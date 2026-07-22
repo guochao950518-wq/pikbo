@@ -1,44 +1,77 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PRESETS } from "@/lib/presets";
-import { PresetsWall } from "@/components/PresetsWall";
+import { allCategoryFeeds } from "@/lib/videoFeed";
+import { VideoTile } from "@/components/VideoTile";
 
 export const metadata: Metadata = {
   title: "Toy video presets",
   description:
-    "Every Pikbo effect for designer toys, figures, blind boxes and plush — spin, unbox, dance, cinematic scenes.",
+    "Every Pikbo effect as a playable video — spin, unbox, dance, cinematic scenes for designer toys.",
   alternates: { canonical: "/effects" },
 };
 
+/** HF viral-presets wall: every card is video */
 export default function EffectsHub() {
+  const groups = allCategoryFeeds();
+
   return (
-    <div className="px-4 py-10 sm:px-8">
-      <div className="mx-auto max-w-6xl">
-        <div className="max-w-2xl">
-          <span className="chip">🧸 {PRESETS.length} presets</span>
-          <h1 className="mt-4 text-4xl font-bold sm:text-5xl">
-            Toy video presets
-          </h1>
-          <p className="mt-4 text-lg text-[var(--fg-muted)]">
-            One photo of a toy you own → a clip that sells or goes viral. Each
-            card is a full tool page: generate on the spot, then dig into how-to
-            and FAQ.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link href="/create" className="btn btn-primary">
-              Open full studio →
+    <div className="pb-24">
+      <div className="sticky top-0 z-20 border-b border-[var(--border)] bg-[var(--bg)]/90 px-4 py-3 backdrop-blur sm:px-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="section-label">{PRESETS.length} presets</p>
+            <h1 className="text-lg font-bold tracking-tight sm:text-xl">
+              Viral looks · all play
+            </h1>
+          </div>
+          <div className="flex gap-2">
+            <Link
+              href="/create"
+              className="btn btn-primary !px-4 !py-2 text-xs"
+            >
+              Generate
             </Link>
-            <Link href="/for/etsy-listing-videos" className="btn btn-ghost">
-              For sellers
+            <Link
+              href="/supercomputer"
+              className="btn btn-ghost !px-3 !py-2 text-xs"
+            >
+              Batch
             </Link>
           </div>
         </div>
+        <div className="mt-2 flex gap-2 overflow-x-auto pb-1">
+          {groups.map(({ category }) => (
+            <a
+              key={category.id}
+              href={`#cat-${category.id}`}
+              className="shrink-0 rounded-full border border-[var(--border)] px-3 py-1 text-[11px] font-semibold text-[var(--fg-muted)] hover:border-[var(--mint)] hover:text-[var(--mint)]"
+            >
+              {category.label}
+            </a>
+          ))}
+        </div>
       </div>
 
-      <PresetsWall
-        heading="All effects"
-        subheading="Sell it · reveal it · bring it alive"
-      />
+      {groups.map(({ category, items }) => (
+        <section
+          key={category.id}
+          id={`cat-${category.id}`}
+          className="scroll-mt-28 border-b border-[var(--border)] px-3 py-6 sm:px-5"
+        >
+          <div className="mb-3 px-1">
+            <h2 className="text-base font-bold tracking-tight">
+              {category.label}
+            </h2>
+            <p className="text-xs text-[var(--fg-dim)]">{category.blurb}</p>
+          </div>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-4 xl:grid-cols-5">
+            {items.map((item) => (
+              <VideoTile key={item.id} item={item} />
+            ))}
+          </div>
+        </section>
+      ))}
     </div>
   );
 }
