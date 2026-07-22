@@ -36,6 +36,9 @@
 9. Sample toy stills one-click ✅
 10. Batch duration/aspect ✅
 11. Image history + health endpoint ✅
+12. Sample stills + batch controls ✅
+13. Seed control, Share X, toasts, StatusBadge ✅
+14. Explore feed page ✅
 
 ## Still open (honest)
 - Supabase auth / cloud library

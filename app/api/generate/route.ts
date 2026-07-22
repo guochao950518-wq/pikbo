@@ -28,6 +28,7 @@ export async function POST(req: Request) {
     aspectRatio?: string;
     model?: string;
     resolution?: string;
+    seed?: number;
   };
   try {
     body = await req.json();
@@ -43,6 +44,7 @@ export async function POST(req: Request) {
     aspectRatio,
     model: modelPref,
     resolution: resPref,
+    seed,
   } = body;
 
   const preset = effect ? getPreset(effect) : undefined;
@@ -124,6 +126,9 @@ export async function POST(req: Request) {
       resolution: resolutionForTier(freeTier, resPref),
       generate_audio: !freeTier,
     };
+    if (typeof seed === "number" && Number.isFinite(seed) && seed >= 0) {
+      input.seed = Math.floor(seed);
+    }
 
     const result = await fal.subscribe(model, {
       input,

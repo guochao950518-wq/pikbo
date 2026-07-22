@@ -16,9 +16,11 @@ const LINKS = [
   { href: "/image", label: "Still studio" },
   { href: "/library", label: "Library" },
   { href: "/community", label: "Community" },
+  { href: "/explore", label: "Explore" },
   { href: "/pricing", label: "Pricing" },
   { href: "/profile", label: "Profile" },
   { href: "/settings", label: "Settings" },
+  { href: "/supercomputer", label: "Batch" },
 ];
 
 export function CommandPalette() {

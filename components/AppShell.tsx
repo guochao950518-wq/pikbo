@@ -7,6 +7,8 @@ import { CreditsBadge } from "@/components/CreditsBadge";
 import { MobileGenerateBar } from "@/components/MobileGenerateBar";
 import { OnboardingBanner } from "@/components/OnboardingBanner";
 import { CommandPalette } from "@/components/CommandPalette";
+import { ToastProvider } from "@/components/Toast";
+import { StatusBadge } from "@/components/StatusBadge";
 
 /** Suite nav (big-app structure) + Pikbo candy brand (own style). */
 const NAV = [
@@ -18,6 +20,7 @@ const NAV = [
   { href: "/effects", label: "Presets", icon: "🧸" },
   { href: "/library", label: "Library", icon: "▢" },
   { href: "/community", label: "Community", icon: "◉" },
+  { href: "/explore", label: "Explore", icon: "✦" },
   { href: "/pricing", label: "Pricing", icon: "$" },
   { href: "/profile", label: "Profile", icon: "○" },
   { href: "/settings", label: "Settings", icon: "⚙" },
@@ -27,6 +30,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const path = usePathname() || "/";
 
   return (
+    <ToastProvider>
     <div className="flex min-h-screen bg-[var(--bg)] text-[var(--fg)]">
       <aside className="sticky top-0 z-50 hidden h-screen w-[72px] shrink-0 flex-col border-r border-[var(--border)] bg-[var(--bg-soft)] py-3 lg:flex xl:w-[200px] xl:px-2">
         <Link
@@ -43,6 +47,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             {site.name}
           </span>
         </Link>
+        <div className="mb-3 hidden px-2 xl:block">
+          <StatusBadge />
+        </div>
 
         <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto">
           {NAV.map((item) => {
@@ -123,5 +130,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </nav>
       </div>
     </div>
+    </ToastProvider>
   );
 }

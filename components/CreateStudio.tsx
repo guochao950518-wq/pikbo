@@ -9,6 +9,7 @@ import { PRESETS } from "@/lib/presets";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
 import type { PublicSession } from "@/lib/session";
 import { site } from "@/lib/site";
+import { useToast } from "@/components/Toast";
 
 type Status = "idle" | "uploading" | "generating" | "done" | "error";
 type Mode = "i2v" | "t2v";
@@ -70,6 +71,8 @@ export function CreateStudio({
   const [favorites, setFavorites] = useState<string[]>([]);
   const [compare, setCompare] = useState(true);
   const [resolution, setResolution] = useState<"480p" | "720p">("720p");
+  const [seed, setSeed] = useState<string>("");
+  const toast = useToast();
 
   const preset = useMemo(
     () => PRESETS.find((p) => p.slug === effect)!,
@@ -239,6 +242,7 @@ export function CreateStudio({
           aspectRatio,
           model: modelId,
           resolution: isFree ? "480p" : resolution,
+          seed: seed.trim() === "" ? undefined : Number(seed),
         }),
       });
       const data = await res.json();
@@ -266,6 +270,7 @@ export function CreateStudio({
         watermark: Boolean(data.watermark),
         demo: Boolean(data.demo),
       });
+      toast(data.demo ? "Demo clip ready" : "Clip ready · saved to Library");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
       setStatus("error");
@@ -278,10 +283,24 @@ export function CreateStudio({
     try {
       await navigator.clipboard.writeText(videoUrl);
       setCopied(true);
+      toast("Link copied");
       window.setTimeout(() => setCopied(false), 1500);
     } catch {
       setError("Could not copy link");
     }
+  }
+
+  function shareX() {
+    if (!videoUrl) return;
+    const text = encodeURIComponent(
+      `Made with ${site.name} — ${preset.name} 🧸`
+    );
+    const url = encodeURIComponent(videoUrl);
+    window.open(
+      `https://twitter.com/intent/tweet?text=${text}&url=${url}`,
+      "_blank",
+      "noopener,noreferrer"
+    );
   }
 
   const busy = status === "generating" || status === "uploading";
@@ -300,7 +319,19 @@ export function CreateStudio({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [busy, image, effect, duration, aspectRatio, modelId, extra, mode, session]);
+  }, [
+    busy,
+    image,
+    effect,
+    duration,
+    aspectRatio,
+    modelId,
+    extra,
+    mode,
+    session,
+    seed,
+    resolution,
+  ]);
 
   return (
     <div className="flex h-full min-h-[calc(100vh-3.5rem)] flex-col lg:min-h-screen">
@@ -657,6 +688,29 @@ export function CreateStudio({
           </div>
 
           <div>
+            <div className="flex items-center justify-between gap-2">
+              <label className="text-xs font-semibold text-[var(--fg-muted)]">
+                Seed (optional)
+              </label>
+              <button
+                type="button"
+                className="text-[10px] text-[var(--fg-dim)] hover:text-[var(--fg)]"
+                onClick={() =>
+                  setSeed(String(Math.floor(Math.random() * 1_000_000_000)))
+                }
+              >
+                Random
+              </button>
+            </div>
+            <input
+              value={seed}
+              onChange={(e) => setSeed(e.target.value.replace(/[^\d]/g, ""))}
+              placeholder="Empty = random"
+              className="mt-1.5 w-full rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] px-3 py-2 text-sm outline-none focus:border-[var(--brand)]"
+            />
+          </div>
+
+          <div>
             <div className="flex items-center justify-between">
               <label className="text-xs font-semibold text-[var(--fg-muted)]">
                 Motion prompt
@@ -858,6 +912,13 @@ export function CreateStudio({
                     className="btn btn-ghost px-4 py-2 text-xs"
                   >
                     {copied ? "Copied!" : "Copy link"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={shareX}
+                    className="btn btn-ghost px-4 py-2 text-xs"
+                  >
+                    Share on X
                   </button>
                   <button
                     type="button"
