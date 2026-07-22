@@ -1,4 +1,5 @@
-import { CREDITS_PER_VIDEO, getPlan } from "@/lib/pricing";
+import { getPlan } from "@/lib/pricing";
+import { jobCostCredits } from "@/lib/contracts";
 import type { UserSession } from "@/lib/session";
 
 export type CreditCheck =
@@ -6,7 +7,7 @@ export type CreditCheck =
   | { ok: false; reason: "insufficient"; need: number; have: number };
 
 export function checkCredits(session: UserSession): CreditCheck {
-  const cost = CREDITS_PER_VIDEO;
+  const cost = jobCostCredits();
   if (session.credits < cost) {
     return {
       ok: false,
@@ -22,14 +23,20 @@ export function checkCredits(session: UserSession): CreditCheck {
   };
 }
 
-export function deductCredits(session: UserSession, amount = CREDITS_PER_VIDEO): UserSession {
+export function deductCredits(
+  session: UserSession,
+  amount = jobCostCredits()
+): UserSession {
   return {
     ...session,
     credits: Math.max(0, session.credits - amount),
   };
 }
 
-export function refundCredits(session: UserSession, amount = CREDITS_PER_VIDEO): UserSession {
+export function refundCredits(
+  session: UserSession,
+  amount = jobCostCredits()
+): UserSession {
   const cap = getPlan(session.plan).credits;
   // Allow temporary over-cap on refund after failed gen (don't punish failed runs)
   return {

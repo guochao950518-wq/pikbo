@@ -26,15 +26,15 @@ npm run dev      # http://localhost:3000
 | **Dev billing** | no Stripe keys, non-prod | `/api/checkout` upgrades plan instantly |
 | **Live billing** | Stripe keys + price IDs | Redirects to Stripe Checkout |
 
-## Credits & plans
-| Plan | Price | Credits/mo | Watermark |
-|---|---|---|---|
-| Free | $0 | 30 (~3 clips) | yes |
-| Creator | $19 | 500 (~50 clips) | no |
-| Shop | $49 | 1,500 (~150 clips) | no |
+## Credits & plans (see `docs/UNIT_ECONOMICS.md` + `lib/pricing.ts`)
+| Plan | Price | Credits/mo | Approx clips | Watermark |
+|---|---|---|---|---|
+| Free | $0 | 10 | ~1 trial | yes |
+| Creator | $19 | 50 | ~5 | no |
+| Shop | $49 | 150 | ~15 | no |
 
-Rule: **1 clip = 10 credits**. Failed generations refund credits.
-Free tier always shows an on-player watermark; paid plans remove it.
+Rule: **1 clip = 10 credits** (flat until model×duration metering). Failed gens refund.
+Free: 5s · 480p · watermark. Demo mode (no `FAL_KEY`) still deducts credits, returns local `/demos/*`.
 
 ## Where things live
 | Path | What |

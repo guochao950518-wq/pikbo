@@ -12,11 +12,16 @@ import {
   type ModelPreference,
 } from "@/lib/models";
 import { ensureSession, publicSession, saveSession } from "@/lib/session";
+import type {
+  GenerateErrorBody,
+  GenerateRequestBody,
+  GenerateSuccess,
+} from "@/lib/contracts";
 
 export const runtime = "nodejs";
 export const maxDuration = 180;
 
-/** Local toy demos when FAL_KEY missing — never ship flower.mp4 as product proof */
+/** Local toy demos when FAL_KEY missing — product-relevant, never random stock */
 const DEMO_CLIPS = [
   "/demos/scout-packshot-spin.mp4",
   "/demos/orbit-hyper-cgi.mp4",
@@ -26,25 +31,25 @@ const DEMO_CLIPS = [
 
 function demoClipForEffect(effect: string): string {
   let h = 0;
-  for (let i = 0; i < effect.length; i++) h = (h + effect.charCodeAt(i) * 17) % DEMO_CLIPS.length;
+  for (let i = 0; i < effect.length; i++) {
+    h = (h + effect.charCodeAt(i) * 17) % DEMO_CLIPS.length;
+  }
   return DEMO_CLIPS[h] ?? DEMO_CLIPS[0];
 }
 
+function err(
+  body: GenerateErrorBody,
+  status: number
+): NextResponse<GenerateErrorBody> {
+  return NextResponse.json(body, { status });
+}
+
 export async function POST(req: Request) {
-  let body: {
-    effect?: string;
-    image?: string;
-    extra?: string;
-    duration?: number;
-    aspectRatio?: string;
-    model?: string;
-    resolution?: string;
-    seed?: number;
-  };
+  let body: GenerateRequestBody;
   try {
-    body = await req.json();
+    body = (await req.json()) as GenerateRequestBody;
   } catch {
-    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+    return err({ error: "Invalid request", code: "INVALID_REQUEST" }, 400);
   }
 
   const {
@@ -60,26 +65,25 @@ export async function POST(req: Request) {
 
   const preset = effect ? getPreset(effect) : undefined;
   if (!preset) {
-    return NextResponse.json({ error: "Unknown effect" }, { status: 400 });
+    return err({ error: "Unknown effect", code: "UNKNOWN_EFFECT" }, 400);
   }
   if (!image || !image.startsWith("data:image")) {
-    return NextResponse.json(
-      { error: "A toy photo is required" },
-      { status: 400 }
+    return err(
+      { error: "A toy photo is required", code: "INVALID_REQUEST" },
+      400
     );
   }
-  // ~8–9MB decoded; reject huge payloads that blow memory / fal upload
   if (image.length > 12_000_000) {
-    return NextResponse.json(
-      { error: "Image too large (max ~8MB)" },
-      { status: 413 }
+    return err(
+      { error: "Image too large (max ~8MB)", code: "IMAGE_TOO_LARGE" },
+      413
     );
   }
 
   let session = await ensureSession();
   const check = checkCredits(session);
   if (!check.ok) {
-    return NextResponse.json(
+    return err(
       {
         error: "Not enough credits",
         code: "INSUFFICIENT_CREDITS",
@@ -87,7 +91,7 @@ export async function POST(req: Request) {
         have: check.have,
         session: publicSession(session),
       },
-      { status: 402 }
+      402
     );
   }
 
@@ -96,14 +100,9 @@ export async function POST(req: Request) {
 
   const plan = getPlan(session.plan);
   const freeTier = plan.watermark;
-  // Free trial: keep cost bounded (unit economics — short Fast 480p only)
-  const secs = freeTier
-    ? 5
-    : clampDuration(duration, preset.duration);
+  const secs = freeTier ? 5 : clampDuration(duration, preset.duration);
   const aspect = normalizeAspect(aspectRatio, preset.aspectRatio);
 
-  // If user typed a full custom prompt in extra that looks complete, use it;
-  // otherwise merge with preset template.
   const custom = extra?.trim() || "";
   const prompt =
     custom.length > 80
@@ -112,9 +111,10 @@ export async function POST(req: Request) {
         ? `${preset.promptTemplate} Additional direction: ${custom}.`
         : preset.promptTemplate;
 
+  // --- Demo path: foundation still deducts credits so free trial is real ---
   if (!process.env.FAL_KEY) {
-    await new Promise((r) => setTimeout(r, 800));
-    return NextResponse.json({
+    await new Promise((r) => setTimeout(r, 600));
+    const payload: GenerateSuccess = {
       videoUrl: demoClipForEffect(preset.slug),
       demo: true,
       watermark: plan.watermark,
@@ -122,7 +122,8 @@ export async function POST(req: Request) {
       duration: secs,
       aspectRatio: aspect,
       session: publicSession(session),
-    });
+    };
+    return NextResponse.json(payload);
   }
 
   const model = modelForTier({
@@ -161,34 +162,42 @@ export async function POST(req: Request) {
     if (!videoUrl) {
       session = refundCredits(session, check.cost);
       await saveSession(session);
-      return NextResponse.json(
+      return err(
         {
           error: "Model returned no video",
+          code: "MODEL_EMPTY",
           model,
           session: publicSession(session),
         },
-        { status: 502 }
+        502
       );
     }
 
-    return NextResponse.json({
+    const payload: GenerateSuccess = {
       videoUrl,
-      requestId: result.requestId,
+      demo: false,
       watermark: plan.watermark,
       model,
-      provider: "bytedance-seedance",
       duration: secs,
       aspectRatio: aspect,
       session: publicSession(session),
-    });
-  } catch (err) {
-    console.error("generate error:", model, err);
+      requestId: result.requestId,
+      provider: "bytedance-seedance",
+    };
+    return NextResponse.json(payload);
+  } catch (e) {
+    console.error("generate error:", model, e);
     session = refundCredits(session, check.cost);
     await saveSession(session);
-    const msg = err instanceof Error ? err.message : "Generation failed";
-    return NextResponse.json(
-      { error: msg, model, session: publicSession(session) },
-      { status: 500 }
+    const msg = e instanceof Error ? e.message : "Generation failed";
+    return err(
+      {
+        error: msg,
+        code: "GENERATION_FAILED",
+        model,
+        session: publicSession(session),
+      },
+      500
     );
   }
 }
