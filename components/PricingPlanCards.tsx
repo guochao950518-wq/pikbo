@@ -79,7 +79,7 @@ export function PricingPlanCards() {
                 <div className="flex items-center justify-between gap-2">
                   <CardTitle>{plan.name}</CardTitle>
                   {plan.featured ? (
-                    <Badge variant="brand">Plan preview</Badge>
+                    <Badge variant="brand">Current allowance</Badge>
                   ) : plan.id === "free" ? (
                     <Badge variant="live">Start</Badge>
                   ) : null}
@@ -103,13 +103,13 @@ export function PricingPlanCards() {
               <CardContent className="flex flex-1 flex-col gap-5">
                 <div className="rounded-xl border border-white/[0.07] bg-black/30 p-4">
                   <p className="text-3xl font-black tracking-tight">
-                    Prototype: {clipsFromCredits(plan.credits)}
+                    ≈ {clipsFromCredits(plan.credits)}
                     <span className="ml-1 text-base font-semibold text-[var(--fg-muted)]">
                       clips
                     </span>
                   </p>
                   <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--fg-dim)]">
-                    Current UI estimate · launch weights under review
+                    Current flat rate · model-aware weights next
                   </p>
                 </div>
                 <ul className="space-y-2.5 text-sm">
