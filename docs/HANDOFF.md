@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [gpt] overnight cached/Lab/Mini truth pass (T31)
+- Paths: Explore/navigation, PIKBO Lab cards, trust/empty states, preset/toy/use-case/guide copy, and truth-status docs.
+- Labels: cached media is never called Live or Real; remix cards are Concept; the anonymous showcase is PIKBO Lab rather than a claimed user community.
+- Free contract: one configured Seedance Mini 5s 480p trial with an on-player mark; without a provider, Studio uses a clearly labeled cached demo.
+- Guardrails: removed exact-output, instant-speed, guaranteed-reach, and guaranteed-conversion claims; generated unseen angles and small details require review.
+- Scope: presentation strings and content registries only; no API, session, credits, Stripe, layout, or CSS changes.
+
 ### 2026-07-23 — [gpt] truth-sync C1–C5
 - Paths: pricing UI, CreateStudio/LandingToolPanel/Paywall/Profile/Credits copy, `README.md`, `docs/UNIT_ECONOMICS.md`, terms/preset FAQ, and audit docs.
 - Contract: Free 10 credits ≈ one Mini 5s 480p live trial with an on-player mark; Creator 50 ≈ five; Shop 150 ≈ fifteen at the current flat 10-credit rate. No unlimited live generation claim remains.

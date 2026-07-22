@@ -18,14 +18,14 @@ const TOP = [
   { href: "/effects", label: "Presets" },
   { href: "/models", label: "Models" },
   { href: "/supercomputer", label: "Batch" },
-  { href: "/community", label: "Community" },
+  { href: "/community", label: "PIKBO Lab" },
   { href: "/explore", label: "Feed" },
   { href: "/library", label: "Library" },
 ] as const;
 
 const MOBILE = [
   { href: "/", label: "Home", icon: "⌂" },
-  { href: "/community", label: "Community", icon: "◉" },
+  { href: "/community", label: "PIKBO Lab", icon: "◉" },
   { href: "/create", label: "Generate", icon: "✦", primary: true as const },
   { href: "/library", label: "Library", icon: "▢" },
   { href: "/profile", label: "Profile", icon: "○" },

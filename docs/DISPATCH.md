@@ -21,6 +21,7 @@
 | 项 | 状态 |
 |----|------|
 | Codex truth-sync C3–C5 | **Grok 已 merge main** |
+| Codex overnight truth copy | **done · `agent/gpt/overnight-copy`** |
 | Claude home-hf 设计 | worktree 活跃 · 有本地未提交时请 commit+push |
 | Grok 引擎 | 下载/限流/tsc · 继续 |
 | 公网部署 | 等老板醒后 LAUNCH |

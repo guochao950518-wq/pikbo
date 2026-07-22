@@ -11,25 +11,25 @@ See also `docs/GAP_AUDIT.md` for the latest gap analysis.
 | Module | Big apps | Pikbo | Status |
 |---|---|---|---|
 | App shell nav | ✓ | `AppShell` | live |
-| Home feed + demos | ✓ | `/` + GPT demos | live |
-| Generate I2V | ✓ | `/create` · `/generate` | live Seedance |
+| Home feed + demos | ✓ | `/` + GPT demos | cached, labeled |
+| Generate I2V | ✓ | `/create` · `/generate` | provider-configured; cached fallback |
 | Duration / aspect / resolution | ✓ | CreateStudio | live |
 | Generate T2V | ✓ | UI stub | partial |
-| Models shelf | ✓ | `/models` | 2 live + slots |
-| Apps library | ✓ | `/apps` | live + stubs |
-| Cinema Studio | ✓ | `/cinema` | live → Generate |
-| Viral presets | ✓ | `/effects` | live |
-| Image studio | ✓ | `/image` + `/api/image` | live Flux (or demo) |
+| Models shelf | ✓ | `/models` | catalog; capabilities labeled |
+| Apps library | ✓ | `/apps` | configured workspaces + stubs |
+| Cinema Studio | ✓ | `/cinema` | configured workspace → Generate |
+| Viral presets | ✓ | `/effects` | recipes + cached previews |
+| Image studio | ✓ | `/image` + `/api/image` | configured Flux or labeled demo |
 | Library manage | ✓ | filter + delete | live local |
-| Community + real demos | ✓ | `/community` | live demos |
-| Profile | ✓ | live credits | live guest |
-| Settings | ✓ | `/settings` | live |
-| Pricing annual toggle | ✓ | `/pricing` | UI live |
-| Batch agent | ✓ | `/supercomputer` | live |
+| PIKBO Lab + cached demos | ✓ | `/community` | cached and concept-labeled |
+| Profile | ✓ | browser-session credits | guest prototype |
+| Settings | ✓ | `/settings` | UI prototype |
+| Pricing annual toggle | ✓ | `/pricing` | UI; billing gated |
+| Batch agent | ✓ | `/supercomputer` | workspace; provider-gated |
 | Cmd+K palette | ✓ | global | live |
 | Auth multi-device | ✓ | — | todo Supabase |
 | Multi-model Kling/Veo live | ✓ | catalog only | later |
 
-## Live engines
+## Provider-backed engines
 - Video: ByteDance **Seedance 2.0** + Fast (fal)
 - Image: **Flux Schnell** (fal) · override `FAL_IMAGE_MODEL`

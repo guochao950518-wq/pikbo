@@ -69,10 +69,10 @@ function Clip({
 function FeatureRow({ demos }: { demos: DemoVideo[] }) {
   const cards = [
     {
-      title: "Seedance free trial",
-      blurb: "One figure photo → a shareable clip",
+      title: "Seedance Mini free path",
+      blurb: "Cached example; configured live trial is 5s at 480p",
       href: "/create",
-      badge: "Live",
+      badge: "Cached demo",
     },
     {
       title: "Blind-box unboxing",
@@ -135,19 +135,19 @@ function LimePromo() {
         <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center sm:gap-5">
           <div>
             <h2 className="font-display text-[26px] font-black uppercase leading-[0.98] tracking-tight text-black sm:text-5xl">
-              1 free trial
+              1 Mini trial
               <span className="block">animate a toy you own</span>
             </h2>
             <p className="mt-2 hidden max-w-xl text-sm font-medium text-black/70 sm:block">
-              One figure photo → a Seedance clip. No card. Priced for real model
-              cost, never fake &quot;unlimited&quot;.
+              One figure photo → Seedance Mini 480p when live is on. No card.
+              Cached demos labeled. Never fake &quot;unlimited&quot;.
             </p>
           </div>
           <Link
             href="/create"
             className="shrink-0 rounded-full bg-black px-6 py-3 text-sm font-black text-[#c8ff3d] transition-transform hover:-translate-y-0.5 sm:px-7 sm:py-3.5"
           >
-            Start free →
+            Try Mini →
           </Link>
         </div>
       </div>
@@ -217,8 +217,8 @@ function LineIcon({ name }: { name: string }) {
 /* ---- 3. Two-col: pitch card + model/feature grid (HF icon+badge+title cards) ---- */
 function ModelGrid() {
   const features = [
-    { icon: "film", title: "Seedance Mini", sub: "Free toy clips in seconds", badge: "Free", href: "/create" },
-    { icon: "spark", title: "Seedance 2.0", sub: "Best quality for painted figures", badge: "Paid", href: "/pricing" },
+    { icon: "film", title: "Seedance Mini", sub: "One 5s 480p trial when live", badge: "Free", href: "/create" },
+    { icon: "spark", title: "Seedance 2.0", sub: "Paid higher-quality path", badge: "Paid", href: "/pricing" },
     { icon: "box", title: "Blind-box unboxing", sub: "The reveal collectors share", badge: "Viral", href: "/create?effect=blind-box-unboxing" },
     { icon: "spin", title: "360° listing spin", sub: "Marketplace-ready packshot", badge: "Seller", href: "/create?effect=360-spin-showcase" },
     { icon: "wand", title: "Make it dance", sub: "Come-alive loop for Reels", badge: "Viral", href: "/create?effect=make-figure-dance" },
@@ -230,10 +230,10 @@ function ModelGrid() {
       <div className="flex flex-col justify-between rounded-[20px] border border-white/10 bg-gradient-to-br from-[#12242a] to-[#0e1417] p-6">
         <div>
           <h3 className="font-display text-2xl font-black uppercase leading-tight tracking-tight text-white">
-            All Seedance models
+            Toy video paths
           </h3>
           <ul className="mt-4 space-y-2 text-sm text-white/70">
-            <li>✓ Free trial — no card</li>
+            <li>✓ Free: one Mini 5s 480p trial</li>
             <li>✓ Failed gens refund credits</li>
             <li>✓ Paid = commercial use</li>
             <li>✓ Priced for model cost, not fake volume</li>

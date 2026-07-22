@@ -49,7 +49,7 @@ export const USE_CASES: UseCase[] = [
     faq: [
       {
         q: "What video does Etsy allow on listings?",
-        a: "Etsy supports short listing videos in the gallery. A 5-second square or vertical clip works well — exactly what Pikbo exports.",
+        a: "Etsy supports listing videos. Pikbo can be configured for a 5-second square or vertical clip; confirm the marketplace requirements before publishing.",
       },
       {
         q: "Do I need to film anything?",
@@ -199,7 +199,7 @@ export const USE_CASES: UseCase[] = [
     faq: [
       {
         q: "Can I make clips between lives?",
-        a: "Yes — generate a promo from a single photo in seconds, so you can post between or during shows.",
+        a: "Yes — create a promo from one photo. With a configured provider, live renders usually take 30–90 seconds, so prepare them before the show.",
       },
     ],
   },

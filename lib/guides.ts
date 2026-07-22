@@ -36,7 +36,7 @@ export const GUIDES: Guide[] = [
       "A simple guide to creating a smooth 360° spin video of your figure or collectible from a single photo — no turntable, camera rig, or editing.",
     readMins: 3,
     intro:
-      "A slow 360° spin is the single most useful video you can add to a toy listing or a collection post — it shows the piece from every angle and instantly reads as professional. Here's how to make one from a single photo, without a motorized turntable or any filming.",
+      "A slow generated spin can add motion to a toy listing or collection post. From one front photo, unseen angles are model-generated rather than product documentation, so review them carefully before publishing.",
     sections: [
       {
         h2: "1. Start with a clean product photo",
@@ -55,7 +55,7 @@ export const GUIDES: Guide[] = [
       {
         h2: "3. Use it where it converts",
         paragraphs: [
-          "Add the spin to your product listing gallery, a storefront hero, or a 'new arrival' post. Listings with video consistently out-convert photo-only listings because buyers can see exactly what they're getting.",
+          "Test the spin in a product gallery, storefront hero, or 'new arrival' post. Performance varies, and model-generated unseen angles should not be presented as exact product proof.",
           "Keep the clip short — around five seconds, looping — so it plays cleanly in a feed.",
         ],
       },

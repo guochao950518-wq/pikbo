@@ -56,7 +56,7 @@ export default function ExplorePage() {
         <div className="mt-2 flex gap-2 overflow-x-auto pb-0.5">
           {[
             { href: "/effects", label: "All presets" },
-            { href: "/community", label: "Community" },
+            { href: "/community", label: "PIKBO Lab" },
             { href: "/cinema", label: "Cinema" },
             { href: "/supercomputer", label: "Batch" },
             { href: "/create", label: "Upload" },
