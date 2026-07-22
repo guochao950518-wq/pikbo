@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { site } from "@/lib/site";
 import { CreditsBadge } from "@/components/CreditsBadge";
 import { MobileGenerateBar } from "@/components/MobileGenerateBar";
+import { OnboardingBanner } from "@/components/OnboardingBanner";
 
 /** Suite nav (big-app structure) + Pikbo candy brand (own style). */
 const NAV = [
@@ -93,6 +94,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
+        <OnboardingBanner />
         <div className="flex-1">{children}</div>
         <MobileGenerateBar />
 

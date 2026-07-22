@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { loadFavorites, toggleFavorite } from "@/lib/favorites";
 import { pushHistory } from "@/lib/history";
 import { PRESETS } from "@/lib/presets";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
@@ -65,6 +66,8 @@ export function CreateStudio({
   const [elapsed, setElapsed] = useState(0);
   const [copied, setCopied] = useState(false);
   const [recent, setRecent] = useState<string[]>([]);
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [compare, setCompare] = useState(true);
 
   const preset = useMemo(
     () => PRESETS.find((p) => p.slug === effect)!,
@@ -96,6 +99,7 @@ export function CreateStudio({
     } catch {
       // ignore
     }
+    setFavorites(loadFavorites());
   }, []);
 
   useEffect(() => {
@@ -373,6 +377,29 @@ export function CreateStudio({
             placeholder="Search spin, unbox…"
             className="mb-2 w-full rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] px-2.5 py-1.5 text-xs outline-none focus:border-[var(--brand)]"
           />
+          {favorites.length > 0 && !presetFilter && (
+            <div className="mb-2">
+              <p className="mb-1 px-1 text-[9px] font-bold uppercase text-[var(--fg-dim)]">
+                ★ Favorites
+              </p>
+              <div className="flex flex-wrap gap-1">
+                {favorites.map((slug) => {
+                  const p = PRESETS.find((x) => x.slug === slug);
+                  if (!p) return null;
+                  return (
+                    <button
+                      key={`fav-${slug}`}
+                      type="button"
+                      onClick={() => setEffect(slug)}
+                      className="rounded-md border border-[var(--brand)]/40 px-1.5 py-0.5 text-[10px]"
+                    >
+                      {p.emoji} {p.name}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
           {recent.length > 0 && !presetFilter && (
             <div className="mb-2">
               <p className="mb-1 px-1 text-[9px] font-bold uppercase text-[var(--fg-dim)]">
@@ -398,29 +425,41 @@ export function CreateStudio({
           )}
           <div className="flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible">
             {filteredPresets.map((p) => (
-              <button
+              <div
                 key={p.slug}
-                type="button"
-                onClick={() => setEffect(p.slug)}
-                className={`flex min-w-[140px] items-center gap-2 rounded-xl border p-2.5 text-left text-sm lg:min-w-0 ${
+                className={`flex min-w-[140px] items-stretch gap-1 rounded-xl border lg:min-w-0 ${
                   effect === p.slug
                     ? "border-[var(--brand)] bg-[var(--card)]"
-                    : "border-transparent bg-[var(--bg-soft)] hover:border-[var(--border)]"
+                    : "border-transparent bg-[var(--bg-soft)]"
                 }`}
               >
-                <span
-                  className="grid h-10 w-10 shrink-0 place-items-center rounded-lg text-lg"
-                  style={{ background: p.gradient }}
+                <button
+                  type="button"
+                  onClick={() => setEffect(p.slug)}
+                  className="flex flex-1 items-center gap-2 p-2.5 text-left text-sm"
                 >
-                  {p.emoji}
-                </span>
-                <span className="leading-tight">
-                  <span className="block font-medium">{p.name}</span>
-                  <span className="block text-[10px] text-[var(--fg-dim)]">
-                    {p.duration}s · {p.aspectRatio}
+                  <span
+                    className="grid h-10 w-10 shrink-0 place-items-center rounded-lg text-lg"
+                    style={{ background: p.gradient }}
+                  >
+                    {p.emoji}
                   </span>
-                </span>
-              </button>
+                  <span className="leading-tight">
+                    <span className="block font-medium">{p.name}</span>
+                    <span className="block text-[10px] text-[var(--fg-dim)]">
+                      {p.duration}s · {p.aspectRatio}
+                    </span>
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  title="Favorite"
+                  className="px-2 text-xs text-[var(--fg-dim)] hover:text-[var(--brand)]"
+                  onClick={() => setFavorites(toggleFavorite(p.slug))}
+                >
+                  {favorites.includes(p.slug) ? "★" : "☆"}
+                </button>
+              </div>
             ))}
             {filteredPresets.length === 0 && (
               <p className="px-1 text-xs text-[var(--fg-dim)]">No presets match</p>
@@ -659,22 +698,72 @@ export function CreateStudio({
             )}
             {status === "done" && videoUrl && (
               <div className="relative w-full p-3">
-                {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-                <video
-                  src={videoUrl}
-                  controls
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="mx-auto max-h-[70vh] rounded-lg"
-                />
-                {watermark && (
-                  <div
-                    className="pointer-events-none absolute bottom-6 right-6 rounded-md px-2 py-1 text-xs font-bold text-white/90"
-                    style={{ background: "var(--grad)" }}
+                <div className="mb-2 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setCompare((c) => !c)}
+                    className="text-[10px] font-semibold text-[var(--brand)] hover:underline"
                   >
-                    {site.name}
+                    {compare ? "Video only" : "Photo ↔ video"}
+                  </button>
+                </div>
+                {compare && image ? (
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    <div>
+                      <p className="mb-1 text-center text-[10px] font-bold uppercase text-[var(--fg-dim)]">
+                        Before
+                      </p>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={image}
+                        alt="before"
+                        className="mx-auto max-h-[50vh] rounded-lg object-contain"
+                      />
+                    </div>
+                    <div className="relative">
+                      <p className="mb-1 text-center text-[10px] font-bold uppercase text-[var(--fg-dim)]">
+                        After
+                      </p>
+                      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+                      <video
+                        src={videoUrl}
+                        controls
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="mx-auto max-h-[50vh] rounded-lg"
+                      />
+                      {watermark && (
+                        <div
+                          className="pointer-events-none absolute bottom-3 right-3 rounded-md px-2 py-1 text-[10px] font-bold text-white/90"
+                          style={{ background: "var(--grad)" }}
+                        >
+                          {site.name}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="relative">
+                    {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+                    <video
+                      src={videoUrl}
+                      controls
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="mx-auto max-h-[70vh] rounded-lg"
+                    />
+                    {watermark && (
+                      <div
+                        className="pointer-events-none absolute bottom-6 right-6 rounded-md px-2 py-1 text-xs font-bold text-white/90"
+                        style={{ background: "var(--grad)" }}
+                      >
+                        {site.name}
+                      </div>
+                    )}
                   </div>
                 )}
                 <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
@@ -707,12 +796,18 @@ export function CreateStudio({
                   >
                     Library
                   </Link>
+                  <Link
+                    href="/supercomputer"
+                    className="btn btn-ghost px-4 py-2 text-xs"
+                  >
+                    Batch more
+                  </Link>
                 </div>
                 <p className="mt-2 text-center text-[10px] text-[var(--fg-dim)]">
-                  Shortcut: ⌘/Ctrl + Enter to generate
+                  {duration}s · {aspectRatio} · ⌘/Ctrl+Enter
                 </p>
                 {demo && (
-                  <p className="mt-3 text-center text-xs text-[var(--fg-dim)]">
+                  <p className="mt-2 text-center text-xs text-[var(--fg-dim)]">
                     Demo clip — set FAL_KEY to run real Seedance.
                   </p>
                 )}

@@ -9,6 +9,7 @@ import {
 } from "@/components/HomeDemoShowcase";
 import { HomeModelShelf } from "@/components/HomeModelShelf";
 import { HowItWorks } from "@/components/HowItWorks";
+import { TrustStrip } from "@/components/TrustStrip";
 
 /**
  * Home feed patterned on full AI creative suites:
@@ -64,6 +65,7 @@ export default function Home() {
         </div>
       </section>
 
+      <TrustStrip />
       <HomeDemoShowcase />
       <HowItWorks />
 
