@@ -107,5 +107,20 @@ const pe = fs.readFileSync(join(root, "lib/providerError.ts"), "utf8");
 assert.match(pe, /export function isValidImageDataUrl/);
 assert.match(pe, /export function classifyProviderError/);
 
+// Demo path must not charge before FAL_KEY gate (honesty vs pricing)
+const genRoute = fs.readFileSync(join(root, "app/api/generate/route.ts"), "utf8");
+const demoIdx = genRoute.indexOf("if (!process.env.FAL_KEY)");
+const deductIdx = genRoute.indexOf("deductCredits(session");
+assert.ok(demoIdx > 0 && deductIdx > demoIdx, "demo path must run before credit deduct");
+assert.match(genRoute, /Cached demos stay free|free cached Lab/i);
+
+const imgRoute = fs.readFileSync(join(root, "app/api/image/route.ts"), "utf8");
+const imgDemo = imgRoute.indexOf("if (!process.env.FAL_KEY)");
+const imgDeduct = imgRoute.indexOf("deductCredits(session");
+assert.ok(imgDemo > 0 && imgDeduct > imgDemo, "image demo path free before deduct");
+
+const ent = fs.readFileSync(join(root, "lib/entitlements.ts"), "utf8");
+assert.match(ent, /probeEntitlementsStore/);
+
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

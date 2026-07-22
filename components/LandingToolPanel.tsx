@@ -126,10 +126,7 @@ export function LandingToolPanel({
       setError("Upload a toy photo first (JPEG, PNG, WebP, or GIF).");
       return;
     }
-    if (session && session.credits < CREDITS_PER_VIDEO) {
-      setError("This allowance is used up — compare finite plans on Pricing.");
-      return;
-    }
+    // Server enforces live credits; demo-cached path is free when no provider.
     const freeTier = session?.plan === "free" || session?.watermark;
     const resolution = freeTier ? "480p" : "720p";
     setError(null);

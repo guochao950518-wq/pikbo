@@ -92,6 +92,39 @@ export async function POST(req: Request) {
     );
   }
 
+  const plan = getPlan(session.plan);
+  const freeTier = plan.watermark;
+  const secs = freeTier ? 5 : clampDuration(duration, preset.duration);
+  const aspect = normalizeAspect(aspectRatio, preset.aspectRatio);
+  const resolution = resolutionForTier(freeTier, resPref);
+
+  const custom = extra?.trim() || "";
+  const prompt =
+    custom.length > 80
+      ? custom
+      : custom
+        ? `${preset.promptTemplate} Additional direction: ${custom}.`
+        : preset.promptTemplate;
+
+  // --- Demo path (no provider): free cached Lab clips — matches pricing honesty ---
+  // "Cached demos stay free" / unlimited labeled demo playback. Live jobs charge.
+  if (!process.env.FAL_KEY) {
+    await new Promise((r) => setTimeout(r, 600));
+    const payload: GenerateSuccess = {
+      videoUrl: demoClipForEffect(preset.slug),
+      demo: true,
+      demoReason: "no_provider_key",
+      watermark: plan.watermark,
+      model: "demo-cached",
+      duration: secs,
+      aspectRatio: aspect,
+      resolution,
+      session: publicSession(session),
+    };
+    return NextResponse.json(payload);
+  }
+
+  // --- Live path: charge credits only when a real provider call will run ---
   const check = checkCredits(session);
   if (!check.ok) {
     return err(
@@ -111,37 +144,6 @@ export async function POST(req: Request) {
 
   session = deductCredits(session, check.cost);
   await saveSession(session);
-
-  const plan = getPlan(session.plan);
-  const freeTier = plan.watermark;
-  const secs = freeTier ? 5 : clampDuration(duration, preset.duration);
-  const aspect = normalizeAspect(aspectRatio, preset.aspectRatio);
-  const resolution = resolutionForTier(freeTier, resPref);
-
-  const custom = extra?.trim() || "";
-  const prompt =
-    custom.length > 80
-      ? custom
-      : custom
-        ? `${preset.promptTemplate} Additional direction: ${custom}.`
-        : preset.promptTemplate;
-
-  // --- Demo path: foundation still deducts credits so free trial is real ---
-  if (!process.env.FAL_KEY) {
-    await new Promise((r) => setTimeout(r, 600));
-    const payload: GenerateSuccess = {
-      videoUrl: demoClipForEffect(preset.slug),
-      demo: true,
-      demoReason: "no_provider_key",
-      watermark: plan.watermark,
-      model: "demo-cached",
-      duration: secs,
-      aspectRatio: aspect,
-      resolution,
-      session: publicSession(session),
-    };
-    return NextResponse.json(payload);
-  }
 
   const model = modelForTier({
     freeTier,

@@ -90,3 +90,32 @@ export async function findBySubscription(
     ) ?? null
   );
 }
+
+/**
+ * Ops probe: can this process persist entitlements?
+ * On Vercel serverless the default `data/` path is ephemeral / often unwritable —
+ * soft-live free is OK; real paid needs ENTITLEMENTS_PATH → durable store (R1).
+ */
+export async function probeEntitlementsStore(): Promise<{
+  writable: boolean;
+  path: string;
+  backend: "file";
+  warning?: string;
+}> {
+  const file = storePath();
+  try {
+    await fs.mkdir(path.dirname(file), { recursive: true });
+    const probe = `${file}.probe`;
+    await fs.writeFile(probe, String(Date.now()), "utf8");
+    await fs.unlink(probe).catch(() => undefined);
+    return { writable: true, path: file, backend: "file" };
+  } catch {
+    return {
+      writable: false,
+      path: file,
+      backend: "file",
+      warning:
+        "Entitlements file not writable — Stripe webhooks will not stick across instances. Set ENTITLEMENTS_PATH to durable storage before real charges.",
+    };
+  }
+}

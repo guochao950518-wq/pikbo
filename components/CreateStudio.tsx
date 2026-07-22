@@ -281,11 +281,8 @@ export function CreateStudio({
       setError("Image is too large. Use a photo under ~8MB.");
       return;
     }
-    if (session && session.credits < CREDITS_PER_VIDEO) {
-      setShowPaywall(true);
-      setError("Not enough credits.");
-      return;
-    }
+    // Do not hard-block on client credits: demo-cached mode (no FAL_KEY) is free.
+    // Live path enforces credits server-side and returns 402 / paywall.
 
     setError(null);
     setVideoUrl(null);
@@ -846,12 +843,7 @@ export function CreateStudio({
           <button
             type="button"
             onClick={generate}
-            disabled={
-              busy ||
-              !canAfford ||
-              mode === "t2v" ||
-              (mode === "i2v" && !image)
-            }
+            disabled={busy || mode === "t2v" || (mode === "i2v" && !image)}
             className="btn btn-primary w-full disabled:opacity-50"
           >
             {busy
@@ -859,7 +851,7 @@ export function CreateStudio({
               : mode === "t2v"
                 ? "Text→Video soon — use Image→Video"
                 : !canAfford
-                  ? "Out of credits"
+                  ? `Generate · live needs ${CREDITS_PER_VIDEO} credits (cached demo free offline)`
                   : `Generate · ${CREDITS_PER_VIDEO} credits · ${effectiveDuration}s · ${aspectRatio}`}
           </button>
 

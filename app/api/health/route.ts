@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { probeEntitlementsStore } from "@/lib/entitlements";
 
 export const runtime = "nodejs";
 
@@ -13,14 +14,24 @@ export async function GET() {
   const production = process.env.NODE_ENV === "production";
   const degraded = production && !sessionSecret;
 
+  const entitlements = await probeEntitlementsStore();
+
   /** Demo / soft-live / paid ladders — honest gates for ops */
   const ready = {
-    /** Cached Lab + Studio demo path (no provider key required) */
+    /** Cached Lab + Studio demo path (no provider key; free, no credit burn) */
     demo: true,
     /** Live Mini/full Seedance when FAL_KEY + session secret present */
     softLive: fal && (sessionSecret || !production),
-    /** Real charges — still needs durable entitlements (see PRELAUNCH R1) */
-    paid: fal && sessionSecret && stripe && stripeWebhook,
+    /**
+     * Real charges — needs durable entitlements (PRELAUNCH R1).
+     * File store unwritable ⇒ paid stays false even if Stripe env is set.
+     */
+    paid:
+      fal &&
+      sessionSecret &&
+      stripe &&
+      stripeWebhook &&
+      entitlements.writable,
   };
 
   return NextResponse.json({
@@ -34,14 +45,21 @@ export async function GET() {
     stripeWebhook,
     sessionSecret,
     mode: fal ? "live-generate" : "demo-cached",
+    /** Honesty contract: cached demos free; live jobs charge flat credits */
+    billing: {
+      cachedDemoCredits: 0,
+      liveJobCredits: "flat CREDITS_PER_VIDEO",
+    },
     rateLimit: "memory-8rpm",
     ready,
+    entitlements,
     checks: {
       sessionSecret,
       fal,
       stripe,
       stripeWebhook,
       production,
+      entitlementsWritable: entitlements.writable,
     },
     devTopup:
       process.env.NODE_ENV === "development" ||

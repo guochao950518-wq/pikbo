@@ -13,6 +13,7 @@
 | Codex wave2 | Lab labels · Mini trial · TrustStrip honesty |
 | Grok engine | PROVIDER_* codes · MIME guard · health.ready · library import |
 | Grok engine | generateClient shared · Batch 429 retry · Landing parity · engine-smoke |
+| Grok engine | cached demo = 0 credits · entitlements probe · health.ready.paid gated |
 
 ---
 

@@ -165,7 +165,7 @@ Newest first. One block per meaningful landing.
   - Deduct credits **before** fal call; **refund** on failure
   - Free plan → `watermark: true`; paid → false
   - Keep `CREDITS_PER_VIDEO = 10` unless pricing doc updates
-  - Demo mode (no `FAL_KEY`) must still deduct/refund consistently
+  - Demo mode (no `FAL_KEY`) is **free** (0 credits) — labeled cached Lab only; live path deducts before fal and refunds on failure
 
 ### 2026-07-22 — [mixed] 3-axis pSEO
 - Paths: `lib/presets.ts`, `lib/usecases.ts`, `lib/toytypes.ts` + `app/effects|for|toys`

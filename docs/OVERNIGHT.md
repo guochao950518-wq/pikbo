@@ -44,7 +44,8 @@
 3. [x] generate/image: MIME guard · Retry-After · PROVIDER_BALANCE/RATE codes · resolution in success  
 4. [x] health ready ladder · library import/export + live/demo filter + richer meta  
 5. [x] shared `generateClient` · Batch retry on 429 · Landing/Create aligned · image delete/demo · engine-smoke  
-6. 下一拍：Claude 有新 home-hf 就合；否则继续 batch UX / softLive checklist  
+6. [x] honesty: cached demos **0 credits** (generate+image); client no longer blocks out-of-credit demo; entitlements probe on health  
+7. 下一拍：Claude 有新 home-hf 就合；softLive 部署清单  
 
 ### 老板醒来验收
 
@@ -58,9 +59,9 @@
 
 ## Grok 本拍状态（3 行）
 
-- No new Claude/GPT branches to merge (home-hf already at main tip).  
-- Engine `a0d4915`: shared generateClient · Batch 429 retry · Landing/Create parity · image delete/demo.  
-- engine-smoke PASS · typecheck+lint green · **pushed main**. Next: Claude D5+ merge when pushed.  
+- No agent merges (home-hf still at main tip).  
+- Honesty engine: demo path free (no credit burn); health.entitlements writable probe; paid ready requires it.  
+- smoke+typecheck+lint green · pushing main.
 
 ---
 
