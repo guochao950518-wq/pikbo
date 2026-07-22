@@ -32,6 +32,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | T20 | Favorites, before/after, onboarding, trust strip | Grok | done | main | |
 | T21 | Gap close: image API, resolution, settings, cmd-K, library, annual UI | Grok | done | main | docs/GAP_AUDIT.md |
 | T22 | Pre-launch audit: lint green, pricing honesty, size guard, T2V honesty | Grok | done | main | docs/PRELAUNCH_AUDIT.md |
+| T23 | Claude audit: homepage/pricing promise consistency sweep | GPT | doing | agent/gpt/claude-copy-audit | claimed 2026-07-23; DISPATCH fix #3 |
 | T8 | Batch generate for Shop plan | — | todo | — | After auth/credits DB |
 | T9 | Effect preset expansion (studio + SEO landing) | Claude | done | agent/claude/seo-presets | +3 effects |
 | T11 | Guides: informational long-tail content | Claude | done | agent/claude/guides | 3 how-to/tips/ideas articles at /guides; Article+FAQ JSON-LD; cross-linked to effects |
