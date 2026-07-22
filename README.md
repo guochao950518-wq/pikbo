@@ -69,10 +69,13 @@ Single source of truth: **this GitHub repo**.
 
 | Doc | Purpose |
 |---|---|
+| [`docs/BOSS.md`](./docs/BOSS.md) | **老板怎么只说一遍就指挥三个人** |
+| [`docs/DISPATCH.md`](./docs/DISPATCH.md) | **当前总指令**（老板改这一份） |
 | [`COLLAB.md`](./COLLAB.md) | Branch rules, how to pull each other’s good commits |
 | [`docs/STATUS.md`](./docs/STATUS.md) | Live task board — **claim before coding** |
 | [`docs/HANDOFF.md`](./docs/HANDOFF.md) | Quality landings worth reusing |
 | [`AGENTS.md`](./AGENTS.md) | Short entrypoint for any agent session |
+| [`tools/README_TELEGRAM.md`](./tools/README_TELEGRAM.md) | 手机 Telegram 派活 |
 
 ```bash
 git fetch origin --prune && git pull --ff-only

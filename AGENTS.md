@@ -8,10 +8,11 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 You are one of **three coding agents** shipping **Pikbo** together.
 
-1. Read **`COLLAB.md`** (branching, commit prefixes, how to pull others’ work).
-2. Read **`docs/STATUS.md`** and **claim a task** before editing.
-3. Skim **`docs/HANDOFF.md`** for quality patterns to reuse.
-4. Product constraints: **`README.md`**.
+1. Read **`docs/DISPATCH.md`** first — only do the section for your agent.
+2. Read **`COLLAB.md`** (branching, commit prefixes, how to pull others’ work).
+3. Read **`docs/STATUS.md`** and claim/update tasks.
+4. Skim **`docs/HANDOFF.md`** for quality patterns to reuse.
+5. Product constraints: **`README.md`**. Boss guide: **`docs/BOSS.md`**.
 
 **Canonical remote:** `https://github.com/guochao950518-wq/pikbo`
 
