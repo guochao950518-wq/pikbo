@@ -1,57 +1,52 @@
-# DISPATCH — parallel tracks
+# DISPATCH — 分工（老板定）
 
-**Last human intent:** Claude 修审美 UI；Grok 继续地基/出片/运维，互不踩文件。
+**Last human intent:**  
+**Claude = 网站设计 / 审美 UI。**  
+**Grok = 只做自己有优势的地方：出片水管、契约、积分、限流、测试、合流、部署协助。**
 
-**协调：** Grok  
-
----
-
-## Tracks
-
-| Track | Owner | Branch | Scope | Freeze |
-|-------|-------|--------|-------|--------|
-| **UI aesthetic** | Claude | `agent/claude/ui-quality` | 字体、质感、film grain、交互细节、视觉 polish | 不改 generate 契约 / 积分 / session |
-| **Foundation ops** | Grok | `agent/grok/foundation-ops` → main | demo 片源、rate limit、dev topup、health、preflight、LAUNCH | 不改 AppShell/首页视觉大改 |
-
-合流：Claude UI 稳后 Grok 把 `ui-quality` merge 进 main；Grok ops 可先合 main。
+**协调 / merge：** Grok  
 
 ---
 
-## Grok now
+## 车道
 
-| ID | Task | Status |
-|----|------|--------|
-| G1 | Lab demos ×12 + generate demo map by preset | done |
-| G2 | Generate rate limit 8/min + free exhausted copy | done |
-| G3 | `POST /api/dev/topup` (dev only) | done |
-| G4 | preflight checks demo files | done |
-| T7 | Boss Vercel + domain | blocked |
+| 车道 | Owner | 做 | 不做 |
+|------|-------|----|------|
+| **Design** | Claude | 视觉、布局 polish、字体、动效、交互细节、HF 审美 | 不改 `app/api/*`、`lib/session|pricing|contracts|credits|models|generate` |
+| **Engine** | Grok | generate/fal、session/credits、rate limit、demo 片源、health/preflight、契约、真出片验收、merge 冲突 | 不抢 UI 大改；不另开视觉分支 |
+| **Boss** | 你 | 礼品卡订 Claude、Vercel 域名、充 fal | — |
 
 ---
 
-## Claude now
+## Grok 优势清单（只在这些上动手）
 
-| ID | Task | Status |
-|----|------|--------|
-| UI1 | UI quality r1–r3 (font / grain / craft) | doing on ui-quality |
-
----
-
-## Boss (when ready)
-
-1. 美区礼品卡 → Claude Pro（设计继续）  
-2. `docs/LAUNCH.md` 公网部署  
+1. **出片水管** — fal Seedance Mini/Fast/Full、失败退积分、错误码  
+2. **会话 / 计费** — cookie credits、free trial、Stripe 前置契约（真收钱等 T5）  
+3. **诚实经济** — pricing 数字、单位成本、不写假 live  
+4. **可靠与测** — preflight、critical-path、dev topup、rate limit  
+5. **多 agent 合流** — 解冲突、只合绿的 main  
 
 ---
 
-## 开工口令
+## Now
+
+| ID | Task | Owner | Status |
+|----|------|-------|--------|
+| UI | 审美 UI quality | Claude | doing · `agent/claude/ui-quality` |
+| Eng | foundation ops（demo/rate/topup） | Grok | done · main `5b3f89e` |
+| T7 | Vercel + pikbo.ai | Boss | blocked · `LAUNCH.md` |
+| T5 | durable auth/credits | Grok later | todo · 挡真 Stripe |
+
+---
+
+## 口令
 
 **Claude**
 ```text
-git pull。只做 UI 审美，不改 app/api 与 lib/session|pricing|contracts|generate。
+git pull。只做网站设计与 UI 审美。禁止改 app/api 与 lib 计费/生成契约。
 ```
 
 **Grok**
 ```text
-git pull。只做地基与出片水管，避开 components 大视觉重写。
+git pull。只做引擎与地基；不改首页/AppShell 视觉大改。Claude UI 稳后协助 merge。
 ```

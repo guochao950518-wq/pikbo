@@ -305,7 +305,14 @@ export function CreateStudio({
 
       if (res.status === 402 || data.code === "INSUFFICIENT_CREDITS") {
         setShowPaywall(true);
-        setError("Not enough credits. Upgrade to keep creating.");
+        setError(
+          data.error || "Not enough credits. Upgrade to keep creating."
+        );
+        setStatus("error");
+        return;
+      }
+      if (res.status === 429 || data.code === "RATE_LIMITED") {
+        setError(data.error || "Too many generates — wait a moment.");
         setStatus("error");
         return;
       }
