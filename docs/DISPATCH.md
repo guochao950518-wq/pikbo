@@ -23,11 +23,11 @@
 
 | ID | Task | Status | Branch |
 |----|------|--------|--------|
-| **C1** | 全站文案数字对齐 `lib/pricing.ts`：Free ~1 片 / Creator ~5 / Shop ~15；Mini free 不是 Fast 无限 | **todo → claim** | `agent/gpt/truth-sync` |
-| **C2** | `PricingUsageEstimator` + pricing FAQ：去掉旧「3 free / 50 clips」等过时算法文案 | todo | 同上 |
-| **C3** | `docs/UNIT_ECONOMICS.md` 与 Mini free + 现行积分同步；标清「prototype estimates」 | todo | 同上 |
-| **C4** | CreateStudio / paywall / 空态：错误与 CTA 英文短句诚实（demo vs live、trial used up）— **只改文案字符串** | todo | 同上 |
-| **C5** | README 顶部数字与 pricing 一致 | todo | 同上 |
+| **C1** | 全站文案数字对齐 `lib/pricing.ts`：Free ~1 片 / Creator ~5 / Shop ~15 | **done** (pricing page) · PR#12 merged | `agent/gpt/pricing-truth-main` |
+| **C2** | `PricingUsageEstimator` + pricing FAQ 对齐 | **done** · merged | 同上 |
+| **C3** | `docs/UNIT_ECONOMICS.md` 与 Mini free + 现行积分同步 | **todo** · next | `agent/gpt/truth-sync` |
+| **C4** | CreateStudio / paywall / 空态字符串诚实 | **todo** · next | 同上 |
+| **C5** | README 顶部数字与 pricing 一致 | **todo** · next | 同上 |
 
 **验收：** `npm run lint` 绿；不改 `app/api`、`lib/session.ts`、`lib/credits.ts`、`lib/contracts.ts` 逻辑。  
 **提交：** `[gpt]` 前缀 · push 分支 · Grok 合流 main。
