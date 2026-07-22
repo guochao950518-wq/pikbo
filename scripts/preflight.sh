@@ -34,5 +34,6 @@ fi
 echo "OK: lab demos present"
 
 npm run lint
+npm run typecheck
 npm run build
 echo "OK: build green"

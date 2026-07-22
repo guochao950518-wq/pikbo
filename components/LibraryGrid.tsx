@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
   clearHistory,
+  downloadVideoFile,
+  exportHistoryJson,
   loadHistory,
   removeHistoryItem,
   type HistoryItem,
@@ -56,6 +58,14 @@ export function LibraryGrid() {
     } catch {
       toast("Could not copy");
     }
+  }
+
+  async function downloadClip(item: HistoryItem) {
+    const name = `pikbo-${item.effect}-${item.id.slice(0, 8)}.mp4`;
+    const result = await downloadVideoFile(item.videoUrl, name);
+    if (result === "ok") toast("Download started");
+    else if (result === "fallback") toast("Opened video — save from browser");
+    else toast("Download failed");
   }
 
   if (!ready) {
@@ -119,18 +129,30 @@ export function LibraryGrid() {
             {filtered.length} / {items.length}
           </span>
         </div>
-        <button
-          type="button"
-          className="text-xs text-[var(--fg-dim)] hover:text-[var(--brand)]"
-          onClick={() => {
-            if (confirm("Clear all clips from this browser?")) {
-              clearHistory();
-              setItems([]);
-            }
-          }}
-        >
-          Clear all
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            className="text-xs text-[var(--fg-muted)] hover:text-[var(--mint)]"
+            onClick={() => {
+              exportHistoryJson();
+              toast("Library JSON exported");
+            }}
+          >
+            Export JSON
+          </button>
+          <button
+            type="button"
+            className="text-xs text-[var(--fg-dim)] hover:text-[var(--brand)]"
+            onClick={() => {
+              if (confirm("Clear all clips from this browser?")) {
+                clearHistory();
+                setItems([]);
+              }
+            }}
+          >
+            Clear all
+          </button>
+        </div>
       </div>
 
       {effectNames.length > 1 && (
@@ -197,15 +219,13 @@ export function LibraryGrid() {
                 {item.model ? ` · ${item.model.split("/").pop()}` : ""}
               </p>
               <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
-                <a
-                  href={item.videoUrl}
-                  download={`pikbo-${item.effect}.mp4`}
-                  target="_blank"
-                  rel="noreferrer"
+                <button
+                  type="button"
+                  onClick={() => void downloadClip(item)}
                   className="text-xs font-medium text-[var(--mint)] hover:underline"
                 >
                   Download
-                </a>
+                </button>
                 <button
                   type="button"
                   className="text-xs text-[var(--fg-muted)] hover:text-[var(--mint)]"
