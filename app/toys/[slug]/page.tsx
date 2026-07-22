@@ -4,6 +4,9 @@ import type { Metadata } from "next";
 import { TOY_TYPES, getToyType } from "@/lib/toytypes";
 import { getPreset } from "@/lib/presets";
 import { PresetCard } from "@/components/PresetCard";
+import { LandingToolPanel } from "@/components/LandingToolPanel";
+import { LandingHowItWorks } from "@/components/LandingHowItWorks";
+import { LandingResults } from "@/components/LandingResults";
 import { site } from "@/lib/site";
 
 export function generateStaticParams() {
@@ -39,6 +42,8 @@ export default async function ToyTypePage({
   const t = getToyType(slug);
   if (!t) notFound();
 
+  const primarySlug = t.recommendedEffects[0];
+  const primary = primarySlug ? getPreset(primarySlug) : undefined;
   const effects = t.recommendedEffects
     .map((s) => getPreset(s))
     .filter((p) => p !== undefined);
@@ -61,9 +66,9 @@ export default async function ToyTypePage({
       />
 
       <section className="glow-bg">
-        <div className="container-x relative z-10 pt-16 pb-10">
+        <div className="container-x relative z-10 pt-14 pb-8">
           <span className="chip">
-            {t.emoji} {t.label}
+            {t.emoji} {t.label} · Tool landing
           </span>
           <h1 className="mt-4 max-w-3xl text-4xl font-bold leading-tight sm:text-5xl">
             {t.h1}
@@ -71,14 +76,25 @@ export default async function ToyTypePage({
           <p className="mt-4 max-w-2xl text-lg text-[var(--fg-muted)]">
             {t.intro}
           </p>
-          <Link href="/create" className="btn btn-primary mt-7">
-            Create a clip →
-          </Link>
         </div>
       </section>
 
+      {primary && (
+        <section className="container-x py-8">
+          <LandingToolPanel
+            effectSlug={primary.slug}
+            effectName={primary.name}
+            duration={primary.duration}
+            aspectRatio={primary.aspectRatio}
+          />
+        </section>
+      )}
+
+      <LandingHowItWorks productLabel={`${t.label} clip`} />
+
       <section className="container-x py-10">
-        <div className="max-w-2xl space-y-5 text-[var(--fg-muted)]">
+        <h2 className="text-2xl font-bold">About {t.label} videos</h2>
+        <div className="mt-5 max-w-2xl space-y-5 text-[var(--fg-muted)]">
           {t.body.map((para, i) => (
             <p key={i} className="leading-relaxed">
               {para}
@@ -87,8 +103,13 @@ export default async function ToyTypePage({
         </div>
       </section>
 
+      <LandingResults
+        effectSlug={primary?.slug}
+        title={`${t.label} example clips`}
+      />
+
       <section className="container-x py-8">
-        <h2 className="text-2xl font-bold">Best effects for {t.label.toLowerCase()}</h2>
+        <h2 className="text-2xl font-bold">Best effects</h2>
         <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {effects.map((p) => (
             <PresetCard key={p.slug} preset={p} />

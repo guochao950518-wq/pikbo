@@ -1,0 +1,117 @@
+import Link from "next/link";
+import { getPreset, PRESETS } from "@/lib/presets";
+import { USE_CASES } from "@/lib/usecases";
+import { GUIDES } from "@/lib/guides";
+
+/**
+ * 哥飞 V2：Generate 页下方 SSR 文案 + 内链
+ * CreateStudio 是客户端工具；此块给爬虫补正文与站内链接。
+ */
+export function CreateSeoFooter({ effectSlug }: { effectSlug?: string }) {
+  const preset = effectSlug ? getPreset(effectSlug) : undefined;
+  const h1 = preset?.h1 ?? "Designer toy AI video maker";
+  const intro =
+    preset?.intro ??
+    "Pikbo turns one photo of a figure or blind-box pull into a listing-ready or viral clip with ByteDance Seedance — spin, unbox, float, and more.";
+  const body = preset?.body ?? [
+    "Upload a photo of a toy you own, pick a preset, and generate. Free tier uses Seedance Fast with an on-player mark; paid plans unlock Seedance 2.0 and 720p.",
+    "Use clips for Etsy, TikTok Shop, Whatnot, shelf flexes, and drop-day posts — without a camera rig.",
+  ];
+  const keywords = preset?.keywords ?? [
+    "designer toy video maker",
+    "figure spin video",
+    "blind box video from photo",
+  ];
+
+  const relatedEffects = PRESETS.filter((p) => p.slug !== effectSlug).slice(
+    0,
+    6
+  );
+  const forLinks = USE_CASES.slice(0, 5);
+  const guides = GUIDES.slice(0, 3);
+
+  return (
+    <div className="border-t border-[var(--border)] bg-[var(--bg)]">
+      <section className="container-x py-14">
+        <h2 className="text-2xl font-bold">{h1}</h2>
+        <p className="mt-3 max-w-2xl text-[var(--fg-muted)]">{intro}</p>
+        <div className="mt-6 max-w-2xl space-y-4 text-sm leading-relaxed text-[var(--fg-muted)]">
+          {body.map((p, i) => (
+            <p key={i}>{p}</p>
+          ))}
+        </div>
+        <div className="mt-6 flex flex-wrap gap-2">
+          {keywords.map((k) => (
+            <span key={k} className="chip">
+              {k}
+            </span>
+          ))}
+        </div>
+
+        <div className="mt-12 grid gap-10 md:grid-cols-3">
+          <div>
+            <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--fg-dim)]">
+              Effects
+            </h3>
+            <ul className="mt-3 space-y-2 text-sm">
+              {relatedEffects.map((p) => (
+                <li key={p.slug}>
+                  <Link
+                    href={`/effects/${p.slug}`}
+                    className="text-[var(--fg-muted)] hover:text-[var(--mint)]"
+                  >
+                    {p.emoji} {p.name}
+                  </Link>
+                </li>
+              ))}
+              <li>
+                <Link href="/effects" className="text-[var(--mint)]">
+                  All effects →
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--fg-dim)]">
+              For sellers
+            </h3>
+            <ul className="mt-3 space-y-2 text-sm">
+              {forLinks.map((u) => (
+                <li key={u.slug}>
+                  <Link
+                    href={`/for/${u.slug}`}
+                    className="text-[var(--fg-muted)] hover:text-[var(--mint)]"
+                  >
+                    {u.emoji} {u.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--fg-dim)]">
+              Guides
+            </h3>
+            <ul className="mt-3 space-y-2 text-sm">
+              {guides.map((g) => (
+                <li key={g.slug}>
+                  <Link
+                    href={`/guides/${g.slug}`}
+                    className="text-[var(--fg-muted)] hover:text-[var(--mint)]"
+                  >
+                    {g.emoji} {g.title}
+                  </Link>
+                </li>
+              ))}
+              <li>
+                <Link href="/guides" className="text-[var(--mint)]">
+                  All guides →
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
