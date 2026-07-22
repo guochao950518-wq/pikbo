@@ -60,3 +60,48 @@ export function clearHistory(): void {
     // ignore
   }
 }
+
+/** Download a remote or local video (fal CORS allows *). Falls back to new tab. */
+export async function downloadVideoFile(
+  url: string,
+  filename: string
+): Promise<"ok" | "fallback" | "fail"> {
+  try {
+    const res = await fetch(url, { mode: "cors" });
+    if (!res.ok) throw new Error(String(res.status));
+    const blob = await res.blob();
+    const objectUrl = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = objectUrl;
+    a.download = filename.endsWith(".mp4") ? filename : `${filename}.mp4`;
+    a.rel = "noopener";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(objectUrl);
+    return "ok";
+  } catch {
+    try {
+      window.open(url, "_blank", "noopener,noreferrer");
+      return "fallback";
+    } catch {
+      return "fail";
+    }
+  }
+}
+
+/** Backup library as JSON file for the user. */
+export function exportHistoryJson(): void {
+  const list = loadHistory();
+  const blob = new Blob([JSON.stringify(list, null, 2)], {
+    type: "application/json",
+  });
+  const objectUrl = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = objectUrl;
+  a.download = `pikbo-library-${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(objectUrl);
+}

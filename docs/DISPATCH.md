@@ -35,10 +35,9 @@
 
 | 项 | 状态 |
 |----|------|
-| Claude UI 分支 `home-hf` | 已 push origin；worktree 已建 |
-| Claude `ui-quality` PR #11 | 历史在 home-hf 内；新工作走 home-hf |
+| Claude UI `home-hf` | **已 merge main** (PR #13) · worktree 继续迭代 |
 | Codex C1–C2 | 已 merge main |
-| Grok 主目录 | 固定 `main` |
+| Grok | 修 tsc、CI、Library 下载/导出、generate 读图校验 · 主目录 `main` |
 
 ---
 

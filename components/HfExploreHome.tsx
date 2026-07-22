@@ -242,7 +242,7 @@ function ViralGrid({ items }: { items: FeedItem[] }) {
         ))}
       </div>
       <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-        {wall.map((item, i) => (
+        {wall.map((item) => (
           <Link
             key={item.id}
             href={item.href}

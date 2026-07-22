@@ -137,7 +137,35 @@ export async function POST(req: Request) {
   try {
     fal.config({ credentials: process.env.FAL_KEY });
 
-    const blob = await (await fetch(image)).blob();
+    let blob: Blob;
+    try {
+      blob = await (await fetch(image)).blob();
+    } catch {
+      session = refundCredits(session, check.cost);
+      await saveSession(session);
+      return err(
+        {
+          error: "Could not read image data",
+          code: "INVALID_REQUEST",
+          model,
+          session: publicSession(session),
+        },
+        400
+      );
+    }
+    if (!blob || blob.size < 32) {
+      session = refundCredits(session, check.cost);
+      await saveSession(session);
+      return err(
+        {
+          error: "Image data empty or too small",
+          code: "INVALID_REQUEST",
+          model,
+          session: publicSession(session),
+        },
+        400
+      );
+    }
     const file = new File([blob], "toy.png", {
       type: blob.type || "image/png",
     });

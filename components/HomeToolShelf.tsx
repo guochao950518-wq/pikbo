@@ -1,7 +1,15 @@
 import Link from "next/link";
 
 /** HF model chips under promo — icon + name + type */
-const TOOLS = [
+type ToolChip = {
+  href: string;
+  label: string;
+  sub: string;
+  emoji: string;
+  hot?: boolean;
+};
+
+const TOOLS: ToolChip[] = [
   { href: "/create", label: "Seedance", sub: "Video", emoji: "✦", hot: true },
   { href: "/effects", label: "Presets", sub: "Viral", emoji: "▶" },
   { href: "/supercomputer", label: "Batch", sub: "Agent", emoji: "⚡" },
@@ -10,7 +18,7 @@ const TOOLS = [
   { href: "/community", label: "Community", sub: "Watch", emoji: "◉" },
   { href: "/models", label: "Models", sub: "Live", emoji: "◎" },
   { href: "/guides", label: "Learn", sub: "Free", emoji: "◎" },
-] as const;
+];
 
 export function HomeToolShelf() {
   return (
