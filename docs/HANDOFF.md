@@ -4,6 +4,17 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-22 — [gpt] pricing conversion + usage estimator (T21)
+- Paths: `app/pricing/page.tsx`, `components/PricingUsageEstimator.tsx`
+- Why good: turns a static three-card page into a transparent monthly-output calculator, recommendation flow, plan comparison table, and clear FAQ while preserving the real checkout buttons.
+- Reuse / pitfalls:
+  - Recommendations intentionally match current allowances: Free up to 3 clips, Creator up to 50, Shop up to 150 at `CREDITS_PER_VIDEO = 10`.
+  - The calculator is illustrative of included credits, not a quote for model overages; keep wording tied to the current credit estimate.
+  - No annual toggle or unlimited claim exists because neither billing mode is implemented.
+  - Checkout stays in `PricingCheckoutButton`; do not duplicate Stripe logic inside the estimator.
+- Verified: production build; desktop and 390px visual passes; quick choices switch Creator → Shop correctly; no browser warnings/errors.
+- Depends on: `PLANS`, `CREDITS_PER_VIDEO`, existing Stripe checkout component. No checkout API, credits, session, entitlement, or webhook code changed.
+
 ### 2026-07-22 — [gpt] live model shelf + demo-aware preset wall (T12)
 - Paths: `app/page.tsx`, `components/HomeModelShelf.tsx`, `components/PresetPreviewCard.tsx`, `components/PresetsWall.tsx`
 - Why good: live Seedance cards use cached toy footage on hover/focus, while Kling/Veo stay visibly marked `Roadmap`; six presets with matching T2 assets show real video/posters and all remaining presets stay honest `Recipe` cards.
