@@ -86,28 +86,43 @@ function FeatureRow({ demos }: { demos: DemoVideo[] }) {
     },
   ];
   return (
-    <section className="grid grid-cols-1 gap-3 px-3 pt-3 sm:px-5 md:grid-cols-3 md:gap-4">
-      {cards.map((c, i) => (
-        <Link key={c.title} href={c.href} className="group block">
-          <div className="relative aspect-[16/10] overflow-hidden rounded-[18px] bg-neutral-900 ring-1 ring-white/10 transition-all duration-300 group-hover:-translate-y-1 group-hover:ring-2 group-hover:ring-[#c8ff3d]/45 group-hover:shadow-[0_28px_70px_-30px_rgba(0,0,0,0.9)]">
-            <Clip
-              demo={demos[i % demos.length]}
-              eager
-              className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-            />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-            {c.badge && (
-              <span className="absolute left-3 top-3 rounded-full bg-[#c8ff3d] px-2.5 py-1 text-[10px] font-black uppercase tracking-wide text-black">
-                {c.badge}
-              </span>
-            )}
-          </div>
-          <h3 className="font-display mt-3 text-[17px] font-bold uppercase leading-tight tracking-tight text-white transition-colors group-hover:text-[#c8ff3d] sm:text-[19px]">
-            {c.title}
-          </h3>
-          <p className="mt-1 text-[13px] text-white/50">{c.blurb}</p>
-        </Link>
-      ))}
+    <section className="grid grid-cols-2 gap-2 px-3 pt-3 sm:gap-3 sm:px-5 md:grid-cols-3 md:gap-4">
+      {cards.map((c, i) => {
+        const hero = i === 0;
+        return (
+          <Link
+            key={c.title}
+            href={c.href}
+            className={`group block ${hero ? "col-span-2 md:col-span-1" : ""}`}
+          >
+            <div
+              className={`relative overflow-hidden rounded-[14px] bg-neutral-900 ring-1 ring-white/10 transition-all duration-300 group-hover:-translate-y-1 group-hover:ring-2 group-hover:ring-[#c8ff3d]/45 group-hover:shadow-[0_28px_70px_-30px_rgba(0,0,0,0.9)] sm:rounded-[18px] ${
+                hero ? "aspect-[16/10]" : "aspect-[4/5] sm:aspect-[16/10]"
+              }`}
+            >
+              <Clip
+                demo={demos[i % demos.length]}
+                eager
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+              />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+              {c.badge && (
+                <span className="absolute left-2.5 top-2.5 rounded-full bg-[#c8ff3d] px-2 py-0.5 text-[9px] font-black uppercase tracking-wide text-black sm:left-3 sm:top-3 sm:px-2.5 sm:py-1 sm:text-[10px]">
+                  {c.badge}
+                </span>
+              )}
+              {/* mobile: title overlaid on the video so the first screen stays video-first */}
+              <h3 className="font-display absolute inset-x-0 bottom-0 p-2.5 text-[12px] font-bold uppercase leading-tight tracking-tight text-white sm:hidden">
+                {c.title}
+              </h3>
+            </div>
+            <h3 className="font-display mt-3 hidden text-[17px] font-bold uppercase leading-tight tracking-tight text-white transition-colors group-hover:text-[#c8ff3d] sm:block sm:text-[19px]">
+              {c.title}
+            </h3>
+            <p className="mt-1 hidden text-[13px] text-white/50 sm:block">{c.blurb}</p>
+          </Link>
+        );
+      })}
     </section>
   );
 }
@@ -115,22 +130,22 @@ function FeatureRow({ demos }: { demos: DemoVideo[] }) {
 /* ---- 2. Big lime promo banner (HF signature) ---- */
 function LimePromo() {
   return (
-    <section className="px-3 py-4 sm:px-5">
-      <div className="relative overflow-hidden rounded-[20px] bg-gradient-to-r from-[#a6e22e] via-[#c8ff3d] to-[#9be870] px-6 py-8 sm:px-10 sm:py-10">
-        <div className="flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
+    <section className="px-3 py-3 sm:px-5 sm:py-4">
+      <div className="relative overflow-hidden rounded-[20px] bg-gradient-to-r from-[#a6e22e] via-[#c8ff3d] to-[#9be870] px-5 py-6 sm:px-10 sm:py-10">
+        <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center sm:gap-5">
           <div>
-            <h2 className="font-display text-3xl font-black uppercase leading-[0.98] tracking-tight text-black sm:text-5xl">
+            <h2 className="font-display text-[26px] font-black uppercase leading-[0.98] tracking-tight text-black sm:text-5xl">
               1 free trial
               <span className="block">animate a toy you own</span>
             </h2>
-            <p className="mt-2 max-w-xl text-sm font-medium text-black/70">
+            <p className="mt-2 hidden max-w-xl text-sm font-medium text-black/70 sm:block">
               One figure photo → a Seedance clip. No card. Priced for real model
               cost, never fake &quot;unlimited&quot;.
             </p>
           </div>
           <Link
             href="/create"
-            className="shrink-0 rounded-full bg-black px-7 py-3.5 text-sm font-black text-[#c8ff3d] transition-transform hover:-translate-y-0.5"
+            className="shrink-0 rounded-full bg-black px-6 py-3 text-sm font-black text-[#c8ff3d] transition-transform hover:-translate-y-0.5 sm:px-7 sm:py-3.5"
           >
             Start free →
           </Link>
