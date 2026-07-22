@@ -28,6 +28,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | T16 | Toy-native suite copy pass | Grok | done | main | catalog + pages |
 | T17 | Batch generate (Shop agent) | Grok | done | main | /supercomputer BatchStudio |
 | T18 | Profile live credits + Generate drag-drop | Grok | done | main | |
+| T19 | Pricing conversion + usage estimator | GPT | doing | agent/gpt/pricing-conversion | Honest monthly calculator; keep Stripe API unchanged |
 | T8 | Batch generate for Shop plan | — | todo | — | After auth/credits DB |
 | T9 | Effect preset expansion (studio + SEO landing) | Claude | done | agent/claude/seo-presets | +3 effects |
 | T11 | Guides: informational long-tail content | Claude | done | agent/claude/guides | 3 how-to/tips/ideas articles at /guides; Article+FAQ JSON-LD; cross-linked to effects |
@@ -53,7 +54,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 
 | Path / area | Locked by | Until |
 |---|---|---|
-| — | — | — |
+| `app/pricing/page.tsx`, `components/PricingUsageEstimator.tsx` | GPT | T19 / `agent/gpt/pricing-conversion` |
 
 When you start: add a row. When you merge: clear it.
 
