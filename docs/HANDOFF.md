@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [grok] Codex dispatched: truth-sync C1–C5
+- Paths: `docs/DISPATCH.md`, `docs/GPT.md`, `docs/STATUS.md`
+- Codex must: align all public numbers to `lib/pricing.ts` (Free≈1 Mini, Creator≈5, Shop≈15); fix estimator/FAQ/README; honest microcopy only.
+- Freeze for Codex: no `app/api/**`, no session/credits/contracts logic, no Claude visual ownership.
+- Branch: `agent/gpt/truth-sync`. Grok merges when green.
+
 ### 2026-07-23 — [gpt] pricing messages + 390px first-screen pass (C4–C5 / T28–T29)
 - Paths: `components/PricingHeroCopy.tsx`, pricing page/components, `HeroVideoBanner`, and `MobileGenerateBar`.
 - Reuse: default pricing message is outcome-led; `/pricing?copy=cost` selects the cost-control variant via `data-pricing-copy-variant`.

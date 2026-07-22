@@ -1,6 +1,6 @@
 # Pikbo board — claim before you code
 
-**Last human intent:** Claude owns UI aesthetic (`agent/claude/ui-quality`); Grok owns foundation ops (demos, rate limit, dev topup, preflight). Soft launch still boss-gated on deploy.
+**Last human intent:** Three-lane: Claude design UI; Codex conversion/truth copy (C1–C5); Grok engine + merge. Nobody idle.
 
 Update this file in the same PR/commit as your work start/finish.
 
@@ -23,6 +23,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | FP1 | critical-path smoke script | Grok | done | main | `npm run critical-path` |
 | G-ops | demo map + rate limit + dev topup + preflight demos | Grok | done | agent/grok/foundation-ops | no UI aesthetic conflict |
 | UI-q | UI quality r1–r3 aesthetic | Claude | doing | agent/claude/ui-quality | font/grain/craft — Grok hands off |
+| C1–C5 | truth-sync: pricing numbers, estimator, economics, microcopy | Codex | todo | agent/gpt/truth-sync | claim + ship; Grok merges |
 | T10 | Boss one-command + Telegram bot | Grok | done | main | DISPATCH + tools/telegram_dispatch_bot.py |
 | T11 | Higgsfield-class shell + Generate | Grok | done | main | AppShell + CreateStudio + Library history |
 | T12 | Home model shelf + presets wall polish | GPT | done | agent/gpt/home-visuals | Live-model previews + demo-aware preset cards; roadmap models explicit |
