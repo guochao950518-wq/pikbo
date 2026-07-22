@@ -35,9 +35,9 @@ export default function Home() {
         <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 sm:px-6">
           <p className="text-[12px] text-[var(--fg-dim)]">
             <span className="font-semibold text-[var(--fg)]">
-              Scroll · every tile plays
+              Scroll · cached Lab loops
             </span>{" "}
-            · tap to remake with your toy
+            · tap to open that recipe with your toy
           </p>
           <div className="flex gap-2">
             <Link
@@ -63,15 +63,15 @@ export default function Home() {
       </section>
 
       <VideoRail
-        label="Featured demos"
-        title="Official shelf clips"
+        label="PIKBO Lab examples"
+        title="Cached motion studies"
         href="/community"
         items={featured}
       />
 
       <VideoRail
-        label="Suite"
-        title="Models & live apps"
+        label="Workflow previews"
+        title="Configured engines & tools"
         href="/apps"
         items={suite}
         wide
@@ -82,9 +82,9 @@ export default function Home() {
       <section className="border-b border-[var(--border)] px-3 py-6 sm:px-5">
         <div className="mb-4 flex flex-wrap items-end justify-between gap-2 px-1">
           <div>
-            <p className="section-label">Community projects</p>
+            <p className="section-label">PIKBO Lab projects</p>
             <h2 className="mt-1 text-xl font-bold tracking-tight">
-              Official looks · remake yours
+              Lab recipes · remake yours
             </h2>
           </div>
           <Link
@@ -138,7 +138,7 @@ export default function Home() {
           <div>
             <p className="section-label">Viral presets</p>
             <h2 className="mt-1 text-xl font-bold tracking-tight sm:text-2xl">
-              {PRESETS.length}+ looks · video on enter
+              {PRESETS.length}+ recipes · Lab motion previews
             </h2>
           </div>
           <Link

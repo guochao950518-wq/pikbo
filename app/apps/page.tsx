@@ -5,7 +5,7 @@ import { APPS } from "@/lib/catalog";
 export const metadata: Metadata = {
   title: "Apps",
   description:
-    "Pikbo apps for toy video — spin, unbox, cinema, stills. Live tools open workspace; soon tiles are honest placeholders.",
+    "Pikbo apps for toy video — configured workspaces are separated from roadmap tools, and provider-dependent output is labeled.",
   alternates: { canonical: "/apps" },
 };
 
@@ -26,9 +26,9 @@ export default function AppsPage() {
         <span className="chip">🧸 Suite · toy-native</span>
         <h1 className="mt-3 text-3xl font-bold">Apps</h1>
         <p className="mt-2 max-w-2xl text-sm text-[var(--fg-muted)]">
-          Big-suite app grid, toy-native jobs.{" "}
-          <strong className="text-[var(--mint)]">LIVE</strong> opens a real
-          workspace ·{" "}
+          Toy-native workspaces in one app grid.{" "}
+          <strong className="text-[var(--mint)]">CONFIGURED</strong> opens an
+          implemented workspace; provider-dependent output still needs its key ·{" "}
           <strong className="text-[var(--fg-dim)]">SOON</strong> is catalog only
           (not sold as live).
         </p>
@@ -49,7 +49,7 @@ export default function AppsPage() {
 
         <section className="mt-10">
           <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-[var(--mint)]">
-            Live now · {live.length}
+            Configured · {live.length}
           </h2>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {live.map((app) => (
@@ -67,7 +67,7 @@ export default function AppsPage() {
                       {app.name}
                     </h3>
                     <span className="rounded-full bg-[var(--mint)]/15 px-1.5 py-0.5 text-[9px] font-bold text-[var(--mint)]">
-                      LIVE
+                      CONFIGURED
                     </span>
                   </div>
                   <p className="mt-1 text-xs text-[var(--fg-muted)]">

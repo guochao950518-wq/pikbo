@@ -3,7 +3,8 @@ import { DEMO_VIDEOS } from "@/lib/demoVideos";
 
 /**
  * Flagship model campaign strip — HF Seedance-battle pattern.
- * Honest: only Seedance live on Pikbo free path.
+ * Honest capability copy: the integration is wired, while real provider calls
+ * still depend on FAL_KEY. Cached Lab footage is never claimed as user output.
  */
 export function SeedanceCampaign() {
   const hero = DEMO_VIDEOS[0];
@@ -29,19 +30,19 @@ export function SeedanceCampaign() {
 
       <div className="relative grid gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-end lg:py-14">
         <div>
-          <p className="section-label text-[var(--mint)]">Flagship · live now</p>
+          <p className="section-label text-[var(--mint)]">Flagship · integration ready</p>
           <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
             Seedance
             <span className="text-[var(--mint)]"> on Pikbo</span>
           </h2>
           <p className="mt-3 max-w-md text-sm leading-relaxed text-white/70 sm:text-base">
-            ByteDance motion for designer toys — figure-safe i2v, free
-            watermarked tries, paid for clean exports. Same engine class the
-            big suites push; niche for your shelf.
+            The Seedance workflow is wired for designer-toy image-to-video.
+            Without provider access, Generate returns a clearly labeled cached
+            demo instead of pretending it animated your upload.
           </p>
           <div className="mt-6 flex flex-wrap gap-2">
             <Link href="/create" className="btn btn-primary px-6 py-3 text-sm">
-              Try Seedance free
+              Open Generate
             </Link>
             <Link
               href="/models"
@@ -53,11 +54,11 @@ export function SeedanceCampaign() {
               href="/community"
               className="btn btn-ghost border-white/15 px-5 py-3 text-sm"
             >
-              Seedance clips
+              PIKBO Lab clips
             </Link>
           </div>
           <p className="mt-3 text-[11px] text-[var(--fg-dim)]">
-            Live · fal Seedance Fast / 2.0 · no fake multi-model on free tier
+            Seedance-ready · live provider calls require FAL_KEY · outputs vary
           </p>
         </div>
 

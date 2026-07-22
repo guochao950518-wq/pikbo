@@ -62,7 +62,7 @@ function ModelCard({ model }: { model: CatalogModel }) {
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/5 to-transparent" />
           <div className="absolute left-3 top-3 flex gap-2">
             <span className={`rounded-full px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.14em] ${model.live ? "bg-[var(--lime)] text-black" : "bg-black/55 text-white/65 backdrop-blur"}`}>
-              {model.live ? "Live" : "Roadmap"}
+              {model.live ? "Configured" : "Roadmap"}
             </span>
             {demo && (
               <span className="rounded-full border border-white/15 bg-black/50 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-white/70 backdrop-blur">
@@ -79,7 +79,7 @@ function ModelCard({ model }: { model: CatalogModel }) {
           <div>
             <p className="text-sm leading-5 text-[var(--fg-muted)]">{model.blurb}</p>
             <p className="mt-2 text-[10px] text-[var(--fg-dim)]">
-              {model.live ? "Image → toy motion" : "Visible now so teams can plan the stack"}
+              {model.live ? "Provider key required for live output" : "Visible now so teams can plan the stack"}
             </p>
           </div>
           <span className="shrink-0 text-sm font-bold text-[var(--brand)]">
@@ -107,7 +107,8 @@ export function HomeModelShelf() {
               Video engines
             </h2>
             <p className="mt-1 max-w-xl text-sm text-[var(--fg-muted)]">
-              Seedance live today. Roadmap slots marked clearly — never faked.
+              Seedance is configured in the product path. Live output still
+              requires provider access; cached previews are labeled.
             </p>
           </div>
           <Link

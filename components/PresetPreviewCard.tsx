@@ -5,15 +5,15 @@ import { useEffect, useMemo, useRef } from "react";
 import type { Preset } from "@/lib/presets";
 import { DEMO_VIDEOS } from "@/lib/demoVideos";
 
-/** Always shows a looping video (cycles demos if no exact match). */
+/** Exact Lab examples and shared concept backdrops are labeled separately. */
 export function PresetPreviewCard({ preset }: { preset: Preset }) {
-  const demo = useMemo(() => {
+  const { demo, exact } = useMemo(() => {
     const exact = DEMO_VIDEOS.find((d) => d.preset === preset.slug);
-    if (exact) return exact;
+    if (exact) return { demo: exact, exact: true };
     const idx = Math.abs(
       preset.slug.split("").reduce((a, c) => a + c.charCodeAt(0), 0)
     );
-    return DEMO_VIDEOS[idx % DEMO_VIDEOS.length];
+    return { demo: DEMO_VIDEOS[idx % DEMO_VIDEOS.length], exact: false };
   }, [preset.slug]);
 
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -51,7 +51,7 @@ export function PresetPreviewCard({ preset }: { preset: Preset }) {
         </video>
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent" />
         <span className="absolute right-2 top-2 rounded-full bg-[var(--mint)] px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-black">
-          Play
+          {exact ? "Lab example" : "Concept · shared loop"}
         </span>
         <div className="absolute inset-x-0 bottom-0 p-3">
           <p className="text-sm font-bold text-white">{preset.name}</p>

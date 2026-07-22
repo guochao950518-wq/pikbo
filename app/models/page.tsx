@@ -5,7 +5,7 @@ import { MODELS } from "@/lib/catalog";
 export const metadata: Metadata = {
   title: "Models",
   description:
-    "AI models in Pikbo — ByteDance Seedance live for toy image-to-video, Flux for stills. Placeholders labeled Soon.",
+    "AI model integrations in PIKBO — configured paths are separated from roadmap models and cached previews are labeled.",
   alternates: { canonical: "/models" },
 };
 
@@ -19,9 +19,9 @@ export default function ModelsPage() {
         <span className="chip">Engines</span>
         <h1 className="mt-3 text-3xl font-bold">Models</h1>
         <p className="mt-2 max-w-2xl text-sm text-[var(--fg-muted)]">
-          Multi-model shelf like the big studios.{" "}
-          <strong className="text-[var(--mint)]">LIVE</strong> cards open a
-          workspace.{" "}
+          Configured model shelf for the PIKBO workflow.{" "}
+          <strong className="text-[var(--mint)]">WIRED</strong> cards open a
+          workspace; live output still requires provider credentials.{" "}
           <strong className="text-[var(--fg)]">Seedance</strong> for motion ·{" "}
           <strong className="text-[var(--fg)]">Flux</strong> for stills. We
           don&apos;t fake Kling/Veo/Sora without keys.
@@ -39,7 +39,7 @@ export default function ModelsPage() {
         </div>
 
         <h2 className="mt-10 mb-4 text-xs font-bold uppercase tracking-wider text-[var(--mint)]">
-          Live · {live.length}
+          Configured · {live.length}
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {live.map((m) => (
@@ -50,7 +50,7 @@ export default function ModelsPage() {
             >
               <div className="relative h-28" style={{ background: m.gradient }}>
                 <span className="absolute left-2 top-2 rounded-full bg-black/55 px-2 py-0.5 text-[10px] font-bold text-[var(--mint)]">
-                  LIVE
+                  WIRED
                 </span>
                 {m.tag && (
                   <span className="absolute right-2 top-2 rounded-full bg-black/45 px-2 py-0.5 text-[10px] font-semibold text-white/80">

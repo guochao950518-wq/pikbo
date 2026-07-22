@@ -26,7 +26,7 @@ export function PricingUsageEstimator() {
           <div className="mt-3 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
             <div>
               <h2 className="text-2xl font-bold">How many clips do you publish?</h2>
-              <p className="mt-1 text-sm text-[var(--fg-muted)]">Slide to your real monthly output. No fake unlimited plan.</p>
+              <p className="mt-1 text-sm text-[var(--fg-muted)]">Slide to your real monthly output. Every plan has a finite credit allowance.</p>
             </div>
             <p className="text-4xl font-black text-white">
               {clips}<span className="ml-2 text-sm font-medium text-[var(--fg-dim)]">clips / month</span>

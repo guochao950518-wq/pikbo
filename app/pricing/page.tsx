@@ -25,7 +25,7 @@ export default function PricingPage() {
       <section className="glow-bg overflow-hidden border-b border-[var(--border)]">
         <div className="container-x relative z-10 py-14 text-center sm:py-20">
           <Badge variant="live" className="mx-auto normal-case tracking-wider">
-            Clear pricing · no unlimited myth
+            Clear credit limits · no unlimited claim
           </Badge>
           <h1 className="mx-auto mt-5 max-w-4xl text-4xl font-black leading-[1.02] tracking-[-0.04em] sm:text-6xl lg:text-7xl">
             Start with three clips.
@@ -33,8 +33,9 @@ export default function PricingPage() {
             Scale to a <span className="text-grad">content engine.</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-[var(--fg-muted)] sm:text-lg">
-            Free tests your own toy photo. Creator removes the watermark for
-            regular posting. Shop adds volume and batch for sellers.
+            Free starts with three watermarked test credits. Live generation
+            uses Seedance Fast when provider access is configured; demo mode is
+            labeled. Creator and Shop add export and volume benefits.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-2">
             <Button asChild size="lg">
@@ -146,7 +147,7 @@ export default function PricingPage() {
               ],
               [
                 "Why is Free watermarked?",
-                `Free uses Seedance Fast (480p) with a ${site.name} mark on the in-app player. Creator and Shop remove it. File burn-in watermark is coming next.`,
+                `When provider access is configured, Free uses Seedance Fast (480p) with a ${site.name} mark on the in-app player. Demo mode returns a labeled sample. Creator and Shop remove the player mark; file burn-in watermark is coming next.`,
               ],
               [
                 "Can I use clips commercially?",
@@ -183,8 +184,8 @@ export default function PricingPage() {
             <div>
               <CardTitle className="text-xl">Ready to animate a figure?</CardTitle>
               <p className="mt-2 text-sm text-[var(--fg-muted)]">
-                Upload one photo · free Seedance Fast · upgrade when you need
-                clean exports.
+                Upload one photo · labeled demo until live generation is
+                configured · upgrade when you need clean exports.
               </p>
             </div>
             <div className="mt-4 flex flex-wrap gap-2 sm:mt-0">

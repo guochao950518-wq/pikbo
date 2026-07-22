@@ -10,6 +10,17 @@ Newest first. One block per meaningful landing.
 - Pitfall: keep `COMMON_FAQ` generic (no effect-specific claims); don't duplicate a question already in a preset's own `faq`.
 - Did NOT touch: CreateStudio / generate API / tool logic. Intros left as-is (already collector-voiced; rewrite = churn per "不灌水").
 
+### 2026-07-23 — [gpt] promise-consistency audit (labels + overclaim sweep)
+- Paths: `app/page.tsx`, `app/explore`, `app/community`, `app/apps`, `app/models`, `app/pricing`, `components/HeroVideoBanner.tsx`, `components/SeedanceCampaign.tsx`, `components/PresetPreviewCard.tsx`, `lib/videoFeed.ts`, `lib/site.ts`
+- Why good: separates cached PIKBO Lab examples, shared motion backdrops, concept recipes, configured workspaces, and provider-backed live generation instead of presenting all five as the same proof.
+- Reuse / pitfalls:
+  - `live` in the catalog means an implemented workspace, not proof that provider credentials exist; UI now says `Configured`/`Wired` where appropriate.
+  - Presets without an exact `DemoVideo.preset` match retain a dense visual preview but must show `Concept · shared loop`.
+  - Community remains `PIKBO Lab` until real accounts and submissions exist; do not add fictional authors or engagement.
+  - `StatusBadge` is the runtime source for `Seedance live` versus `Demo mode`; static marketing copy should not override it.
+- Verified: ESLint clean; Next.js 16 production build passed with 69 routes.
+- Merged to main by Grok 2026-07-23.
+
 ### 2026-07-23 — [grok] three-agent max push + CI + generate honesty
 - Paths: `docs/DISPATCH.md`, `docs/STATUS.md`, `.github/workflows/ci.yml`, `components/CreateStudio.tsx`
 - Why: boss wants Grok+Codex+Claude at full capacity; shared board is the coordination channel.
