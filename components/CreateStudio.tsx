@@ -28,16 +28,26 @@ const MODELS = [
   },
 ] as const;
 
-export function CreateStudio({ initialEffect }: { initialEffect?: string }) {
-  const [mode, setMode] = useState<Mode>("i2v");
+export function CreateStudio({
+  initialEffect,
+  initialModel,
+  initialMode,
+  initialPrompt,
+}: {
+  initialEffect?: string;
+  initialModel?: string;
+  initialMode?: Mode;
+  initialPrompt?: string;
+}) {
+  const [mode, setMode] = useState<Mode>(initialMode ?? "i2v");
   const [modelId, setModelId] = useState<(typeof MODELS)[number]["id"]>(
-    "seedance-2"
+    initialModel === "seedance-fast" ? "seedance-fast" : "seedance-2"
   );
   const [effect, setEffect] = useState(
     PRESETS.find((p) => p.slug === initialEffect)?.slug ?? PRESETS[0].slug
   );
   const [image, setImage] = useState<string | null>(null);
-  const [extra, setExtra] = useState("");
+  const [extra, setExtra] = useState(initialPrompt ?? "");
   const [status, setStatus] = useState<Status>("idle");
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);

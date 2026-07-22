@@ -14,7 +14,7 @@
   --brand: #ff4d8d;      /* candy pink */
   --brand-2: #a855f7;    /* violet */
   --mint: #6ee7c7;       /* pop mint */
-  --lime: #d6ff4d;       /* accent lime */
+  --lime: #c8f542;       /* suite accent (HF-class neon) */
 
   --grad: linear-gradient(135deg, #ff4d8d 0%, #a855f7 55%, #6a5cff 100%);
   --grad-soft: linear-gradient(135deg, rgba(255,77,141,.18), rgba(168,85,247,.14));

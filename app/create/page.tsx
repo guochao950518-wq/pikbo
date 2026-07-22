@@ -10,9 +10,21 @@ export const metadata: Metadata = {
 export default async function CreatePage({
   searchParams,
 }: {
-  searchParams: Promise<{ effect?: string }>;
+  searchParams: Promise<{
+    effect?: string;
+    model?: string;
+    mode?: string;
+    prompt?: string;
+  }>;
 }) {
-  const { effect } = await searchParams;
+  const sp = await searchParams;
 
-  return <CreateStudio initialEffect={effect} />;
+  return (
+    <CreateStudio
+      initialEffect={sp.effect}
+      initialModel={sp.model}
+      initialMode={sp.mode === "t2v" ? "t2v" : "i2v"}
+      initialPrompt={sp.prompt}
+    />
+  );
 }

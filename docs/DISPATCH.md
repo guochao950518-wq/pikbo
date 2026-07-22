@@ -1,7 +1,8 @@
 # 老板指令板 — 先抄站，后潮玩，不上线
 
 > **暂停部署/上线。**  
-> 目标：按 Higgsfield / Yiha 的 **产品结构与交互** 1:1 级复刻（自有品牌 Pikbo，不盗 Logo/素材），再改成潮玩垂直。
+> 目标：大站有什么模块，我们就铺什么模块（Apps/Models/Cinema/Generate/Library…）。  
+> 品牌必须是 Pikbo，**禁止盗用**对方 Logo/官网素材；功能面与信息架构对齐。
 
 **更新时间：** 2026-07-22  
 **规格全文：** `docs/COMPETITOR_SPEC.md`

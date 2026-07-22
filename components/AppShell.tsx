@@ -5,12 +5,16 @@ import { usePathname } from "next/navigation";
 import { site } from "@/lib/site";
 import { CreditsBadge } from "@/components/CreditsBadge";
 
+/** Full suite nav — mirrors Higgsfield-class apps (Home, Generate, Apps, …) */
 const NAV = [
   { href: "/", label: "Home", icon: "⌂" },
   { href: "/create", label: "Generate", icon: "✦" },
-  { href: "/effects", label: "Presets", icon: "▦" },
+  { href: "/apps", label: "Apps", icon: "▦" },
+  { href: "/models", label: "Models", icon: "◎" },
+  { href: "/cinema", label: "Cinema", icon: "🎞" },
+  { href: "/effects", label: "Presets", icon: "⚡" },
   { href: "/library", label: "Library", icon: "▢" },
-  { href: "/community", label: "Community", icon: "◎" },
+  { href: "/community", label: "Community", icon: "◉" },
   { href: "/pricing", label: "Pricing", icon: "$" },
   { href: "/profile", label: "Profile", icon: "○" },
 ];
@@ -18,25 +22,25 @@ const NAV = [
 export function AppShell({ children }: { children: React.ReactNode }) {
   const path = usePathname() || "/";
 
-  // Marketing-ish pages still use shell; legal pages too for consistency
   return (
     <div className="flex min-h-screen bg-[var(--bg)] text-[var(--fg)]">
-      {/* Desktop sidebar — Higgsfield-class app chrome */}
-      <aside className="sticky top-0 hidden h-screen w-[72px] shrink-0 flex-col items-center border-r border-[var(--border)] bg-[var(--bg-soft)] py-4 lg:flex xl:w-[220px] xl:items-stretch xl:px-3">
+      <aside className="sticky top-0 z-50 hidden h-screen w-[72px] shrink-0 flex-col border-r border-[var(--border)] bg-[#0a0a0c] py-3 lg:flex xl:w-[200px] xl:px-2">
         <Link
           href="/"
-          className="mb-6 flex items-center justify-center gap-2 xl:justify-start xl:px-2"
+          className="mb-4 flex items-center justify-center gap-2 xl:justify-start xl:px-2"
         >
           <span
-            className="grid h-10 w-10 place-items-center rounded-xl text-lg font-bold"
-            style={{ background: "var(--grad)" }}
+            className="grid h-9 w-9 place-items-center rounded-lg text-sm font-black text-black"
+            style={{ background: "var(--lime)" }}
           >
             P
           </span>
-          <span className="hidden text-lg font-bold xl:inline">{site.name}</span>
+          <span className="hidden text-base font-bold tracking-tight xl:inline">
+            {site.name}
+          </span>
         </Link>
 
-        <nav className="flex flex-1 flex-col gap-1">
+        <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto">
           {NAV.map((item) => {
             const active =
               item.href === "/"
@@ -46,31 +50,38 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center justify-center gap-3 rounded-xl px-0 py-3 text-sm font-medium transition-colors xl:justify-start xl:px-3 ${
+                className={`flex items-center justify-center gap-2.5 rounded-lg px-0 py-2.5 text-[13px] font-medium transition-colors xl:justify-start xl:px-2.5 ${
                   active
-                    ? "bg-[var(--card)] text-[var(--fg)] ring-1 ring-[var(--brand)]/40"
-                    : "text-[var(--fg-muted)] hover:bg-[var(--card)] hover:text-[var(--fg)]"
+                    ? "bg-white/10 text-[var(--lime)]"
+                    : "text-white/55 hover:bg-white/5 hover:text-white"
                 }`}
               >
-                <span className="text-base opacity-80">{item.icon}</span>
+                <span className="w-5 text-center text-sm opacity-90">
+                  {item.icon}
+                </span>
                 <span className="hidden xl:inline">{item.label}</span>
               </Link>
             );
           })}
         </nav>
 
-        <div className="mt-auto hidden xl:block">
+        <div className="mt-2 hidden border-t border-white/10 pt-3 xl:block">
           <CreditsBadge />
+          <Link
+            href="/create"
+            className="mt-3 flex w-full items-center justify-center rounded-full bg-[var(--lime)] py-2 text-xs font-bold text-black"
+          >
+            Generate
+          </Link>
         </div>
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        {/* Mobile top bar */}
-        <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--bg)_90%,transparent)] px-4 backdrop-blur-md lg:hidden">
-          <Link href="/" className="flex items-center gap-2 font-bold">
+        <header className="sticky top-0 z-40 flex h-12 items-center justify-between border-b border-[var(--border)] bg-black/80 px-3 backdrop-blur-md lg:hidden">
+          <Link href="/" className="flex items-center gap-2 text-sm font-bold">
             <span
-              className="grid h-8 w-8 place-items-center rounded-lg text-sm"
-              style={{ background: "var(--grad)" }}
+              className="grid h-7 w-7 place-items-center rounded-md text-xs font-black text-black"
+              style={{ background: "var(--lime)" }}
             >
               P
             </span>
@@ -78,7 +89,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </Link>
           <div className="flex items-center gap-2">
             <CreditsBadge />
-            <Link href="/create" className="btn btn-primary px-3 py-1.5 text-xs">
+            <Link
+              href="/create"
+              className="rounded-full bg-[var(--lime)] px-3 py-1 text-xs font-bold text-black"
+            >
               Generate
             </Link>
           </div>
@@ -86,9 +100,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         <div className="flex-1">{children}</div>
 
-        {/* Mobile bottom nav */}
-        <nav className="sticky bottom-0 z-40 flex border-t border-[var(--border)] bg-[var(--bg-soft)] lg:hidden">
-          {NAV.slice(0, 5).map((item) => {
+        <nav className="sticky bottom-0 z-40 flex overflow-x-auto border-t border-[var(--border)] bg-[#0a0a0c] lg:hidden">
+          {NAV.slice(0, 6).map((item) => {
             const active =
               item.href === "/"
                 ? path === "/"
@@ -97,11 +110,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex flex-1 flex-col items-center gap-0.5 py-2 text-[10px] ${
-                  active ? "text-[var(--brand)]" : "text-[var(--fg-dim)]"
+                className={`flex min-w-[4.2rem] flex-1 flex-col items-center gap-0.5 py-2 text-[9px] ${
+                  active ? "text-[var(--lime)]" : "text-white/45"
                 }`}
               >
-                <span className="text-base">{item.icon}</span>
+                <span className="text-sm">{item.icon}</span>
                 {item.label}
               </Link>
             );
