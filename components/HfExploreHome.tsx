@@ -89,11 +89,11 @@ function FeatureRow({ demos }: { demos: DemoVideo[] }) {
     <section className="grid grid-cols-1 gap-3 px-3 pt-3 sm:px-5 md:grid-cols-3 md:gap-4">
       {cards.map((c, i) => (
         <Link key={c.title} href={c.href} className="group block">
-          <div className="relative aspect-[16/10] overflow-hidden rounded-[18px] bg-neutral-900">
+          <div className="relative aspect-[16/10] overflow-hidden rounded-[18px] bg-neutral-900 ring-1 ring-white/10 transition-all duration-300 group-hover:-translate-y-1 group-hover:ring-2 group-hover:ring-[#c8ff3d]/45 group-hover:shadow-[0_28px_70px_-30px_rgba(0,0,0,0.9)]">
             <Clip
               demo={demos[i % demos.length]}
               eager
-              className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+              className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
             {c.badge && (
@@ -102,7 +102,7 @@ function FeatureRow({ demos }: { demos: DemoVideo[] }) {
               </span>
             )}
           </div>
-          <h3 className="font-display mt-3 text-[17px] font-bold uppercase leading-tight tracking-tight text-white sm:text-[19px]">
+          <h3 className="font-display mt-3 text-[17px] font-bold uppercase leading-tight tracking-tight text-white transition-colors group-hover:text-[#c8ff3d] sm:text-[19px]">
             {c.title}
           </h3>
           <p className="mt-1 text-[13px] text-white/50">{c.blurb}</p>
