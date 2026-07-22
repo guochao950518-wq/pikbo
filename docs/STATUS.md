@@ -1,6 +1,6 @@
 # Pikbo board — claim before you code
 
-**Last human intent:** Musk first-principles + 5-step algorithm — critical path only; soft launch blocked on boss deploy (LAUNCH.md). See `docs/FIRST_PRINCIPLES.md`.
+**Last human intent:** Claude owns UI aesthetic (`agent/claude/ui-quality`); Grok owns foundation ops (demos, rate limit, dev topup, preflight). Soft launch still boss-gated on deploy.
 
 Update this file in the same PR/commit as your work start/finish.
 
@@ -21,6 +21,8 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | T7 | Vercel deploy + domain pikbo.ai | boss | blocked | — | **Step-4 bottleneck** — LAUNCH.md; code soft-ready |
 | FP0 | First-principles nav + Mini truth + doctrine | Grok | done | main | AppShell primary/more; docs/FIRST_PRINCIPLES.md |
 | FP1 | critical-path smoke script | Grok | done | main | `npm run critical-path` |
+| G-ops | demo map + rate limit + dev topup + preflight demos | Grok | done | agent/grok/foundation-ops | no UI aesthetic conflict |
+| UI-q | UI quality r1–r3 aesthetic | Claude | doing | agent/claude/ui-quality | font/grain/craft — Grok hands off |
 | T10 | Boss one-command + Telegram bot | Grok | done | main | DISPATCH + tools/telegram_dispatch_bot.py |
 | T11 | Higgsfield-class shell + Generate | Grok | done | main | AppShell + CreateStudio + Library history |
 | T12 | Home model shelf + presets wall polish | GPT | done | agent/gpt/home-visuals | Live-model previews + demo-aware preset cards; roadmap models explicit |
