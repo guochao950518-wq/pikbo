@@ -139,7 +139,7 @@ export const USE_CASES: UseCase[] = [
       "collector reels maker",
       "figure video for instagram",
     ],
-    recommendedEffects: ["make-figure-dance", "collection-shelf-pan", "neon-city-night"],
+    recommendedEffects: ["make-figure-dance", "paparazzi-flash", "neon-city-night"],
     faq: [
       {
         q: "Are clips ready for Reels?",

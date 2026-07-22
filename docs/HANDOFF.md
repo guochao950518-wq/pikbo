@@ -4,6 +4,22 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-22 — [grok] Stripe billing + entitlements (T4)
+- Paths: `lib/entitlements.ts`, `lib/stripe.ts`, `lib/session.ts` (merge), `app/api/webhooks/stripe`, `app/api/checkout`, `app/api/checkout/confirm`, CreateStudio confirm on return, `/privacy` `/terms`, homepage pipeline demo
+- Why good: real subscription path without Supabase yet. Webhooks update durable plan; browser confirm upgrades cookie; credits not clobbered on every request (periodKey reset only).
+- Reuse / pitfalls:
+  - Set `STRIPE_SECRET_KEY`, `STRIPE_PRICE_*`, `STRIPE_WEBHOOK_SECRET`
+  - Webhook URL: `/api/webhooks/stripe`
+  - Entitlements file default `data/entitlements.json` (gitignored); serverless should move to Redis/Supabase (T5)
+  - Never overwrite cookie credits from entitlement unless `periodKey` changes or free→paid upgrade
+- Depends on: existing pricing plans + cookie session
+
+### 2026-07-22 — [claude] effect preset expansion (T9)
+- Paths: `lib/presets.ts` (+assemble-reveal, +paparazzi-flash, +kaiju-rampage); internal-link rewire in `lib/toytypes.ts` (model-kits, action-figures) + `lib/usecases.ts` (instagram)
+- Why good: 3 distinct high-intent viral/scene effects, each a studio effect **and** full SEO landing page (h1/title/description/faq/promptTemplate). Quality over quantity — no keyword padding. Cross-linked from relevant toy-type/use-case pages so new effects get inbound internal links.
+- Reuse / pitfalls: a new preset needs a valid `category` (showcase/unboxing/comealive/scene) so the hub + homepage group it; keep `promptTemplate` emphasizing the user's real figure (no brand replication). Append order doesn't matter — pages group by category.
+- Depends on: `/effects/[slug]` route + `presetsByCategory`.
+
 ### 2026-07-22 — [claude] long-tail SEO expansion (T3)
 - Paths: `lib/usecases.ts` (+whatnot-live-selling, +depop-shop-videos), `lib/toytypes.ts` (+vinyl-figures, +resin-sofubi, +model-kits)
 - Why good: extends the Use-case + Toy-type axes into distinct long-tail intents (live-selling / resale platforms; vinyl / sofubi / gunpla subcultures) picked from competitor-page keyword research. Data-only change → auto-generates pages + sitemap + footer.

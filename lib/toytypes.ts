@@ -43,7 +43,7 @@ export const TOY_TYPES: ToyType[] = [
       "animate action figure",
       "make action figure move video",
     ],
-    recommendedEffects: ["make-figure-walk", "make-figure-dance", "neon-city-night"],
+    recommendedEffects: ["make-figure-walk", "make-figure-dance", "kaiju-rampage"],
     faq: [
       {
         q: "Does it animate my figure or generate a new one?",
@@ -211,7 +211,7 @@ export const TOY_TYPES: ToyType[] = [
       "model kit video maker",
       "mecha figure video",
     ],
-    recommendedEffects: ["make-figure-walk", "neon-city-night", "360-spin-showcase"],
+    recommendedEffects: ["assemble-reveal", "make-figure-walk", "neon-city-night"],
     faq: [
       {
         q: "Does it work with custom paint jobs?",

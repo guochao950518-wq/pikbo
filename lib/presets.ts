@@ -593,6 +593,111 @@ export const PRESETS: Preset[] = [
     duration: 5,
     aspectRatio: "16:9",
   },
+  // ---------------- COME ALIVE (added) ----------------
+  {
+    slug: "assemble-reveal",
+    emoji: "🧩",
+    name: "Assemble Reveal",
+    gradient: "linear-gradient(135deg,#6a5cff,#d6ff4d)",
+    category: "comealive",
+    audience: "collector",
+    tagline: "Parts fly in and snap together into your figure.",
+    h1: "Figure Assembly Video Maker",
+    seoTitle: "Figure Assembly / Assemble Reveal Video Maker | Pikbo",
+    seoDescription:
+      "Watch your figure build itself — parts fly in and snap together in an epic assembly reveal. From one photo, no rig. Great for mecha and model kits.",
+    intro:
+      "Give your figure an epic origin. Pikbo animates an assembly reveal from a single photo — parts fly in and snap together into the finished figure, with a satisfying mechanical build-up.",
+    body: [
+      "The assemble format suits mecha, robots, action figures, and model kits where the build itself is the appeal.",
+      "Use it as a launch teaser or a 'my latest build' reveal that feels far more produced than a photo.",
+    ],
+    keywords: [
+      "figure assembly video",
+      "toy assemble video",
+      "parts assemble animation",
+    ],
+    faq: [
+      {
+        q: "Which figures work best?",
+        a: "Mecha, robots, and model kits read especially well, but any figure with clear parts animates convincingly.",
+      },
+    ],
+    promptTemplate:
+      "The collectible figure's parts fly in from off-screen and snap together to assemble the complete figure, dynamic mechanical assembly motion, small sparks of light at each connection, clean studio background, epic satisfying build-up, the finished figure holds a confident pose at the end, keeping its exact sculpt and colors.",
+    duration: 5,
+    aspectRatio: "9:16",
+  },
+  {
+    slug: "paparazzi-flash",
+    emoji: "📷",
+    name: "Paparazzi Flash",
+    gradient: "linear-gradient(135deg,#ff4d8d,#6a5cff)",
+    category: "comealive",
+    audience: "collector",
+    tagline: "Your figure hits the red carpet, flashes popping.",
+    h1: "Paparazzi / Red Carpet Toy Video Maker",
+    seoTitle: "Paparazzi Red Carpet Toy Video Maker | Pikbo",
+    seoDescription:
+      "Turn your figure into a celebrity — red carpet, camera flashes popping, viral energy. A fun, shareable clip from a single photo.",
+    intro:
+      "Make your figure famous. Pikbo drops it onto a glamorous red carpet with paparazzi flashes popping all around — the viral, high-energy clip collectors love to share.",
+    body: [
+      "A playful, trend-driven format that stands out and gets shares.",
+      "Perfect for a 'star of my collection' post or hyping a grail piece.",
+    ],
+    keywords: [
+      "paparazzi toy video",
+      "red carpet figure video",
+      "celebrity toy video",
+    ],
+    faq: [
+      {
+        q: "Is it very flashy?",
+        a: "Yes — rapid camera flashes and motion are the whole point. Ask for a calmer version in the studio prompt box if you prefer.",
+      },
+    ],
+    promptTemplate:
+      "The collectible figure walks a glamorous red carpet as paparazzi camera flashes pop rapidly all around it, bright flashing lights, soft motion blur of a crowd behind, a confident celebrity strut, the figure stays crisp and centered, fun viral energetic mood.",
+    duration: 5,
+    aspectRatio: "9:16",
+  },
+
+  // ---------------- SCENE (added) ----------------
+  {
+    slug: "kaiju-rampage",
+    emoji: "🦖",
+    name: "Kaiju Rampage",
+    gradient: "linear-gradient(135deg,#6ee7c7,#ff4d8d)",
+    category: "scene",
+    audience: "collector",
+    tagline: "Your figure towers over a tiny city like a kaiju.",
+    h1: "Giant Kaiju Toy Video Maker",
+    seoTitle: "Giant Kaiju Toy Video Maker | Pikbo",
+    seoDescription:
+      "Turn your figure into a city-crushing giant. Kaiju-scale monster-movie clips with smoke and searchlights, from one photo.",
+    intro:
+      "Go full monster movie. Pikbo makes your figure tower as a giant kaiju over a tiny city — stomping between skyscrapers with smoke and searchlights — all from a single photo.",
+    body: [
+      "An epic, dramatic scene that suits kaiju, dinosaurs, mecha, and larger-than-life characters.",
+      "A standout format for a bold reveal or a 'king of the shelf' post.",
+    ],
+    keywords: [
+      "giant toy video",
+      "kaiju figure video",
+      "monster toy video",
+    ],
+    faq: [
+      {
+        q: "Does my figure stay recognizable?",
+        a: "Yes — it keeps its exact look and colors; only the scale and city scene around it change.",
+      },
+    ],
+    promptTemplate:
+      "The collectible figure towers as a giant kaiju over a tiny miniature city at dusk, stomping between skyscrapers, dramatic sense of massive scale, atmospheric smoke and sweeping searchlights, epic monster-movie mood, slow low-angle camera, the figure keeps its exact look and colors.",
+    duration: 5,
+    aspectRatio: "16:9",
+  },
 ];
 
 export function getPreset(slug: string): Preset | undefined {

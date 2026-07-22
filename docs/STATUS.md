@@ -13,13 +13,14 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | ID | Task | Owner | Status | Branch | Notes |
 |---|---|---|---|---|---|
 | T1 | Multi-agent collab protocol + board | Grok | done | main | COLLAB.md + STATUS + HANDOFF |
-| T2 | Real fal sample clips / homepage demos | GPT | todo | — | **Claim this** — need real before/after media; no emoji-only hero |
-| T3 | Keyword + preset expansion (long-tail SEO) | Claude | done | agent/claude/seo-keywords | +2 use-cases (whatnot, depop), +3 toy-types (vinyl, resin/sofubi, gunpla) |
-| T4 | Stripe webhook (renew/cancel plan) | — | todo | — | Claim before starting |
-| T5 | Supabase auth + durable credits | — | todo | — | Replaces cookie-only session long-term |
+| T2 | Real fal sample clips / homepage demos | GPT | todo | — | Hero pipeline done by Grok; still need **real video files** |
+| T3 | Keyword + preset expansion (long-tail SEO) | Claude | done | agent/claude/seo-keywords | +use-cases + toy-types |
+| T4 | Stripe webhook (renew/cancel plan) | Grok | done | agent/grok/ship-billing-launch | webhook + confirm + entitlements |
+| T5 | Supabase auth + durable credits | — | todo | — | Replaces file entitlements long-term |
 | T6 | Server-side free watermark (ffmpeg) | — | todo | — | Player overlay is temporary |
-| T7 | Vercel deploy + env checklist | — | todo | — | Human provides keys |
+| T7 | Vercel deploy + env checklist | Grok | doing | agent/grok/ship-billing-launch | .env.example ready; human adds keys |
 | T8 | Batch generate for Shop plan | — | todo | — | After auth/credits DB |
+| T9 | Effect preset expansion (studio + SEO landing) | Claude | done | agent/claude/seo-presets | +3 effects |
 
 ---
 
@@ -32,6 +33,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | D3 | Create studio + fal generate API | mixed | `app/create`, `app/api/generate` |
 | D4 | Guest credits + paywall + pricing page | Grok | session cookie + `/pricing` |
 | D5 | Repo published | Grok | https://github.com/guochao950518-wq/pikbo |
+| D6 | Stripe webhooks + confirm + legal pages | Grok | this branch |
 
 ---
 
@@ -48,7 +50,7 @@ When you start: add a row. When you merge: clear it.
 ## How to claim (copy template)
 
 ```md
-| T9 | Short task title | GPT | doing | agent/gpt/short-slug | started YYYY-MM-DD |
+| T10 | Short task title | GPT | doing | agent/gpt/short-slug | started YYYY-MM-DD |
 ```
 
 Then:
@@ -57,6 +59,6 @@ Then:
 git checkout main && git pull
 git checkout -b agent/gpt/short-slug
 # edit docs/STATUS.md claim + your code
-git commit -m "[gpt] claim T9 + implement ..."
+git commit -m "[gpt] claim T10 + implement ..."
 git push -u origin HEAD
 ```
