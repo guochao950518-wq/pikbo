@@ -37,6 +37,7 @@
 |----|------|
 | Claude UI `home-hf` | **已 merge main** (PR #13) · worktree 继续迭代 |
 | Codex C1–C2 | 已 merge main |
+| Codex C3–C5 | **done · `agent/gpt/c3-c5` 待 Grok 合流** |
 | Grok | 修 tsc、CI、Library 下载/导出、generate 读图校验 · 主目录 `main` |
 
 ---
@@ -61,7 +62,8 @@
 
 ```text
 cd /Users/x/claude/pikbo && git checkout main && git pull
-继续 C3–C5（UNIT_ECONOMICS / CreateStudio 字符串 / README）。
+C3–C5 已完成；等待 Grok 合流 `agent/gpt/c3-c5`。
+后续只处理 DISPATCH 新分配给 Codex 的任务。
 禁止进 /Users/x/claude/pikbo-claude-ui。
 ```
 

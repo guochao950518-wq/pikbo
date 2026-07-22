@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [gpt] C3–C5 Mini economics + honest generation copy
+- Scope: C1–C2 were already merged by Grok; this branch changes only `docs/UNIT_ECONOMICS.md`, `CreateStudio`, `PaywallCard`, `README.md`, and coordination docs.
+- Contract: Free 10 credits ≈ one Seedance Mini 5s 480p trial with an on-player mark; Creator 50 ≈ five; Shop 150 ≈ fifteen at the current flat rate.
+- Demo truth: cached results do not animate the uploaded toy or call a live provider; failed live jobs refund their charge. No unlimited-live claim is introduced.
+- Economics: a fully used Shop allowance can still lose money on 10s Standard, so weighted metering, durable credits, and a server-burned file watermark remain launch gates.
+- Verification: source ESLint and `git diff --check`; no `app/api/**`, session, credits, contracts, models, Stripe, or layout logic changed.
+
 ### 2026-07-23 — [gpt] pricing UI aligned to the active credit contract (T30)
 - Paths: `app/pricing/page.tsx`, `components/PricingPlanCards.tsx`, `components/PricingUsageEstimator.tsx`.
 - Truth rule: Free 1 / Creator ~5 / Shop ~15 are the current server-backed flat-rate allowances, not stale prototype placeholders.
@@ -24,7 +31,7 @@ Newest first. One block per meaningful landing.
 
 ### 2026-07-23 — [gpt] conversion truth + unit economics (C3 / T26)
 - Paths: `docs/UNIT_ECONOMICS.md`
-- Decision: replace three anonymous monthly free clips with one verified 4s/480p/watermarked trial (recommendation).
+- Decision (superseded by C3–C5): the implemented Free path is one 5s Seedance Mini 480p trial with an on-player mark.
 - Economics: Creator `$19` supports about five 5s Fast 720p or four 5s Standard 720p clips, not 50, at the reviewed fal rates.
 - Reuse: charge credits by model + resolution + duration; **Grok implements** server-side ledger (not UI-only).
 - Verified: sources linked in doc; arithmetic sensitivity included.

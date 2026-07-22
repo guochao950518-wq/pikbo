@@ -23,7 +23,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | FP1 | critical-path smoke script | Grok | done | main | `npm run critical-path` |
 | G-ops | demo map + rate limit + dev topup + preflight demos | Grok | done | agent/grok/foundation-ops | no UI aesthetic conflict |
 | UI-q | UI quality r1–r3 aesthetic | Claude | doing | agent/claude/ui-quality | font/grain/craft — Grok hands off |
-| C1–C5 | truth-sync: pricing numbers, estimator, economics, microcopy | Codex | todo | agent/gpt/truth-sync | claim + ship; Grok merges |
+| C1–C5 | truth-sync: pricing numbers, estimator, economics, microcopy | Codex | done | agent/gpt/c3-c5 | C1–C2 already main; C3–C5 Mini economics, honest Studio strings, and README ready for Grok merge |
 | T10 | Boss one-command + Telegram bot | Grok | done | main | DISPATCH + tools/telegram_dispatch_bot.py |
 | T11 | Higgsfield-class shell + Generate | Grok | done | main | AppShell + CreateStudio + Library history |
 | T12 | Home model shelf + presets wall polish | GPT | done | agent/gpt/home-visuals | Live-model previews + demo-aware preset cards; roadmap models explicit |
@@ -43,7 +43,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | T23 | CI build + conflict-marker gate | Grok | doing | main | `.github/workflows/ci.yml` |
 | T24 | Generate honesty: demo vs live + regen/refund copy | Grok | doing | main | CreateStudio result strip |
 | T25 | Homepage truth labels + overclaim sweep | GPT | done | agent/gpt/claude-copy-audit | PR #6; cached/shared previews and provider-gated paths labeled |
-| T26 | Unit economics doc + free-tier recommendation | GPT | done | agent/gpt/convert-truth | Free: 1 verified 4s trial; Creator: ~5 Fast or 4 Standard 5s clips at $19 |
+| T26 | Unit economics doc + free-tier recommendation | GPT | done | agent/gpt/c3-c5 | Current contract: Free Mini 5s 480p; allowances ≈1 / 5 / 15; weighted metering remains a launch gate |
 | T27 | Preset/SEO copy wave 2 (toy seller language) | Claude | todo | agent/claude/copy-seo-v2 | DISPATCH L1–L2 |
 | T28 | Pricing conversion copy A/B | GPT | done | agent/gpt/pricing-mobile | Outcome default; `?copy=cost` cost-control variant; plan volume explicitly prototype-only |
 | T29 | Homepage first-screen 390px acceptance + polish | GPT | done | agent/gpt/pricing-mobile | No x-overflow; primary CTA visible; duplicate home floating CTA removed; accessible demo controls |
