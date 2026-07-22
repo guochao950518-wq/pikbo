@@ -30,6 +30,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | T18 | Profile live credits + Generate drag-drop | Grok | done | main | |
 | T19 | Generate search/recent/progress/copy + mobile CTA | Grok | done | main | |
 | T20 | Favorites, before/after, onboarding, trust strip | Grok | done | main | |
+| T21 | Pricing conversion + usage estimator | GPT | done | agent/gpt/pricing-conversion | Honest monthly calculator; Stripe API unchanged |
 | T8 | Batch generate for Shop plan | — | todo | — | After auth/credits DB |
 | T9 | Effect preset expansion (studio + SEO landing) | Claude | done | agent/claude/seo-presets | +3 effects |
 | T11 | Guides: informational long-tail content | Claude | done | agent/claude/guides | 3 how-to/tips/ideas articles at /guides; Article+FAQ JSON-LD; cross-linked to effects |
@@ -48,6 +49,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | D6 | Stripe webhooks + confirm + legal pages | Grok | this branch |
 | D7 | Toy-first homepage demo theatre | GPT | `agent/gpt/homepage-demos` |
 | D8 | Model shelf + demo-aware PresetsWall | GPT | `agent/gpt/home-visuals` |
+| D9 | Pricing estimator + comparison experience | GPT | `agent/gpt/pricing-conversion` |
 
 ---
 
