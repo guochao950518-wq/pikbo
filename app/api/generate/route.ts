@@ -85,7 +85,10 @@ export async function POST(req: Request) {
 
   const plan = getPlan(session.plan);
   const freeTier = plan.watermark;
-  const secs = clampDuration(duration, preset.duration);
+  // Free trial: keep cost bounded (unit economics — short Fast 480p only)
+  const secs = freeTier
+    ? 5
+    : clampDuration(duration, preset.duration);
   const aspect = normalizeAspect(aspectRatio, preset.aspectRatio);
 
   // If user typed a full custom prompt in extra that looks complete, use it;

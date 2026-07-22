@@ -375,9 +375,14 @@ export function LandingToolPanel({
                   {site.name}
                 </div>
               )}
-              {demo && (
+              {demo ? (
                 <p className="mt-2 text-center text-[10px] text-[var(--fg-dim)]">
-                  Demo clip — set FAL_KEY for real Seedance.
+                  Cached demo path — set FAL_KEY for live Seedance.
+                </p>
+              ) : (
+                <p className="mt-2 text-center text-[10px] text-[var(--fg-dim)]">
+                  AI motion varies. Regenerate free on failed jobs (credits
+                  refunded). Free path is short 480p + watermark.
                 </p>
               )}
               <div className="mt-3 flex flex-wrap justify-center gap-2">
