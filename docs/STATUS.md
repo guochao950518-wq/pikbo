@@ -13,7 +13,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | ID | Task | Owner | Status | Branch | Notes |
 |---|---|---|---|---|---|
 | T1 | Multi-agent collab protocol + board | Grok | done | main | COLLAB.md + STATUS + HANDOFF |
-| T2 | Real fal sample clips / homepage demos | GPT | todo | — | Hero pipeline done by Grok; still need **real video files** |
+| T2 | Real fal sample clips / homepage demos | GPT | done | agent/gpt/homepage-demos | 6 original encoded demos; cached/no FAL cost; verified fal renders can replace assets later |
 | T3 | Keyword + preset expansion (long-tail SEO) | Claude | done | agent/claude/seo-keywords | +use-cases + toy-types |
 | T4 | Stripe webhook (renew/cancel plan) | Grok | done | agent/grok/ship-billing-launch | webhook + confirm + entitlements |
 | T5 | Supabase auth + durable credits | — | todo | — | Replaces file entitlements long-term |
@@ -40,6 +40,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | D4 | Guest credits + paywall + pricing page | Grok | session cookie + `/pricing` |
 | D5 | Repo published | Grok | https://github.com/guochao950518-wq/pikbo |
 | D6 | Stripe webhooks + confirm + legal pages | Grok | this branch |
+| D7 | Toy-first homepage demo theatre | GPT | `agent/gpt/homepage-demos` |
 
 ---
 
