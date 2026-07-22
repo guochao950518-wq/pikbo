@@ -11,6 +11,7 @@ import { HomeModelShelf } from "@/components/HomeModelShelf";
 import { HowItWorks } from "@/components/HowItWorks";
 import { TrustStrip } from "@/components/TrustStrip";
 import { DEMO_VIDEOS } from "@/lib/demoVideos";
+import { HeroUpload } from "@/components/HeroUpload";
 
 /**
  * Home feed patterned on full AI creative suites:
@@ -47,6 +48,7 @@ export default function Home() {
               <span>✓ No card to try</span>
               <span>✓ Free exports show a Pikbo watermark</span>
             </div>
+            <HeroUpload />
             <div className="mt-6 flex flex-wrap gap-2">
               <Link href="/effects/360-spin-showcase" className="chip hover:border-[var(--brand)]">
                 🌀 360° spin
@@ -62,6 +64,9 @@ export default function Home() {
               </Link>
               <Link href="/guides" className="chip hover:border-[var(--brand)]">
                 📖 Guides
+              </Link>
+              <Link href="/supercomputer" className="chip hover:border-[var(--brand)]">
+                ⚡ Batch pack
               </Link>
             </div>
             <div className="mt-10 grid max-w-lg grid-cols-3 border-y border-white/10 py-4">

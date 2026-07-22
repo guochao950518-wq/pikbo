@@ -16,9 +16,18 @@ export default function ModelsPage() {
         <h1 className="mt-3 text-3xl font-bold">Models</h1>
         <p className="mt-2 max-w-2xl text-sm text-[var(--fg-muted)]">
           Multi-model shelf like the big studios.{" "}
-          <strong className="text-[var(--fg)]">Seedance</strong> is live and
-          tuned for painted figures — other cards are reserved slots.
+          <strong className="text-[var(--fg)]">ByteDance Seedance</strong> is
+          live (Fast on Free · 2.0 on paid). Other cards are honest placeholders —
+          we don&apos;t fake Kling/Veo without keys.
         </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Link href="/create" className="btn btn-primary text-sm">
+            Generate with Seedance →
+          </Link>
+          <Link href="/effects" className="btn btn-ghost text-sm">
+            Toy presets
+          </Link>
+        </div>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {MODELS.map((m) => (

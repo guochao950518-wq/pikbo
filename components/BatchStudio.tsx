@@ -58,13 +58,18 @@ function csvCell(value: unknown) {
   const text = String(value ?? "");
   return `"${text.replaceAll('"', '""')}"`;
 }
-export function BatchStudio() {
+export function BatchStudio({ initialEffects }: { initialEffects?: string[] }) {
   const defaultPresets = useMemo(
-    () =>
-      PRESETS.filter((preset) => DEFAULT_PRESETS.includes(preset.slug)).map(
+    () => {
+      const requested = (initialEffects ?? []).filter((slug) =>
+        PRESETS.some((preset) => preset.slug === slug)
+      );
+      if (requested.length > 0) return [...new Set(requested)];
+      return PRESETS.filter((preset) => DEFAULT_PRESETS.includes(preset.slug)).map(
         (preset) => preset.slug
-      ),
-    []
+      );
+    },
+    [initialEffects]
   );
   const [campaignName, setCampaignName] = useState("New toy launch");
   const [sku, setSku] = useState("");

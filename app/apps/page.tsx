@@ -23,8 +23,22 @@ export default function AppsPage() {
         <h1 className="mt-3 text-3xl font-bold">Apps</h1>
         <p className="mt-2 max-w-2xl text-sm text-[var(--fg-muted)]">
           Same app-grid idea as big AI platforms — every tile is aimed at
-          figures, blind boxes, and product clips. Live apps run Seedance.
+          figures, blind boxes, and product clips.{" "}
+          <strong className="text-[var(--fg)]">LIVE</strong> runs Seedance /
+          Flux; <strong className="text-[var(--fg)]">SOON</strong> are suite
+          stubs (not sold as live).
         </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Link href="/create" className="btn btn-primary text-sm">
+            Core: Image → Video
+          </Link>
+          <Link href="/image" className="btn btn-ghost text-sm">
+            Still studio
+          </Link>
+          <Link href="/supercomputer" className="btn btn-ghost text-sm">
+            Batch
+          </Link>
+        </div>
 
         {CATS.map((cat) => {
           const items = APPS.filter((a) => a.category === cat.id);

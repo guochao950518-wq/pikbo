@@ -8,6 +8,8 @@ import { SAMPLE_TOYS, sampleToDataUrl } from "@/lib/samples";
 import type { PublicSession } from "@/lib/session";
 import { site } from "@/lib/site";
 import { useToast } from "@/components/Toast";
+import { PaywallCard } from "@/components/PaywallCard";
+import { emitSessionRefresh } from "@/lib/sessionEvents";
 
 type Status = "idle" | "generating" | "done" | "error";
 
@@ -119,10 +121,6 @@ export function LandingToolPanel({
       setError("Upload a toy photo first.");
       return;
     }
-    if (session && session.credits < CREDITS_PER_VIDEO) {
-      setError("Not enough credits — upgrade on Pricing.");
-      return;
-    }
     setError(null);
     setVideoUrl(null);
     setElapsed(0);
@@ -143,7 +141,7 @@ export function LandingToolPanel({
       const data = await res.json();
       if (data.session) setSession(data.session);
       if (res.status === 402) {
-        setError("Not enough credits. Upgrade to keep creating.");
+        setError("INSUFFICIENT");
         setStatus("error");
         return;
       }
@@ -160,6 +158,7 @@ export function LandingToolPanel({
         watermark: Boolean(data.watermark),
         demo: Boolean(data.demo),
       });
+      emitSessionRefresh();
       toast(data.demo ? "Demo clip ready" : "Clip ready · saved to Library");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Generation failed");
@@ -313,24 +312,26 @@ export function LandingToolPanel({
               : `Generate ${effectName} · ${CREDITS_PER_VIDEO} credits`}
           </button>
 
-          {error && (
-            <p className="text-center text-xs text-[var(--brand)]">
-              {error}{" "}
-              {error.toLowerCase().includes("credit") && (
-                <Link href="/pricing" className="underline">
-                  Pricing
-                </Link>
-              )}
-            </p>
-          )}
+          {error === "INSUFFICIENT" ||
+          (error && error.toLowerCase().includes("credit")) ? (
+            <PaywallCard />
+          ) : error ? (
+            <p className="text-center text-xs text-[var(--brand)]">{error}</p>
+          ) : null}
 
           <p className="text-center text-[10px] text-[var(--fg-dim)]">
-            Duration / seed / batch?{" "}
             <Link
               href={`/create?effect=${effectSlug}`}
               className="text-[var(--mint)] hover:underline"
             >
-              Full studio →
+              Full studio
+            </Link>
+            {" · "}
+            <Link
+              href={`/supercomputer?effects=${effectSlug},360-spin-showcase,floating-hero,blind-box-unboxing`}
+              className="text-[var(--mint)] hover:underline"
+            >
+              Batch more
             </Link>
           </p>
         </div>
@@ -372,7 +373,8 @@ export function LandingToolPanel({
               )}
               {demo && (
                 <p className="mt-2 text-center text-[10px] text-[var(--fg-dim)]">
-                  Demo clip — set FAL_KEY for real Seedance.
+                  Cached validation preview · unrelated to the uploaded toy · 0
+                  credits. Set FAL_KEY for live Seedance.
                 </p>
               )}
               <div className="mt-3 flex flex-wrap justify-center gap-2">

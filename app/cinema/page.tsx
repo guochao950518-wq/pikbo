@@ -116,11 +116,17 @@ export default function CinemaPage() {
               </div>
             ))}
             <p className="text-[11px] text-[var(--fg-dim)]">
-              Multi-shot batch render ships after auth queue. Single-shot
-              renders now via Generate + Seedance.
+              Single-shot cinema renders now: prompt + preset open in Generate
+              with Seedance. Multi-shot queue later.
             </p>
             <Link href={href} className="btn btn-primary w-full text-sm">
-              Open Generate
+              Render in Generate →
+            </Link>
+            <Link
+              href={`/effects/${effect}`}
+              className="btn btn-ghost w-full text-sm"
+            >
+              Or open tool page
             </Link>
           </aside>
         </div>
