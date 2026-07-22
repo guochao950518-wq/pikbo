@@ -15,12 +15,17 @@ export default function LibraryPage() {
           <div>
             <h1 className="text-2xl font-bold">Library</h1>
             <p className="mt-1 text-sm text-[var(--fg-muted)]">
-              Outputs from this device — same idea as big AI video apps.
+              Outputs from this device. Download, re-run, or open the tool page.
             </p>
           </div>
-          <Link href="/create" className="btn btn-primary text-sm">
-            New generate
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <Link href="/create" className="btn btn-primary text-sm">
+              New generate
+            </Link>
+            <Link href="/supercomputer" className="btn btn-ghost text-sm">
+              Batch
+            </Link>
+          </div>
         </div>
         <LibraryGrid />
       </div>

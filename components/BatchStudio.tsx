@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { PRESETS } from "@/lib/presets";
+import { CATEGORIES, PRESETS, type CategoryId } from "@/lib/presets";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
 import { pushHistory } from "@/lib/history";
 import { SAMPLE_TOYS, sampleToDataUrl } from "@/lib/samples";
@@ -17,17 +17,31 @@ type Job = {
 
 /**
  * Shop-style batch: one toy photo → several presets in sequence.
- * Uses same /api/generate as single Generate.
+ * Supports ?effects=slug1,slug2 from effect landings.
  */
-export function BatchStudio() {
+export function BatchStudio({
+  initialEffects,
+}: {
+  initialEffects?: string[];
+}) {
+  const validInitial = useMemo(() => {
+    if (!initialEffects?.length) return null;
+    return initialEffects.filter((s) => PRESETS.some((p) => p.slug === s));
+  }, [initialEffects]);
+
   const defaults = useMemo(
     () =>
-      PRESETS.filter((p) =>
-        ["360-spin-showcase", "floating-hero", "blind-box-unboxing", "display-case-glam"].includes(
-          p.slug
-        )
-      ).map((p) => p.slug),
-    []
+      validInitial && validInitial.length > 0
+        ? validInitial
+        : PRESETS.filter((p) =>
+            [
+              "360-spin-showcase",
+              "floating-hero",
+              "blind-box-unboxing",
+              "display-case-glam",
+            ].includes(p.slug)
+          ).map((p) => p.slug),
+    [validInitial]
   );
 
   const [image, setImage] = useState<string | null>(null);
@@ -39,12 +53,22 @@ export function BatchStudio() {
     "9:16"
   );
   const [duration, setDuration] = useState<5 | 10>(5);
+  const [catFilter, setCatFilter] = useState<CategoryId | "all">("all");
 
   const cost = selected.length * CREDITS_PER_VIDEO;
+
+  const visiblePresets = useMemo(() => {
+    if (catFilter === "all") return PRESETS;
+    return PRESETS.filter((p) => p.category === catFilter);
+  }, [catFilter]);
 
   function loadFile(file: File | undefined | null) {
     if (!file?.type.startsWith("image/")) {
       setError("Upload a PNG/JPG of your toy.");
+      return;
+    }
+    if (file.size > 8_000_000) {
+      setError("Image too large (max ~8MB).");
       return;
     }
     const reader = new FileReader();
@@ -59,6 +83,27 @@ export function BatchStudio() {
     setSelected((prev) =>
       prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]
     );
+  }
+
+  function selectCategory(id: CategoryId | "all") {
+    setCatFilter(id);
+    if (id === "all") return;
+    const slugs = PRESETS.filter((p) => p.category === id).map((p) => p.slug);
+    setSelected(slugs);
+  }
+
+  function selectSellerPack() {
+    setSelected(
+      PRESETS.filter((p) =>
+        [
+          "360-spin-showcase",
+          "floating-hero",
+          "blind-box-unboxing",
+          "display-case-glam",
+        ].includes(p.slug)
+      ).map((p) => p.slug)
+    );
+    setCatFilter("all");
   }
 
   async function runBatch() {
@@ -81,9 +126,7 @@ export function BatchStudio() {
 
     for (let i = 0; i < queue.length; i++) {
       setJobs((prev) =>
-        prev.map((j, idx) =>
-          idx === i ? { ...j, status: "running" } : j
-        )
+        prev.map((j, idx) => (idx === i ? { ...j, status: "running" } : j))
       );
       try {
         const res = await fetch("/api/generate", {
@@ -121,7 +164,10 @@ export function BatchStudio() {
             idx === i ? { ...j, status: "error", error: msg } : j
           )
         );
-        if (msg.includes("credits") || msg.includes("Credits")) {
+        if (
+          msg.toLowerCase().includes("credit") ||
+          msg.includes("INSUFFICIENT")
+        ) {
           setError(msg);
           break;
         }
@@ -129,6 +175,8 @@ export function BatchStudio() {
     }
     setRunning(false);
   }
+
+  const doneCount = jobs.filter((j) => j.status === "done").length;
 
   return (
     <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_1.1fr]">
@@ -143,7 +191,11 @@ export function BatchStudio() {
         >
           {image ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={image} alt="toy" className="h-full w-full object-contain" />
+            <img
+              src={image}
+              alt="toy"
+              className="h-full w-full object-contain"
+            />
           ) : (
             <span className="px-4 text-center text-sm text-[var(--fg-dim)]">
               🧸 Drop one toy photo for the whole batch
@@ -224,11 +276,57 @@ export function BatchStudio() {
         </div>
 
         <div>
-          <p className="text-xs font-semibold text-[var(--fg-muted)]">
-            Presets in this batch
-          </p>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-xs font-semibold text-[var(--fg-muted)]">
+              Presets in this batch
+            </p>
+            <div className="flex flex-wrap gap-1">
+              <button
+                type="button"
+                onClick={selectSellerPack}
+                className="rounded-md border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--mint)] hover:border-[var(--mint)]"
+              >
+                Seller pack (4)
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelected([])}
+                className="rounded-md border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--fg-dim)]"
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+          <div className="mt-2 flex flex-wrap gap-1">
+            <button
+              type="button"
+              onClick={() => setCatFilter("all")}
+              className={`rounded-full border px-2 py-0.5 text-[10px] ${
+                catFilter === "all"
+                  ? "border-[var(--brand)]"
+                  : "border-[var(--border)] text-[var(--fg-dim)]"
+              }`}
+            >
+              All
+            </button>
+            {CATEGORIES.map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => selectCategory(c.id)}
+                className={`rounded-full border px-2 py-0.5 text-[10px] ${
+                  catFilter === c.id
+                    ? "border-[var(--brand)]"
+                    : "border-[var(--border)] text-[var(--fg-dim)]"
+                }`}
+                title={c.blurb}
+              >
+                {c.label}
+              </button>
+            ))}
+          </div>
           <div className="mt-2 flex max-h-56 flex-wrap gap-2 overflow-y-auto">
-            {PRESETS.map((p) => {
+            {visiblePresets.map((p) => {
               const on = selected.includes(p.slug);
               return (
                 <button
@@ -246,21 +344,26 @@ export function BatchStudio() {
               );
             })}
           </div>
+          {validInitial && validInitial.length > 0 && (
+            <p className="mt-2 text-[10px] text-[var(--mint)]">
+              Pre-selected from tool page link ({validInitial.length} effects).
+            </p>
+          )}
         </div>
 
         <button
           type="button"
           disabled={running || !image || selected.length === 0}
-          onClick={runBatch}
+          onClick={() => void runBatch()}
           className="btn btn-primary w-full disabled:opacity-50"
         >
           {running
-            ? "Batch running…"
+            ? `Batch running… ${doneCount}/${jobs.length}`
             : `Run batch · ${selected.length} clips · ~${cost} credits`}
         </button>
         {error && <p className="text-sm text-[var(--brand)]">{error}</p>}
         <p className="text-[11px] text-[var(--fg-dim)]">
-          Sequential jobs use the same generate API. Finished clips also land in{" "}
+          Sequential jobs use the same generate API. Finished clips land in{" "}
           <Link href="/library" className="text-[var(--brand)] hover:underline">
             Library
           </Link>
@@ -269,10 +372,18 @@ export function BatchStudio() {
       </div>
 
       <div className="card space-y-3 p-4">
-        <h2 className="font-semibold">Queue</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="font-semibold">Queue</h2>
+          {jobs.length > 0 && (
+            <span className="text-[10px] text-[var(--fg-dim)]">
+              {doneCount} done
+            </span>
+          )}
+        </div>
         {jobs.length === 0 && (
           <p className="text-sm text-[var(--fg-dim)]">
-            No jobs yet. Pick presets and run.
+            No jobs yet. Pick presets (or open Batch from an effect page) and
+            run.
           </p>
         )}
         {jobs.map((j) => (
@@ -300,7 +411,6 @@ export function BatchStudio() {
               <p className="mt-1 text-xs text-[var(--brand)]">{j.error}</p>
             )}
             {j.videoUrl && (
-               
               <video
                 src={j.videoUrl}
                 controls
@@ -308,6 +418,14 @@ export function BatchStudio() {
                 playsInline
                 className="mt-2 max-h-40 w-full rounded-lg bg-black/40"
               />
+            )}
+            {j.status === "done" && (
+              <Link
+                href={`/effects/${j.slug}`}
+                className="mt-1 inline-block text-[10px] text-[var(--mint)] hover:underline"
+              >
+                Effect page →
+              </Link>
             )}
           </div>
         ))}

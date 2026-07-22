@@ -325,12 +325,18 @@ export function LandingToolPanel({
           )}
 
           <p className="text-center text-[10px] text-[var(--fg-dim)]">
-            Duration / seed / batch?{" "}
             <Link
               href={`/create?effect=${effectSlug}`}
               className="text-[var(--mint)] hover:underline"
             >
-              Full studio →
+              Full studio
+            </Link>
+            {" · "}
+            <Link
+              href={`/supercomputer?effects=${effectSlug},360-spin-showcase,floating-hero,blind-box-unboxing`}
+              className="text-[var(--mint)] hover:underline"
+            >
+              Batch more
             </Link>
           </p>
         </div>

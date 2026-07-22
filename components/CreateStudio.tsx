@@ -120,7 +120,10 @@ export function CreateStudio({
       // optional still from Image studio
       try {
         const pending = sessionStorage.getItem("pikbo_pending_still");
-        if (pending?.startsWith("http")) {
+        if (pending?.startsWith("data:image")) {
+          sessionStorage.removeItem("pikbo_pending_still");
+          setImage(pending);
+        } else if (pending?.startsWith("http")) {
           sessionStorage.removeItem("pikbo_pending_still");
           sampleToDataUrl(pending)
             .then((data) => setImage(data))
