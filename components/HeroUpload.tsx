@@ -4,14 +4,12 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const PRESETS_QUICK = [
-  { slug: "360-spin-showcase", label: "360° spin", emoji: "🌀" },
-  { slug: "blind-box-unboxing", label: "Unbox", emoji: "📦" },
-  { slug: "floating-hero", label: "Float", emoji: "✨" },
+  { slug: "360-spin-showcase", label: "360°" },
+  { slug: "blind-box-unboxing", label: "Unbox" },
+  { slug: "floating-hero", label: "Float" },
 ] as const;
 
-/**
- * Home hero: drop a toy photo → stash still → jump to full studio or effect page.
- */
+/** Compact drop zone for video-home conversion */
 export function HeroUpload() {
   const router = useRouter();
   const [hover, setHover] = useState(false);
@@ -21,11 +19,11 @@ export function HeroUpload() {
 
   function goWithFile(file: File | undefined | null) {
     if (!file || !file.type.startsWith("image/")) {
-      setErr("Use a PNG or JPG of a toy you own.");
+      setErr("PNG or JPG of a toy you own.");
       return;
     }
     if (file.size > 8_000_000) {
-      setErr("Max ~8MB photo.");
+      setErr("Max ~8MB.");
       return;
     }
     setBusy(true);
@@ -33,12 +31,9 @@ export function HeroUpload() {
     const reader = new FileReader();
     reader.onload = () => {
       try {
-        sessionStorage.setItem(
-          "pikbo_pending_still",
-          reader.result as string
-        );
+        sessionStorage.setItem("pikbo_pending_still", reader.result as string);
       } catch {
-        setErr("Could not save photo in browser storage.");
+        setErr("Storage full — open Generate instead.");
         setBusy(false);
         return;
       }
@@ -52,20 +47,20 @@ export function HeroUpload() {
   }
 
   return (
-    <div className="mt-8 max-w-lg">
+    <div>
       <div className="mb-2 flex flex-wrap gap-1.5">
         {PRESETS_QUICK.map((p) => (
           <button
             key={p.slug}
             type="button"
             onClick={() => setEffect(p.slug)}
-            className={`rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors ${
+            className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold transition-colors ${
               effect === p.slug
-                ? "border-[var(--brand)] bg-[var(--grad-soft)] text-[var(--fg)]"
+                ? "border-[var(--mint)] text-[var(--mint)]"
                 : "border-[var(--border)] text-[var(--fg-dim)] hover:text-[var(--fg)]"
             }`}
           >
-            {p.emoji} {p.label}
+            {p.label}
           </button>
         ))}
       </div>
@@ -80,17 +75,17 @@ export function HeroUpload() {
           setHover(false);
           goWithFile(e.dataTransfer.files?.[0]);
         }}
-        className={`flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed bg-white px-4 py-7 transition-all ${
+        className={`flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed px-4 py-5 transition-colors ${
           hover
-            ? "border-[var(--brand)] bg-[var(--grad-soft)] shadow-[var(--shadow-md)]"
-            : "border-[var(--border)] hover:border-[var(--fg)]/25 hover:shadow-[var(--shadow-sm)]"
+            ? "border-[var(--mint)] bg-[var(--mint)]/10"
+            : "border-[var(--border)] bg-[var(--card)] hover:border-white/20"
         }`}
       >
-        <p className="text-sm font-semibold tracking-tight">
-          {busy ? "Opening studio…" : "Drop a product photo"}
+        <p className="text-sm font-semibold">
+          {busy ? "Opening Generate…" : "Drop a toy photo → start"}
         </p>
-        <p className="mt-1.5 text-center text-[12px] text-[var(--fg-dim)]">
-          Opens Create with your look · no account
+        <p className="mt-1 text-[11px] text-[var(--fg-dim)]">
+          Jumps into Generate with look preselected
         </p>
         <input
           type="file"

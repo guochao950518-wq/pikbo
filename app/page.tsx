@@ -1,201 +1,121 @@
 import Link from "next/link";
-import { APPS } from "@/lib/catalog";
+import { buildVideoFeed, featuredStrip } from "@/lib/videoFeed";
+import { VideoTile } from "@/components/VideoTile";
 import { PRESETS } from "@/lib/presets";
-import { PLANS } from "@/lib/pricing";
-import { PresetsWall } from "@/components/PresetsWall";
-import {
-  HeroDemoStage,
-  HomeDemoShowcase,
-} from "@/components/HomeDemoShowcase";
-import { HomeModelShelf } from "@/components/HomeModelShelf";
-import { HowItWorks } from "@/components/HowItWorks";
-import { TrustStrip } from "@/components/TrustStrip";
 import { HeroUpload } from "@/components/HeroUpload";
 
 /**
- * POP MART–inspired home: product theatre first, clean retail hierarchy.
+ * Higgsfield-style home: enter = video everywhere.
+ * Dense autoplay feed drives dwell + convert to Generate.
  */
 export default function Home() {
-  const liveApps = APPS.filter((a) => a.live).slice(0, 6);
-  const creator = PLANS.find((p) => p.id === "creator");
+  const featured = featuredStrip();
+  const feed = buildVideoFeed();
 
   return (
-    <div className="pb-20">
-      <section className="glow-bg overflow-hidden">
-        <div className="container-x relative z-10 grid items-center gap-12 py-16 lg:min-h-[720px] lg:grid-cols-[1fr_1.05fr] lg:gap-16 lg:py-20">
-          <div>
-            <p className="section-label">Designer toy video</p>
-            <h1 className="mt-5 max-w-xl font-[family-name:var(--font-display)] text-5xl font-semibold leading-[1.02] tracking-[-0.03em] text-[var(--fg)] sm:text-6xl lg:text-[3.75rem]">
-              One photo.
-              <br />
-              A shelf that{" "}
-              <span className="text-grad">moves.</span>
-            </h1>
-            <p className="mt-6 max-w-md text-base leading-7 text-[var(--fg-muted)] sm:text-lg sm:leading-8">
-              Turn figures, blind boxes, and plush you own into listing clips and
-              drop-day reels — no camera rig, no studio day.
+    <div className="pb-24">
+      {/* Compact sticky convert bar over the video world */}
+      <section className="sticky top-0 z-30 border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--bg)_90%,transparent)] backdrop-blur-xl lg:top-0">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold tracking-tight">
+              Designer toy video · Seedance
             </p>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link href="/create" className="btn btn-primary px-7 py-3.5 text-sm">
-                Start free
-              </Link>
-              <Link
-                href="#examples"
-                className="btn btn-ghost px-7 py-3.5 text-sm"
-              >
-                Watch demos
-              </Link>
-            </div>
-            <p className="mt-4 text-xs text-[var(--fg-dim)]">
-              ~3 free clips / month · No card · 480p with on-player mark
+            <p className="truncate text-[11px] text-[var(--fg-dim)]">
+              Scroll the feed · tap any clip to recreate
             </p>
-            <HeroUpload />
-            <div className="mt-8 flex flex-wrap gap-2">
-              {[
-                { href: "/effects/360-spin-showcase", t: "360° Spin" },
-                { href: "/effects/blind-box-unboxing", t: "Blind box" },
-                { href: "/for/etsy-listing-videos", t: "Etsy" },
-                { href: "/for/tiktok-shop-product-videos", t: "TikTok Shop" },
-              ].map((x) => (
-                <Link
-                  key={x.href}
-                  href={x.href}
-                  className="rounded-full border border-[var(--border)] bg-white px-3.5 py-1.5 text-xs font-medium text-[var(--fg-muted)] transition hover:border-[var(--fg)]/20 hover:text-[var(--fg)]"
-                >
-                  {x.t}
-                </Link>
-              ))}
-            </div>
           </div>
-          <HeroDemoStage />
-        </div>
-      </section>
-
-      <TrustStrip />
-      <HomeDemoShowcase />
-      <HowItWorks />
-
-      <section className="border-b border-[var(--border)] bg-white px-4 py-12 sm:px-8">
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-6 flex items-end justify-between">
-            <div>
-              <p className="section-label">Studio</p>
-              <h2 className="mt-2 font-[family-name:var(--font-display)] text-2xl font-semibold tracking-tight">
-                Tools
-              </h2>
-            </div>
+          <div className="flex shrink-0 items-center gap-2">
+            <Link href="/create" className="btn btn-primary !px-4 !py-2 text-xs">
+              Generate free
+            </Link>
             <Link
-              href="/apps"
-              className="text-xs font-semibold text-[var(--brand)] hover:underline"
+              href="/supercomputer"
+              className="btn btn-ghost !px-3 !py-2 text-xs"
             >
-              View all
+              Batch
             </Link>
           </div>
-          <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
-            {liveApps.map((a) => (
-              <Link
-                key={a.id}
-                href={a.href}
-                className="card flex flex-col items-start gap-3 p-4 transition-transform hover:-translate-y-0.5"
-              >
-                <span className="text-2xl">{a.emoji}</span>
-                <span className="text-sm font-semibold tracking-tight">
-                  {a.name}
-                </span>
-              </Link>
-            ))}
-          </div>
         </div>
       </section>
 
-      <HomeModelShelf />
-
-      <section className="border-b border-[var(--border)] px-4 py-14 sm:px-8">
-        <div className="mx-auto grid max-w-6xl gap-4 md:grid-cols-2">
-          <Link href="/cinema" className="card group p-8 transition-transform hover:-translate-y-0.5">
-            <p className="section-label">Cinema</p>
-            <h2 className="mt-3 font-[family-name:var(--font-display)] text-2xl font-semibold tracking-tight group-hover:text-[var(--brand)]">
-              Direct the shot
-            </h2>
-            <p className="mt-2 text-sm leading-relaxed text-[var(--fg-muted)]">
-              Lens, camera move, grade — then render with Seedance.
-            </p>
-          </Link>
+      {/* Feature strip — horizontal video rail (HF hero cards) */}
+      <section className="border-b border-[var(--border)] px-4 py-4 sm:px-6">
+        <div className="mb-3 flex items-end justify-between">
+          <p className="section-label">Featured</p>
           <Link
-            href="/supercomputer"
-            className="card group p-8 transition-transform hover:-translate-y-0.5"
+            href="/community"
+            className="text-[11px] font-semibold text-[var(--mint)] hover:underline"
           >
-            <p className="section-label">Batch</p>
-            <h2 className="mt-3 font-[family-name:var(--font-display)] text-2xl font-semibold tracking-tight group-hover:text-[var(--brand)]">
-              Shop packs
-            </h2>
-            <p className="mt-2 text-sm leading-relaxed text-[var(--fg-muted)]">
-              One figure photo → spin, float, unbox in one queue.
-            </p>
+            Community →
           </Link>
         </div>
-      </section>
-
-      <div className="border-b border-[var(--border)] bg-white">
-        <PresetsWall
-          heading="Looks"
-          subheading="Gallery of motion recipes — open any card to generate on-page"
-        />
-      </div>
-
-      <section className="border-b border-[var(--border)] px-4 py-14 sm:px-8">
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-6 flex items-end justify-between">
-            <div>
-              <p className="section-label">Shelf</p>
-              <h2 className="mt-2 font-[family-name:var(--font-display)] text-2xl font-semibold">
-                From the community
-              </h2>
-            </div>
-            <Link
-              href="/community"
-              className="text-xs font-semibold text-[var(--brand)] hover:underline"
+        <div className="-mx-1 flex gap-3 overflow-x-auto pb-2 pt-1 snap-x snap-mandatory">
+          {featured.map((item) => (
+            <div
+              key={item.id}
+              className="w-[42vw] max-w-[220px] shrink-0 snap-start sm:w-[180px]"
             >
-              Explore
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            {PRESETS.slice(0, 4).map((p) => (
-              <Link
-                key={p.slug}
-                href={`/effects/${p.slug}`}
-                className="card overflow-hidden p-0"
-              >
-                <div
-                  className="aspect-[4/5]"
-                  style={{ background: p.gradient }}
-                />
-                <div className="p-3">
-                  <p className="text-sm font-semibold tracking-tight">{p.name}</p>
-                  <p className="mt-0.5 text-[11px] text-[var(--fg-dim)]">
-                    {p.tagline}
-                  </p>
-                </div>
-              </Link>
-            ))}
-          </div>
+              <VideoTile item={item} />
+            </div>
+          ))}
+          <Link
+            href="/create"
+            className="video-tile flex w-[42vw] max-w-[220px] shrink-0 snap-start flex-col items-center justify-center gap-2 border-dashed border-[var(--mint)]/30 bg-[var(--card)] p-4 sm:w-[180px] aspect-[9/14]"
+          >
+            <span className="text-2xl text-[var(--mint)]">+</span>
+            <span className="text-center text-xs font-semibold text-[var(--mint)]">
+              Your toy next
+            </span>
+            <span className="text-center text-[10px] text-[var(--fg-dim)]">
+              Upload & generate
+            </span>
+          </Link>
         </div>
       </section>
 
-      <section className="px-4 py-16 sm:px-8">
-        <div className="mx-auto max-w-xl text-center">
-          <p className="section-label mx-auto">Membership</p>
-          <h2 className="mt-3 font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight">
-            Simple credits
-          </h2>
-          <p className="mt-3 text-sm leading-relaxed text-[var(--fg-muted)]">
-            Free to try. Creator from ${creator?.priceMonthly ?? 19}/mo for HD
-            Seedance 2.0 and commercial listings.
-          </p>
-          <Link href="/pricing" className="btn btn-primary mt-8 px-8">
-            View pricing
+      {/* Drop zone — conversion without leaving video context */}
+      <section className="border-b border-[var(--border)] px-4 py-5 sm:px-6">
+        <div className="mx-auto max-w-xl">
+          <HeroUpload />
+        </div>
+      </section>
+
+      {/* Dense viral wall */}
+      <section className="px-3 py-6 sm:px-5">
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-2 px-1">
+          <div>
+            <p className="section-label">Viral presets</p>
+            <h1 className="mt-1 text-xl font-bold tracking-tight sm:text-2xl">
+              {PRESETS.length}+ looks · all play on enter
+            </h1>
+          </div>
+          <Link
+            href="/effects"
+            className="text-xs font-semibold text-[var(--mint)] hover:underline"
+          >
+            All presets →
           </Link>
         </div>
+
+        <div className="columns-2 gap-2 sm:columns-3 sm:gap-3 lg:columns-4 xl:columns-5">
+          {feed.map((item) => (
+            <div key={item.id} className="mb-2 break-inside-avoid sm:mb-3">
+              <VideoTile item={item} />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Bottom convert strip */}
+      <section className="mx-4 mb-8 rounded-2xl border border-[var(--mint)]/25 bg-gradient-to-br from-[var(--mint)]/10 to-transparent p-6 text-center sm:mx-6">
+        <p className="text-sm font-semibold">Ready to animate your shelf?</p>
+        <p className="mt-1 text-xs text-[var(--fg-dim)]">
+          Free tier · ~3 clips · Seedance Fast
+        </p>
+        <Link href="/create" className="btn btn-primary mt-4 px-8">
+          Open Generate
+        </Link>
       </section>
     </div>
   );

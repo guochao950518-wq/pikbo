@@ -6,31 +6,30 @@ import { TOY_TYPES } from "@/lib/toytypes";
 
 export function Footer() {
   return (
-    <footer className="mt-20 border-t border-[var(--border)] bg-white">
-      <div className="container-x py-16">
-        <div className="grid gap-12 md:grid-cols-6">
+    <footer className="mt-10 border-t border-[var(--border)] bg-[var(--bg-soft)]">
+      <div className="container-x py-12">
+        <div className="grid gap-10 md:grid-cols-6">
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2 font-bold">
               <span
-                className="grid h-9 w-9 place-items-center rounded-full text-xs font-black text-white"
-                style={{ background: "var(--grad)" }}
+                className="grid h-8 w-8 place-items-center rounded-lg text-xs font-black text-black"
+                style={{ background: "var(--mint)" }}
               >
                 P
               </span>
-              <span className="font-[family-name:var(--font-display)] text-xl font-semibold tracking-tight">
-                {site.name}
-              </span>
+              {site.name}
             </div>
-            <p className="mt-4 max-w-xs text-sm leading-relaxed text-[var(--fg-muted)]">
-              {site.tagline}. Premium motion for designer toys you already own.
+            <p className="mt-3 max-w-xs text-sm text-[var(--fg-dim)]">
+              {site.tagline}. Video-first studio for toys you own.
             </p>
           </div>
-
           <div>
-            <h4 className="section-label mb-4">Effects</h4>
-            <ul className="space-y-2.5 text-sm text-[var(--fg-muted)]">
+            <h4 className="mb-3 text-xs font-bold uppercase tracking-wider text-[var(--fg-dim)]">
+              Effects
+            </h4>
+            <ul className="space-y-2 text-sm text-[var(--fg-muted)]">
               <li>
-                <Link href="/effects" className="hover:text-[var(--fg)]">
+                <Link href="/effects" className="hover:text-[var(--mint)]">
                   All presets
                 </Link>
               </li>
@@ -38,7 +37,7 @@ export function Footer() {
                 <li key={c.id}>
                   <Link
                     href={`/effects#${c.id}`}
-                    className="hover:text-[var(--fg)]"
+                    className="hover:text-[var(--mint)]"
                   >
                     {c.label}
                   </Link>
@@ -46,56 +45,38 @@ export function Footer() {
               ))}
             </ul>
           </div>
-
           <div>
-            <h4 className="section-label mb-4">Product</h4>
-            <ul className="space-y-2.5 text-sm text-[var(--fg-muted)]">
-              <li>
-                <Link href="/create" className="hover:text-[var(--fg)]">
-                  Create
-                </Link>
-              </li>
-              <li>
-                <Link href="/pricing" className="hover:text-[var(--fg)]">
-                  Pricing
-                </Link>
-              </li>
-              <li>
-                <Link href="/supercomputer" className="hover:text-[var(--fg)]">
-                  Batch
-                </Link>
-              </li>
-              <li>
-                <Link href="/library" className="hover:text-[var(--fg)]">
-                  Library
-                </Link>
-              </li>
-              <li>
-                <Link href="/guides" className="hover:text-[var(--fg)]">
-                  Guides
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy" className="hover:text-[var(--fg)]">
-                  Privacy
-                </Link>
-              </li>
-              <li>
-                <Link href="/terms" className="hover:text-[var(--fg)]">
-                  Terms
-                </Link>
-              </li>
+            <h4 className="mb-3 text-xs font-bold uppercase tracking-wider text-[var(--fg-dim)]">
+              Product
+            </h4>
+            <ul className="space-y-2 text-sm text-[var(--fg-muted)]">
+              {[
+                ["/create", "Generate"],
+                ["/supercomputer", "Batch"],
+                ["/library", "Library"],
+                ["/pricing", "Pricing"],
+                ["/guides", "Guides"],
+                ["/privacy", "Privacy"],
+                ["/terms", "Terms"],
+              ].map(([h, l]) => (
+                <li key={h}>
+                  <Link href={h} className="hover:text-[var(--mint)]">
+                    {l}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
-
           <div>
-            <h4 className="section-label mb-4">For</h4>
-            <ul className="space-y-2.5 text-sm text-[var(--fg-muted)]">
+            <h4 className="mb-3 text-xs font-bold uppercase tracking-wider text-[var(--fg-dim)]">
+              For
+            </h4>
+            <ul className="space-y-2 text-sm text-[var(--fg-muted)]">
               {USE_CASES.map((u) => (
                 <li key={u.slug}>
                   <Link
                     href={`/for/${u.slug}`}
-                    className="hover:text-[var(--fg)]"
+                    className="hover:text-[var(--mint)]"
                   >
                     {u.label}
                   </Link>
@@ -103,15 +84,16 @@ export function Footer() {
               ))}
             </ul>
           </div>
-
           <div>
-            <h4 className="section-label mb-4">Toys</h4>
-            <ul className="space-y-2.5 text-sm text-[var(--fg-muted)]">
+            <h4 className="mb-3 text-xs font-bold uppercase tracking-wider text-[var(--fg-dim)]">
+              Toys
+            </h4>
+            <ul className="space-y-2 text-sm text-[var(--fg-muted)]">
               {TOY_TYPES.map((t) => (
                 <li key={t.slug}>
                   <Link
                     href={`/toys/${t.slug}`}
-                    className="hover:text-[var(--fg)]"
+                    className="hover:text-[var(--mint)]"
                   >
                     {t.label}
                   </Link>
@@ -120,12 +102,8 @@ export function Footer() {
             </ul>
           </div>
         </div>
-
-        <div className="mt-14 flex flex-col gap-2 border-t border-[var(--border)] pt-8 text-xs text-[var(--fg-dim)] sm:flex-row sm:items-center sm:justify-between">
-          <p>
-            © {new Date().getFullYear()} {site.name}. Animate toys you own.
-          </p>
-          <p className="tracking-wide">{site.domain}</p>
+        <div className="mt-10 border-t border-[var(--border)] pt-6 text-xs text-[var(--fg-dim)]">
+          © {new Date().getFullYear()} {site.name} · {site.domain}
         </div>
       </div>
     </footer>
