@@ -47,6 +47,12 @@ export default function Home() {
               Generate free
             </Link>
             <Link
+              href="/pricing"
+              className="btn btn-ghost !px-3 !py-1.5 text-xs"
+            >
+              Pricing
+            </Link>
+            <Link
               href="/supercomputer"
               className="btn btn-ghost !px-3 !py-1.5 text-xs"
             >

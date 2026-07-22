@@ -6,6 +6,7 @@ import { loadFavorites, toggleFavorite } from "@/lib/favorites";
 import { pushHistory } from "@/lib/history";
 import { SAMPLE_TOYS, sampleToDataUrl } from "@/lib/samples";
 import { PRESETS } from "@/lib/presets";
+import { viralName } from "@/lib/viralNames";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
 import type { PublicSession } from "@/lib/session";
 import { site } from "@/lib/site";
@@ -88,12 +89,15 @@ export function CreateStudio({
   const filteredPresets = useMemo(() => {
     const q = presetFilter.trim().toLowerCase();
     if (!q) return PRESETS;
-    return PRESETS.filter(
-      (p) =>
+    return PRESETS.filter((p) => {
+      const viral = viralName(p.slug, p.name).toLowerCase();
+      return (
         p.name.toLowerCase().includes(q) ||
+        viral.includes(q) ||
         p.tagline.toLowerCase().includes(q) ||
         p.category.includes(q)
-    );
+      );
+    });
   }, [presetFilter]);
 
   function selectEffect(slug: string) {
@@ -165,6 +169,11 @@ export function CreateStudio({
       const data = (await res.json()) as PublicSession;
       setSession(data);
       setWatermark(data.watermark);
+      // Free path must land on Fast (HF: free model chip is the default)
+      if (data.plan === "free" || data.watermark) {
+        setModelId("seedance-fast");
+        setResolution("480p");
+      }
     } catch {
       // ignore
     }
@@ -397,9 +406,13 @@ export function CreateStudio({
           </button>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="hidden text-[10px] font-bold uppercase tracking-wider text-[var(--fg-dim)] sm:inline">
+            Model
+          </span>
           {MODELS.map((m) => {
             const lockedPaid = Boolean(isFree && !m.free);
+            const active = modelId === m.id;
             return (
               <button
                 key={m.id}
@@ -413,19 +426,19 @@ export function CreateStudio({
                   }
                   setModelId(m.id);
                 }}
-                className={`rounded-xl border px-3 py-1.5 text-left text-xs transition-colors ${
-                  modelId === m.id
-                    ? "border-[var(--brand)] bg-[var(--grad-soft)]"
-                    : "border-[var(--border)] bg-[var(--card)] hover:border-[var(--fg-dim)]"
+                className={`rounded-full border px-3.5 py-1.5 text-left text-xs transition-colors ${
+                  active
+                    ? "border-[var(--mint)] bg-[var(--mint)]/15 text-[var(--mint)] ring-1 ring-[var(--mint)]/40"
+                    : "border-[var(--border)] bg-[var(--card)] text-[var(--fg)] hover:border-[var(--fg-dim)]"
                 } ${lockedPaid ? "opacity-70" : ""}`}
               >
-                <div className="font-semibold">
+                <span className="font-semibold">
                   {m.label}
-                  {lockedPaid ? " 🔒" : ""}
-                </div>
-                <div className="text-[10px] text-[var(--fg-dim)]">
-                  {m.vendor} · {m.blurb}
-                </div>
+                  {lockedPaid ? " · paid" : m.free ? " · free" : ""}
+                </span>
+                <span className="ml-1.5 hidden text-[10px] text-[var(--fg-dim)] sm:inline">
+                  {m.vendor}
+                </span>
               </button>
             );
           })}
@@ -526,7 +539,9 @@ export function CreateStudio({
                     {p.emoji}
                   </span>
                   <span className="leading-tight">
-                    <span className="block font-medium">{p.name}</span>
+                    <span className="block text-[11px] font-bold tracking-wide">
+                      {viralName(p.slug, p.name)}
+                    </span>
                     <span className="block text-[10px] text-[var(--fg-dim)]">
                       {p.duration}s · {p.aspectRatio}
                     </span>

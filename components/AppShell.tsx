@@ -99,10 +99,33 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             >
               Generate
             </Link>
+            <Link
+              href="/pricing"
+              className="mt-2 block text-center text-[11px] font-semibold text-[var(--mint)] hover:underline"
+            >
+              Pricing & plans
+            </Link>
           </div>
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
+          {/* Desktop top bar — pricing discoverability (HF has dedicated pricing) */}
+          <header className="sticky top-0 z-40 hidden h-11 items-center justify-end gap-3 border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--bg)_88%,transparent)] px-4 backdrop-blur-md lg:flex">
+            <CreditsBadge />
+            <Link
+              href="/pricing"
+              className="text-xs font-semibold text-[var(--fg-muted)] hover:text-[var(--mint)]"
+            >
+              Pricing
+            </Link>
+            <Link
+              href="/create"
+              className="btn btn-primary !px-3 !py-1.5 text-xs"
+            >
+              Generate
+            </Link>
+          </header>
+
           <header className="sticky top-0 z-40 flex h-12 items-center justify-between border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--bg)_88%,transparent)] px-3 backdrop-blur-md lg:hidden">
             <Link href="/" className="flex items-center gap-2 text-sm font-bold">
               <span
@@ -115,6 +138,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </Link>
             <div className="flex items-center gap-2">
               <CreditsBadge />
+              <Link
+                href="/pricing"
+                className="text-[11px] font-semibold text-[var(--mint)]"
+              >
+                Plans
+              </Link>
               <Link
                 href="/create"
                 className="btn btn-primary !px-3 !py-1.5 text-xs"
