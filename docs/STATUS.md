@@ -22,7 +22,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | T10 | Boss one-command + Telegram bot | Grok | done | main | DISPATCH + tools/telegram_dispatch_bot.py |
 | T11 | Higgsfield-class shell + Generate | Grok | doing | main | AppShell + CreateStudio + library/profile/community |
 | T12 | Home model shelf + presets wall polish | GPT | todo | — | COMPETITOR_SPEC home |
-| T13 | Presets/community density | Claude | todo | — | COMPETITOR_SPEC |
+| T13 | Presets/community density | Claude | done | agent/claude/clone-presets | PresetsWall (generate-prefilled) on /effects; reusable for home. Real community needs FAL_KEY |
 | T8 | Batch generate for Shop plan | — | todo | — | After auth/credits DB |
 | T9 | Effect preset expansion (studio + SEO landing) | Claude | done | agent/claude/seo-presets | +3 effects |
 | T11 | Guides: informational long-tail content | Claude | done | agent/claude/guides | 3 how-to/tips/ideas articles at /guides; Article+FAQ JSON-LD; cross-linked to effects |
