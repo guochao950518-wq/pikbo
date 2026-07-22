@@ -10,17 +10,20 @@ import { CommandPalette } from "@/components/CommandPalette";
 import { ToastProvider } from "@/components/Toast";
 import { StatusBadge } from "@/components/StatusBadge";
 
-/** Suite nav (big-app structure) + Pikbo candy brand (own style). */
+/** Primary product path first; suite extras below. */
 const NAV = [
   { href: "/", label: "Home", icon: "⌂" },
   { href: "/create", label: "Generate", icon: "✦" },
-  { href: "/apps", label: "Apps", icon: "▦" },
-  { href: "/models", label: "Models", icon: "◎" },
-  { href: "/cinema", label: "Cinema", icon: "🎞" },
   { href: "/effects", label: "Presets", icon: "🧸" },
   { href: "/library", label: "Library", icon: "▢" },
+  { href: "/image", label: "Stills", icon: "🖼" },
+  { href: "/cinema", label: "Cinema", icon: "🎞" },
+  { href: "/supercomputer", label: "Batch", icon: "⚡" },
+  { href: "/guides", label: "Guides", icon: "📖" },
+  { href: "/apps", label: "Apps", icon: "▦" },
+  { href: "/models", label: "Models", icon: "◎" },
+  { href: "/explore", label: "Explore", icon: "✧" },
   { href: "/community", label: "Community", icon: "◉" },
-  { href: "/explore", label: "Explore", icon: "✦" },
   { href: "/pricing", label: "Pricing", icon: "$" },
   { href: "/profile", label: "Profile", icon: "○" },
   { href: "/settings", label: "Settings", icon: "⚙" },

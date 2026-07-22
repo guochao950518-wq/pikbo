@@ -4,8 +4,10 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
 import { pushHistory } from "@/lib/history";
+import { SAMPLE_TOYS, sampleToDataUrl } from "@/lib/samples";
 import type { PublicSession } from "@/lib/session";
 import { site } from "@/lib/site";
+import { useToast } from "@/components/Toast";
 
 type Status = "idle" | "generating" | "done" | "error";
 
@@ -32,6 +34,8 @@ export function LandingToolPanel({
   const [watermark, setWatermark] = useState(true);
   const [session, setSession] = useState<PublicSession | null>(null);
   const [elapsed, setElapsed] = useState(0);
+  const [loadingSample, setLoadingSample] = useState(false);
+  const toast = useToast();
 
   const refreshSession = useCallback(async () => {
     try {
@@ -47,6 +51,22 @@ export function LandingToolPanel({
   useEffect(() => {
     const t = window.setTimeout(() => {
       void refreshSession();
+      // Still studio → effect page handoff
+      try {
+        const pending = sessionStorage.getItem("pikbo_pending_still");
+        if (pending?.startsWith("http") || pending?.startsWith("data:")) {
+          sessionStorage.removeItem("pikbo_pending_still");
+          if (pending.startsWith("data:")) {
+            setImage(pending);
+          } else {
+            sampleToDataUrl(pending)
+              .then((data) => setImage(data))
+              .catch(() => undefined);
+          }
+        }
+      } catch {
+        // ignore
+      }
     }, 0);
     return () => window.clearTimeout(t);
   }, [refreshSession]);
@@ -77,6 +97,21 @@ export function LandingToolPanel({
       setStatus("idle");
     };
     reader.readAsDataURL(file);
+  }
+
+  async function loadSampleStill(path: string) {
+    setLoadingSample(true);
+    setError(null);
+    try {
+      const data = await sampleToDataUrl(path);
+      setImage(data);
+      setVideoUrl(null);
+      setStatus("idle");
+    } catch {
+      setError("Could not load sample photo");
+    } finally {
+      setLoadingSample(false);
+    }
   }
 
   async function generate() {
@@ -125,6 +160,7 @@ export function LandingToolPanel({
         watermark: Boolean(data.watermark),
         demo: Boolean(data.demo),
       });
+      toast(data.demo ? "Demo clip ready" : "Clip ready · saved to Library");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Generation failed");
       setStatus("error");
@@ -133,25 +169,52 @@ export function LandingToolPanel({
   }
 
   const busy = status === "generating";
+  const progress = busy ? Math.min(95, 12 + elapsed * 4) : status === "done" ? 100 : 0;
+
+  // Prefer samples tagged for this effect, else all
+  const samples = [
+    ...SAMPLE_TOYS.filter((s) => s.effect === effectSlug),
+    ...SAMPLE_TOYS.filter((s) => s.effect !== effectSlug),
+  ].slice(0, 4);
 
   return (
     <div className="card overflow-hidden p-0">
       <div className="border-b border-[var(--border)] bg-[var(--bg-soft)] px-4 py-3">
-        <p className="text-xs font-bold uppercase tracking-wider text-[var(--fg-dim)]">
-          Try free · {effectName}
-        </p>
-        <p className="mt-0.5 text-sm text-[var(--fg-muted)]">
-          Upload one photo → get a clip on this page (no extra hop).
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wider text-[var(--fg-dim)]">
+              Try free · {effectName}
+            </p>
+            <p className="mt-0.5 text-sm text-[var(--fg-muted)]">
+              Upload one photo → clip on this page (no extra hop).
+            </p>
+          </div>
           {session && (
-            <span className="ml-2 text-[var(--mint)]">
-              {session.credits} credits
-            </span>
+            <div className="text-right text-xs">
+              <p className="font-semibold text-[var(--mint)]">
+                {session.credits} credits
+              </p>
+              <p className="text-[var(--fg-dim)]">
+                ~{Math.floor(session.credits / CREDITS_PER_VIDEO)} clips ·{" "}
+                {session.planName}
+              </p>
+            </div>
           )}
-        </p>
+        </div>
+        {busy && (
+          <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-black/30">
+            <div
+              className="h-full rounded-full transition-all duration-300"
+              style={{
+                width: `${progress}%`,
+                background: "var(--grad)",
+              }}
+            />
+          </div>
+        )}
       </div>
 
       <div className="grid gap-0 lg:grid-cols-2">
-        {/* Upload / controls */}
         <div className="space-y-4 p-5">
           <div
             onDragOver={(e) => e.preventDefault()}
@@ -162,12 +225,25 @@ export function LandingToolPanel({
             className="relative grid min-h-[200px] place-items-center rounded-2xl border border-dashed border-[var(--border)] bg-[var(--bg)] p-4"
           >
             {image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={image}
-                alt="Your toy"
-                className="max-h-56 rounded-lg object-contain"
-              />
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={image}
+                  alt="Your toy"
+                  className="max-h-56 rounded-lg object-contain"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setImage(null);
+                    setVideoUrl(null);
+                    setStatus("idle");
+                  }}
+                  className="absolute right-3 top-3 rounded-lg border border-[var(--border)] bg-[var(--card)] px-2 py-1 text-[10px] text-[var(--fg-muted)] hover:text-[var(--fg)]"
+                >
+                  Clear
+                </button>
+              </>
             ) : (
               <div className="text-center text-sm text-[var(--fg-dim)]">
                 <p className="text-3xl">🧸</p>
@@ -177,12 +253,33 @@ export function LandingToolPanel({
                 <p className="mt-1 text-xs">PNG / JPG · toys you own</p>
               </div>
             )}
-            <input
-              type="file"
-              accept="image/*"
-              className="absolute inset-0 cursor-pointer opacity-0"
-              onChange={(e) => loadFile(e.target.files?.[0])}
-            />
+            {!image && (
+              <input
+                type="file"
+                accept="image/*"
+                className="absolute inset-0 cursor-pointer opacity-0"
+                onChange={(e) => loadFile(e.target.files?.[0])}
+              />
+            )}
+          </div>
+
+          <div>
+            <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-[var(--fg-dim)]">
+              Or try a sample still
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {samples.map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  disabled={loadingSample || busy}
+                  onClick={() => void loadSampleStill(s.path)}
+                  className="rounded-lg border border-[var(--border)] px-2 py-1 text-[10px] text-[var(--fg-muted)] hover:border-[var(--brand)] disabled:opacity-50"
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="flex flex-wrap gap-2 text-[10px] text-[var(--fg-dim)]">
@@ -198,6 +295,11 @@ export function LandingToolPanel({
             <span className="rounded-md border border-[var(--border)] px-2 py-1">
               {CREDITS_PER_VIDEO} credits
             </span>
+            {(session?.plan === "free" || session?.watermark) && (
+              <span className="rounded-md border border-[var(--border)] px-2 py-1">
+                480p · mark
+              </span>
+            )}
           </div>
 
           <button
@@ -223,19 +325,33 @@ export function LandingToolPanel({
           )}
 
           <p className="text-center text-[10px] text-[var(--fg-dim)]">
-            Want full controls?{" "}
+            Duration / seed / batch?{" "}
             <Link
               href={`/create?effect=${effectSlug}`}
               className="text-[var(--mint)] hover:underline"
             >
-              Open full studio →
+              Full studio →
             </Link>
           </p>
         </div>
 
-        {/* Result */}
         <div className="relative min-h-[220px] border-t border-[var(--border)] bg-black/40 lg:border-t-0 lg:border-l">
-          {videoUrl ? (
+          {busy && (
+            <div className="grid h-full min-h-[220px] place-items-center p-8 text-center">
+              <div>
+                <div
+                  className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-white/20 border-t-[var(--brand)]"
+                />
+                <p className="mt-4 text-sm text-[var(--fg-muted)]">
+                  Seedance is rendering…
+                </p>
+                <p className="mt-1 text-xs text-[var(--fg-dim)]">
+                  Usually 30–90s · {elapsed}s elapsed
+                </p>
+              </div>
+            </div>
+          )}
+          {!busy && videoUrl ? (
             <div className="relative p-4">
               <video
                 src={videoUrl}
@@ -265,10 +381,17 @@ export function LandingToolPanel({
                   download={`pikbo-${effectSlug}.mp4`}
                   target="_blank"
                   rel="noreferrer"
-                  className="btn btn-ghost px-3 py-1.5 text-xs"
+                  className="btn btn-primary px-3 py-1.5 text-xs"
                 >
                   Download
                 </a>
+                <button
+                  type="button"
+                  onClick={() => void generate()}
+                  className="btn btn-ghost px-3 py-1.5 text-xs"
+                >
+                  Regenerate
+                </button>
                 <Link
                   href="/library"
                   className="btn btn-ghost px-3 py-1.5 text-xs"
@@ -277,17 +400,18 @@ export function LandingToolPanel({
                 </Link>
               </div>
             </div>
-          ) : (
+          ) : null}
+          {!busy && !videoUrl ? (
             <div className="grid h-full min-h-[220px] place-items-center p-8 text-center text-sm text-[var(--fg-dim)]">
               <div>
                 <p className="text-2xl">▶</p>
                 <p className="mt-2">Your clip lands here</p>
                 <p className="mt-1 text-xs">
-                  Same page · SEO landing + real tool (V2)
+                  Tool + landing on one page — ready for search & convert
                 </p>
               </div>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </div>

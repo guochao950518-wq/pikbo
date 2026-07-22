@@ -18,11 +18,12 @@ export const metadata: Metadata = {
   },
   description: site.description,
   keywords: [
-    "ai video generator",
-    "image to video",
-    "seedance",
-    "designer toy video",
-    "figure video maker",
+    "designer toy video maker",
+    "figure spin video",
+    "blind box video from photo",
+    "etsy listing video toys",
+    "image to video seedance",
+    "collectible product video",
   ],
   openGraph: {
     title: `${site.name} — AI Video Studio`,

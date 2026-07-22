@@ -42,9 +42,26 @@ export default function Home() {
               </Link>
             </div>
             <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-xs text-[var(--fg-dim)]">
-              <span>✓ 3 free clips</span>
+              <span>✓ ~3 free clips / month</span>
               <span>✓ No card to try</span>
-              <span>✓ Free exports show a Pikbo watermark</span>
+              <span>✓ Free plan: 480p + on-player mark</span>
+            </div>
+            <div className="mt-6 flex flex-wrap gap-2">
+              <Link href="/effects/360-spin-showcase" className="chip hover:border-[var(--brand)]">
+                🌀 360° spin
+              </Link>
+              <Link href="/effects/blind-box-unboxing" className="chip hover:border-[var(--brand)]">
+                📦 Blind box
+              </Link>
+              <Link href="/for/etsy-listing-videos" className="chip hover:border-[var(--brand)]">
+                🛍️ Etsy listings
+              </Link>
+              <Link href="/for/tiktok-shop-product-videos" className="chip hover:border-[var(--brand)]">
+                🎵 TikTok Shop
+              </Link>
+              <Link href="/guides" className="chip hover:border-[var(--brand)]">
+                📖 Guides
+              </Link>
             </div>
             <div className="mt-10 grid max-w-lg grid-cols-3 border-y border-white/10 py-4">
               <div>
@@ -123,10 +140,10 @@ export default function Home() {
               Supercomputer
             </p>
             <h2 className="mt-2 text-2xl font-bold group-hover:text-[var(--lime)]">
-              Agents & automation
+              Batch generate
             </h2>
             <p className="mt-2 text-sm text-[var(--fg-muted)]">
-              Multi-step creative jobs surface (roadmap live as shell).
+              Queue multiple toy photos → sequential Seedance clips for shops.
             </p>
           </Link>
         </div>
@@ -135,7 +152,7 @@ export default function Home() {
       <div className="border-b border-[var(--border)]">
         <PresetsWall
           heading="Viral presets"
-          subheading="One tap → Generate with motion recipe loaded"
+          subheading="One tap → tool page with generate on the spot"
         />
       </div>
 
@@ -152,7 +169,7 @@ export default function Home() {
             {PRESETS.slice(0, 4).map((p, i) => (
               <Link
                 key={p.slug}
-                href={`/create?effect=${p.slug}`}
+                href={`/effects/${p.slug}`}
                 className="overflow-hidden rounded-xl border border-[var(--border)]"
               >
                 <div
