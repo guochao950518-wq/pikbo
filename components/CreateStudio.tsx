@@ -41,14 +41,46 @@ export function CreateStudio({ initialEffect }: { initialEffect?: string }) {
   }, []);
 
   useEffect(() => {
-    refreshSession();
-    if (typeof window !== "undefined") {
+    let cancelled = false;
+    async function boot() {
+      await refreshSession();
+      if (typeof window === "undefined") return;
       const params = new URLSearchParams(window.location.search);
+      const checkoutId = params.get("session_id");
+      if (checkoutId?.startsWith("cs_")) {
+        try {
+          const res = await fetch("/api/checkout/confirm", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ session_id: checkoutId }),
+          });
+          const data = await res.json();
+          if (!cancelled && res.ok && data.session) {
+            setSession(data.session);
+            setWatermark(data.session.watermark);
+            setUpgradedBanner(true);
+          } else if (!cancelled && params.get("upgraded") === "1") {
+            setUpgradedBanner(true);
+            await refreshSession();
+          }
+        } catch {
+          if (!cancelled) await refreshSession();
+        }
+        // Clean query without reload
+        const url = new URL(window.location.href);
+        url.searchParams.delete("session_id");
+        window.history.replaceState({}, "", url.pathname + url.search);
+        return;
+      }
       if (params.get("upgraded") === "1") {
-        setUpgradedBanner(true);
-        refreshSession();
+        if (!cancelled) setUpgradedBanner(true);
+        await refreshSession();
       }
     }
+    boot();
+    return () => {
+      cancelled = true;
+    };
   }, [refreshSession]);
 
   function onFile(e: React.ChangeEvent<HTMLInputElement>) {

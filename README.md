@@ -48,12 +48,20 @@ Free tier always shows an on-player watermark; paid plans remove it.
 | `app/create` + `components/CreateStudio.tsx` | Upload → effect → generate |
 | `app/sitemap.ts`, `app/robots.ts` | SEO plumbing |
 
+## Deploy checklist
+1. Host on Vercel (or any Node host) from this repo.
+2. Env: `SESSION_SECRET`, `FAL_KEY`, Stripe keys (see `.env.example`).
+3. Stripe webhook → `https://YOUR_DOMAIN/api/webhooks/stripe`  
+   Events: `checkout.session.completed`, `invoice.paid`, `customer.subscription.deleted`, `customer.subscription.updated`.
+4. Create products/prices for Creator ($19) and Shop ($49); paste Price IDs into env.
+5. Point domain (`pikbo.ai`) DNS to host.
+
 ## Roadmap
 1. ~~Credits + free watermark + pricing checkout path~~ (done — cookie session)
-2. **Auth + credits DB** (Supabase) — multi-device balance, history
-3. **Stripe webhooks** — renew monthly allotment, cancel plan
+2. ~~Stripe webhooks + checkout confirm~~ (done — file entitlements)
+3. **Auth + credits DB** (Supabase) — multi-device balance, history
 4. **Server-side video watermark** (ffmpeg) for free downloads
-5. **Keyword expansion** — more `/effects/*` pages from long-tail list
+5. **Real demo clips** on homepage (need fal renders)
 6. Vertical ads / affiliate (after free traffic is stable)
 
 ## Multi-agent workflow (Grok · GPT · Claude)

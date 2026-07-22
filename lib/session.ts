@@ -1,5 +1,6 @@
 import { createHmac, randomUUID, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
+import { getEntitlement } from "@/lib/entitlements";
 import { CREDITS_PER_VIDEO, getPlan, type PlanId } from "@/lib/pricing";
 
 export const SESSION_COOKIE = "pikbo_s";
@@ -43,7 +44,9 @@ export function encodeSession(session: UserSession): string {
   return `${payloadB64}.${sign(payloadB64)}`;
 }
 
-export function decodeSession(raw: string | undefined | null): UserSession | null {
+export function decodeSession(
+  raw: string | undefined | null
+): UserSession | null {
   if (!raw) return null;
   const [payloadB64, sig] = raw.split(".");
   if (!payloadB64 || !sig) return null;
@@ -76,7 +79,7 @@ function newGuest(): UserSession {
   };
 }
 
-/** Refresh free monthly allowance; paid plans keep remaining until Stripe renews. */
+/** Refresh free monthly allowance when the calendar month rolls. */
 export function refreshPeriod(session: UserSession): UserSession {
   const key = currentPeriodKey();
   if (session.periodKey === key) return session;
@@ -90,13 +93,65 @@ export function refreshPeriod(session: UserSession): UserSession {
     };
   }
 
-  // Paid: reset to plan allotment on calendar month (placeholder until Stripe webhook)
+  // Paid: calendar rollover is a fallback; Stripe invoice.paid is preferred.
   const plan = getPlan(session.plan);
   return {
     ...session,
     periodKey: key,
     credits: plan.credits,
   };
+}
+
+/**
+ * Overlay durable entitlements (from Stripe webhooks / confirm).
+ * Plan comes from entitlements; credits stay on the cookie unless
+ * entitlement.periodKey is newer (checkout / renew reset).
+ */
+export async function applyEntitlement(
+  session: UserSession
+): Promise<UserSession> {
+  const ent = await getEntitlement(session.id);
+  if (!ent) return session;
+
+  if (ent.status === "canceled" || ent.plan === "free") {
+    if (session.plan === "free") return session;
+    return {
+      ...session,
+      plan: "free",
+    };
+  }
+
+  if (ent.status === "active" || ent.status === "past_due") {
+    const plan = getPlan(ent.plan);
+    const periodReset =
+      ent.periodKey && ent.periodKey !== session.periodKey
+        ? {
+            periodKey: ent.periodKey,
+            credits:
+              typeof ent.credits === "number"
+                ? ent.credits
+                : plan.credits,
+          }
+        : null;
+
+    // First time cookie is still free but entitlement is paid
+    const upgradeFromFree =
+      session.plan === "free" && plan.id !== "free"
+        ? {
+            credits:
+              typeof ent.credits === "number" ? ent.credits : plan.credits,
+            periodKey: ent.periodKey || session.periodKey,
+          }
+        : null;
+
+    return {
+      ...session,
+      plan: plan.id,
+      ...(periodReset || upgradeFromFree || {}),
+    };
+  }
+
+  return session;
 }
 
 export function publicSession(session: UserSession): PublicSession {
@@ -113,7 +168,10 @@ export function publicSession(session: UserSession): PublicSession {
 export async function getOrCreateSession(): Promise<UserSession> {
   const jar = await cookies();
   const existing = decodeSession(jar.get(SESSION_COOKIE)?.value);
-  if (existing) return refreshPeriod(existing);
+  if (existing) {
+    const refreshed = refreshPeriod(existing);
+    return applyEntitlement(refreshed);
+  }
   return newGuest();
 }
 
@@ -121,7 +179,7 @@ export async function readSession(): Promise<UserSession | null> {
   const jar = await cookies();
   const existing = decodeSession(jar.get(SESSION_COOKIE)?.value);
   if (!existing) return null;
-  return refreshPeriod(existing);
+  return applyEntitlement(refreshPeriod(existing));
 }
 
 export async function saveSession(session: UserSession): Promise<void> {

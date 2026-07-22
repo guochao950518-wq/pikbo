@@ -1,14 +1,21 @@
 import { NextResponse } from "next/server";
+import { upsertEntitlement } from "@/lib/entitlements";
 import { getPlan, type PlanId } from "@/lib/pricing";
-import { ensureSession, publicSession, saveSession, setPlan } from "@/lib/session";
+import {
+  currentPeriodKey,
+  ensureSession,
+  publicSession,
+  saveSession,
+  setPlan,
+} from "@/lib/session";
 import { site } from "@/lib/site";
+import { creditsForPlan } from "@/lib/stripe";
 
 export const runtime = "nodejs";
 
 /**
  * Start a Stripe Checkout session for Creator / Shop.
- * When Stripe is not configured, accepts ?dev=1 (or body.dev) in non-production
- * to simulate an upgrade so the product flow can be tested end-to-end.
+ * Without Stripe keys, non-production can still "dev upgrade".
  */
 export async function POST(req: Request) {
   let body: { plan?: string; dev?: boolean } = {};
@@ -46,11 +53,16 @@ export async function POST(req: Request) {
 
       const params = new URLSearchParams();
       params.set("mode", "subscription");
-      params.set("success_url", `${origin}/create?upgraded=1&plan=${plan.id}`);
+      params.set(
+        "success_url",
+        `${origin}/create?upgraded=1&plan=${plan.id}&session_id={CHECKOUT_SESSION_ID}`
+      );
       params.set("cancel_url", `${origin}/pricing?canceled=1`);
       params.set("client_reference_id", session.id);
       params.set("metadata[pikbo_session_id]", session.id);
       params.set("metadata[plan]", plan.id);
+      params.set("subscription_data[metadata][pikbo_session_id]", session.id);
+      params.set("subscription_data[metadata][plan]", plan.id);
       params.set("line_items[0][price]", priceId);
       params.set("line_items[0][quantity]", "1");
       params.set("allow_promotion_codes", "true");
@@ -64,7 +76,11 @@ export async function POST(req: Request) {
         body: params.toString(),
       });
 
-      const data = (await res.json()) as { id?: string; url?: string; error?: { message?: string } };
+      const data = (await res.json()) as {
+        id?: string;
+        url?: string;
+        error?: { message?: string };
+      };
       if (!res.ok || !data.url) {
         return NextResponse.json(
           { error: data.error?.message || "Stripe checkout failed" },
@@ -90,6 +106,14 @@ export async function POST(req: Request) {
   if (allowDev) {
     const upgraded = setPlan(session, plan.id, { resetCredits: true });
     await saveSession(upgraded);
+    await upsertEntitlement({
+      sessionId: upgraded.id,
+      plan: plan.id,
+      credits: creditsForPlan(plan.id),
+      periodKey: currentPeriodKey(),
+      status: "active",
+      updatedAt: new Date().toISOString(),
+    });
     return NextResponse.json({
       url: `/create?upgraded=1&plan=${plan.id}`,
       provider: "dev",

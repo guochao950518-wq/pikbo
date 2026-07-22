@@ -33,7 +33,9 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 !.env.example
-!.env.example
+
+# local billing entitlements (runtime data)
+/data/entitlements.json
 
 # vercel
 .vercel

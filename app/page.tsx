@@ -30,16 +30,80 @@ export default function Home() {
             No filming. No rig. Free clips include a small watermark.
           </p>
 
-          {/* preview tiles */}
-          <div className="mt-14 grid grid-cols-2 gap-4 sm:grid-cols-4">
-            {PRESETS.slice(0, 4).map((p) => (
-              <div
-                key={p.slug}
-                className="grid aspect-[3/4] place-items-center rounded-2xl text-5xl"
-                style={{ background: p.gradient }}
-              >
-                <span className="drop-shadow-lg">{p.emoji}</span>
+          {/* Photo → Clip pipeline demo */}
+          <div className="mx-auto mt-14 max-w-3xl">
+            <div className="grid items-center gap-3 sm:grid-cols-[1fr_auto_1fr_auto_1fr]">
+              <div className="card overflow-hidden p-0">
+                <div
+                  className="grid aspect-[3/4] place-items-center text-5xl"
+                  style={{ background: PRESETS[0]?.gradient }}
+                >
+                  {PRESETS[0]?.emoji ?? "🧸"}
+                </div>
+                <p className="px-3 py-2 text-xs font-semibold text-[var(--fg-muted)]">
+                  1. Your photo
+                </p>
               </div>
+              <span className="hidden text-2xl text-[var(--fg-dim)] sm:block">
+                →
+              </span>
+              <div className="card overflow-hidden p-0">
+                <div
+                  className="grid aspect-[3/4] place-items-center text-5xl"
+                  style={{ background: PRESETS[1]?.gradient }}
+                >
+                  {PRESETS[1]?.emoji ?? "✨"}
+                </div>
+                <p className="px-3 py-2 text-xs font-semibold text-[var(--fg-muted)]">
+                  2. Pick effect
+                </p>
+              </div>
+              <span className="hidden text-2xl text-[var(--fg-dim)] sm:block">
+                →
+              </span>
+              <div className="card overflow-hidden p-0 ring-2 ring-[var(--mint)]/40">
+                <div
+                  className="relative grid aspect-[3/4] place-items-center text-5xl"
+                  style={{ background: PRESETS[2]?.gradient }}
+                >
+                  {PRESETS[2]?.emoji ?? "🎬"}
+                  <span className="absolute bottom-2 left-2 rounded bg-black/50 px-2 py-0.5 text-[10px] font-bold text-white">
+                    ▶ clip
+                  </span>
+                </div>
+                <p className="px-3 py-2 text-xs font-semibold text-[var(--mint)]">
+                  3. Share / list
+                </p>
+              </div>
+            </div>
+            <p className="mt-4 text-center text-sm text-[var(--fg-dim)]">
+              Built for toys you already own — not generic AI video playgrounds.
+            </p>
+          </div>
+
+          {/* effect chips */}
+          <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {PRESETS.slice(0, 4).map((p) => (
+              <Link
+                key={p.slug}
+                href={`/create?effect=${p.slug}`}
+                className="card group overflow-hidden p-0 transition-transform hover:-translate-y-1"
+              >
+                <div
+                  className="grid aspect-[4/3] place-items-center text-4xl"
+                  style={{ background: p.gradient }}
+                >
+                  <span className="drop-shadow-lg">{p.emoji}</span>
+                </div>
+                <div className="px-3 py-2 text-left">
+                  <p className="text-sm font-semibold group-hover:text-[var(--mint)]">
+                    {p.name}
+                  </p>
+                  <p className="truncate text-xs text-[var(--fg-dim)]">
+                    {p.tagline}
+                  </p>
+                </div>
+              </Link>
             ))}
           </div>
         </div>

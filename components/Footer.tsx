@@ -65,6 +65,16 @@ export function Footer() {
                   How it works
                 </Link>
               </li>
+              <li>
+                <Link href="/privacy" className="hover:text-[var(--fg)]">
+                  Privacy
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms" className="hover:text-[var(--fg)]">
+                  Terms
+                </Link>
+              </li>
             </ul>
           </div>
 
