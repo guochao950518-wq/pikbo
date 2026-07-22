@@ -25,29 +25,31 @@ const STEPS = [
 
 export function HowItWorks() {
   return (
-    <section className="border-b border-[var(--border)] px-4 py-12 sm:px-8">
+    <section className="border-b border-[var(--border)] bg-white px-4 py-16 sm:px-8">
       <div className="mx-auto max-w-6xl">
-        <h2 className="text-center text-2xl font-bold">How it works</h2>
-        <p className="mx-auto mt-2 max-w-md text-center text-sm text-[var(--fg-muted)]">
-          Pro AI suite flow — built for toys you already own
+        <p className="section-label text-center">Process</p>
+        <h2 className="mt-2 text-center font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight">
+          How it works
+        </h2>
+        <p className="mx-auto mt-3 max-w-md text-center text-sm text-[var(--fg-muted)]">
+          Four steps from shelf photo to post-ready clip
         </p>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {STEPS.map((s) => (
-            <div key={s.n} className="card p-5">
-              <span
-                className="grid h-9 w-9 place-items-center rounded-full text-sm font-bold text-white"
-                style={{ background: "var(--grad)" }}
-              >
-                {s.n}
+            <div key={s.n} className="card p-6">
+              <span className="font-[family-name:var(--font-display)] text-3xl font-semibold text-[var(--brand)]">
+                {s.n.padStart(2, "0")}
               </span>
-              <h3 className="mt-3 font-semibold">{s.t}</h3>
-              <p className="mt-1.5 text-sm text-[var(--fg-muted)]">{s.d}</p>
+              <h3 className="mt-4 font-semibold tracking-tight">{s.t}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-[var(--fg-muted)]">
+                {s.d}
+              </p>
             </div>
           ))}
         </div>
-        <div className="mt-8 text-center">
+        <div className="mt-10 text-center">
           <Link href="/create" className="btn btn-primary">
-            Try with your figure →
+            Try with your figure
           </Link>
         </div>
       </div>

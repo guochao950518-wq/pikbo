@@ -31,7 +31,7 @@ function ModelCard({ model }: { model: CatalogModel }) {
 
   return (
     <article
-      className="group min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-[#111016] transition duration-300 hover:-translate-y-1 hover:border-white/25"
+      className="card group min-w-0 overflow-hidden p-0 transition duration-300 hover:-translate-y-1"
       onMouseEnter={play}
       onMouseLeave={pause}
       onFocus={play}
@@ -40,6 +40,7 @@ function ModelCard({ model }: { model: CatalogModel }) {
       <Link href={model.href} className="block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lime)]">
         <div className="relative aspect-[16/10] overflow-hidden bg-black">
           {demo && !failed ? (
+
             <video
               ref={videoRef}
               muted
@@ -61,7 +62,7 @@ function ModelCard({ model }: { model: CatalogModel }) {
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/5 to-transparent" />
           <div className="absolute left-3 top-3 flex gap-2">
             <span className={`rounded-full px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.14em] ${model.live ? "bg-[var(--lime)] text-black" : "bg-black/55 text-white/65 backdrop-blur"}`}>
-              {model.live ? "Integrated" : "Roadmap"}
+              {model.live ? "Live" : "Roadmap"}
             </span>
             {demo && (
               <span className="rounded-full border border-white/15 bg-black/50 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-white/70 backdrop-blur">
@@ -81,7 +82,9 @@ function ModelCard({ model }: { model: CatalogModel }) {
               {model.live ? "Image → toy motion" : "Visible now so teams can plan the stack"}
             </p>
           </div>
-          <span className="shrink-0 text-sm font-bold text-[var(--lime)]">{model.live ? "Use →" : "View →"}</span>
+          <span className="shrink-0 text-sm font-bold text-[var(--brand)]">
+            {model.live ? "Use →" : "View →"}
+          </span>
         </div>
       </Link>
     </article>
@@ -92,17 +95,25 @@ export function HomeModelShelf() {
   const models = MODELS.filter((model) => model.kind === "video").slice(0, 4);
 
   return (
-    <section id="models" className="scroll-mt-20 border-b border-[var(--border)] px-4 py-12 sm:px-8">
+    <section
+      id="models"
+      className="scroll-mt-20 border-b border-[var(--border)] bg-white px-4 py-14 sm:px-8"
+    >
       <div className="mx-auto max-w-6xl">
-        <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--lime)]">Model shelf</p>
-            <h2 className="mt-2 text-2xl font-bold">Video engines for toy content</h2>
+            <p className="section-label">Engines</p>
+            <h2 className="mt-2 font-[family-name:var(--font-display)] text-2xl font-semibold tracking-tight">
+              Video engines
+            </h2>
             <p className="mt-1 max-w-xl text-sm text-[var(--fg-muted)]">
-              Two Seedance adapters are wired. Cached previews stay explicit until provider credentials are configured.
+              Seedance live today. Roadmap slots marked clearly — never faked.
             </p>
           </div>
-          <Link href="/models" className="text-sm font-semibold text-[var(--lime)] hover:text-white">
+          <Link
+            href="/models"
+            className="text-sm font-semibold text-[var(--brand)] hover:underline"
+          >
             Compare models →
           </Link>
         </div>

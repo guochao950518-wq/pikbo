@@ -17,12 +17,12 @@ export function MobileGenerateBar() {
     return null;
   }
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-14 z-30 flex justify-center px-4 lg:hidden">
+    <div className="pointer-events-none fixed inset-x-0 bottom-16 z-30 flex justify-center px-4 md:hidden">
       <Link
         href="/create"
-        className="pointer-events-auto btn btn-primary shadow-xl shadow-pink-500/20 px-6 py-3 text-sm"
+        className="pointer-events-auto btn btn-primary px-7 py-3 text-sm shadow-[var(--shadow-lg)]"
       >
-        🧸 Animate my toy
+        Create a clip
       </Link>
     </div>
   );

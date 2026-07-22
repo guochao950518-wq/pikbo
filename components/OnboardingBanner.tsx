@@ -32,14 +32,13 @@ export function OnboardingBanner() {
   }
 
   return (
-    <div className="border-b border-[var(--brand)]/30 bg-[var(--grad-soft)] px-4 py-3 sm:px-8">
+    <div className="border-b border-[var(--border)] bg-white px-4 py-3 sm:px-8">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3">
         <div className="text-sm">
-          <span className="font-semibold">Welcome to Pikbo</span>
+          <span className="font-semibold">Welcome</span>
           <span className="text-[var(--fg-muted)]">
             {" "}
-            — ① upload a figure photo ② pick a toy preset ③ generate with
-            Seedance
+            — upload a figure · pick a look · generate with Seedance
           </span>
         </div>
         <div className="flex items-center gap-2">

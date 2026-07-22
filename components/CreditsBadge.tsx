@@ -40,8 +40,8 @@ export function CreditsBadge() {
       href="/pricing"
       className={`hidden items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors sm:flex ${
         low
-          ? "border-[var(--brand)]/60 bg-[var(--grad-soft)] text-[var(--fg)]"
-          : "border-[var(--border)] bg-[var(--bg-soft)] text-[var(--fg-muted)] hover:border-[var(--brand)] hover:text-[var(--fg)]"
+          ? "border-[var(--brand)]/40 bg-[var(--grad-soft)] text-[var(--fg)]"
+          : "border-[var(--border)] bg-white text-[var(--fg-muted)] hover:border-[var(--fg)]/20 hover:text-[var(--fg)]"
       }`}
       title={`${session.planName} · ${session.credits} credits · ~${clips} clips`}
     >

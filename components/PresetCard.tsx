@@ -5,24 +5,32 @@ export function PresetCard({ preset }: { preset: Preset }) {
   return (
     <Link
       href={`/effects/${preset.slug}`}
-      className="card group relative overflow-hidden p-5 transition-transform hover:-translate-y-1"
+      className="card group relative overflow-hidden p-0 transition-transform hover:-translate-y-1"
     >
       <div
-        className="mb-4 grid h-32 place-items-center rounded-xl text-5xl"
+        className="grid h-40 place-items-center text-5xl"
         style={{ background: preset.gradient }}
       >
-        <span className="drop-shadow-lg">{preset.emoji}</span>
-      </div>
-      <div className="flex items-center justify-between gap-2">
-        <h3 className="font-semibold">{preset.name}</h3>
-        <span className="chip">
-          {preset.audience === "seller" ? "Sellers" : "Collectors"}
+        <span className="drop-shadow-md transition-transform duration-300 group-hover:scale-110">
+          {preset.emoji}
         </span>
       </div>
-      <p className="mt-1.5 text-sm text-[var(--fg-muted)]">{preset.tagline}</p>
-      <span className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-[var(--mint)] opacity-0 transition-opacity group-hover:opacity-100">
-        Open tool page →
-      </span>
+      <div className="p-4">
+        <div className="flex items-start justify-between gap-2">
+          <h3 className="font-[family-name:var(--font-display)] text-base font-semibold tracking-tight">
+            {preset.name}
+          </h3>
+          <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wider text-[var(--fg-dim)]">
+            {preset.audience === "seller" ? "Sell" : "Flex"}
+          </span>
+        </div>
+        <p className="mt-1.5 text-sm leading-snug text-[var(--fg-muted)]">
+          {preset.tagline}
+        </p>
+        <span className="mt-3 inline-flex text-xs font-semibold text-[var(--brand)] opacity-0 transition-opacity group-hover:opacity-100">
+          Open →
+        </span>
+      </div>
     </Link>
   );
 }

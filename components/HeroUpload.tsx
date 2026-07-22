@@ -80,18 +80,17 @@ export function HeroUpload() {
           setHover(false);
           goWithFile(e.dataTransfer.files?.[0]);
         }}
-        className={`flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed px-4 py-6 transition-colors ${
+        className={`flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed bg-white px-4 py-7 transition-all ${
           hover
-            ? "border-[var(--brand)] bg-[var(--grad-soft)]"
-            : "border-white/15 bg-black/20 hover:border-[var(--brand)]/50"
+            ? "border-[var(--brand)] bg-[var(--grad-soft)] shadow-[var(--shadow-md)]"
+            : "border-[var(--border)] hover:border-[var(--fg)]/25 hover:shadow-[var(--shadow-sm)]"
         }`}
       >
-        <p className="text-2xl">🧸</p>
-        <p className="mt-2 text-sm font-semibold">
-          {busy ? "Opening studio…" : "Drop a toy photo to start"}
+        <p className="text-sm font-semibold tracking-tight">
+          {busy ? "Opening studio…" : "Drop a product photo"}
         </p>
-        <p className="mt-1 text-center text-[11px] text-[var(--fg-dim)]">
-          Goes straight to Generate with your preset · no account needed
+        <p className="mt-1.5 text-center text-[12px] text-[var(--fg-dim)]">
+          Opens Create with your look · no account
         </p>
         <input
           type="file"

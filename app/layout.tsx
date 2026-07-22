@@ -7,14 +7,11 @@ import { Analytics } from "@/components/Analytics";
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} — AI Video Studio`,
+    default: `${site.name} — Designer toy AI video`,
     template: `%s | ${site.name}`,
   },
   description: site.description,
   keywords: [
-    "ai video generator",
-    "image to video",
-    "seedance",
     "designer toy video maker",
     "figure spin video",
     "blind box video from photo",
@@ -23,7 +20,7 @@ export const metadata: Metadata = {
     "collectible product video",
   ],
   openGraph: {
-    title: `${site.name} — AI Video Studio`,
+    title: `${site.name} — Designer toy AI video`,
     description: site.description,
     url: site.url,
     siteName: site.name,
@@ -31,7 +28,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: `${site.name} — AI Video Studio`,
+    title: `${site.name} — Designer toy AI video`,
     description: site.description,
   },
 };
@@ -43,7 +40,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full">
-      <body className="min-h-full bg-[var(--bg)] text-[var(--fg)]">
+      <body className="min-h-full bg-[var(--bg)] font-sans text-[var(--fg)] antialiased">
         <Analytics />
         <AppShell>{children}</AppShell>
       </body>

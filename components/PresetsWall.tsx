@@ -13,10 +13,15 @@ export function PresetsWall({
   subheading?: string;
 }) {
   return (
-    <section className="container-x py-10">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold">{heading}</h2>
-        <p className="mt-1 text-[var(--fg-muted)]">{subheading}</p>
+    <section className="container-x py-14">
+      <div className="mb-8">
+        <p className="section-label">Collection</p>
+        <h2 className="mt-2 font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight">
+          {heading}
+        </h2>
+        <p className="mt-2 max-w-xl text-sm text-[var(--fg-muted)]">
+          {subheading}
+        </p>
       </div>
 
       {/* category quick-nav */}
