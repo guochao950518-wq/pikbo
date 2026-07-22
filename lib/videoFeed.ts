@@ -82,24 +82,26 @@ export function buildVideoFeed(): FeedItem[] {
     });
   });
 
-  // Second pass: shuffle-feel density — remixed Lab loops for “lots of clips”
-  // (honest Recipe badge; same cached cost-free demos)
-  PRESETS.forEach((p, i) => {
-    if (i % 2 !== 0) return;
-    const demo = demoForIndex(i + 3);
-    items.push({
-      id: `dense-${p.slug}`,
-      title: viralName(p.slug, p.name),
-      subtitle: `${p.emoji} ${p.tagline}`,
-      href: createHref(p.slug),
-      detailHref: `/effects/${p.slug}`,
-      badge: "Remake",
-      ratio: i % 3 === 0 ? "9:16" : i % 3 === 1 ? "1:1" : "16:9",
-      demo,
-      kind: "preset",
-      category: p.category,
+  // Density passes — remixed Lab loops so the wall feels full of motion
+  // (same zero-cost cached demos; every card still remakes a real recipe)
+  for (const pass of [1, 2, 3]) {
+    PRESETS.forEach((p, i) => {
+      if ((i + pass) % 2 === 0 && pass > 1) return;
+      const demo = demoForIndex(i + pass * 2);
+      items.push({
+        id: `dense-${pass}-${p.slug}`,
+        title: viralName(p.slug, p.name),
+        subtitle: `${p.emoji} ${p.tagline}`,
+        href: createHref(p.slug),
+        detailHref: `/effects/${p.slug}`,
+        badge: "Remake",
+        ratio: (i + pass) % 3 === 0 ? "9:16" : (i + pass) % 3 === 1 ? "1:1" : "16:9",
+        demo,
+        kind: "preset",
+        category: p.category,
+      });
     });
-  });
+  }
 
   return items;
 }
@@ -136,7 +138,7 @@ export function communityProjects(): CommunityProject[] {
   }));
 
   // Extra project cards so the HF-style rail feels full (remixed Lab loops)
-  const extras = PRESETS.slice(0, 10).map((p, i) => {
+  const extras = PRESETS.map((p, i) => {
     const demo = demoForIndex(i + 1);
     return {
       id: `proj-extra-${p.slug}`,

@@ -3,50 +3,48 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { FeedItem } from "@/lib/videoFeed";
-import { VideoTile } from "@/components/VideoTile";
+import { AutoPlayVideo } from "@/components/AutoPlayVideo";
 import { CATEGORIES } from "@/lib/presets";
 
-/** HF Viral Presets wall: chips + dense autoplay masonry */
+/**
+ * HF Viral Presets wall — uniform dense GRID of autoplay videos.
+ * Not a marketing blog section: pure content density.
+ */
 export function HomeViralWall({ items }: { items: FeedItem[] }) {
-  const [filter, setFilter] = useState<string>("all");
+  const [filter, setFilter] = useState("all");
 
   const chips = useMemo(
     () => [
       { id: "all", label: "ALL" },
-      ...CATEGORIES.map((c) => ({
-        id: c.id,
-        label: c.label.toUpperCase(),
-      })),
-      { id: "demo", label: "LAB CLIPS" },
+      ...CATEGORIES.map((c) => ({ id: c.id, label: c.label.toUpperCase() })),
     ],
     []
   );
 
   const wall = useMemo(() => {
     if (filter === "all") return items;
-    if (filter === "demo") return items.filter((i) => i.kind === "demo");
     return items.filter((i) => i.category === filter);
   }, [filter, items]);
 
   return (
-    <section className="px-2 py-6 sm:px-4">
+    <section className="px-2 py-8 sm:px-3">
       <div className="mb-3 flex flex-wrap items-end justify-between gap-2 px-2">
         <div>
           <Link
             href="/effects"
-            className="text-xl font-bold tracking-tight hover:text-[var(--mint)] sm:text-2xl"
+            className="text-xl font-bold tracking-tight text-white hover:text-[var(--mint)] sm:text-2xl"
           >
             Viral toy presets
           </Link>
-          <p className="mt-1 text-sm text-[var(--fg-dim)]">
-            Scroll the wall · every card is a remakeable recipe
+          <p className="mt-1 text-sm text-white/40">
+            Big-budget looks for figures you own — tap any card to remake
           </p>
         </div>
         <Link
           href="/effects"
           className="text-xs font-semibold text-[var(--mint)] hover:underline"
         >
-          View all presets →
+          View all presets
         </Link>
       </div>
 
@@ -59,7 +57,7 @@ export function HomeViralWall({ items }: { items: FeedItem[] }) {
             className={`shrink-0 rounded-full border px-3 py-1.5 text-[10px] font-bold tracking-wide transition ${
               filter === c.id
                 ? "border-[var(--mint)] bg-[var(--mint)] text-black"
-                : "border-white/10 bg-white/[0.03] text-[var(--fg-muted)] hover:border-white/20"
+                : "border-white/10 bg-white/[0.03] text-white/55 hover:border-white/20 hover:text-white"
             }`}
           >
             {c.label}
@@ -67,11 +65,45 @@ export function HomeViralWall({ items }: { items: FeedItem[] }) {
         ))}
       </div>
 
-      <div className="columns-2 gap-2 sm:columns-3 sm:gap-2.5 md:columns-4 lg:columns-5 xl:columns-6 2xl:columns-7">
-        {wall.map((item) => (
-          <div key={item.id} className="mb-2 break-inside-avoid sm:mb-2.5">
-            <VideoTile item={item} compact />
-          </div>
+      {/* Uniform dense grid — HF viral wall feel */}
+      <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 sm:gap-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7">
+        {wall.map((item, i) => (
+          <Link
+            key={item.id}
+            href={item.href}
+            className="group relative aspect-[3/4] overflow-hidden rounded-xl bg-zinc-900 sm:aspect-[9/14]"
+          >
+            <AutoPlayVideo
+              poster={item.demo.poster}
+              webm={item.demo.webm}
+              mp4={item.demo.mp4}
+              className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.05]"
+              style={{
+                filter:
+                  i % 5 === 1
+                    ? "saturate(1.2)"
+                    : i % 5 === 2
+                      ? "contrast(1.1) brightness(1.03)"
+                      : i % 5 === 3
+                        ? "saturate(0.9) hue-rotate(8deg)"
+                        : i % 5 === 4
+                          ? "brightness(1.06)"
+                          : undefined,
+                objectPosition:
+                  i % 3 === 0
+                    ? "center top"
+                    : i % 3 === 1
+                      ? "center 30%"
+                      : "center center",
+              }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-90" />
+            <div className="absolute inset-x-0 bottom-0 p-2 sm:p-2.5">
+              <p className="line-clamp-2 text-[11px] font-bold uppercase leading-tight tracking-wide text-white sm:text-xs">
+                {item.title}
+              </p>
+            </div>
+          </Link>
         ))}
       </div>
     </section>

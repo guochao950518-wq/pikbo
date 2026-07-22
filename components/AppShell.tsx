@@ -4,43 +4,30 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { site } from "@/lib/site";
 import { CreditsBadge } from "@/components/CreditsBadge";
-import { MobileGenerateBar } from "@/components/MobileGenerateBar";
-import { OnboardingBanner } from "@/components/OnboardingBanner";
 import { CommandPalette } from "@/components/CommandPalette";
 import { ToastProvider } from "@/components/Toast";
-import { StatusBadge } from "@/components/StatusBadge";
 import { Footer } from "@/components/Footer";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
 /**
- * First-principles nav (docs/FIRST_PRINCIPLES.md):
- * Critical path only in primary rail. Suite pages demoted — routes kept for deep links.
+ * Higgsfield-class app chrome:
+ * - thin icon rail (always)
+ * - full-bleed main (no marketing top bar on home)
+ * - mobile: Home · Community · Generate · Library · Profile
  */
-/** HF-class primary rail — Home / Generate / Community first */
-const NAV_PRIMARY = [
+const SIDE_NAV = [
   { href: "/", label: "Home", icon: "⌂" },
   { href: "/create", label: "Generate", icon: "✦" },
   { href: "/community", label: "Community", icon: "◉" },
   { href: "/effects", label: "Presets", icon: "▶" },
   { href: "/explore", label: "Explore", icon: "✧" },
   { href: "/library", label: "Library", icon: "▢" },
+  { href: "/supercomputer", label: "Batch", icon: "⚡" },
+  { href: "/image", label: "Image", icon: "▣" },
   { href: "/pricing", label: "Pricing", icon: "$" },
   { href: "/profile", label: "Profile", icon: "○" },
 ] as const;
 
-/** Secondary suite tools */
-const NAV_MORE = [
-  { href: "/image", label: "Image", icon: "▣" },
-  { href: "/supercomputer", label: "Batch", icon: "⚡" },
-  { href: "/cinema", label: "Cinema", icon: "◎" },
-  { href: "/apps", label: "Apps", icon: "▦" },
-  { href: "/models", label: "Models", icon: "◎" },
-  { href: "/settings", label: "Settings", icon: "⚙" },
-] as const;
-
-/** Mobile dock — Higgsfield chrome: Home · Community · Generate · Library · Profile */
 const MOBILE_NAV = [
   { href: "/", label: "Home", icon: "⌂" },
   { href: "/community", label: "Community", icon: "◉" },
@@ -56,128 +43,106 @@ function isActive(path: string, href: string) {
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const path = usePathname() || "/";
-  const hideFooter =
-    path.startsWith("/create") || path === "/" || path.startsWith("/supercomputer");
+  const isHome = path === "/";
+  const isTool =
+    path.startsWith("/create") || path.startsWith("/supercomputer");
+  const hideFooter = isHome || isTool || path.startsWith("/explore");
 
   return (
     <ToastProvider>
-      <div className="flex min-h-screen bg-[var(--bg)] text-[var(--fg)]">
-        {/* Left suite rail */}
-        <aside className="sticky top-0 z-50 hidden h-screen w-[68px] shrink-0 flex-col border-r border-[var(--border)] bg-[var(--bg-soft)] py-3 lg:flex xl:w-[200px] xl:px-2">
+      <div className="flex min-h-screen bg-black text-white">
+        {/* HF-style thin left rail — icons only */}
+        <aside className="sticky top-0 z-50 hidden h-screen w-[64px] shrink-0 flex-col items-center border-r border-white/[0.06] bg-[#0a0a0c] py-3 lg:flex">
           <Link
             href="/"
-            className="mb-4 flex items-center justify-center gap-2 xl:justify-start xl:px-2"
+            className="mb-5 grid h-9 w-9 place-items-center rounded-xl bg-[var(--mint)] text-sm font-black text-black"
+            title={site.name}
           >
-            <span
-              className="grid h-9 w-9 place-items-center rounded-xl text-sm font-black text-black"
-              style={{ background: "var(--mint)" }}
-            >
-              P
-            </span>
-            <span className="hidden text-base font-bold tracking-tight xl:inline">
-              {site.name}
-            </span>
+            P
           </Link>
-          <div className="mb-2 hidden px-2 xl:block">
-            <StatusBadge />
-          </div>
-          <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto">
-            {NAV_PRIMARY.map((item) => {
+          <nav className="flex flex-1 flex-col items-center gap-1 overflow-y-auto">
+            {SIDE_NAV.map((item) => {
               const active = isActive(path, item.href);
               return (
                 <Link
                   key={item.href}
                   href={item.href}
+                  title={item.label}
                   className={cn(
-                    "flex items-center justify-center gap-2.5 rounded-xl px-0 py-2.5 text-[13px] font-medium transition-colors xl:justify-start xl:px-2.5",
+                    "grid h-11 w-11 place-items-center rounded-xl text-base transition",
                     active
                       ? "bg-white/10 text-[var(--mint)]"
-                      : "text-[var(--fg-dim)] hover:bg-white/[0.04] hover:text-[var(--fg)]"
+                      : "text-white/45 hover:bg-white/[0.06] hover:text-white"
                   )}
                 >
-                  <span className="w-5 text-center text-sm opacity-90">
-                    {item.icon}
-                  </span>
-                  <span className="hidden xl:inline">{item.label}</span>
-                </Link>
-              );
-            })}
-            <p className="mb-0.5 mt-3 hidden px-2.5 text-[10px] font-bold uppercase tracking-wider text-[var(--fg-dim)]/70 xl:block">
-              More
-            </p>
-            {NAV_MORE.map((item) => {
-              const active = isActive(path, item.href);
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "flex items-center justify-center gap-2.5 rounded-xl px-0 py-2 text-[12px] font-medium transition-colors xl:justify-start xl:px-2.5",
-                    active
-                      ? "bg-white/5 text-[var(--fg-muted)]"
-                      : "text-[var(--fg-dim)]/80 hover:bg-white/[0.03] hover:text-[var(--fg-dim)]"
-                  )}
-                >
-                  <span className="w-5 text-center text-xs opacity-70">
-                    {item.icon}
-                  </span>
-                  <span className="hidden xl:inline">{item.label}</span>
+                  <span aria-hidden>{item.icon}</span>
+                  <span className="sr-only">{item.label}</span>
                 </Link>
               );
             })}
           </nav>
-          <div className="mt-2 hidden xl:block">
-            <Separator className="mb-3" />
-            <CreditsBadge />
-            <Button asChild className="mt-3 w-full" size="sm">
-              <Link href="/create">Generate</Link>
-            </Button>
-            <Button asChild variant="ghost" size="sm" className="mt-1 w-full">
-              <Link href="/pricing">Pricing & plans</Link>
-            </Button>
+          <div className="mt-2 flex flex-col items-center gap-2 px-1">
+            <CreditsBadge compact />
+            <Link
+              href="/create"
+              className="grid h-10 w-10 place-items-center rounded-xl bg-[var(--mint)] text-sm font-black text-black"
+              title="Generate"
+            >
+              ✦
+            </Link>
           </div>
         </aside>
 
-        <div className="flex min-w-0 flex-1 flex-col">
-          {/* Desktop top bar — SaaS template chrome */}
-          <header className="sticky top-0 z-40 hidden h-12 items-center justify-end gap-3 border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--bg)_88%,transparent)] px-4 backdrop-blur-md lg:flex">
-            <CreditsBadge />
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/pricing">Pricing</Link>
-            </Button>
-            <Button asChild size="sm">
-              <Link href="/create">Generate</Link>
-            </Button>
-          </header>
-
-          <header className="sticky top-0 z-40 flex h-12 items-center justify-between border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--bg)_88%,transparent)] px-3 backdrop-blur-md lg:hidden">
+        <div className="flex min-w-0 flex-1 flex-col bg-black">
+          {/* Mobile top — minimal, HF-like */}
+          <header
+            className={cn(
+              "sticky top-0 z-40 flex h-12 items-center justify-between border-b border-white/[0.06] bg-black/80 px-3 backdrop-blur-md lg:hidden",
+              isHome && "border-transparent bg-black/40"
+            )}
+          >
             <Link href="/" className="flex items-center gap-2 text-sm font-bold">
-              <span
-                className="grid h-7 w-7 place-items-center rounded-lg text-xs font-black text-black"
-                style={{ background: "var(--mint)" }}
-              >
+              <span className="grid h-7 w-7 place-items-center rounded-lg bg-[var(--mint)] text-xs font-black text-black">
                 P
               </span>
               {site.name}
             </Link>
-            <div className="flex items-center gap-1.5">
-              <CreditsBadge />
-              <Button asChild variant="ghost" size="sm">
-                <Link href="/pricing">Plans</Link>
-              </Button>
-              <Button asChild size="sm">
-                <Link href="/create">Generate</Link>
-              </Button>
+            <div className="flex items-center gap-2">
+              <CreditsBadge compact />
+              <Link
+                href="/create"
+                className="rounded-full bg-[var(--mint)] px-3 py-1.5 text-[11px] font-black text-black"
+              >
+                Generate
+              </Link>
             </div>
           </header>
 
-          <OnboardingBanner />
-          <CommandPalette />
-          <div className="flex-1">{children}</div>
-          {!hideFooter && <Footer />}
-          <MobileGenerateBar />
+          {/* Desktop: no marketing top bar — pure content like HF */}
+          {!isHome && (
+            <header className="sticky top-0 z-40 hidden h-12 items-center justify-end gap-3 border-b border-white/[0.06] bg-black/70 px-4 backdrop-blur-md lg:flex">
+              <CreditsBadge />
+              <Link
+                href="/pricing"
+                className="text-xs font-semibold text-white/60 hover:text-white"
+              >
+                Pricing
+              </Link>
+              <Link
+                href="/create"
+                className="rounded-full bg-[var(--mint)] px-4 py-1.5 text-xs font-black text-black"
+              >
+                Generate
+              </Link>
+            </header>
+          )}
 
-          <nav className="sticky bottom-0 z-40 flex items-end border-t border-[var(--border)] bg-[var(--bg-soft)]/95 px-1 pb-[env(safe-area-inset-bottom)] backdrop-blur-md lg:hidden">
+          <CommandPalette />
+          <div className="flex-1 bg-black">{children}</div>
+          {!hideFooter && <Footer />}
+
+          {/* HF mobile dock */}
+          <nav className="sticky bottom-0 z-40 flex items-end border-t border-white/[0.06] bg-[#0a0a0c]/95 px-1 pb-[env(safe-area-inset-bottom)] backdrop-blur-md lg:hidden">
             {MOBILE_NAV.map((item) => {
               const active = isActive(path, item.href);
               if (item.primary) {
@@ -188,10 +153,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     className="flex flex-1 flex-col items-center gap-0.5 py-1.5"
                   >
                     <span
-                      className={`grid h-11 w-11 place-items-center rounded-2xl text-base font-black text-black shadow-[0_0_24px_rgba(200,255,61,0.35)] ${
-                        active ? "ring-2 ring-white/40" : ""
-                      }`}
-                      style={{ background: "var(--mint)" }}
+                      className={cn(
+                        "grid h-12 w-12 place-items-center rounded-2xl bg-[var(--mint)] text-lg font-black text-black shadow-[0_0_28px_rgba(200,255,61,0.4)]",
+                        active && "ring-2 ring-white/50"
+                      )}
                     >
                       {item.icon}
                     </span>
@@ -205,11 +170,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 text-[9px] font-semibold ${
-                    active ? "text-[var(--mint)]" : "text-[var(--fg-dim)]"
-                  }`}
+                  className={cn(
+                    "flex flex-1 flex-col items-center gap-0.5 py-2.5 text-[9px] font-semibold",
+                    active ? "text-[var(--mint)]" : "text-white/45"
+                  )}
                 >
-                  <span className="text-sm">{item.icon}</span>
+                  <span className="text-base">{item.icon}</span>
                   {item.label}
                 </Link>
               );

@@ -1,74 +1,33 @@
 import Link from "next/link";
 
-/** HF model/app chip rail under the promo carousel */
+/** HF model chips under promo — icon + name + type */
 const TOOLS = [
-  {
-    href: "/create",
-    label: "Seedance",
-    sub: "Toy → video",
-    emoji: "✦",
-    hot: true,
-  },
-  {
-    href: "/effects",
-    label: "Presets",
-    sub: "Viral recipes",
-    emoji: "▶",
-  },
-  {
-    href: "/supercomputer",
-    label: "Batch",
-    sub: "Seller packs",
-    emoji: "⚡",
-  },
-  {
-    href: "/image",
-    label: "Image",
-    sub: "Still studio",
-    emoji: "▣",
-  },
-  {
-    href: "/cinema",
-    label: "Cinema",
-    sub: "Longer looks",
-    emoji: "◎",
-  },
-  {
-    href: "/guides",
-    label: "Learn",
-    sub: "How-to free",
-    emoji: "◎",
-  },
-  {
-    href: "/models",
-    label: "Models",
-    sub: "What's live",
-    emoji: "◎",
-  },
-  {
-    href: "/community",
-    label: "Lab",
-    sub: "Watch more",
-    emoji: "◉",
-  },
+  { href: "/create", label: "Seedance", sub: "Video", emoji: "✦", hot: true },
+  { href: "/effects", label: "Presets", sub: "Viral", emoji: "▶" },
+  { href: "/supercomputer", label: "Batch", sub: "Agent", emoji: "⚡" },
+  { href: "/image", label: "Image", sub: "Still", emoji: "▣" },
+  { href: "/cinema", label: "Cinema", sub: "Scene", emoji: "◎" },
+  { href: "/community", label: "Community", sub: "Watch", emoji: "◉" },
+  { href: "/models", label: "Models", sub: "Live", emoji: "◎" },
+  { href: "/guides", label: "Learn", sub: "Free", emoji: "◎" },
 ] as const;
 
 export function HomeToolShelf() {
   return (
-    <section className="border-b border-[var(--border)] px-3 py-3 sm:px-5">
-      <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <section className="px-3 py-4 sm:px-4">
+      <div className="flex gap-2.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {TOOLS.map((t) => (
           <Link
             key={t.href + t.label}
             href={t.href}
-            className={`flex min-w-[128px] shrink-0 items-center gap-2.5 rounded-2xl border px-3 py-2.5 transition hover:border-white/20 hover:bg-white/[0.04] ${
+            className={`flex min-w-[148px] shrink-0 items-center gap-3 rounded-2xl border px-3 py-3 transition hover:bg-white/[0.05] ${
               t.hot
-                ? "border-[var(--mint)]/40 bg-[var(--mint)]/10"
-                : "border-[var(--border)] bg-white/[0.02]"
+                ? "border-[var(--mint)]/35 bg-[var(--mint)]/[0.08]"
+                : "border-white/[0.08] bg-white/[0.03]"
             }`}
           >
             <span
-              className={`grid h-9 w-9 place-items-center rounded-xl text-sm ${
+              className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl text-base ${
                 t.hot
                   ? "bg-[var(--mint)] font-black text-black"
                   : "bg-white/10 text-white"
@@ -77,10 +36,10 @@ export function HomeToolShelf() {
               {t.emoji}
             </span>
             <span className="min-w-0">
-              <span className="block truncate text-[12px] font-bold text-[var(--fg)]">
+              <span className="block truncate text-[13px] font-bold text-white">
                 {t.label}
               </span>
-              <span className="block truncate text-[10px] text-[var(--fg-dim)]">
+              <span className="block truncate text-[11px] text-white/45">
                 {t.sub}
               </span>
             </span>

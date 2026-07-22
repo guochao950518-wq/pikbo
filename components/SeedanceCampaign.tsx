@@ -1,74 +1,68 @@
 import Link from "next/link";
 import { DEMO_VIDEOS } from "@/lib/demoVideos";
+import { AutoPlayVideo } from "@/components/AutoPlayVideo";
 
-/**
- * Flagship model campaign strip — HF Seedance-battle pattern.
- * Honest capability copy: the integration is wired, while real provider calls
- * still depend on FAL_KEY. Cached Lab footage is never claimed as user output.
- */
+/** Full-bleed flagship banner — HF Seedance battle pattern */
 export function SeedanceCampaign() {
   const hero = DEMO_VIDEOS[0];
-  const strip = DEMO_VIDEOS.slice(0, 5);
+  const strip = DEMO_VIDEOS;
 
   return (
-    <section className="relative overflow-hidden border-b border-[var(--border)]">
+    <section className="relative my-2 overflow-hidden border-y border-white/[0.06]">
       <div className="absolute inset-0">
-        <video
-          className="h-full w-full object-cover opacity-50"
-          autoPlay
-          muted
-          loop
-          playsInline
+        <AutoPlayVideo
           poster={hero.poster}
-        >
-          <source src={hero.webm} type="video/webm" />
-          <source src={hero.mp4} type="video/mp4" />
-        </video>
-        <div className="absolute inset-0 bg-gradient-to-r from-[var(--bg)] via-[var(--bg)]/85 to-black/40" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg)] via-transparent to-black/30" />
+          webm={hero.webm}
+          mp4={hero.mp4}
+          eager
+          className="h-full w-full object-cover opacity-55"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40" />
       </div>
 
-      <div className="relative grid gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-end lg:py-14">
+      <div className="relative grid gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-end lg:py-16">
         <div>
-          <p className="section-label text-[var(--mint)]">Now on Pikbo</p>
-          <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
+          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[var(--mint)]">
+            Now on Pikbo
+          </p>
+          <h2 className="mt-2 text-4xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl">
             Seedance
-            <span className="text-[var(--mint)]"> for toys</span>
+            <span className="block text-[var(--mint)]">for toys</span>
           </h2>
-          <p className="mt-2 text-sm font-semibold uppercase tracking-[0.2em] text-[var(--mint)]">
+          <p className="mt-2 text-sm font-semibold uppercase tracking-[0.18em] text-white/50">
             Image → video · free trial
           </p>
-          <p className="mt-3 max-w-md text-sm leading-relaxed text-white/70 sm:text-base">
-            Upload a figure you own. Get a listing or viral clip in seconds.
-            Scroll the wall first — remake any look when you&apos;re ready.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-2">
-            <Link href="/create" className="btn btn-primary px-6 py-3 text-sm">
+          <div className="mt-7 flex flex-wrap gap-3">
+            <Link
+              href="/create"
+              className="rounded-full bg-[var(--mint)] px-7 py-3 text-sm font-black text-black"
+            >
               Try now
             </Link>
             <Link
               href="/community"
-              className="btn btn-ghost border-white/15 px-5 py-3 text-sm"
+              className="rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold text-white backdrop-blur"
             >
-              Watch Lab clips
+              Watch more
             </Link>
           </div>
         </div>
 
-        <div className="flex gap-2 overflow-x-auto pb-1 lg:justify-end">
+        <div className="flex gap-2 overflow-x-auto pb-1 lg:justify-end [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {strip.map((d) => (
             <Link
               key={d.id}
               href={`/create?effect=${encodeURIComponent(d.preset)}`}
-              className="relative h-36 w-24 shrink-0 overflow-hidden rounded-xl border border-white/15 sm:h-44 sm:w-28"
+              className="relative h-40 w-24 shrink-0 overflow-hidden rounded-xl border border-white/10 sm:h-48 sm:w-28"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={d.poster}
-                alt=""
-                className="h-full w-full object-cover"
+              <AutoPlayVideo
+                poster={d.poster}
+                webm={d.webm}
+                mp4={d.mp4}
+                className="absolute inset-0 h-full w-full object-cover"
               />
-              <span className="absolute inset-x-0 bottom-0 bg-black/70 px-1.5 py-1 text-center text-[9px] font-bold uppercase tracking-wide text-white/90">
+              <span className="absolute inset-x-0 bottom-0 bg-black/70 px-1 py-1 text-center text-[9px] font-bold uppercase text-white">
                 Remake
               </span>
             </Link>

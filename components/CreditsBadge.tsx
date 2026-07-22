@@ -6,7 +6,7 @@ import type { PublicSession } from "@/lib/session";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
 import { SESSION_EVENT } from "@/lib/sessionEvents";
 
-export function CreditsBadge() {
+export function CreditsBadge({ compact }: { compact?: boolean }) {
   const [session, setSession] = useState<PublicSession | null>(null);
 
   const load = useCallback(() => {
@@ -28,12 +28,36 @@ export function CreditsBadge() {
 
   if (!session) {
     return (
-      <span className="hidden text-xs text-[var(--fg-dim)] sm:inline">…</span>
+      <span
+        className={
+          compact
+            ? "text-[10px] text-white/30"
+            : "hidden text-xs text-[var(--fg-dim)] sm:inline"
+        }
+      >
+        …
+      </span>
     );
   }
 
   const clips = Math.floor(session.credits / CREDITS_PER_VIDEO);
   const low = session.credits < CREDITS_PER_VIDEO;
+
+  if (compact) {
+    return (
+      <Link
+        href="/pricing"
+        className={`grid h-8 min-w-8 place-items-center rounded-full border px-1.5 text-[10px] font-bold ${
+          low
+            ? "border-pink-500/50 text-pink-300"
+            : "border-white/10 text-[var(--mint)]"
+        }`}
+        title={`${session.credits} credits`}
+      >
+        {session.credits}
+      </Link>
+    );
+  }
 
   return (
     <Link

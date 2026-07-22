@@ -92,11 +92,9 @@ export default function CommunityPage() {
             Full explore →
           </Link>
         </div>
-        <div className="columns-2 gap-2 sm:columns-3 sm:gap-2.5 md:columns-4 lg:columns-5 xl:columns-6">
+        <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 sm:gap-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {wall.map((item) => (
-            <div key={item.id} className="mb-2 break-inside-avoid sm:mb-2.5">
-              <VideoTile item={item} compact />
-            </div>
+            <VideoTile key={item.id} item={item} compact />
           ))}
         </div>
       </section>
