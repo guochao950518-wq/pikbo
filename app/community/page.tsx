@@ -4,44 +4,27 @@ import { DEMO_VIDEOS } from "@/lib/demoVideos";
 import { PRESETS } from "@/lib/presets";
 
 export const metadata: Metadata = {
-  title: "Community",
-  description:
-    "Explore toy video demos and presets on Pikbo — spin, unbox, float from one photo.",
+  title: "Pikbo Lab",
+  description: "Explore clearly labeled Pikbo toy-video prototypes and recipes.",
 };
 
 export default function CommunityPage() {
   return (
     <div className="px-4 py-10 sm:px-8">
       <div className="mx-auto max-w-6xl">
-        <span className="chip">Community</span>
-        <h1 className="mt-3 text-2xl font-bold">From the shelf</h1>
-        <p className="mt-1 max-w-2xl text-sm text-[var(--fg-muted)]">
-          Real Pikbo demos (no credit cost) plus every preset tool page. User
-          UGC lands here after accounts — for now these are official demos you
-          can remake.
+        <span className="chip">Pikbo Lab</span>
+        <h1 className="mt-3 text-2xl font-bold">Prototype shelf</h1>
+        <p className="mt-1 text-sm text-[var(--fg-muted)]">
+          Owned, cached prototype footage for testing the product experience.
+          These clips do not claim provider provenance and playback never spends credits.
         </p>
 
-        <div className="mt-6 flex flex-wrap gap-2">
-          <Link href="/create" className="btn btn-primary text-sm">
-            Make your own →
-          </Link>
-          <Link href="/explore" className="btn btn-ghost text-sm">
-            Explore feed
-          </Link>
-          <Link href="/effects" className="btn btn-ghost text-sm">
-            All presets
-          </Link>
-        </div>
-
-        <h2 className="mt-10 text-lg font-bold">Featured demos</h2>
-        <p className="mt-1 text-xs text-[var(--fg-dim)]">
-          Tap a card → open the matching tool page and generate with your toy.
-        </p>
+        <h2 className="mt-10 text-lg font-bold">Cached lab previews</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {DEMO_VIDEOS.map((d) => (
             <Link
               key={d.id}
-              href={`/effects/${d.preset}`}
+              href={`/create?effect=${d.preset}`}
               className="card group overflow-hidden p-0 transition-transform hover:-translate-y-1"
             >
               <div className="aspect-[9/14] bg-black/50 sm:aspect-video">
@@ -66,8 +49,8 @@ export default function CommunityPage() {
                   {d.title}
                 </p>
                 <p className="mt-1 text-xs text-[var(--fg-muted)]">{d.result}</p>
-                <p className="mt-2 text-[10px] text-[var(--mint)]">
-                  Remake this look →
+                <p className="mt-2 text-[10px] uppercase tracking-wide text-[var(--fg-dim)]">
+                  Prototype · not a public user post
                 </p>
               </div>
             </Link>
@@ -79,7 +62,7 @@ export default function CommunityPage() {
           {PRESETS.map((p) => (
             <Link
               key={p.slug}
-              href={`/effects/${p.slug}`}
+              href={`/create?effect=${p.slug}`}
               className="card flex items-center gap-3 p-3 transition-transform hover:-translate-y-0.5"
             >
               <span

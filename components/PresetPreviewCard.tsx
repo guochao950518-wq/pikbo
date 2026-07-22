@@ -32,7 +32,6 @@ export function PresetPreviewCard({ preset }: { preset: Preset }) {
       >
         <div className="relative grid aspect-[3/4] place-items-center overflow-hidden text-4xl" style={{ background: preset.gradient }}>
           {demo && !failed ? (
-             
             <video
               ref={videoRef}
               muted
@@ -51,7 +50,7 @@ export function PresetPreviewCard({ preset }: { preset: Preset }) {
           )}
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/5 to-transparent" />
           <span className={`absolute right-2 top-2 rounded-full px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] ${demo ? "bg-[var(--lime)] text-black" : "bg-black/45 text-white/65 backdrop-blur"}`}>
-            {demo ? "Demo" : "Recipe"}
+            {demo ? "Cached preview" : "Recipe"}
           </span>
           <span className="absolute inset-x-0 bottom-0 px-3 pb-3 pt-12 text-left">
             <span className="block text-sm font-bold text-white">{preset.name}</span>

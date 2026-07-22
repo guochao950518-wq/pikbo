@@ -139,7 +139,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 text-[10px] font-semibold tracking-wide ${
+                className={`flex min-w-0 flex-1 flex-col items-center gap-0.5 py-2.5 text-[10px] font-semibold tracking-wide ${
                   active ? "text-[var(--brand)]" : "text-[var(--fg-dim)]"
                 }`}
               >

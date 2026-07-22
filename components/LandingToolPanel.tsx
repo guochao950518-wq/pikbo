@@ -121,10 +121,6 @@ export function LandingToolPanel({
       setError("Upload a toy photo first.");
       return;
     }
-    if (session && session.credits < CREDITS_PER_VIDEO) {
-      setError("Not enough credits — upgrade on Pricing.");
-      return;
-    }
     setError(null);
     setVideoUrl(null);
     setElapsed(0);
@@ -377,7 +373,8 @@ export function LandingToolPanel({
               )}
               {demo && (
                 <p className="mt-2 text-center text-[10px] text-[var(--fg-dim)]">
-                  Demo clip — set FAL_KEY for real Seedance.
+                  Cached validation preview · unrelated to the uploaded toy · 0
+                  credits. Set FAL_KEY for live Seedance.
                 </p>
               )}
               <div className="mt-3 flex flex-wrap justify-center gap-2">

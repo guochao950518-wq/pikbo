@@ -5,11 +5,12 @@ import { useState } from "react";
 import { PLANS, CREDITS_PER_VIDEO, clipsFromCredits } from "@/lib/pricing";
 import { PricingCheckoutButton } from "@/components/PricingCheckoutButton";
 
-export function PricingPlanCards() {
+export function PricingPlanCards({ annualEnabled }: { annualEnabled: boolean }) {
   const [annual, setAnnual] = useState(false);
 
   return (
     <>
+      {annualEnabled ? (
       <div className="mb-8 flex justify-center">
         <div className="inline-flex rounded-full border border-[var(--border)] p-1 text-sm">
           <button
@@ -33,6 +34,11 @@ export function PricingPlanCards() {
           </button>
         </div>
       </div>
+      ) : (
+        <p className="mb-8 text-center text-xs text-[var(--fg-dim)]">
+          Monthly billing is live. Annual checkout appears only after its Stripe prices are verified.
+        </p>
+      )}
 
       <div className="grid gap-5 md:grid-cols-3">
         {PLANS.map((plan) => {
@@ -108,6 +114,7 @@ export function PricingPlanCards() {
                   planId={plan.id}
                   label={plan.cta}
                   featured={plan.featured}
+                  interval={annual ? "year" : "month"}
                 />
               )}
             </div>

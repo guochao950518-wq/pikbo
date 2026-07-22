@@ -10,6 +10,10 @@ export const metadata: Metadata = {
 };
 
 export default function PricingPage() {
+  const annualEnabled = Boolean(
+    process.env.STRIPE_PRICE_CREATOR_ANNUAL &&
+      process.env.STRIPE_PRICE_SHOP_ANNUAL
+  );
   return (
     <div className="pb-20">
       <section className="glow-bg overflow-hidden border-b border-[var(--border)]">
@@ -36,7 +40,7 @@ export default function PricingPage() {
         <PricingUsageEstimator />
 
         <div className="mt-16">
-          <PricingPlanCards />
+          <PricingPlanCards annualEnabled={annualEnabled} />
         </div>
 
         <section className="mt-20">

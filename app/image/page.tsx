@@ -60,11 +60,12 @@ export default function ImageStudioPage() {
   return (
     <div className="px-4 py-10 sm:px-8">
       <div className="mx-auto max-w-4xl">
-        <span className="chip">🖼️ Stills · live</span>
+        <span className="chip">🖼️ Still studio</span>
         <h1 className="mt-3 text-3xl font-bold">Still studio</h1>
         <p className="mt-2 text-sm text-[var(--fg-muted)]">
-          Mock packaging & colorways before motion. Flux via fal (
-          {CREDITS_PER_VIDEO} credits). Then animate in Generate.
+          Mock packaging & colorways before motion. Live Flux stills use fal and
+          cost {CREDITS_PER_VIDEO} credits; validation previews cost 0. Then
+          animate in Generate.
         </p>
 
         <div className="card mt-8 grid gap-6 p-6 lg:grid-cols-2">
@@ -102,14 +103,15 @@ export default function ImageStudioPage() {
             >
               {busy
                 ? "Generating still…"
-                : `Generate still · ${CREDITS_PER_VIDEO} credits`}
+                : `Generate still · up to ${CREDITS_PER_VIDEO} credits`}
             </button>
             {error && (
               <p className="mt-2 text-sm text-[var(--brand)]">{error}</p>
             )}
             {demo && (
               <p className="mt-2 text-xs text-[var(--fg-dim)]">
-                Demo placeholder — add FAL_KEY for Flux stills.
+                Validation preview — no provider call or credit charge. Add
+                FAL_KEY for live Flux stills.
               </p>
             )}
             {imageUrl && imageUrl.startsWith("http") && (

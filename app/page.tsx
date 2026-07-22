@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { APPS } from "@/lib/catalog";
-import { PRESETS } from "@/lib/presets";
 import { PLANS } from "@/lib/pricing";
 import { PresetsWall } from "@/components/PresetsWall";
 import {
@@ -11,6 +10,7 @@ import { HomeModelShelf } from "@/components/HomeModelShelf";
 import { HowItWorks } from "@/components/HowItWorks";
 import { TrustStrip } from "@/components/TrustStrip";
 import { HeroUpload } from "@/components/HeroUpload";
+import { DEMO_VIDEOS } from "@/lib/demoVideos";
 
 /**
  * POP MART–inspired home: product theatre first, clean retail hierarchy.
@@ -147,9 +147,9 @@ export default function Home() {
         <div className="mx-auto max-w-6xl">
           <div className="mb-6 flex items-end justify-between">
             <div>
-              <p className="section-label">Shelf</p>
+              <p className="section-label">Pikbo Lab</p>
               <h2 className="mt-2 font-[family-name:var(--font-display)] text-2xl font-semibold">
-                From the community
+                Prototype recipes
               </h2>
             </div>
             <Link
@@ -160,20 +160,24 @@ export default function Home() {
             </Link>
           </div>
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            {PRESETS.slice(0, 4).map((p) => (
+            {DEMO_VIDEOS.slice(0, 4).map((demo) => (
               <Link
-                key={p.slug}
-                href={`/effects/${p.slug}`}
+                key={demo.id}
+                href={`/create?effect=${demo.preset}`}
                 className="card overflow-hidden p-0"
               >
-                <div
-                  className="aspect-[4/5]"
-                  style={{ background: p.gradient }}
-                />
+                <div className="aspect-[4/5] overflow-hidden bg-black">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={demo.poster}
+                    alt={`${demo.character} ${demo.title} prototype poster`}
+                    className="h-full w-full object-cover transition-transform duration-500 hover:scale-[1.03]"
+                  />
+                </div>
                 <div className="p-3">
-                  <p className="text-sm font-semibold tracking-tight">{p.name}</p>
+                  <p className="text-sm font-semibold tracking-tight">{demo.title}</p>
                   <p className="mt-0.5 text-[11px] text-[var(--fg-dim)]">
-                    {p.tagline}
+                    Cached lab preview · use recipe
                   </p>
                 </div>
               </Link>

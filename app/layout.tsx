@@ -1,21 +1,8 @@
 import type { Metadata } from "next";
-import { Outfit, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { site } from "@/lib/site";
 import { AppShell } from "@/components/AppShell";
-
-/** Display: fashion/retail impact · Body: clean readable */
-const display = Outfit({
-  variable: "--font-display",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const body = DM_Sans({
-  variable: "--font-sans",
-  subsets: ["latin"],
-  display: "swap",
-});
+import { Analytics } from "@/components/Analytics";
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -52,8 +39,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${display.variable} ${body.variable} h-full`}>
+    <html lang="en" className="h-full">
       <body className="min-h-full bg-[var(--bg)] font-sans text-[var(--fg)] antialiased">
+        <Analytics />
         <AppShell>{children}</AppShell>
       </body>
     </html>
