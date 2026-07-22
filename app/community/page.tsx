@@ -4,16 +4,18 @@ import { PRESETS } from "@/lib/presets";
 
 export const metadata: Metadata = {
   title: "Community",
-  description: "Explore public generations and presets.",
+  description: "Explore toy video presets and public-style generations on Pikbo.",
 };
 
 export default function CommunityPage() {
   return (
     <div className="px-4 py-10 sm:px-8">
       <div className="mx-auto max-w-6xl">
-        <h1 className="text-2xl font-bold">Community</h1>
+        <span className="chip">Community</span>
+        <h1 className="mt-3 text-2xl font-bold">From the shelf</h1>
         <p className="mt-1 text-sm text-[var(--fg-muted)]">
-          Explore wall (mock projects — same pattern as big AI video apps).
+          Explore wall for collectors & sellers. Mock posts for now — each card
+          jumps into Generate with that toy preset.
         </p>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -24,19 +26,20 @@ export default function CommunityPage() {
               className="card group overflow-hidden p-0 transition-transform hover:-translate-y-1"
             >
               <div
-                className="relative aspect-[16/10]"
+                className="relative grid aspect-[16/10] place-items-center text-5xl"
                 style={{ background: p.gradient }}
               >
-                <span className="absolute bottom-2 left-2 text-3xl">
-                  {p.emoji}
-                </span>
+                <span className="drop-shadow-lg">{p.emoji}</span>
               </div>
               <div className="p-4">
-                <p className="font-semibold group-hover:text-[var(--mint)]">
+                <p className="font-semibold group-hover:text-[var(--brand)]">
                   {p.name}
                 </p>
                 <p className="mt-1 text-xs text-[var(--fg-dim)]">
-                  @creator{(i % 7) + 1} · used preset · public
+                  @collector{(i % 9) + 1} · {p.audience} · public
+                </p>
+                <p className="mt-2 line-clamp-2 text-xs text-[var(--fg-muted)]">
+                  {p.tagline}
                 </p>
               </div>
             </Link>

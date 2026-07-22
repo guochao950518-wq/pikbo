@@ -17,7 +17,7 @@ export default function CinemaPage() {
   const [move, setMove] = useState(MOVES[1]);
   const [look, setLook] = useState(LOOKS[0]);
   const [shot, setShot] = useState(
-    "Hero product on seamless, figure sharp, premium catalog lighting"
+    "Designer vinyl figure on seamless, sharp sculpt and paint, premium catalog lighting, toy photography"
   );
   const [effect, setEffect] = useState(PRESETS[0]?.slug ?? "360-spin-showcase");
 
@@ -41,15 +41,15 @@ export default function CinemaPage() {
             </p>
             <h1 className="mt-1 text-3xl font-bold">Director board</h1>
             <p className="mt-2 max-w-xl text-sm text-[var(--fg-muted)]">
-              Camera language + shot brief → open Generate with Seedance. Same
-              idea as professional AI film studios on large platforms.
+              Pick lens & camera moves for your figure, then render with
+              Seedance — pro film-studio flow, toy-native subject.
             </p>
           </div>
           <Link
             href={href}
-            className="rounded-full bg-[var(--lime)] px-5 py-2.5 text-sm font-bold text-black"
+            className="btn btn-primary px-5 py-2.5 text-sm"
           >
-            Render in Generate →
+            Render my figure →
           </Link>
         </div>
 

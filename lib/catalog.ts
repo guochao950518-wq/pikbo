@@ -1,7 +1,5 @@
 /**
- * Product catalog mirroring Higgsfield-class AI suites:
- * models shelf + one-click apps + studio modes.
- * Branding is Pikbo; feature surface matches the big apps.
+ * Suite catalog (big-app structure) with Pikbo toy-native copy (own style).
  */
 
 export type CatalogModel = {
@@ -13,7 +11,6 @@ export type CatalogModel = {
   blurb: string;
   href: string;
   gradient: string;
-  /** Wired to live generate path */
   live?: boolean;
   falId?: string;
 };
@@ -28,17 +25,16 @@ export type CatalogApp = {
   live?: boolean;
 };
 
-/** Models shelf — names match what users see on big platforms; only Seedance paths are live. */
 export const MODELS: CatalogModel[] = [
   {
     id: "seedance-2",
     name: "Seedance 2.0",
     vendor: "ByteDance",
     kind: "video",
-    tag: "Featured",
-    blurb: "Flagship image-to-video. Default engine for Generate.",
+    tag: "Best for toys",
+    blurb: "Keeps paint lines & sculpt readable while the figure moves.",
     href: "/create?model=seedance-2",
-    gradient: "linear-gradient(135deg,#6ee7c7,#a855f7)",
+    gradient: "linear-gradient(135deg,#ff4d8d,#a855f7)",
     live: true,
     falId: "bytedance/seedance-2.0/image-to-video",
   },
@@ -48,9 +44,9 @@ export const MODELS: CatalogModel[] = [
     vendor: "ByteDance",
     kind: "video",
     tag: "Free tier",
-    blurb: "Lower latency path for free credits.",
+    blurb: "Quick shelf clips when you're batching listings.",
     href: "/create?model=seedance-fast",
-    gradient: "linear-gradient(135deg,#d6ff4d,#6ee7c7)",
+    gradient: "linear-gradient(135deg,#6ee7c7,#a855f7)",
     live: true,
     falId: "bytedance/seedance-2.0/fast/image-to-video",
   },
@@ -60,8 +56,8 @@ export const MODELS: CatalogModel[] = [
     vendor: "Kuaishou",
     kind: "video",
     tag: "Soon",
-    blurb: "Cinematic physics model — slot ready, not default.",
-    href: "/create",
+    blurb: "Extra physics for action poses — slot reserved.",
+    href: "/models",
     gradient: "linear-gradient(135deg,#3b82f6,#1e1b4b)",
   },
   {
@@ -70,7 +66,7 @@ export const MODELS: CatalogModel[] = [
     vendor: "Google",
     kind: "video",
     tag: "Soon",
-    blurb: "Multi-input video generation (catalog placeholder).",
+    blurb: "Longer cinematic shelves — coming later.",
     href: "/models",
     gradient: "linear-gradient(135deg,#60a5fa,#312e81)",
   },
@@ -80,7 +76,7 @@ export const MODELS: CatalogModel[] = [
     vendor: "OpenAI",
     kind: "video",
     tag: "Soon",
-    blurb: "Long-form generative video (catalog placeholder).",
+    blurb: "Narrative world shots for dioramas — catalog only.",
     href: "/models",
     gradient: "linear-gradient(135deg,#a78bfa,#4c1d95)",
   },
@@ -90,7 +86,7 @@ export const MODELS: CatalogModel[] = [
     vendor: "ByteDance",
     kind: "image",
     tag: "Image",
-    blurb: "ByteDance image model entry — opens Image studio.",
+    blurb: "Still mockups before you animate the figure.",
     href: "/image",
     gradient: "linear-gradient(135deg,#f472b6,#7c3aed)",
   },
@@ -100,7 +96,7 @@ export const MODELS: CatalogModel[] = [
     vendor: "Partner",
     kind: "image",
     tag: "Image",
-    blurb: "Fast image generations (UI parity; backend optional).",
+    blurb: "Fast concept stills for colorways & packaging.",
     href: "/image",
     gradient: "linear-gradient(135deg,#fbbf24,#f97316)",
   },
@@ -110,7 +106,7 @@ export const MODELS: CatalogModel[] = [
     vendor: "Black Forest",
     kind: "image",
     tag: "Image",
-    blurb: "High-detail stills for product boards.",
+    blurb: "High-detail product boards and box art tests.",
     href: "/image",
     gradient: "linear-gradient(135deg,#34d399,#0f766e)",
   },
@@ -119,18 +115,18 @@ export const MODELS: CatalogModel[] = [
 export const APPS: CatalogApp[] = [
   {
     id: "image-to-video",
-    name: "Image to Video",
+    name: "Photo → Clip",
     emoji: "🎬",
-    blurb: "Animate a still with Seedance.",
+    blurb: "One toy photo in, scroll-stopping video out.",
     href: "/create",
     category: "video",
     live: true,
   },
   {
     id: "text-to-video",
-    name: "Text to Video",
+    name: "Text → Video",
     emoji: "✍️",
-    blurb: "Prompt-only video (UI live; engine rolls out).",
+    blurb: "Prompt-only (UI ready; photo path is live).",
     href: "/create?mode=t2v",
     category: "video",
   },
@@ -138,51 +134,51 @@ export const APPS: CatalogApp[] = [
     id: "cinema",
     name: "Cinema Studio",
     emoji: "🎥",
-    blurb: "Shot list, lens, camera language workspace.",
+    blurb: "Lens & camera moves for premium figure shots.",
     href: "/cinema",
     category: "studio",
     live: true,
   },
   {
     id: "viral-presets",
-    name: "Viral Presets",
-    emoji: "⚡",
-    blurb: "One-tap effect recipes.",
+    name: "Toy presets",
+    emoji: "🧸",
+    blurb: "Spin, unbox, dance, shelf pan — one tap.",
     href: "/effects",
     category: "video",
     live: true,
   },
   {
     id: "product-spin",
-    name: "Product Spin",
+    name: "360° Spin",
     emoji: "🌀",
-    blurb: "360° product / figure showcase.",
+    blurb: "Turntable showcase for listings.",
     href: "/create?effect=360-spin-showcase",
     category: "video",
     live: true,
   },
   {
     id: "unbox",
-    name: "Unbox Reveal",
+    name: "Blind-box reveal",
     emoji: "📦",
-    blurb: "Reveal beat for blind boxes.",
+    blurb: "The open-box beat collectors stop for.",
     href: "/create?effect=blind-box-unboxing",
     category: "video",
     live: true,
   },
   {
     id: "image-studio",
-    name: "Image Studio",
+    name: "Still studio",
     emoji: "🖼️",
-    blurb: "Still generation board.",
+    blurb: "Mock product photos before motion.",
     href: "/image",
     category: "image",
   },
   {
     id: "face-swap",
-    name: "Face Swap",
+    name: "Face swap",
     emoji: "🎭",
-    blurb: "Swap faces in a frame (stub app).",
+    blurb: "Optional edit tool (stub — not core toy flow).",
     href: "/apps/face-swap",
     category: "edit",
   },
@@ -190,7 +186,7 @@ export const APPS: CatalogApp[] = [
     id: "lipsync",
     name: "Lipsync",
     emoji: "🎙️",
-    blurb: "Talking-head style clips (stub).",
+    blurb: "Talking figure experiments (stub).",
     href: "/apps/lipsync",
     category: "edit",
   },
@@ -198,7 +194,7 @@ export const APPS: CatalogApp[] = [
     id: "upscale",
     name: "Upscale",
     emoji: "🔍",
-    blurb: "Enhance resolution (stub).",
+    blurb: "Sharpen exports for shops (stub).",
     href: "/apps/upscale",
     category: "edit",
   },
@@ -206,16 +202,16 @@ export const APPS: CatalogApp[] = [
     id: "storyboard",
     name: "Storyboard",
     emoji: "📋",
-    blurb: "Multi-shot board for Cinema.",
+    blurb: "Multi-shot board for a full drop video.",
     href: "/cinema",
     category: "studio",
     live: true,
   },
   {
     id: "supercomputer",
-    name: "Supercomputer",
+    name: "Batch agent",
     emoji: "🧠",
-    blurb: "Agent / automation surface.",
+    blurb: "Whole-shop clip runs (coming).",
     href: "/supercomputer",
     category: "studio",
   },

@@ -4,19 +4,20 @@ import { MODELS } from "@/lib/catalog";
 
 export const metadata: Metadata = {
   title: "Models",
-  description: "All image and video models available in the studio.",
+  description:
+    "AI models in Pikbo — ByteDance Seedance for toy image-to-video, more slots as we grow.",
 };
 
 export default function ModelsPage() {
   return (
     <div className="px-4 py-10 sm:px-8">
       <div className="mx-auto max-w-6xl">
-        <h1 className="text-3xl font-bold">Models</h1>
+        <span className="chip">Engines</span>
+        <h1 className="mt-3 text-3xl font-bold">Models</h1>
         <p className="mt-2 max-w-2xl text-sm text-[var(--fg-muted)]">
-          Multi-model shelf (Higgsfield pattern).{" "}
-          <strong className="text-[var(--fg)]">Seedance</strong> is live via
-          fal; other cards reserve slots so the product surface matches a full
-          suite.
+          Multi-model shelf like the big studios.{" "}
+          <strong className="text-[var(--fg)]">Seedance</strong> is live and
+          tuned for painted figures — other cards are reserved slots.
         </p>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -28,18 +29,18 @@ export default function ModelsPage() {
             >
               <div className="relative h-28" style={{ background: m.gradient }}>
                 {m.live && (
-                  <span className="absolute left-2 top-2 rounded bg-black/50 px-2 py-0.5 text-[10px] font-bold text-[var(--lime)]">
+                  <span className="absolute left-2 top-2 rounded-full bg-black/55 px-2 py-0.5 text-[10px] font-bold text-[var(--mint)]">
                     LIVE
                   </span>
                 )}
                 {m.tag && !m.live && (
-                  <span className="absolute left-2 top-2 rounded bg-black/50 px-2 py-0.5 text-[10px] font-bold text-white/70">
+                  <span className="absolute left-2 top-2 rounded-full bg-black/55 px-2 py-0.5 text-[10px] font-bold text-white/75">
                     {m.tag}
                   </span>
                 )}
               </div>
               <div className="p-4">
-                <h2 className="font-semibold group-hover:text-[var(--lime)]">
+                <h2 className="font-semibold group-hover:text-[var(--brand)]">
                   {m.name}
                 </h2>
                 <p className="text-[11px] text-[var(--fg-dim)]">{m.vendor}</p>

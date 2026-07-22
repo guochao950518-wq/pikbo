@@ -6,8 +6,8 @@ import { PRESETS, CATEGORIES } from "@/lib/presets";
 // secondary link to the effect's SEO landing page. Honest content only — these
 // are the real available effects, not fabricated community posts.
 export function PresetsWall({
-  heading = "Viral presets",
-  subheading = "Tap a preset to open the studio with it loaded.",
+  heading = "Toy presets",
+  subheading = "Tap a preset — Generate opens with your effect loaded.",
 }: {
   heading?: string;
   subheading?: string;

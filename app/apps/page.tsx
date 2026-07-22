@@ -4,24 +4,26 @@ import { APPS } from "@/lib/catalog";
 
 export const metadata: Metadata = {
   title: "Apps",
-  description: "One-click AI apps — video, image, edit, and studio tools.",
+  description:
+    "Pikbo apps for toy video — spin, unbox, cinema, stills. Photo to clip tools for collectors and sellers.",
 };
 
 const CATS = [
-  { id: "video" as const, label: "Video" },
-  { id: "image" as const, label: "Image" },
-  { id: "edit" as const, label: "Edit" },
-  { id: "studio" as const, label: "Studio" },
+  { id: "video" as const, label: "Video for your shelf" },
+  { id: "image" as const, label: "Stills & packaging" },
+  { id: "edit" as const, label: "Edit tools" },
+  { id: "studio" as const, label: "Pro studio" },
 ];
 
 export default function AppsPage() {
   return (
     <div className="px-4 py-10 sm:px-8">
       <div className="mx-auto max-w-6xl">
-        <h1 className="text-3xl font-bold">Apps</h1>
-        <p className="mt-2 text-sm text-[var(--fg-muted)]">
-          Same surface as big AI suites: open an app, run a job, spend credits.
-          Live apps call Seedance; stubs keep the catalog complete.
+        <span className="chip">🧸 Suite · toy-native</span>
+        <h1 className="mt-3 text-3xl font-bold">Apps</h1>
+        <p className="mt-2 max-w-2xl text-sm text-[var(--fg-muted)]">
+          Same app-grid idea as big AI platforms — every tile is aimed at
+          figures, blind boxes, and product clips. Live apps run Seedance.
         </p>
 
         {CATS.map((cat) => {
@@ -38,21 +40,21 @@ export default function AppsPage() {
                     href={app.href}
                     className="card group flex gap-3 p-4 transition-transform hover:-translate-y-0.5"
                   >
-                    <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-white/5 text-2xl">
+                    <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-[var(--grad-soft)] text-2xl">
                       {app.emoji}
                     </span>
                     <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-semibold group-hover:text-[var(--lime)]">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="font-semibold group-hover:text-[var(--brand)]">
                           {app.name}
                         </h3>
                         {app.live ? (
-                          <span className="rounded bg-[var(--lime)]/20 px-1.5 py-0.5 text-[9px] font-bold text-[var(--lime)]">
+                          <span className="rounded-full bg-[var(--mint)]/15 px-1.5 py-0.5 text-[9px] font-bold text-[var(--mint)]">
                             LIVE
                           </span>
                         ) : (
-                          <span className="rounded bg-white/10 px-1.5 py-0.5 text-[9px] font-bold text-white/40">
-                            STUB
+                          <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[9px] font-bold text-[var(--fg-dim)]">
+                            SOON
                           </span>
                         )}
                       </div>

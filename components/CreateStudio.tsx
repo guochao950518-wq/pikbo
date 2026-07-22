@@ -16,14 +16,14 @@ const MODELS = [
     id: "seedance-2",
     label: "Seedance 2.0",
     vendor: "ByteDance",
-    blurb: "Best motion · image-to-video",
+    blurb: "Best for figures · paid",
     free: false,
   },
   {
     id: "seedance-fast",
     label: "Seedance Fast",
     vendor: "ByteDance",
-    blurb: "Faster · free tier",
+    blurb: "Quick shelf clips · free",
     free: true,
   },
 ] as const;
@@ -252,7 +252,7 @@ export function CreateStudio({
         {/* Preset rail */}
         <aside className="max-h-[40vh] overflow-y-auto border-b border-[var(--border)] p-3 lg:max-h-none lg:border-b-0 lg:border-r">
           <p className="mb-2 px-1 text-[10px] font-bold uppercase tracking-wider text-[var(--fg-dim)]">
-            Viral presets
+            🧸 Toy presets
           </p>
           <div className="flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible">
             {PRESETS.map((p) => (
@@ -294,21 +294,23 @@ export function CreateStudio({
           {mode === "i2v" ? (
             <div>
               <label className="text-xs font-semibold text-[var(--fg-muted)]">
-                Reference image
+                Your toy photo
               </label>
               <label className="mt-2 flex aspect-video cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-[var(--border)] bg-[var(--bg-soft)]">
                 {image ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={image}
-                    alt="reference"
+                    alt="your toy"
                     className="h-full w-full object-contain"
                   />
                 ) : (
                   <span className="px-6 text-center text-sm text-[var(--fg-dim)]">
-                    Drop or click to upload
+                    🧸 Drop a photo of a figure you own
                     <br />
-                    <span className="text-xs">PNG / JPG — product or figure photo</span>
+                    <span className="text-xs">
+                      Clean background · even light · full toy in frame
+                    </span>
                   </span>
                 )}
                 <input
@@ -318,14 +320,39 @@ export function CreateStudio({
                   onChange={onFile}
                 />
               </label>
+              <p className="mt-2 text-[10px] text-[var(--fg-dim)]">
+                Tip: only animate toys you own. Works great for blind boxes,
+                resin, plush, gunpla.
+              </p>
             </div>
           ) : (
             <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-soft)] p-4 text-sm text-[var(--fg-muted)]">
-              Text-to-video is stubbed in UI (Higgsfield-class mode tab). Current
-              pipeline is image-to-video with Seedance — switch to Image → Video
-              and upload a photo.
+              Text → Video is on the roadmap. For the best figure consistency,
+              use <strong className="text-[var(--fg)]">Image → Video</strong>{" "}
+              with a real shelf photo + Seedance.
             </div>
           )}
+
+          <div className="grid grid-cols-3 gap-2 text-center text-[10px]">
+            <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] py-2">
+              <div className="text-[var(--fg-dim)]">Duration</div>
+              <div className="font-semibold text-[var(--fg)]">
+                {preset.duration}s
+              </div>
+            </div>
+            <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] py-2">
+              <div className="text-[var(--fg-dim)]">Aspect</div>
+              <div className="font-semibold text-[var(--fg)]">
+                {preset.aspectRatio}
+              </div>
+            </div>
+            <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] py-2">
+              <div className="text-[var(--fg-dim)]">Audience</div>
+              <div className="font-semibold capitalize text-[var(--fg)]">
+                {preset.audience}
+              </div>
+            </div>
+          </div>
 
           <div>
             <label className="text-xs font-semibold text-[var(--fg-muted)]">
@@ -338,7 +365,7 @@ export function CreateStudio({
               className="mt-2 w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--bg-soft)] px-3 py-2.5 text-sm outline-none focus:border-[var(--brand)]"
             />
             <p className="mt-1 text-[10px] text-[var(--fg-dim)]">
-              Preset: {preset.name} · {preset.duration}s · {preset.aspectRatio}
+              Preset: {preset.name} · keep the toy as the hero of the shot
             </p>
           </div>
 
@@ -388,9 +415,9 @@ export function CreateStudio({
             {status === "generating" && (
               <div className="p-10 text-center text-[var(--fg-muted)]">
                 <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--mint)]" />
-                Rendering with ByteDance Seedance…
+                Animating your figure with Seedance…
                 <p className="mt-1 text-xs text-[var(--fg-dim)]">
-                  Usually 20–60s
+                  Usually 20–60s · hold paint detail
                 </p>
               </div>
             )}
@@ -422,9 +449,13 @@ export function CreateStudio({
               </div>
             )}
             {(status === "idle" || status === "error") && !videoUrl && (
-              <p className="p-10 text-center text-sm text-[var(--fg-dim)]">
-                Your video will appear here
-              </p>
+              <div className="p-10 text-center text-sm text-[var(--fg-dim)]">
+                <p className="text-3xl">🧸</p>
+                <p className="mt-3">Your clip will land here</p>
+                <p className="mt-1 text-xs">
+                  Perfect for TikTok, Etsy, Whatnot, shelf flexes
+                </p>
+              </div>
             )}
           </div>
         </section>
