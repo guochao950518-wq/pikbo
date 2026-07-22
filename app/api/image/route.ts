@@ -3,6 +3,7 @@ import { fal } from "@fal-ai/client";
 import { deductCredits, refundCredits } from "@/lib/credits";
 import { IMAGE_MODEL } from "@/lib/models";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
+import { pruneRateLimit, takeToken } from "@/lib/rateLimit";
 import { ensureSession, publicSession, saveSession } from "@/lib/session";
 
 export const runtime = "nodejs";
@@ -25,10 +26,27 @@ export async function POST(req: Request) {
   }
 
   let session = await ensureSession();
+
+  pruneRateLimit();
+  const rl = takeToken(`img:${session.id}`, 8, 60_000);
+  if (!rl.ok) {
+    return NextResponse.json(
+      {
+        error: `Too many image jobs — try again in ${rl.retryAfterSec}s`,
+        code: "RATE_LIMITED",
+        session: publicSession(session),
+      },
+      { status: 429 }
+    );
+  }
+
   if (session.credits < COST) {
     return NextResponse.json(
       {
-        error: "Not enough credits",
+        error:
+          session.plan === "free"
+            ? "Free trial used up — upgrade on Pricing, or wait for monthly refresh"
+            : "Not enough credits",
         code: "INSUFFICIENT_CREDITS",
         session: publicSession(session),
       },
