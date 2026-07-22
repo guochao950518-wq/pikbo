@@ -60,8 +60,8 @@
 ## Grok 本拍状态（3 行）
 
 - No agent merges (home-hf still at main tip).  
-- Honesty engine: demo path free (no credit burn); health.entitlements writable probe; paid ready requires it.  
-- smoke+typecheck+lint green · pushing main.
+- Honesty `9d5c4a2`: demo path free (0 credits); health.entitlements probe gates ready.paid.  
+- smoke+typecheck+lint green · **pushed main**. Next: Claude D5+ when pushed.
 
 ---
 
