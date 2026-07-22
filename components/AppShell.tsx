@@ -108,7 +108,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="flex-1">{children}</div>
         <MobileGenerateBar />
 
-        <nav className="sticky bottom-0 z-40 flex overflow-x-auto border-t border-[var(--border)] bg-[var(--bg-soft)] lg:hidden">
+        <nav className="sticky bottom-0 z-40 flex border-t border-[var(--border)] bg-[var(--bg-soft)] lg:hidden">
           {NAV.slice(0, 6).map((item) => {
             const active =
               item.href === "/"
@@ -118,7 +118,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex min-w-[4.2rem] flex-1 flex-col items-center gap-0.5 py-2 text-[9px] ${
+                className={`flex min-w-0 flex-1 flex-col items-center gap-0.5 py-2 text-[9px] ${
                   active ? "text-[var(--brand)]" : "text-[var(--fg-dim)]"
                 }`}
               >

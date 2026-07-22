@@ -40,7 +40,6 @@ function ModelCard({ model }: { model: CatalogModel }) {
       <Link href={model.href} className="block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lime)]">
         <div className="relative aspect-[16/10] overflow-hidden bg-black">
           {demo && !failed ? (
-             
             <video
               ref={videoRef}
               muted
@@ -62,7 +61,7 @@ function ModelCard({ model }: { model: CatalogModel }) {
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/5 to-transparent" />
           <div className="absolute left-3 top-3 flex gap-2">
             <span className={`rounded-full px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.14em] ${model.live ? "bg-[var(--lime)] text-black" : "bg-black/55 text-white/65 backdrop-blur"}`}>
-              {model.live ? "Live" : "Roadmap"}
+              {model.live ? "Integrated" : "Roadmap"}
             </span>
             {demo && (
               <span className="rounded-full border border-white/15 bg-black/50 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-white/70 backdrop-blur">
@@ -100,7 +99,7 @@ export function HomeModelShelf() {
             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--lime)]">Model shelf</p>
             <h2 className="mt-2 text-2xl font-bold">Video engines for toy content</h2>
             <p className="mt-1 max-w-xl text-sm text-[var(--fg-muted)]">
-              Two live Seedance paths today. Future engines stay clearly marked until they are actually wired.
+              Two Seedance adapters are wired. Cached previews stay explicit until provider credentials are configured.
             </p>
           </div>
           <Link href="/models" className="text-sm font-semibold text-[var(--lime)] hover:text-white">

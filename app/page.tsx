@@ -10,6 +10,7 @@ import {
 import { HomeModelShelf } from "@/components/HomeModelShelf";
 import { HowItWorks } from "@/components/HowItWorks";
 import { TrustStrip } from "@/components/TrustStrip";
+import { DEMO_VIDEOS } from "@/lib/demoVideos";
 
 /**
  * Home feed patterned on full AI creative suites:
@@ -139,29 +140,40 @@ export default function Home() {
         />
       </div>
 
-      {/* Community */}
+      {/* Lab examples: owned cached prototypes, never presented as user posts. */}
       <section className="border-b border-[var(--border)] px-4 py-10 sm:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="mb-5 flex justify-between">
-            <h2 className="text-xl font-bold">Community</h2>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--mint)]">
+                Pikbo Lab
+              </p>
+              <h2 className="mt-1 text-xl font-bold">Prototype recipes</h2>
+            </div>
             <Link href="/community" className="text-xs text-[var(--lime)]">
-              Explore
+              View every lab example
             </Link>
           </div>
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            {PRESETS.slice(0, 4).map((p, i) => (
+            {DEMO_VIDEOS.slice(0, 4).map((demo) => (
               <Link
-                key={p.slug}
-                href={`/create?effect=${p.slug}`}
-                className="overflow-hidden rounded-xl border border-[var(--border)]"
+                key={demo.id}
+                href={`/create?effect=${demo.preset}`}
+                className="group overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)]"
               >
-                <div
-                  className="aspect-[4/3]"
-                  style={{ background: p.gradient }}
-                />
-                <div className="p-2 text-[11px]">
-                  <p className="font-semibold">{p.name}</p>
-                  <p className="text-[var(--fg-dim)]">@user{i + 1}</p>
+                <div className="aspect-[4/3] overflow-hidden bg-black">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={demo.poster}
+                    alt={`${demo.character} ${demo.title} prototype poster`}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                  />
+                </div>
+                <div className="p-3 text-[11px]">
+                  <p className="font-semibold">{demo.title}</p>
+                  <p className="mt-1 text-[var(--fg-dim)]">
+                    Cached lab preview · use recipe →
+                  </p>
                 </div>
               </Link>
             ))}

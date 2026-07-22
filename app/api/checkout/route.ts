@@ -18,7 +18,7 @@ export const runtime = "nodejs";
  * Without Stripe keys, non-production can still "dev upgrade".
  */
 export async function POST(req: Request) {
-  let body: { plan?: string; dev?: boolean } = {};
+  let body: { plan?: string; dev?: boolean; interval?: "month" | "year" } = {};
   try {
     body = await req.json();
   } catch {
@@ -40,16 +40,28 @@ export async function POST(req: Request) {
 
   const session = await ensureSession();
   const stripeKey = process.env.STRIPE_SECRET_KEY;
-  const priceEnv = plan.stripePriceEnv;
+  const interval = body.interval === "year" ? "year" : "month";
+  const priceEnv =
+    interval === "year" ? plan.stripeAnnualPriceEnv : plan.stripePriceEnv;
   const priceId = priceEnv ? process.env[priceEnv] : undefined;
+
+  if (interval === "year" && !priceId) {
+    return NextResponse.json(
+      {
+        error: "Annual billing is not configured yet. Choose monthly billing.",
+        code: "ANNUAL_NOT_CONFIGURED",
+      },
+      { status: 503 }
+    );
+  }
 
   // --- Stripe path ---
   if (stripeKey && priceId) {
     try {
       const origin =
-        req.headers.get("origin") ||
-        process.env.NEXT_PUBLIC_SITE_URL ||
-        site.url;
+        process.env.NODE_ENV === "production"
+          ? process.env.NEXT_PUBLIC_SITE_URL || site.url
+          : req.headers.get("origin") || site.url;
 
       const params = new URLSearchParams();
       params.set("mode", "subscription");
@@ -61,8 +73,10 @@ export async function POST(req: Request) {
       params.set("client_reference_id", session.id);
       params.set("metadata[pikbo_session_id]", session.id);
       params.set("metadata[plan]", plan.id);
+      params.set("metadata[billing_interval]", interval);
       params.set("subscription_data[metadata][pikbo_session_id]", session.id);
       params.set("subscription_data[metadata][plan]", plan.id);
+      params.set("subscription_data[metadata][billing_interval]", interval);
       params.set("line_items[0][price]", priceId);
       params.set("line_items[0][quantity]", "1");
       params.set("allow_promotion_codes", "true");
@@ -99,7 +113,6 @@ export async function POST(req: Request) {
 
   // --- Dev / demo upgrade (no Stripe keys) ---
   const allowDev =
-    body.dev === true ||
     process.env.ALLOW_DEV_UPGRADE === "1" ||
     process.env.NODE_ENV !== "production";
 

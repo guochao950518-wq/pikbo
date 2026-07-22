@@ -4,22 +4,22 @@ import { DEMO_VIDEOS } from "@/lib/demoVideos";
 import { PRESETS } from "@/lib/presets";
 
 export const metadata: Metadata = {
-  title: "Community",
-  description: "Explore toy video demos and presets on Pikbo.",
+  title: "Pikbo Lab",
+  description: "Explore clearly labeled Pikbo toy-video prototypes and recipes.",
 };
 
 export default function CommunityPage() {
   return (
     <div className="px-4 py-10 sm:px-8">
       <div className="mx-auto max-w-6xl">
-        <span className="chip">Community</span>
-        <h1 className="mt-3 text-2xl font-bold">From the shelf</h1>
+        <span className="chip">Pikbo Lab</span>
+        <h1 className="mt-3 text-2xl font-bold">Prototype shelf</h1>
         <p className="mt-1 text-sm text-[var(--fg-muted)]">
-          Real Pikbo demos (no credit cost) plus every preset you can run in
-          Generate.
+          Owned, cached prototype footage for testing the product experience.
+          These clips do not claim provider provenance and playback never spends credits.
         </p>
 
-        <h2 className="mt-10 text-lg font-bold">Featured demos</h2>
+        <h2 className="mt-10 text-lg font-bold">Cached lab previews</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {DEMO_VIDEOS.map((d) => (
             <Link
@@ -28,7 +28,6 @@ export default function CommunityPage() {
               className="card group overflow-hidden p-0 transition-transform hover:-translate-y-1"
             >
               <div className="aspect-[9/14] bg-black/50 sm:aspect-video">
-                { }
                 <video
                   className="h-full w-full object-cover"
                   poster={d.poster}
@@ -50,6 +49,9 @@ export default function CommunityPage() {
                   {d.title}
                 </p>
                 <p className="mt-1 text-xs text-[var(--fg-muted)]">{d.result}</p>
+                <p className="mt-2 text-[10px] uppercase tracking-wide text-[var(--fg-dim)]">
+                  Prototype · not a public user post
+                </p>
               </div>
             </Link>
           ))}

@@ -1,14 +1,8 @@
 import type { Metadata } from "next";
-import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { site } from "@/lib/site";
 import { AppShell } from "@/components/AppShell";
-
-const display = Space_Grotesk({
-  variable: "--font-sans",
-  subsets: ["latin"],
-  display: "swap",
-});
+import { Analytics } from "@/components/Analytics";
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -44,8 +38,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${display.variable} h-full`}>
+    <html lang="en" className="h-full">
       <body className="min-h-full bg-[var(--bg)] text-[var(--fg)]">
+        <Analytics />
         <AppShell>{children}</AppShell>
       </body>
     </html>

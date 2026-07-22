@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { DEMO_VIDEOS, type DemoVideo } from "@/lib/demoVideos";
+import { track } from "@/lib/analytics";
 
 function useReducedMotion() {
   const [reduced, setReduced] = useState(false);
@@ -85,7 +86,6 @@ export function HeroDemoStage() {
 
           <div className="relative overflow-hidden bg-[#08070b]">
             {!failed ? (
-               
               <video
                 key={active.id}
                 ref={videoRef}
@@ -95,7 +95,10 @@ export function HeroDemoStage() {
                 playsInline
                 autoPlay={!reducedMotion}
                 preload="metadata"
-                onPlay={() => setPlaying(true)}
+                onPlay={() => {
+                  setPlaying(true);
+                  track("hero_video_start", { demoId: active.id });
+                }}
                 onPause={() => setPlaying(false)}
                 onError={() => setFailed(true)}
                 className="h-full w-full object-cover"
@@ -213,7 +216,11 @@ function ShowcaseCard({ demo, index }: { demo: DemoVideo; index: number }) {
   }, [reducedMotion]);
 
   function playPreview() {
-    if (!reducedMotion) videoRef.current?.play().catch(() => undefined);
+    if (!reducedMotion) {
+      videoRef.current?.play().then(() => {
+        track("showcase_video_play", { demoId: demo.id });
+      }).catch(() => undefined);
+    }
   }
 
   function pausePreview() {
@@ -236,7 +243,6 @@ function ShowcaseCard({ demo, index }: { demo: DemoVideo; index: number }) {
         }`}
       >
         {!failed ? (
-           
           <video
             ref={videoRef}
             poster={demo.poster}
@@ -271,6 +277,7 @@ function ShowcaseCard({ demo, index }: { demo: DemoVideo; index: number }) {
         <p className="text-xs leading-5 text-[var(--fg-muted)]">{demo.result}</p>
         <Link
           href={`/create?effect=${demo.preset}`}
+          onClick={() => track("template_select", { presetId: demo.preset, source: "home_showcase" })}
           className="shrink-0 rounded-full border border-white/12 bg-white/[.06] px-3 py-2 text-xs font-semibold text-white transition hover:border-[var(--mint)]/55 hover:text-[var(--mint)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--mint)]"
         >
           Use look →

@@ -2,6 +2,7 @@ import { createHmac, randomUUID, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
 import { getEntitlement } from "@/lib/entitlements";
 import { CREDITS_PER_VIDEO, getPlan, type PlanId } from "@/lib/pricing";
+import { getSupabaseAuthUser } from "@/lib/supabaseAuth";
 
 export const SESSION_COOKIE = "pikbo_s";
 const MAX_AGE = 60 * 60 * 24 * 180; // 180 days
@@ -22,16 +23,14 @@ export type PublicSession = UserSession & {
 };
 
 function secret(): string {
-  const s = process.env.SESSION_SECRET || process.env.CREDITS_SECRET;
-  if (!s) {
-    if (process.env.NODE_ENV === "production") {
-      console.error(
-        "[pikbo] SESSION_SECRET is missing — using insecure default. Set it before real traffic."
-      );
-    }
-    return "pikbo-dev-secret-change-me";
+  const configured = process.env.SESSION_SECRET || process.env.CREDITS_SECRET;
+  if (configured) return configured;
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(
+      "SESSION_SECRET is required in production; refusing an insecure fallback"
+    );
   }
-  return s;
+  return "pikbo-dev-secret-change-me";
 }
 
 export function currentPeriodKey(d = new Date()): string {
@@ -173,6 +172,20 @@ export function publicSession(session: UserSession): PublicSession {
 export async function getOrCreateSession(): Promise<UserSession> {
   const jar = await cookies();
   const existing = decodeSession(jar.get(SESSION_COOKIE)?.value);
+  const authUser = await getSupabaseAuthUser();
+  if (authUser) {
+    const free = getPlan("free");
+    const authenticated =
+      existing?.id === authUser.id
+        ? existing
+        : {
+            id: authUser.id,
+            plan: "free" as const,
+            credits: free.credits,
+            periodKey: currentPeriodKey(),
+          };
+    return applyEntitlement(refreshPeriod(authenticated));
+  }
   if (existing) {
     const refreshed = refreshPeriod(existing);
     return applyEntitlement(refreshed);
@@ -196,6 +209,11 @@ export async function saveSession(session: UserSession): Promise<void> {
     path: "/",
     maxAge: MAX_AGE,
   });
+}
+
+export async function clearSession(): Promise<void> {
+  const jar = await cookies();
+  jar.delete(SESSION_COOKIE);
 }
 
 export async function ensureSession(): Promise<UserSession> {

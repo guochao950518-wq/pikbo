@@ -2,27 +2,31 @@
 
 import { useState } from "react";
 import type { PlanId } from "@/lib/pricing";
+import { track } from "@/lib/analytics";
 
 export function PricingCheckoutButton({
   planId,
   label,
   featured,
+  interval = "month",
 }: {
   planId: PlanId;
   label: string;
   featured?: boolean;
+  interval?: "month" | "year";
 }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function checkout() {
+    track("pricing_plan_select", { planId, interval });
     setBusy(true);
     setError(null);
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: planId }),
+        body: JSON.stringify({ plan: planId, interval }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Checkout failed");

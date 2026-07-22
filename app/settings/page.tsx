@@ -41,7 +41,8 @@ export default function SettingsPage() {
         <span className="chip">Settings</span>
         <h1 className="mt-3 text-2xl font-bold">Settings</h1>
         <p className="mt-1 text-sm text-[var(--fg-muted)]">
-          Device data & session. Cloud accounts come later.
+          Account, device data, and generation settings. Cloud sync is available
+          when Supabase is configured.
         </p>
 
         <div className="card mt-8 space-y-4 p-6 text-sm">
@@ -56,7 +57,7 @@ export default function SettingsPage() {
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[var(--fg-muted)]">Library clips</span>
+            <span className="text-[var(--fg-muted)]">Local library clips</span>
             <span className="font-semibold">{libCount}</span>
           </div>
           <div className="flex justify-between">

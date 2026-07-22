@@ -9,17 +9,43 @@ import {
   type HistoryItem,
 } from "@/lib/history";
 
+type CloudJob = {
+  id: string;
+  presetId: string;
+  status: "queued" | "running" | "succeeded" | "failed" | "canceled";
+  progress: number;
+  outputUrl?: string;
+  posterUrl?: string;
+  demo: boolean;
+  watermark: boolean;
+  model: string;
+  error?: string;
+  chargedCredits: number;
+  updatedAt: string;
+};
+
 export function LibraryGrid() {
   const [items, setItems] = useState<HistoryItem[]>([]);
   const [ready, setReady] = useState(false);
   const [filter, setFilter] = useState("");
+  const [cloudJobs, setCloudJobs] = useState<CloudJob[]>([]);
+  const [cloudReady, setCloudReady] = useState(false);
+  const [cloudPersisted, setCloudPersisted] = useState(false);
 
   useEffect(() => {
-    const t = window.setTimeout(() => {
+    const timer = window.setTimeout(() => {
       setItems(loadHistory());
       setReady(true);
     }, 0);
-    return () => window.clearTimeout(t);
+    fetch("/api/generations", { cache: "no-store" })
+      .then((response) => response.json())
+      .then((data: { jobs?: CloudJob[]; persisted?: boolean }) => {
+        setCloudJobs(data.jobs ?? []);
+        setCloudPersisted(Boolean(data.persisted));
+      })
+      .catch(() => {})
+      .finally(() => setCloudReady(true));
+    return () => window.clearTimeout(timer);
   }, []);
 
   const filtered = useMemo(() => {
@@ -32,19 +58,19 @@ export function LibraryGrid() {
     );
   }, [items, filter]);
 
-  if (!ready) {
+  if (!ready || !cloudReady) {
     return (
       <p className="py-20 text-center text-sm text-[var(--fg-dim)]">Loading…</p>
     );
   }
 
-  if (items.length === 0) {
+  if (items.length === 0 && cloudJobs.length === 0) {
     return (
       <div className="mt-10 grid place-items-center rounded-2xl border border-dashed border-[var(--border)] bg-[var(--bg-soft)] py-24 text-center">
         <p className="text-[var(--fg-muted)]">No clips yet</p>
         <p className="mt-2 max-w-sm text-xs text-[var(--fg-dim)]">
-          Generations from this browser are saved here. Open Generate to make
-          your first clip.
+          Signed-in generations appear here from the cloud. Guest legacy clips
+          remain on this browser only.
         </p>
         <Link href="/create" className="btn btn-primary mt-6 text-sm">
           Open Generate
@@ -55,6 +81,66 @@ export function LibraryGrid() {
 
   return (
     <div className="mt-8">
+      <section>
+        <div className="mb-4 flex items-end justify-between gap-3">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--mint)]">
+              {cloudPersisted ? "Cloud library" : "Validation tasks"}
+            </p>
+            <h2 className="mt-1 text-lg font-semibold">Tracked generation jobs</h2>
+          </div>
+          <Link href="/create" className="text-xs text-[var(--brand)] hover:underline">
+            New clip →
+          </Link>
+        </div>
+        {cloudJobs.length > 0 ? (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {cloudJobs.map((job) => (
+              <article key={job.id} className="card overflow-hidden p-0">
+                <div className="grid aspect-video place-items-center bg-black/50">
+                  {job.outputUrl ? (
+                    <video
+                      src={job.outputUrl}
+                      poster={job.posterUrl}
+                      className="h-full w-full object-contain"
+                      controls
+                      muted
+                      playsInline
+                      preload="metadata"
+                    />
+                  ) : (
+                    <div className="px-4 text-center text-xs text-[var(--fg-dim)]">
+                      {job.status === "failed" ? job.error || "Generation failed" : `${job.status} · ${job.progress}%`}
+                    </div>
+                  )}
+                </div>
+                <div className="p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-semibold">{job.presetId.replaceAll("-", " ")}</p>
+                    <span className="chip text-[9px]">{job.demo ? "validation" : job.status}</span>
+                  </div>
+                  <p className="mt-1 text-[10px] text-[var(--fg-dim)]">
+                    {job.model} · {job.chargedCredits} credits
+                    {job.watermark ? " · watermarked" : ""}
+                  </p>
+                  <Link href={`/create?effect=${job.presetId}`} className="mt-2 inline-block text-xs text-[var(--mint)] hover:underline">
+                    Create another version →
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className="rounded-xl border border-dashed border-[var(--border)] px-4 py-8 text-center text-xs text-[var(--fg-dim)]">
+            No tracked cloud jobs yet.
+          </p>
+        )}
+      </section>
+
+      <div className="my-8 border-t border-[var(--border)]" />
+      <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--fg-dim)]">
+        Legacy device library
+      </p>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <input
           value={filter}
