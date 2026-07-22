@@ -65,9 +65,9 @@ export default function EffectsHub() {
             </h2>
             <p className="text-xs text-[var(--fg-dim)]">{category.blurb}</p>
           </div>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-4 xl:grid-cols-5">
+          <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 sm:gap-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7">
             {items.map((item) => (
-              <VideoTile key={item.id} item={item} />
+              <VideoTile key={item.id} item={item} compact />
             ))}
           </div>
         </section>
