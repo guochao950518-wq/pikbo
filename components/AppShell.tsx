@@ -9,18 +9,18 @@ import { ToastProvider } from "@/components/Toast";
 import { Footer } from "@/components/Footer";
 import { cn } from "@/lib/utils";
 
-/** HF-style: thin left icons + full-bleed black content */
-const SIDE = [
-  { href: "/", icon: "⌂", label: "Home" },
-  { href: "/create", icon: "✦", label: "Generate" },
-  { href: "/community", icon: "◉", label: "Community" },
-  { href: "/effects", icon: "▶", label: "Presets" },
-  { href: "/explore", icon: "✧", label: "Explore" },
-  { href: "/library", icon: "▢", label: "Library" },
-  { href: "/supercomputer", icon: "⚡", label: "Batch" },
-  { href: "/image", icon: "▣", label: "Image" },
-  { href: "/pricing", icon: "$", label: "Pricing" },
-  { href: "/profile", icon: "○", label: "Profile" },
+/** Higgsfield-style: top horizontal text nav + full-bleed black content */
+const TOP = [
+  { href: "/", label: "Explore" },
+  { href: "/image", label: "Image" },
+  { href: "/create", label: "Video" },
+  { href: "/cinema", label: "Cinema Studio" },
+  { href: "/effects", label: "Presets" },
+  { href: "/models", label: "Models" },
+  { href: "/supercomputer", label: "Batch" },
+  { href: "/community", label: "Community" },
+  { href: "/explore", label: "Feed" },
+  { href: "/library", label: "Library" },
 ] as const;
 
 const MOBILE = [
@@ -48,42 +48,47 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <ToastProvider>
-      <div className="flex min-h-screen bg-black text-white">
-        <aside className="sticky top-0 z-50 hidden h-screen w-16 shrink-0 flex-col items-center border-r border-white/[0.07] bg-[#09090b] py-3 lg:flex">
-          <Link
-            href="/"
-            className="mb-4 grid h-9 w-9 place-items-center rounded-xl bg-[#c8ff3d] text-sm font-black text-black"
-            title={site.name}
-          >
-            P
+      <div className="flex min-h-screen flex-col bg-black text-white">
+        {/* Desktop top nav — Higgsfield style */}
+        <header className="sticky top-0 z-50 hidden h-14 items-center gap-6 border-b border-white/[0.07] bg-black/80 px-5 backdrop-blur-md lg:flex">
+          <Link href="/" className="flex shrink-0 items-center gap-2" title={site.name}>
+            <span className="grid h-8 w-8 place-items-center rounded-lg bg-[#c8ff3d] text-sm font-black text-black">
+              P
+            </span>
+            <span className="font-display text-lg font-bold tracking-tight">{site.name}</span>
           </Link>
-          <nav className="flex flex-1 flex-col items-center gap-1">
-            {SIDE.map((item) => (
+          <nav className="flex min-w-0 flex-1 items-center gap-5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {TOP.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                title={item.label}
                 className={cn(
-                  "grid h-11 w-11 place-items-center rounded-xl text-base transition",
+                  "shrink-0 whitespace-nowrap text-[13px] font-medium transition-colors",
                   active(path, item.href)
-                    ? "bg-white/10 text-[#c8ff3d]"
-                    : "text-white/40 hover:bg-white/[0.06] hover:text-white"
+                    ? "text-[#c8ff3d]"
+                    : "text-white/55 hover:text-white"
                 )}
               >
-                {item.icon}
+                {item.label}
               </Link>
             ))}
           </nav>
-          <div className="flex flex-col items-center gap-2">
-            <CreditsBadge compact />
+          <div className="flex shrink-0 items-center gap-3">
+            <CreditsBadge />
+            <Link
+              href="/pricing"
+              className="text-[13px] font-semibold text-white/70 hover:text-white"
+            >
+              Pricing
+            </Link>
             <Link
               href="/create"
-              className="grid h-10 w-10 place-items-center rounded-xl bg-[#c8ff3d] text-sm font-black text-black"
+              className="rounded-full bg-[#c8ff3d] px-4 py-1.5 text-[13px] font-black text-black transition-transform hover:-translate-y-0.5"
             >
-              ✦
+              Generate
             </Link>
           </div>
-        </aside>
+        </header>
 
         <div className="flex min-w-0 flex-1 flex-col bg-black">
           <header
@@ -110,21 +115,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </Link>
             </div>
           </header>
-
-          {!home && (
-            <header className="sticky top-0 z-40 hidden h-12 items-center justify-end gap-3 border-b border-white/[0.07] bg-black/70 px-4 backdrop-blur-md lg:flex">
-              <CreditsBadge />
-              <Link href="/pricing" className="text-xs font-semibold text-white/50 hover:text-white">
-                Pricing
-              </Link>
-              <Link
-                href="/create"
-                className="rounded-full bg-[#c8ff3d] px-4 py-1.5 text-xs font-black text-black"
-              >
-                Generate
-              </Link>
-            </header>
-          )}
 
           <CommandPalette />
           <main className="flex-1 bg-black">{children}</main>

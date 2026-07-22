@@ -89,11 +89,11 @@ function FeatureRow({ demos }: { demos: DemoVideo[] }) {
     <section className="grid grid-cols-1 gap-3 px-3 pt-3 sm:px-5 md:grid-cols-3 md:gap-4">
       {cards.map((c, i) => (
         <Link key={c.title} href={c.href} className="group block">
-          <div className="relative aspect-[16/10] overflow-hidden rounded-[18px] bg-neutral-900">
+          <div className="relative aspect-[16/10] overflow-hidden rounded-[18px] bg-neutral-900 ring-1 ring-white/10 transition-all duration-300 group-hover:-translate-y-1 group-hover:ring-2 group-hover:ring-[#c8ff3d]/45 group-hover:shadow-[0_28px_70px_-30px_rgba(0,0,0,0.9)]">
             <Clip
               demo={demos[i % demos.length]}
               eager
-              className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+              className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
             {c.badge && (
@@ -102,7 +102,7 @@ function FeatureRow({ demos }: { demos: DemoVideo[] }) {
               </span>
             )}
           </div>
-          <h3 className="font-display mt-3 text-[17px] font-bold uppercase leading-tight tracking-tight text-white sm:text-[19px]">
+          <h3 className="font-display mt-3 text-[17px] font-bold uppercase leading-tight tracking-tight text-white transition-colors group-hover:text-[#c8ff3d] sm:text-[19px]">
             {c.title}
           </h3>
           <p className="mt-1 text-[13px] text-white/50">{c.blurb}</p>
@@ -140,15 +140,74 @@ function LimePromo() {
   );
 }
 
+/* Thin monochrome line icons (Higgsfield style) — stroke inherits currentColor */
+function LineIcon({ name }: { name: string }) {
+  const common = {
+    width: 20,
+    height: 20,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.6,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+  };
+  switch (name) {
+    case "film":
+      return (
+        <svg {...common}>
+          <rect x="3" y="4" width="18" height="16" rx="2" />
+          <path d="M7 4v16M17 4v16M3 9h4M3 15h4M17 9h4M17 15h4" />
+        </svg>
+      );
+    case "spark":
+      return (
+        <svg {...common}>
+          <path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3Z" />
+        </svg>
+      );
+    case "box":
+      return (
+        <svg {...common}>
+          <path d="M21 8l-9-5-9 5 9 5 9-5Z" />
+          <path d="M3 8v8l9 5 9-5V8M12 13v8" />
+        </svg>
+      );
+    case "spin":
+      return (
+        <svg {...common}>
+          <path d="M21 12a9 9 0 1 1-2.64-6.36" />
+          <path d="M21 3v5h-5" />
+        </svg>
+      );
+    case "wand":
+      return (
+        <svg {...common}>
+          <path d="M15 4V2M15 10V8M11 6H9M21 6h-2M17.8 8.8l-1.4-1.4M12.6 3.6L11.2 2.2" />
+          <path d="M3 21l11-11" />
+        </svg>
+      );
+    case "clap":
+      return (
+        <svg {...common}>
+          <path d="M3 9h18v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9Z" />
+          <path d="M3 9l1.5-4 4 1L10 2l4 1 1.5-4 4 1L21 5" />
+        </svg>
+      );
+    default:
+      return null;
+  }
+}
+
 /* ---- 3. Two-col: pitch card + model/feature grid (HF icon+badge+title cards) ---- */
 function ModelGrid() {
   const features = [
-    { icon: "🎞️", title: "Seedance Mini", sub: "Free toy clips in seconds", badge: "Free", href: "/create" },
-    { icon: "✨", title: "Seedance 2.0", sub: "Best quality for painted figures", badge: "Paid", href: "/pricing" },
-    { icon: "📦", title: "Blind-box unboxing", sub: "The reveal collectors share", badge: "Viral", href: "/create?effect=blind-box-unboxing" },
-    { icon: "🌀", title: "360° listing spin", sub: "Marketplace-ready packshot", badge: "Seller", href: "/create?effect=360-spin-showcase" },
-    { icon: "💃", title: "Make it dance", sub: "Come-alive loop for Reels", badge: "Viral", href: "/create?effect=make-figure-dance" },
-    { icon: "🏙️", title: "Cinema scene", sub: "Drop a figure into a world", badge: "Scene", href: "/cinema" },
+    { icon: "film", title: "Seedance Mini", sub: "Free toy clips in seconds", badge: "Free", href: "/create" },
+    { icon: "spark", title: "Seedance 2.0", sub: "Best quality for painted figures", badge: "Paid", href: "/pricing" },
+    { icon: "box", title: "Blind-box unboxing", sub: "The reveal collectors share", badge: "Viral", href: "/create?effect=blind-box-unboxing" },
+    { icon: "spin", title: "360° listing spin", sub: "Marketplace-ready packshot", badge: "Seller", href: "/create?effect=360-spin-showcase" },
+    { icon: "wand", title: "Make it dance", sub: "Come-alive loop for Reels", badge: "Viral", href: "/create?effect=make-figure-dance" },
+    { icon: "clap", title: "Cinema scene", sub: "Drop a figure into a world", badge: "Scene", href: "/cinema" },
   ];
   return (
     <section className="grid grid-cols-1 gap-3 px-3 py-4 sm:px-5 lg:grid-cols-[minmax(0,340px)_1fr] lg:gap-4">
@@ -179,11 +238,11 @@ function ModelGrid() {
           <Link
             key={f.title}
             href={f.href}
-            className="card-i flex flex-col justify-between rounded-[18px] border border-white/10 bg-white/[0.03] p-5"
+            className="card-i group flex flex-col justify-between rounded-[18px] border border-white/10 bg-white/[0.03] p-5"
           >
             <div className="flex items-start justify-between">
-              <span className="grid h-10 w-10 place-items-center rounded-xl bg-white/[0.06] text-lg">
-                {f.icon}
+              <span className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/[0.04] text-white/85 transition-colors group-hover:text-[#c8ff3d]">
+                <LineIcon name={f.icon} />
               </span>
               <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wide text-[#c8ff3d]">
                 {f.badge}

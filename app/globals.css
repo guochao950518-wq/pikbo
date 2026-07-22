@@ -4,10 +4,10 @@
    Video-first, near-black canvas, lime/mint live accents.
 ---------------------------------------------------------------- */
 :root {
-  --bg: #07070a;
-  --bg-soft: #0e0e12;
-  --card: #121218;
-  --card-2: #17171f;
+  --bg: #000000;
+  --bg-soft: #0a0a0b;
+  --card: #101012;
+  --card-2: #161619;
   --border: rgba(255, 255, 255, 0.08);
   --fg: #f4f4f5;
   --fg-muted: #a1a1aa;
