@@ -6,16 +6,20 @@ import {
   clearHistory,
   downloadVideoFile,
   exportHistoryJson,
+  importHistoryJson,
   loadHistory,
   removeHistoryItem,
   type HistoryItem,
 } from "@/lib/history";
 import { useToast } from "@/components/Toast";
 
+type KindFilter = "all" | "live" | "demo";
+
 export function LibraryGrid() {
   const [items, setItems] = useState<HistoryItem[]>([]);
   const [ready, setReady] = useState(false);
   const [filter, setFilter] = useState("");
+  const [kind, setKind] = useState<KindFilter>("all");
   const [sort, setSort] = useState<"new" | "name">("new");
   const toast = useToast();
 
@@ -36,8 +40,10 @@ export function LibraryGrid() {
   const filtered = useMemo(() => {
     const q = filter.trim().toLowerCase();
     let list = items;
+    if (kind === "live") list = list.filter((i) => !i.demo);
+    if (kind === "demo") list = list.filter((i) => i.demo);
     if (q) {
-      list = items.filter(
+      list = list.filter(
         (i) =>
           i.effectName.toLowerCase().includes(q) ||
           i.effect.toLowerCase().includes(q)
@@ -49,7 +55,24 @@ export function LibraryGrid() {
       );
     }
     return list;
-  }, [items, filter, sort]);
+  }, [items, filter, sort, kind]);
+
+  function onImportFile(file: File | undefined) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const text = typeof reader.result === "string" ? reader.result : "";
+      const n = importHistoryJson(text);
+      if (n < 0) {
+        toast("Import failed — need a Pikbo library JSON export");
+        return;
+      }
+      setItems(loadHistory());
+      toast(`Library restored · ${n} clip${n === 1 ? "" : "s"}`);
+    };
+    reader.onerror = () => toast("Could not read file");
+    reader.readAsText(file);
+  }
 
   async function copyLink(url: string) {
     try {
@@ -125,6 +148,16 @@ export function LibraryGrid() {
             <option value="new">Newest</option>
             <option value="name">By name</option>
           </select>
+          <select
+            value={kind}
+            onChange={(e) => setKind(e.target.value as KindFilter)}
+            className="rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] px-2 py-1.5 text-xs outline-none"
+            aria-label="Filter live vs cached demo"
+          >
+            <option value="all">All kinds</option>
+            <option value="live">Live only</option>
+            <option value="demo">Cached demos</option>
+          </select>
           <span className="text-[10px] text-[var(--fg-dim)]">
             {filtered.length} / {items.length}
           </span>
@@ -140,6 +173,18 @@ export function LibraryGrid() {
           >
             Export JSON
           </button>
+          <label className="cursor-pointer text-xs text-[var(--fg-muted)] hover:text-[var(--mint)]">
+            Import JSON
+            <input
+              type="file"
+              accept="application/json,.json"
+              className="hidden"
+              onChange={(e) => {
+                onImportFile(e.target.files?.[0]);
+                e.target.value = "";
+              }}
+            />
+          </label>
           <button
             type="button"
             className="text-xs text-[var(--fg-dim)] hover:text-[var(--brand)]"
@@ -217,6 +262,9 @@ export function LibraryGrid() {
               <p className="mt-0.5 text-[10px] text-[var(--fg-dim)]">
                 {new Date(item.createdAt).toLocaleString()}
                 {item.model ? ` · ${item.model.split("/").pop()}` : ""}
+                {item.duration ? ` · ${item.duration}s` : ""}
+                {item.aspectRatio ? ` · ${item.aspectRatio}` : ""}
+                {item.resolution ? ` · ${item.resolution}` : ""}
               </p>
               <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
                 <button

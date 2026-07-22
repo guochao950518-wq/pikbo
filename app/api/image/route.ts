@@ -3,6 +3,10 @@ import { fal } from "@fal-ai/client";
 import { deductCredits, refundCredits } from "@/lib/credits";
 import { IMAGE_MODEL } from "@/lib/models";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
+import {
+  classifyProviderError,
+  providerErrorMessage,
+} from "@/lib/providerError";
 import { pruneRateLimit, takeToken } from "@/lib/rateLimit";
 import { ensureSession, publicSession, saveSession } from "@/lib/session";
 
@@ -17,12 +21,24 @@ export async function POST(req: Request) {
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid request", code: "INVALID_REQUEST" },
+      { status: 400 }
+    );
   }
 
   const prompt = body.prompt?.trim();
   if (!prompt || prompt.length < 4) {
-    return NextResponse.json({ error: "Prompt required" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Prompt required", code: "INVALID_REQUEST" },
+      { status: 400 }
+    );
+  }
+  if (prompt.length > 2000) {
+    return NextResponse.json(
+      { error: "Prompt too long (max 2000 chars)", code: "INVALID_REQUEST" },
+      { status: 400 }
+    );
   }
 
   let session = await ensureSession();
@@ -34,9 +50,13 @@ export async function POST(req: Request) {
       {
         error: `Too many image jobs — try again in ${rl.retryAfterSec}s`,
         code: "RATE_LIMITED",
+        retryAfterSec: rl.retryAfterSec,
         session: publicSession(session),
       },
-      { status: 429 }
+      {
+        status: 429,
+        headers: { "Retry-After": String(rl.retryAfterSec) },
+      }
     );
   }
 
@@ -59,12 +79,13 @@ export async function POST(req: Request) {
 
   if (!process.env.FAL_KEY) {
     await new Promise((r) => setTimeout(r, 800));
-    // placeholder gradient SVG data URL as demo
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="768" height="1024"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ff4d8d"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#g)"/><text x="50%" y="48%" fill="white" font-size="28" text-anchor="middle" font-family="sans-serif">Pikbo demo still</text><text x="50%" y="54%" fill="white" font-size="14" text-anchor="middle" opacity=".8">set FAL_KEY for Flux</text></svg>`;
+    // placeholder gradient SVG data URL as demo (lime/black brand, not purple)
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="768" height="1024"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0a0a0a"/><stop offset="1" stop-color="#1a2e0a"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#g)"/><text x="50%" y="48%" fill="#b8ff3c" font-size="28" text-anchor="middle" font-family="sans-serif">Pikbo demo still</text><text x="50%" y="54%" fill="#b8ff3c" font-size="14" text-anchor="middle" opacity=".75">set FAL_KEY for Flux</text></svg>`;
     const imageUrl = `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`;
     return NextResponse.json({
       imageUrl,
       demo: true,
+      demoReason: "no_provider_key",
       model: "demo",
       session: publicSession(session),
     });
@@ -99,13 +120,18 @@ export async function POST(req: Request) {
       session = refundCredits(session, COST);
       await saveSession(session);
       return NextResponse.json(
-        { error: "No image returned", session: publicSession(session) },
+        {
+          error: "No image returned",
+          code: "MODEL_EMPTY",
+          session: publicSession(session),
+        },
         { status: 502 }
       );
     }
 
     return NextResponse.json({
       imageUrl,
+      demo: false,
       model: IMAGE_MODEL,
       session: publicSession(session),
     });
@@ -113,10 +139,26 @@ export async function POST(req: Request) {
     console.error("image gen error:", err);
     session = refundCredits(session, COST);
     await saveSession(session);
-    const msg = err instanceof Error ? err.message : "Image generation failed";
+    const raw =
+      err && typeof err === "object" && "body" in err
+        ? JSON.stringify((err as { body?: unknown }).body)
+        : err instanceof Error
+          ? err.message
+          : "Image generation failed";
+    const kind = classifyProviderError(raw);
+    const fallback =
+      err instanceof Error ? err.message : "Image generation failed";
+    const msg = providerErrorMessage(kind, fallback);
+    const code =
+      kind === "balance"
+        ? "PROVIDER_BALANCE"
+        : kind === "rate"
+          ? "PROVIDER_RATE_LIMIT"
+          : "GENERATION_FAILED";
+    const status = kind === "balance" ? 402 : kind === "rate" ? 429 : 500;
     return NextResponse.json(
-      { error: msg, session: publicSession(session) },
-      { status: 500 }
+      { error: msg, code, session: publicSession(session) },
+      { status }
     );
   }
 }

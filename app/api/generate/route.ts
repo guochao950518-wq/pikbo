@@ -14,6 +14,11 @@ import {
 import { ensureSession, publicSession, saveSession } from "@/lib/session";
 import { demoClipForEffect } from "@/lib/demoClips";
 import { pruneRateLimit, takeToken } from "@/lib/rateLimit";
+import {
+  classifyProviderError,
+  isValidImageDataUrl,
+  providerErrorMessage,
+} from "@/lib/providerError";
 import type {
   GenerateErrorBody,
   GenerateRequestBody,
@@ -25,9 +30,10 @@ export const maxDuration = 180;
 
 function err(
   body: GenerateErrorBody,
-  status: number
+  status: number,
+  headers?: HeadersInit
 ): NextResponse<GenerateErrorBody> {
-  return NextResponse.json(body, { status });
+  return NextResponse.json(body, { status, headers });
 }
 
 export async function POST(req: Request) {
@@ -53,9 +59,12 @@ export async function POST(req: Request) {
   if (!preset) {
     return err({ error: "Unknown effect", code: "UNKNOWN_EFFECT" }, 400);
   }
-  if (!image || !image.startsWith("data:image")) {
+  if (!image || !isValidImageDataUrl(image)) {
     return err(
-      { error: "A toy photo is required", code: "INVALID_REQUEST" },
+      {
+        error: "A toy photo is required (JPEG, PNG, WebP, or GIF data URL)",
+        code: "INVALID_REQUEST",
+      },
       400
     );
   }
@@ -75,9 +84,11 @@ export async function POST(req: Request) {
       {
         error: `Too many generates — try again in ${rl.retryAfterSec}s`,
         code: "RATE_LIMITED",
+        retryAfterSec: rl.retryAfterSec,
         session: publicSession(session),
       },
-      429
+      429,
+      { "Retry-After": String(rl.retryAfterSec) }
     );
   }
 
@@ -105,6 +116,7 @@ export async function POST(req: Request) {
   const freeTier = plan.watermark;
   const secs = freeTier ? 5 : clampDuration(duration, preset.duration);
   const aspect = normalizeAspect(aspectRatio, preset.aspectRatio);
+  const resolution = resolutionForTier(freeTier, resPref);
 
   const custom = extra?.trim() || "";
   const prompt =
@@ -120,10 +132,12 @@ export async function POST(req: Request) {
     const payload: GenerateSuccess = {
       videoUrl: demoClipForEffect(preset.slug),
       demo: true,
+      demoReason: "no_provider_key",
       watermark: plan.watermark,
       model: "demo-cached",
       duration: secs,
       aspectRatio: aspect,
+      resolution,
       session: publicSession(session),
     };
     return NextResponse.json(payload);
@@ -176,7 +190,7 @@ export async function POST(req: Request) {
       image_url: imageUrl,
       duration: seedanceDuration(secs),
       aspect_ratio: aspect,
-      resolution: resolutionForTier(freeTier, resPref),
+      resolution,
       generate_audio: !freeTier,
     };
     if (typeof seed === "number" && Number.isFinite(seed) && seed >= 0) {
@@ -211,6 +225,7 @@ export async function POST(req: Request) {
       model,
       duration: secs,
       aspectRatio: aspect,
+      resolution,
       session: publicSession(session),
       requestId: result.requestId,
       provider: "bytedance-seedance",
@@ -226,22 +241,25 @@ export async function POST(req: Request) {
         : e instanceof Error
           ? e.message
           : "Generation failed";
-    const exhausted =
-      /Exhausted balance|locked|top up|insufficient.*credit/i.test(raw) ||
-      /Forbidden/i.test(raw);
-    const msg = exhausted
-      ? "fal.ai balance empty or account locked — top up at fal.ai/dashboard/billing (credits refunded)."
-      : e instanceof Error
-        ? e.message
-        : "Generation failed";
+    const kind = classifyProviderError(raw);
+    const fallback =
+      e instanceof Error ? e.message : "Generation failed";
+    const msg = providerErrorMessage(kind, fallback);
+    const code =
+      kind === "balance"
+        ? "PROVIDER_BALANCE"
+        : kind === "rate"
+          ? "PROVIDER_RATE_LIMIT"
+          : "GENERATION_FAILED";
+    const status = kind === "balance" ? 402 : kind === "rate" ? 429 : 500;
     return err(
       {
         error: msg,
-        code: exhausted ? "GENERATION_FAILED" : "GENERATION_FAILED",
+        code,
         model,
         session: publicSession(session),
       },
-      exhausted ? 402 : 500
+      status
     );
   }
 }

@@ -33,15 +33,17 @@
 ### Codex（文案 · 诚实）
 
 1. [x] 扫剩余 overclaim（Explore / PIKBO Lab / trust 条）  
-2. [x] FAQ/空态与 Mini Free 一致  
-3. [x] 新分支 `agent/gpt/overnight-copy` push  
+2. [x] FAQ / 空态与 Mini Free 一致  
+3. [x] wave2 honesty 已进 main（Lab labels · Mini trial）  
+4. 下一波：pricing FAQ residual + any post-merge drift  
 
 ### Grok（引擎 · 生产）
 
-1. ~~merge Codex truth-sync~~  
-2. 合流 Claude home-hf（有 push 就合）  
-3. 生成稳定性、health、preflight、限流  
-4. 不改 Claude 视觉大文件（除非修 build）  
+1. [x] merge Codex wave2 honesty  
+2. [x] 合流 Claude home-hf（community 4-col）  
+3. [x] generate/image: MIME guard · Retry-After · PROVIDER_BALANCE/RATE codes · resolution in success  
+4. [x] health ready ladder · library import/export + live/demo filter + richer meta  
+5. 下一拍：typecheck green push；preflight 若时间够  
 
 ### 老板醒来验收
 
@@ -50,6 +52,14 @@
 - [ ] 首页视频墙像 App  
 - [ ] 定价 1 / 5 / 15 + Mini  
 - [ ] `docs/LAUNCH.md` 仍是公网下一步  
+
+---
+
+## Grok 本拍状态（3 行）
+
+- Merged Claude `home-hf` community featured 4-col + GPT wave2 honesty already on main.  
+- Engine: provider error class · generate MIME + resolution honesty · health `ready` · library import/filter.  
+- Push pending typecheck; next: soft-launch env gate notes only if green.  
 
 ---
 

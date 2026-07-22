@@ -26,10 +26,14 @@ export type GenerateSuccess = {
   model: string;
   duration: number;
   aspectRatio: string;
+  /** Server-enforced resolution (480p free / 720p paid default) */
+  resolution: string;
   session: PublicSession;
   /** present on live fal jobs */
   requestId?: string;
   provider?: string;
+  /** why demo was returned — only when demo:true */
+  demoReason?: "no_provider_key";
 };
 
 export type GenerateErrorBody = {
@@ -41,11 +45,15 @@ export type GenerateErrorBody = {
     | "UNKNOWN_EFFECT"
     | "MODEL_EMPTY"
     | "GENERATION_FAILED"
+    | "PROVIDER_BALANCE"
+    | "PROVIDER_RATE_LIMIT"
     | "RATE_LIMITED";
   need?: number;
   have?: number;
   model?: string;
   session?: PublicSession;
+  /** seconds to wait on rate limits */
+  retryAfterSec?: number;
 };
 
 /** Future metering hook — flat cost today, structured for model×duration later. */

@@ -39,9 +39,12 @@ h=json.load(open("/tmp/pikbo-health.json"))
 assert h.get("ok") is True or h.get("degraded") is False or h.get("ok")
 mode=h.get("mode","?")
 fal=h.get("fal")
-print(f"health mode={mode} fal={fal} foundation={h.get('foundation')}")
+ready=h.get("ready") or {}
+print(f"health mode={mode} fal={fal} foundation={h.get('foundation')} ready={ready}")
 if not h.get("ok") and h.get("degraded"):
     raise SystemExit("health degraded")
+if ready.get("demo") is not True:
+    raise SystemExit("health.ready.demo missing")
 PY
 fi
 

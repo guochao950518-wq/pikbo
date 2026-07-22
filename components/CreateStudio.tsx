@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { loadFavorites, toggleFavorite } from "@/lib/favorites";
 import { pushHistory } from "@/lib/history";
+import { isValidImageDataUrl } from "@/lib/providerError";
 import { SAMPLE_TOYS, sampleToDataUrl } from "@/lib/samples";
 import { PRESETS } from "@/lib/presets";
 import { viralName } from "@/lib/viralNames";
@@ -266,8 +267,10 @@ export function CreateStudio({
       setMode("i2v");
       return;
     }
-    if (!image) {
-      setError("Upload a reference image first (image-to-video).");
+    if (!image || !isValidImageDataUrl(image)) {
+      setError(
+        "Upload a reference image first (JPEG, PNG, WebP, or GIF · image-to-video)."
+      );
       return;
     }
     if (image.length > 12_000_000) {
@@ -303,16 +306,32 @@ export function CreateStudio({
       const data = await res.json();
       if (data.session) setSession(data.session);
 
-      if (res.status === 402 || data.code === "INSUFFICIENT_CREDITS") {
-        setShowPaywall(true);
+      if (
+        res.status === 402 ||
+        data.code === "INSUFFICIENT_CREDITS" ||
+        data.code === "PROVIDER_BALANCE"
+      ) {
+        // Provider balance is not a user paywall, but still blocks live gens.
+        if (data.code !== "PROVIDER_BALANCE") setShowPaywall(true);
         setError(
-          data.error || "This allowance is used up. Compare finite plans to continue."
+          data.error ||
+            (data.code === "PROVIDER_BALANCE"
+              ? "Provider balance empty — credits refunded."
+              : "This allowance is used up. Compare finite plans to continue.")
         );
         setStatus("error");
         return;
       }
-      if (res.status === 429 || data.code === "RATE_LIMITED") {
-        setError(data.error || "Too many generates — wait a moment.");
+      if (
+        res.status === 429 ||
+        data.code === "RATE_LIMITED" ||
+        data.code === "PROVIDER_RATE_LIMIT"
+      ) {
+        const wait =
+          typeof data.retryAfterSec === "number"
+            ? ` try again in ${data.retryAfterSec}s`
+            : " wait a moment";
+        setError(data.error || `Too many generates —${wait}.`);
         setStatus("error");
         return;
       }
@@ -331,6 +350,17 @@ export function CreateStudio({
         model: data.model,
         watermark: Boolean(data.watermark),
         demo: Boolean(data.demo),
+        duration: typeof data.duration === "number" ? data.duration : effectiveDuration,
+        aspectRatio:
+          typeof data.aspectRatio === "string" ? data.aspectRatio : aspectRatio,
+        resolution:
+          typeof data.resolution === "string"
+            ? data.resolution
+            : isFree
+              ? "480p"
+              : resolution,
+        requestId:
+          typeof data.requestId === "string" ? data.requestId : undefined,
       });
       emitSessionRefresh();
       toast(data.demo ? "Cached demo ready" : "Live clip ready · saved to Library");

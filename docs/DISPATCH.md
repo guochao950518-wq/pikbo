@@ -9,21 +9,21 @@
 
 | 谁 | 内容 |
 |----|------|
-| Claude home-hf | 纯黑+lime、视频墙 denser、390 视频优先 |
-| Codex overnight-copy | Lab/Mini 诚实文案 |
+| Claude home-hf | 纯黑+lime、视频墙 denser、community 4-col、create stage |
+| Codex wave2 | Lab labels · Mini trial · TrustStrip honesty |
+| Grok engine | PROVIDER_* codes · MIME guard · health.ready · library import |
 
 ---
 
 ## 下一波 · 立刻执行（做完再停）
 
-### Claude 设计 · D1–D4
+### Claude 设计 · D5+
 
 路径：`/Users/x/claude/pikbo-claude-ui` · 分支：`agent/claude/home-hf`
 
-1. **D1** `/community` 视频墙密度 = 首页级（不能薄）  
-2. **D2** `/create` 黑+lime 大预览（不改 API）  
-3. **D3** `/effects` 密铺 + hover  
-4. **D4** 每 30 分钟 `push origin agent/claude/home-hf`
+1. **D5** 首页/顶栏 HF 密度继续（390 首屏视频优先）  
+2. **D6** 卡片 hover / 播放态 polish  
+3. **D7** 每 30 分钟 `push origin agent/claude/home-hf`
 
 ```text
 【Grok 协调令 · 禁止偷懒】
