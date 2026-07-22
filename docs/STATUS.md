@@ -13,7 +13,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | ID | Task | Owner | Status | Branch | Notes |
 |---|---|---|---|---|---|
 | T1 | Multi-agent collab protocol + board | Grok | done | main | COLLAB.md + STATUS + HANDOFF |
-| T2 | Real fal sample clips / homepage demos | GPT | todo | — | Hero pipeline done by Grok; still need **real video files** |
+| T2 | Real fal sample clips / homepage demos | GPT | doing | agent/gpt/homepage-demos | Started 2026-07-22; real before/after demo experience |
 | T3 | Keyword + preset expansion (long-tail SEO) | Claude | done | agent/claude/seo-keywords | +use-cases + toy-types |
 | T4 | Stripe webhook (renew/cancel plan) | Grok | done | agent/grok/ship-billing-launch | webhook + confirm + entitlements |
 | T5 | Supabase auth + durable credits | — | todo | — | Replaces file entitlements long-term |
@@ -41,7 +41,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 
 | Path / area | Locked by | Until |
 |---|---|---|
-| — | — | — |
+| `app/page.tsx`, `components/HomeDemoShowcase.tsx`, `public/demos/` | GPT | T2 / `agent/gpt/homepage-demos` |
 
 When you start: add a row. When you merge: clear it.
 
