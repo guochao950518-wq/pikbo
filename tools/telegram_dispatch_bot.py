@@ -33,10 +33,11 @@ OFFSET_FILE = Path.home() / ".pikbo_telegram_offset"
 
 API = f"https://api.telegram.org/bot{TOKEN}"
 
-START_PROMPT = """仓库：https://github.com/guochao950518-wq/pikbo
+START_PROMPT = """紧急上线冲刺。仓库：https://github.com/guochao950518-wq/pikbo
 git fetch && git checkout main && git pull --ff-only
-必读 docs/DISPATCH.md（只做分给你的一节）+ STATUS + HANDOFF
-分支 agent/<你>/<topic>，提交前缀 [你]，做完 push 并更新 DISPATCH/STATUS"""
+必读 docs/DISPATCH.md（只做分给你的一节）+ docs/LAUNCH.md + STATUS
+分支 agent/<你>/launch-* ，提交 [你]，做完立刻 push，勾 DISPATCH
+不要 force-push main，不要提交密钥。速度优先。"""
 
 
 def api(method: str, **params):

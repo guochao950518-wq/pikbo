@@ -69,6 +69,7 @@ Single source of truth: **this GitHub repo**.
 
 | Doc | Purpose |
 |---|---|
+| [`docs/LAUNCH.md`](./docs/LAUNCH.md) | **上线作战手册（Vercel + 域名）** |
 | [`docs/BOSS.md`](./docs/BOSS.md) | **老板怎么只说一遍就指挥三个人** |
 | [`docs/DISPATCH.md`](./docs/DISPATCH.md) | **当前总指令**（老板改这一份） |
 | [`COLLAB.md`](./COLLAB.md) | Branch rules, how to pull each other’s good commits |

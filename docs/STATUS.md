@@ -18,7 +18,8 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | T4 | Stripe webhook (renew/cancel plan) | Grok | done | agent/grok/ship-billing-launch | webhook + confirm + entitlements |
 | T5 | Supabase auth + durable credits | — | todo | — | Replaces file entitlements long-term |
 | T6 | Server-side free watermark (ffmpeg) | — | todo | — | Player overlay is temporary |
-| T7 | Vercel deploy + env checklist | Grok | doing | agent/grok/ship-billing-launch | .env.example ready; human adds keys |
+| T7 | Vercel deploy + domain pikbo.ai | Grok | doing | main | docs/LAUNCH.md; human clicks Vercel+Spaceship |
+| T10 | Boss one-command + Telegram bot | Grok | done | main | DISPATCH + tools/telegram_dispatch_bot.py |
 | T8 | Batch generate for Shop plan | — | todo | — | After auth/credits DB |
 | T9 | Effect preset expansion (studio + SEO landing) | Claude | done | agent/claude/seo-presets | +3 effects |
 

@@ -1,72 +1,69 @@
-# 老板指令板（只改这一份）
+# 老板指令板 — 紧急上线冲刺
 
-> **你（老板）只在这里写目标。**  
-> Grok / Codex(GPT) / Claude 每次开工先 `git pull`，再读本文件，**只做分给自己的区块**。
+> **总目标：尽快让 pikbo.ai 能打开、能试玩、能收费骨架就绪**  
+> Agent 只做自己区块。老板只做人肉注册/点按钮。
 
-**更新时间：** 2026-07-22  
-**总目标：** 潮玩 AI 视频站 pikbo.ai 上线能用、能收款
-
----
-
-## 老板原话（你随便写）
-
-```
-我有域名 pikbo.ai，还没弄清楚怎么同时指挥三个 AI。
-需要你们都帮我干活：网站部署上线、真能出片、能收费。
-我只会用手机/聊天下指令，不想复制三遍。
-```
+**更新时间：** 2026-07-22（紧急）  
+**优先级：** 上线 > 完美
 
 ---
 
-## 自动拆工（Agent 认领后开干）
+## 老板原话
 
-### 给 Grok（工程 / 部署 / 支付）
-- [ ] 带老板完成：**Vercel 部署 pikbo 仓库**
-- [ ] 带老板完成：**Spaceship 把 pikbo.ai DNS 指到 Vercel**
-- [ ] 环境变量清单写清楚（FAL / Stripe / SESSION）
-- [ ] 修线上问题；支付/积分继续稳
-- [ ] 维护本 DISPATCH / STATUS；需要时拆任务
+```
+都做。网站还有机会，加紧上线。
+域名 pikbo.ai 已买。要 Telegram 总控 + 三个 AI 一起干活 + 部署上线。
+```
 
-**分支前缀：** `agent/grok/...`　**提交前缀：** `[grok]`
+---
+
+## 拆工
+
+### 给 Grok（工程 / 部署 / 支付）— 主路径
+- [x] 代码可 build；Stripe webhook / 积分 / 法律页
+- [x] DISPATCH + Telegram 派活脚本
+- [ ] **带老板完成 Vercel Deploy**
+- [ ] **带老板完成 pikbo.ai DNS → Vercel**
+- [ ] 环境变量清单（SESSION_SECRET 先上；FAL/Stripe 可后补）
+- [ ] 上线后冒烟：首页 / create / pricing 能开
+- [ ] 接 Telegram Token 后帮老板跑 bot
+
+**分支：** `agent/grok/...`　**提交：** `[grok]`
 
 ### 给 Codex / GPT（首页 / 转化 / 样片）
-- [ ] T2：首页真实 before/after 或样片区（可先占位视频 + 文案）
-- [ ] 定价/CTA 文案更像「卖工具」
-- [ ] 不要大改 `lib/session` / Stripe webhook
+- [ ] **今天：** 首页更像能卖的产品（样片区、信任文案、CTA）
+- [ ] 去掉「半成品感」；强调 designer toys only
+- [ ] 不要动 session / stripe / webhook
+- [ ] push 后在 DISPATCH 勾选
 
-**分支前缀：** `agent/gpt/...`　**提交前缀：** `[gpt]`
+**分支：** `agent/gpt/launch-homepage`　**提交：** `[gpt]`
 
 ### 给 Claude（SEO / 内容）
-- [ ] 继续长尾：effects / for / toys 质量页（不灌水）
-- [ ] 检查内链；sitemap 是否跟上
-- [ ] 不要重写支付与 session
+- [ ] **今天：** 首页下方或 Footer 加强内链；1～2 个高意图 SEO 补强即可
+- [ ] 检查新建页无 broken 内链
+- [ ] 不要重写支付
+- [ ] push 后勾选
 
-**分支前缀：** `agent/claude/...`　**提交前缀：** `[claude]`
-
----
-
-## 老板本周只要做的事（人肉，AI 代替不了）
-
-1. [ ] Vercel 用 GitHub 登录 → Import `pikbo` → Deploy  
-2. [ ] Spaceship 改 DNS 绑 `pikbo.ai`  
-3. [ ] 注册 fal.ai 拿 `FAL_KEY`（真出片）  
-4. [ ] （可后做）Stripe 测试模式  
-5. [ ] （可后做）Telegram Bot Token 发给 Grok 接总控
+**分支：** `agent/claude/launch-seo`　**提交：** `[claude]`
 
 ---
 
-## 三个 Agent 的「同一句开工口令」（复制一次，三个窗口各贴一次）
+## 老板今天必须点的按钮（只有人能做）
+
+1. [ ] https://vercel.com/signup → GitHub 登录 → Import **pikbo** → **Deploy**
+2. [ ] Vercel → Settings → Domains → 加 `pikbo.ai` + `www.pikbo.ai`
+3. [ ] Spaceship DNS：按 Vercel 提示改 A/CNAME（详见 `docs/LAUNCH.md`）
+4. [ ] （可选今天）fal.ai 注册拿 key → Vercel 环境变量 `FAL_KEY` + `SESSION_SECRET` → Redeploy
+5. [ ] （可选）@BotFather `/newbot` → Token 私发给 Grok
+
+---
+
+## 三个 Agent 同一句开工口令（复制三次）
 
 ```text
-仓库：https://github.com/guochao950518-wq/pikbo
-执行：git fetch && git checkout main && git pull --ff-only
-必读：docs/DISPATCH.md （只做「分给你」的那一节）+ docs/STATUS.md + docs/HANDOFF.md
-规则：分支 agent/<你>/<topic>，提交 [你的名字]，做完 push，勾掉 DISPATCH 里你的 checkbox，更新 STATUS
-不要 force-push main，不要提交密钥
+紧急上线冲刺。仓库：https://github.com/guochao950518-wq/pikbo
+git fetch && git checkout main && git pull --ff-only
+必读 docs/DISPATCH.md（只做分给你的一节）+ docs/LAUNCH.md + docs/STATUS.md
+分支 agent/<你>/launch-* ，提交 [你]，做完立刻 push，勾 DISPATCH
+不要 force-push main，不要提交密钥。速度优先，可上线优先。
 ```
-
----
-
-## 最近完成（摘要）
-
-- 站点骨架、创作台、积分、定价、SEO 三轴、Stripe webhook、法律页 — 见 HANDOFF
