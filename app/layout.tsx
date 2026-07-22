@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { site } from "@/lib/site";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
+import { AppShell } from "@/components/AppShell";
 
 const display = Space_Grotesk({
   variable: "--font-sans",
@@ -14,19 +13,19 @@ const display = Space_Grotesk({
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} — ${site.tagline}`,
+    default: `${site.name} — AI Video Studio`,
     template: `%s | ${site.name}`,
   },
   description: site.description,
   keywords: [
+    "ai video generator",
+    "image to video",
+    "seedance",
     "designer toy video",
     "figure video maker",
-    "blind box unboxing video",
-    "collectible video ai",
-    "toy animation",
   ],
   openGraph: {
-    title: `${site.name} — ${site.tagline}`,
+    title: `${site.name} — AI Video Studio`,
     description: site.description,
     url: site.url,
     siteName: site.name,
@@ -34,7 +33,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: `${site.name} — ${site.tagline}`,
+    title: `${site.name} — AI Video Studio`,
     description: site.description,
   },
 };
@@ -46,10 +45,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${display.variable} h-full`}>
-      <body className="min-h-full flex flex-col">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+      <body className="min-h-full bg-[var(--bg)] text-[var(--fg)]">
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );

@@ -8,8 +8,30 @@ import type { PublicSession } from "@/lib/session";
 import { site } from "@/lib/site";
 
 type Status = "idle" | "uploading" | "generating" | "done" | "error";
+type Mode = "i2v" | "t2v";
+
+const MODELS = [
+  {
+    id: "seedance-2",
+    label: "Seedance 2.0",
+    vendor: "ByteDance",
+    blurb: "Best motion · image-to-video",
+    free: false,
+  },
+  {
+    id: "seedance-fast",
+    label: "Seedance Fast",
+    vendor: "ByteDance",
+    blurb: "Faster · free tier",
+    free: true,
+  },
+] as const;
 
 export function CreateStudio({ initialEffect }: { initialEffect?: string }) {
+  const [mode, setMode] = useState<Mode>("i2v");
+  const [modelId, setModelId] = useState<(typeof MODELS)[number]["id"]>(
+    "seedance-2"
+  );
   const [effect, setEffect] = useState(
     PRESETS.find((p) => p.slug === initialEffect)?.slug ?? PRESETS[0].slug
   );
@@ -23,6 +45,7 @@ export function CreateStudio({ initialEffect }: { initialEffect?: string }) {
   const [session, setSession] = useState<PublicSession | null>(null);
   const [showPaywall, setShowPaywall] = useState(false);
   const [upgradedBanner, setUpgradedBanner] = useState(false);
+  const [usedModel, setUsedModel] = useState<string | null>(null);
 
   const preset = useMemo(
     () => PRESETS.find((p) => p.slug === effect)!,
@@ -59,21 +82,17 @@ export function CreateStudio({ initialEffect }: { initialEffect?: string }) {
             setSession(data.session);
             setWatermark(data.session.watermark);
             setUpgradedBanner(true);
-          } else if (!cancelled && params.get("upgraded") === "1") {
-            setUpgradedBanner(true);
-            await refreshSession();
           }
         } catch {
           if (!cancelled) await refreshSession();
         }
-        // Clean query without reload
         const url = new URL(window.location.href);
         url.searchParams.delete("session_id");
         window.history.replaceState({}, "", url.pathname + url.search);
         return;
       }
-      if (params.get("upgraded") === "1") {
-        if (!cancelled) setUpgradedBanner(true);
+      if (params.get("upgraded") === "1" && !cancelled) {
+        setUpgradedBanner(true);
         await refreshSession();
       }
     }
@@ -92,13 +111,13 @@ export function CreateStudio({ initialEffect }: { initialEffect?: string }) {
   }
 
   async function generate() {
-    if (!image) {
-      setError("Upload a photo of your toy first.");
+    if (mode === "i2v" && !image) {
+      setError("Upload a reference image first (image-to-video).");
       return;
     }
     if (session && session.credits < CREDITS_PER_VIDEO) {
       setShowPaywall(true);
-      setError("Not enough credits for another clip.");
+      setError("Not enough credits.");
       return;
     }
 
@@ -110,7 +129,14 @@ export function CreateStudio({ initialEffect }: { initialEffect?: string }) {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ effect, image, extra }),
+        body: JSON.stringify({
+          effect,
+          image:
+            image ||
+            // t2v stub still needs image for current API — use 1px placeholder later
+            image,
+          extra,
+        }),
       });
       const data = await res.json();
       if (data.session) setSession(data.session);
@@ -126,6 +152,7 @@ export function CreateStudio({ initialEffect }: { initialEffect?: string }) {
       setVideoUrl(data.videoUrl);
       setDemo(Boolean(data.demo));
       setWatermark(Boolean(data.watermark));
+      setUsedModel(data.model || null);
       setStatus("done");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
@@ -136,163 +163,220 @@ export function CreateStudio({ initialEffect }: { initialEffect?: string }) {
 
   const busy = status === "generating" || status === "uploading";
   const creditsLeft = session?.credits ?? null;
-  const canAfford =
-    creditsLeft === null || creditsLeft >= CREDITS_PER_VIDEO;
+  const canAfford = creditsLeft === null || creditsLeft >= CREDITS_PER_VIDEO;
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[1fr_1.1fr]">
-      {/* ---- Controls ---- */}
-      <div className="card p-6">
-        {upgradedBanner && (
-          <div className="mb-4 rounded-xl border border-[var(--mint)]/40 bg-[color-mix(in_srgb,var(--mint)_12%,transparent)] px-4 py-3 text-sm">
-            You&apos;re on a paid plan — no watermark, more credits. Happy
-            creating.
-          </div>
-        )}
-
-        {/* balance strip */}
-        <div className="mb-5 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[var(--border)] bg-[var(--bg-soft)] px-3 py-2.5 text-sm">
-          <div className="text-[var(--fg-muted)]">
-            {session ? (
-              <>
-                <span className="font-semibold text-[var(--fg)]">
-                  {session.credits}
-                </span>{" "}
-                credits · {session.planName}
-                {session.watermark && (
-                  <span className="ml-2 text-xs text-[var(--fg-dim)]">
-                    watermark on
-                  </span>
-                )}
-              </>
-            ) : (
-              <span className="text-[var(--fg-dim)]">Loading credits…</span>
-            )}
-          </div>
-          <Link
-            href="/pricing"
-            className="text-xs font-semibold text-[var(--mint)] hover:underline"
+    <div className="flex h-full min-h-[calc(100vh-3.5rem)] flex-col lg:min-h-screen">
+      {/* Top toolbar — model / mode like big AI apps */}
+      <div className="flex flex-wrap items-center gap-2 border-b border-[var(--border)] bg-[var(--bg-soft)] px-4 py-3">
+        <div className="flex rounded-full border border-[var(--border)] p-0.5 text-xs">
+          <button
+            type="button"
+            onClick={() => setMode("i2v")}
+            className={`rounded-full px-3 py-1.5 font-semibold ${
+              mode === "i2v"
+                ? "bg-[var(--card)] text-[var(--fg)]"
+                : "text-[var(--fg-dim)]"
+            }`}
           >
-            Get more →
-          </Link>
+            Image → Video
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("t2v")}
+            className={`rounded-full px-3 py-1.5 font-semibold ${
+              mode === "t2v"
+                ? "bg-[var(--card)] text-[var(--fg)]"
+                : "text-[var(--fg-dim)]"
+            }`}
+          >
+            Text → Video
+          </button>
         </div>
 
-        {/* 1. upload */}
-        <label className="text-sm font-semibold">1. Your toy photo</label>
-        <label className="mt-2 flex aspect-square cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border border-dashed border-[var(--border)] bg-[var(--bg-soft)] text-center">
-          {image ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={image}
-              alt="uploaded toy"
-              className="h-full w-full object-contain"
-            />
-          ) : (
-            <span className="px-6 text-sm text-[var(--fg-dim)]">
-              Tap to upload a photo of a figure you own
-              <br />
-              <span className="text-xs">
-                PNG or JPG, clean background works best
-              </span>
-            </span>
-          )}
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={onFile}
-          />
-        </label>
-
-        {/* 2. effect */}
-        <label className="mt-6 block text-sm font-semibold">2. Effect</label>
-        <div className="mt-2 grid max-h-64 grid-cols-2 gap-2 overflow-y-auto pr-1">
-          {PRESETS.map((p) => (
+        <div className="flex flex-wrap gap-2">
+          {MODELS.map((m) => (
             <button
-              key={p.slug}
+              key={m.id}
               type="button"
-              onClick={() => setEffect(p.slug)}
-              className={`flex items-center gap-2 rounded-lg border p-2.5 text-left text-sm transition-colors ${
-                effect === p.slug
-                  ? "border-[var(--brand)] bg-[var(--card2)]"
-                  : "border-[var(--border)] hover:bg-[var(--card2)]"
+              onClick={() => setModelId(m.id)}
+              className={`rounded-xl border px-3 py-1.5 text-left text-xs transition-colors ${
+                modelId === m.id
+                  ? "border-[var(--mint)] bg-[color-mix(in_srgb,var(--mint)_12%,transparent)]"
+                  : "border-[var(--border)] bg-[var(--card)] hover:border-[var(--fg-dim)]"
               }`}
             >
-              <span className="text-lg">{p.emoji}</span>
-              <span className="leading-tight">{p.name}</span>
+              <div className="font-semibold">{m.label}</div>
+              <div className="text-[10px] text-[var(--fg-dim)]">
+                {m.vendor} · {m.blurb}
+              </div>
             </button>
           ))}
         </div>
 
-        {/* 3. optional prompt */}
-        <label className="mt-6 block text-sm font-semibold">
-          3. Add a twist{" "}
-          <span className="text-[var(--fg-dim)]">(optional)</span>
-        </label>
-        <input
-          value={extra}
-          onChange={(e) => setExtra(e.target.value)}
-          placeholder="e.g. neon city background, confetti, snow…"
-          className="mt-2 w-full rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] px-3 py-2.5 text-sm outline-none focus:border-[var(--brand)]"
-        />
-
-        <button
-          type="button"
-          onClick={generate}
-          disabled={busy || !canAfford}
-          className="btn btn-primary mt-6 w-full disabled:opacity-60"
-        >
-          {busy
-            ? "Generating…"
-            : !canAfford
-              ? "Out of credits — upgrade"
-              : `Generate clip · ${CREDITS_PER_VIDEO} credits`}
-        </button>
-        {error && (
-          <p className="mt-3 text-sm text-[var(--brand)]">{error}</p>
-        )}
-
-        {showPaywall && (
-          <div className="mt-4 rounded-xl border border-[var(--brand)]/40 bg-[color-mix(in_srgb,var(--brand)_10%,transparent)] p-4">
-            <p className="text-sm font-semibold">You&apos;re out of free credits</p>
-            <p className="mt-1 text-xs text-[var(--fg-muted)]">
-              Upgrade to Creator for ~50 clips/mo, no watermark, commercial use.
-            </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <Link href="/pricing" className="btn btn-primary text-sm">
-                See plans
-              </Link>
-              <button
-                type="button"
-                className="btn btn-ghost text-sm"
-                onClick={() => setShowPaywall(false)}
-              >
-                Dismiss
-              </button>
-            </div>
-          </div>
-        )}
+        <div className="ml-auto flex items-center gap-3 text-xs text-[var(--fg-muted)]">
+          {session && (
+            <span>
+              <span className="font-semibold text-[var(--mint)]">
+                {session.credits}
+              </span>{" "}
+              credits · {session.planName}
+            </span>
+          )}
+          <Link href="/pricing" className="text-[var(--mint)] hover:underline">
+            Upgrade
+          </Link>
+        </div>
       </div>
 
-      {/* ---- Result ---- */}
-      <div className="card flex flex-col p-6">
-        <div className="mb-3 flex items-center justify-between gap-2">
-          <h2 className="font-semibold">Result</h2>
-          <span className="chip">{preset.name}</span>
-        </div>
-        <div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-xl bg-[var(--bg-soft)]">
-          {status === "generating" && (
-            <div className="p-10 text-center text-[var(--fg-muted)]">
-              <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--brand)]" />
-              Rendering your clip…
-              <p className="mt-1 text-xs text-[var(--fg-dim)]">
-                Usually 15–40 seconds
-              </p>
+      <div className="grid flex-1 lg:grid-cols-[280px_1fr_1.1fr]">
+        {/* Preset rail */}
+        <aside className="max-h-[40vh] overflow-y-auto border-b border-[var(--border)] p-3 lg:max-h-none lg:border-b-0 lg:border-r">
+          <p className="mb-2 px-1 text-[10px] font-bold uppercase tracking-wider text-[var(--fg-dim)]">
+            Viral presets
+          </p>
+          <div className="flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible">
+            {PRESETS.map((p) => (
+              <button
+                key={p.slug}
+                type="button"
+                onClick={() => setEffect(p.slug)}
+                className={`flex min-w-[140px] items-center gap-2 rounded-xl border p-2.5 text-left text-sm lg:min-w-0 ${
+                  effect === p.slug
+                    ? "border-[var(--brand)] bg-[var(--card)]"
+                    : "border-transparent bg-[var(--bg-soft)] hover:border-[var(--border)]"
+                }`}
+              >
+                <span
+                  className="grid h-10 w-10 shrink-0 place-items-center rounded-lg text-lg"
+                  style={{ background: p.gradient }}
+                >
+                  {p.emoji}
+                </span>
+                <span className="leading-tight">
+                  <span className="block font-medium">{p.name}</span>
+                  <span className="block text-[10px] text-[var(--fg-dim)]">
+                    {p.duration}s · {p.aspectRatio}
+                  </span>
+                </span>
+              </button>
+            ))}
+          </div>
+        </aside>
+
+        {/* Controls */}
+        <section className="space-y-4 overflow-y-auto border-b border-[var(--border)] p-4 lg:border-b-0 lg:border-r">
+          {upgradedBanner && (
+            <div className="rounded-xl border border-[var(--mint)]/40 bg-[color-mix(in_srgb,var(--mint)_10%,transparent)] px-3 py-2 text-xs">
+              Paid plan active — HD path, no watermark.
             </div>
           )}
-          {status === "done" && videoUrl && (
-            <div className="w-full p-4">
-              <div className="relative mx-auto w-fit max-w-full">
+
+          {mode === "i2v" ? (
+            <div>
+              <label className="text-xs font-semibold text-[var(--fg-muted)]">
+                Reference image
+              </label>
+              <label className="mt-2 flex aspect-video cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-[var(--border)] bg-[var(--bg-soft)]">
+                {image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={image}
+                    alt="reference"
+                    className="h-full w-full object-contain"
+                  />
+                ) : (
+                  <span className="px-6 text-center text-sm text-[var(--fg-dim)]">
+                    Drop or click to upload
+                    <br />
+                    <span className="text-xs">PNG / JPG — product or figure photo</span>
+                  </span>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={onFile}
+                />
+              </label>
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-soft)] p-4 text-sm text-[var(--fg-muted)]">
+              Text-to-video is stubbed in UI (Higgsfield-class mode tab). Current
+              pipeline is image-to-video with Seedance — switch to Image → Video
+              and upload a photo.
+            </div>
+          )}
+
+          <div>
+            <label className="text-xs font-semibold text-[var(--fg-muted)]">
+              Motion prompt
+            </label>
+            <textarea
+              value={extra || preset.promptTemplate}
+              onChange={(e) => setExtra(e.target.value)}
+              rows={5}
+              className="mt-2 w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--bg-soft)] px-3 py-2.5 text-sm outline-none focus:border-[var(--brand)]"
+            />
+            <p className="mt-1 text-[10px] text-[var(--fg-dim)]">
+              Preset: {preset.name} · {preset.duration}s · {preset.aspectRatio}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={generate}
+            disabled={
+              busy ||
+              !canAfford ||
+              mode === "t2v" ||
+              (mode === "i2v" && !image)
+            }
+            className="btn btn-primary w-full disabled:opacity-50"
+          >
+            {busy
+              ? "Generating…"
+              : mode === "t2v"
+                ? "Text→Video soon — use Image→Video"
+                : !canAfford
+                  ? "Out of credits"
+                  : `Generate · ${CREDITS_PER_VIDEO} credits`}
+          </button>
+
+          {error && (
+            <p className="text-sm text-[var(--brand)]">{error}</p>
+          )}
+
+          {showPaywall && (
+            <div className="rounded-xl border border-[var(--brand)]/40 p-3 text-sm">
+              <p className="font-semibold">Out of free credits</p>
+              <Link href="/pricing" className="btn btn-primary mt-2 text-sm">
+                See plans
+              </Link>
+            </div>
+          )}
+        </section>
+
+        {/* Result — large preview like HF generate */}
+        <section className="flex flex-col bg-[var(--bg-soft)] p-4">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-sm font-semibold">Output</h2>
+            <span className="rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--fg-dim)]">
+              {usedModel || MODELS.find((m) => m.id === modelId)?.label}
+            </span>
+          </div>
+          <div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-2xl border border-[var(--border)] bg-black/40">
+            {status === "generating" && (
+              <div className="p-10 text-center text-[var(--fg-muted)]">
+                <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--mint)]" />
+                Rendering with ByteDance Seedance…
+                <p className="mt-1 text-xs text-[var(--fg-dim)]">
+                  Usually 20–60s
+                </p>
+              </div>
+            )}
+            {status === "done" && videoUrl && (
+              <div className="relative w-full p-3">
                 {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
                 <video
                   src={videoUrl}
@@ -301,51 +385,30 @@ export function CreateStudio({ initialEffect }: { initialEffect?: string }) {
                   loop
                   muted
                   playsInline
-                  className="mx-auto max-h-[60vh] rounded-lg"
+                  className="mx-auto max-h-[70vh] rounded-lg"
                 />
                 {watermark && (
                   <div
-                    className="pointer-events-none absolute bottom-3 right-3 rounded-md px-2 py-1 text-xs font-bold tracking-wide text-white/90 shadow-lg"
-                    style={{
-                      background:
-                        "linear-gradient(135deg, rgba(255,77,141,.85), rgba(168,85,247,.85))",
-                    }}
+                    className="pointer-events-none absolute bottom-6 right-6 rounded-md px-2 py-1 text-xs font-bold text-white/90"
+                    style={{ background: "var(--grad)" }}
                   >
                     {site.name}
                   </div>
                 )}
+                {demo && (
+                  <p className="mt-3 text-center text-xs text-[var(--fg-dim)]">
+                    Demo clip — set FAL_KEY to run real Seedance.
+                  </p>
+                )}
               </div>
-              {watermark && (
-                <p className="mt-3 text-center text-xs text-[var(--fg-dim)]">
-                  Free plan includes a watermark.{" "}
-                  <Link
-                    href="/pricing"
-                    className="text-[var(--mint)] hover:underline"
-                  >
-                    Remove it with Creator
-                  </Link>
-                </p>
-              )}
-              {demo && (
-                <p className="mt-2 text-center text-xs text-[var(--fg-dim)]">
-                  Demo mode — add a FAL_KEY in{" "}
-                  <code className="text-[var(--fg-muted)]">.env.local</code> to
-                  render real clips from your photo.
-                </p>
-              )}
-              {!watermark && !demo && (
-                <p className="mt-3 text-center text-xs text-[var(--mint)]">
-                  HD export · no watermark · commercial use
-                </p>
-              )}
-            </div>
-          )}
-          {(status === "idle" || status === "error") && !videoUrl && (
-            <p className="p-10 text-center text-sm text-[var(--fg-dim)]">
-              Your generated clip will appear here.
-            </p>
-          )}
-        </div>
+            )}
+            {(status === "idle" || status === "error") && !videoUrl && (
+              <p className="p-10 text-center text-sm text-[var(--fg-dim)]">
+                Your video will appear here
+              </p>
+            )}
+          </div>
+        </section>
       </div>
     </div>
   );

@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { CreateStudio } from "@/components/CreateStudio";
 
 export const metadata: Metadata = {
-  title: "Create a clip",
+  title: "Generate",
   description:
-    "Upload a photo of your designer toy, pick an effect, and generate a shareable video in seconds.",
+    "AI image-to-video studio powered by ByteDance Seedance. Upload a reference, pick a preset, generate.",
 };
 
 export default async function CreatePage({
@@ -14,15 +14,5 @@ export default async function CreatePage({
 }) {
   const { effect } = await searchParams;
 
-  return (
-    <div className="container-x py-12">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Studio</h1>
-        <p className="mt-2 text-[var(--fg-muted)]">
-          Upload → pick an effect → get your clip.
-        </p>
-      </div>
-      <CreateStudio initialEffect={effect} />
-    </div>
-  );
+  return <CreateStudio initialEffect={effect} />;
 }
