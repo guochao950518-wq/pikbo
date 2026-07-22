@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { probeEntitlementsStore } from "@/lib/entitlements";
+import { generateMode } from "@/lib/requestMeta";
 
 export const runtime = "nodejs";
 
@@ -15,6 +16,7 @@ export async function GET() {
   const degraded = production && !sessionSecret;
 
   const entitlements = await probeEntitlementsStore();
+  const mode = generateMode();
 
   /** Demo / soft-live / paid ladders — honest gates for ops */
   const ready = {
@@ -44,13 +46,13 @@ export async function GET() {
     stripe,
     stripeWebhook,
     sessionSecret,
-    mode: fal ? "live-generate" : "demo-cached",
+    mode,
     /** Honesty contract: cached demos free; live jobs charge flat credits */
     billing: {
       cachedDemoCredits: 0,
       liveJobCredits: "flat CREDITS_PER_VIDEO",
     },
-    rateLimit: "memory-8rpm",
+    rateLimit: "session-8rpm + ip-24rpm + inflight-1",
     ready,
     entitlements,
     checks: {
@@ -60,6 +62,19 @@ export async function GET() {
       stripeWebhook,
       production,
       entitlementsWritable: entitlements.writable,
+    },
+    /** Soft-live env checklist (presence only — never echo secrets) */
+    softLiveChecklist: {
+      SESSION_SECRET: sessionSecret,
+      FAL_KEY: fal,
+      STRIPE_SECRET_KEY: stripe,
+      STRIPE_WEBHOOK_SECRET: stripeWebhook,
+      entitlementsWritable: entitlements.writable,
+      notes: [
+        "Soft public: SESSION_SECRET + FAL_KEY (demo works without FAL_KEY)",
+        "Paid: durable entitlements (ENTITLEMENTS_PATH) + Stripe price IDs + webhook",
+        "See docs/LAUNCH.md",
+      ],
     },
     devTopup:
       process.env.NODE_ENV === "development" ||

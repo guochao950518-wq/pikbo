@@ -81,9 +81,11 @@ export function interpretGenerateResponse(
     body.error ||
     (code === "RATE_LIMITED"
       ? `Too many generates — try again in ${retryAfterSec ?? "a few"}s`
-      : code === "PROVIDER_BALANCE"
-        ? "Provider balance empty — credits refunded."
-        : "Generation failed");
+      : code === "JOB_IN_FLIGHT"
+        ? "A generate is already running — wait a moment"
+        : code === "PROVIDER_BALANCE"
+          ? "Provider balance empty — credits refunded."
+          : "Generation failed");
 
   return {
     ok: false,
@@ -179,10 +181,13 @@ export async function postGenerateWithRetry(
   while (
     !result.ok &&
     attempt < maxRetries &&
-    (result.code === "RATE_LIMITED" || result.code === "PROVIDER_RATE_LIMIT")
+    (result.code === "RATE_LIMITED" ||
+      result.code === "PROVIDER_RATE_LIMIT" ||
+      result.code === "JOB_IN_FLIGHT")
   ) {
     attempt += 1;
-    const waitSec = result.retryAfterSec ?? 8;
+    const waitSec =
+      result.code === "JOB_IN_FLIGHT" ? 2 : (result.retryAfterSec ?? 8);
     await sleep(Math.min(60, Math.max(1, waitSec)) * 1000);
     result = await postGenerate(body, { signal: opts?.signal });
   }

@@ -45,7 +45,8 @@
 4. [x] health ready ladder · library import/export + live/demo filter + richer meta  
 5. [x] shared `generateClient` · Batch retry on 429 · Landing/Create aligned · image delete/demo · engine-smoke  
 6. [x] honesty: cached demos **0 credits** (generate+image); client no longer blocks out-of-credit demo; entitlements probe on health  
-7. 下一拍：Claude 有新 home-hf 就合；softLive 部署清单  
+7. [x] softLive: IP+session rate limit · in-flight lock · /api/me mode · softlive-checklist  
+8. 下一拍：Claude 有新 home-hf 就合  
 
 ### 老板醒来验收
 
@@ -60,8 +61,8 @@
 ## Grok 本拍状态（3 行）
 
 - No agent merges (home-hf still at main tip).  
-- Honesty `9d5c4a2`: demo path free (0 credits); health.entitlements probe gates ready.paid.  
-- smoke+typecheck+lint green · **pushed main**. Next: Claude D5+ when pushed.
+- SoftLive harden: session+IP rate limit · in-flight job lock · /api/me mode · softlive-checklist.  
+- smoke+typecheck+lint green · pushing main.
 
 ---
 

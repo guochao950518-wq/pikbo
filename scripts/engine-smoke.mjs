@@ -122,5 +122,14 @@ assert.ok(imgDemo > 0 && imgDeduct > imgDemo, "image demo path free before deduc
 const ent = fs.readFileSync(join(root, "lib/entitlements.ts"), "utf8");
 assert.match(ent, /probeEntitlementsStore/);
 
+const rateLimitSrc = fs.readFileSync(join(root, "lib/rateLimit.ts"), "utf8");
+assert.match(rateLimitSrc, /takeGenerateBudget/);
+assert.match(rateLimitSrc, /tryBeginJob/);
+assert.match(rateLimitSrc, /endJob/);
+
+const me = fs.readFileSync(join(root, "app/api/me/route.ts"), "utf8");
+assert.match(me, /generateMode/);
+assert.match(me, /cachedDemoFree/);
+
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

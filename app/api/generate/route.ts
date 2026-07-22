@@ -13,7 +13,12 @@ import {
 } from "@/lib/models";
 import { ensureSession, publicSession, saveSession } from "@/lib/session";
 import { demoClipForEffect } from "@/lib/demoClips";
-import { pruneRateLimit, takeToken } from "@/lib/rateLimit";
+import {
+  endJob,
+  takeGenerateBudget,
+  tryBeginJob,
+} from "@/lib/rateLimit";
+import { clientIp } from "@/lib/requestMeta";
 import {
   classifyProviderError,
   isValidImageDataUrl,
@@ -77,8 +82,7 @@ export async function POST(req: Request) {
 
   let session = await ensureSession();
 
-  pruneRateLimit();
-  const rl = takeToken(`gen:${session.id}`, 8, 60_000);
+  const rl = takeGenerateBudget(session.id, clientIp(req), "gen");
   if (!rl.ok) {
     return err(
       {
@@ -92,176 +96,191 @@ export async function POST(req: Request) {
     );
   }
 
-  const plan = getPlan(session.plan);
-  const freeTier = plan.watermark;
-  const secs = freeTier ? 5 : clampDuration(duration, preset.duration);
-  const aspect = normalizeAspect(aspectRatio, preset.aspectRatio);
-  const resolution = resolutionForTier(freeTier, resPref);
-
-  const custom = extra?.trim() || "";
-  const prompt =
-    custom.length > 80
-      ? custom
-      : custom
-        ? `${preset.promptTemplate} Additional direction: ${custom}.`
-        : preset.promptTemplate;
-
-  // --- Demo path (no provider): free cached Lab clips — matches pricing honesty ---
-  // "Cached demos stay free" / unlimited labeled demo playback. Live jobs charge.
-  if (!process.env.FAL_KEY) {
-    await new Promise((r) => setTimeout(r, 600));
-    const payload: GenerateSuccess = {
-      videoUrl: demoClipForEffect(preset.slug),
-      demo: true,
-      demoReason: "no_provider_key",
-      watermark: plan.watermark,
-      model: "demo-cached",
-      duration: secs,
-      aspectRatio: aspect,
-      resolution,
-      session: publicSession(session),
-    };
-    return NextResponse.json(payload);
-  }
-
-  // --- Live path: charge credits only when a real provider call will run ---
-  const check = checkCredits(session);
-  if (!check.ok) {
+  if (!tryBeginJob(session.id)) {
     return err(
       {
         error:
-          session.plan === "free"
-            ? "Free trial used up — upgrade on Pricing, or wait for monthly refresh"
-            : "Not enough credits",
-        code: "INSUFFICIENT_CREDITS",
-        need: check.need,
-        have: check.have,
+          "A generate is already running for this session — wait for it to finish",
+        code: "JOB_IN_FLIGHT",
         session: publicSession(session),
       },
-      402
+      409
     );
   }
 
-  session = deductCredits(session, check.cost);
-  await saveSession(session);
-
-  const model = modelForTier({
-    freeTier,
-    prefer: modelPref as ModelPreference,
-  });
-
   try {
-    fal.config({ credentials: process.env.FAL_KEY });
+    const plan = getPlan(session.plan);
+    const freeTier = plan.watermark;
+    const secs = freeTier ? 5 : clampDuration(duration, preset.duration);
+    const aspect = normalizeAspect(aspectRatio, preset.aspectRatio);
+    const resolution = resolutionForTier(freeTier, resPref);
 
-    let blob: Blob;
-    try {
-      blob = await (await fetch(image)).blob();
-    } catch {
-      session = refundCredits(session, check.cost);
-      await saveSession(session);
-      return err(
-        {
-          error: "Could not read image data",
-          code: "INVALID_REQUEST",
-          model,
-          session: publicSession(session),
-        },
-        400
-      );
-    }
-    if (!blob || blob.size < 32) {
-      session = refundCredits(session, check.cost);
-      await saveSession(session);
-      return err(
-        {
-          error: "Image data empty or too small",
-          code: "INVALID_REQUEST",
-          model,
-          session: publicSession(session),
-        },
-        400
-      );
-    }
-    const file = new File([blob], "toy.png", {
-      type: blob.type || "image/png",
-    });
-    const imageUrl = await fal.storage.upload(file);
+    const custom = extra?.trim() || "";
+    const prompt =
+      custom.length > 80
+        ? custom
+        : custom
+          ? `${preset.promptTemplate} Additional direction: ${custom}.`
+          : preset.promptTemplate;
 
-    const input: Record<string, unknown> = {
-      prompt,
-      image_url: imageUrl,
-      duration: seedanceDuration(secs),
-      aspect_ratio: aspect,
-      resolution,
-      generate_audio: !freeTier,
-    };
-    if (typeof seed === "number" && Number.isFinite(seed) && seed >= 0) {
-      input.seed = Math.floor(seed);
-    }
-
-    const result = await fal.subscribe(model, {
-      input,
-      logs: false,
-    });
-
-    const data = result.data as { video?: { url?: string } };
-    const videoUrl = data?.video?.url;
-    if (!videoUrl) {
-      session = refundCredits(session, check.cost);
-      await saveSession(session);
-      return err(
-        {
-          error: "Model returned no video",
-          code: "MODEL_EMPTY",
-          model,
-          session: publicSession(session),
-        },
-        502
-      );
-    }
-
-    const payload: GenerateSuccess = {
-      videoUrl,
-      demo: false,
-      watermark: plan.watermark,
-      model,
-      duration: secs,
-      aspectRatio: aspect,
-      resolution,
-      session: publicSession(session),
-      requestId: result.requestId,
-      provider: "bytedance-seedance",
-    };
-    return NextResponse.json(payload);
-  } catch (e) {
-    console.error("generate error:", model, e);
-    session = refundCredits(session, check.cost);
-    await saveSession(session);
-    const raw =
-      e && typeof e === "object" && "body" in e
-        ? JSON.stringify((e as { body?: unknown }).body)
-        : e instanceof Error
-          ? e.message
-          : "Generation failed";
-    const kind = classifyProviderError(raw);
-    const fallback =
-      e instanceof Error ? e.message : "Generation failed";
-    const msg = providerErrorMessage(kind, fallback);
-    const code =
-      kind === "balance"
-        ? "PROVIDER_BALANCE"
-        : kind === "rate"
-          ? "PROVIDER_RATE_LIMIT"
-          : "GENERATION_FAILED";
-    const status = kind === "balance" ? 402 : kind === "rate" ? 429 : 500;
-    return err(
-      {
-        error: msg,
-        code,
-        model,
+    // --- Demo path (no provider): free cached Lab clips — matches pricing honesty ---
+    if (!process.env.FAL_KEY) {
+      await new Promise((r) => setTimeout(r, 600));
+      const payload: GenerateSuccess = {
+        videoUrl: demoClipForEffect(preset.slug),
+        demo: true,
+        demoReason: "no_provider_key",
+        watermark: plan.watermark,
+        model: "demo-cached",
+        duration: secs,
+        aspectRatio: aspect,
+        resolution,
         session: publicSession(session),
-      },
-      status
-    );
+      };
+      return NextResponse.json(payload);
+    }
+
+    // --- Live path: charge credits only when a real provider call will run ---
+    const check = checkCredits(session);
+    if (!check.ok) {
+      return err(
+        {
+          error:
+            session.plan === "free"
+              ? "Free trial used up — upgrade on Pricing, or wait for monthly refresh"
+              : "Not enough credits",
+          code: "INSUFFICIENT_CREDITS",
+          need: check.need,
+          have: check.have,
+          session: publicSession(session),
+        },
+        402
+      );
+    }
+
+    session = deductCredits(session, check.cost);
+    await saveSession(session);
+
+    const model = modelForTier({
+      freeTier,
+      prefer: modelPref as ModelPreference,
+    });
+
+    try {
+      fal.config({ credentials: process.env.FAL_KEY });
+
+      let blob: Blob;
+      try {
+        blob = await (await fetch(image)).blob();
+      } catch {
+        session = refundCredits(session, check.cost);
+        await saveSession(session);
+        return err(
+          {
+            error: "Could not read image data",
+            code: "INVALID_REQUEST",
+            model,
+            session: publicSession(session),
+          },
+          400
+        );
+      }
+      if (!blob || blob.size < 32) {
+        session = refundCredits(session, check.cost);
+        await saveSession(session);
+        return err(
+          {
+            error: "Image data empty or too small",
+            code: "INVALID_REQUEST",
+            model,
+            session: publicSession(session),
+          },
+          400
+        );
+      }
+      const file = new File([blob], "toy.png", {
+        type: blob.type || "image/png",
+      });
+      const imageUrl = await fal.storage.upload(file);
+
+      const input: Record<string, unknown> = {
+        prompt,
+        image_url: imageUrl,
+        duration: seedanceDuration(secs),
+        aspect_ratio: aspect,
+        resolution,
+        generate_audio: !freeTier,
+      };
+      if (typeof seed === "number" && Number.isFinite(seed) && seed >= 0) {
+        input.seed = Math.floor(seed);
+      }
+
+      const result = await fal.subscribe(model, {
+        input,
+        logs: false,
+      });
+
+      const data = result.data as { video?: { url?: string } };
+      const videoUrl = data?.video?.url;
+      if (!videoUrl) {
+        session = refundCredits(session, check.cost);
+        await saveSession(session);
+        return err(
+          {
+            error: "Model returned no video",
+            code: "MODEL_EMPTY",
+            model,
+            session: publicSession(session),
+          },
+          502
+        );
+      }
+
+      const payload: GenerateSuccess = {
+        videoUrl,
+        demo: false,
+        watermark: plan.watermark,
+        model,
+        duration: secs,
+        aspectRatio: aspect,
+        resolution,
+        session: publicSession(session),
+        requestId: result.requestId,
+        provider: "bytedance-seedance",
+      };
+      return NextResponse.json(payload);
+    } catch (e) {
+      console.error("generate error:", model, e);
+      session = refundCredits(session, check.cost);
+      await saveSession(session);
+      const raw =
+        e && typeof e === "object" && "body" in e
+          ? JSON.stringify((e as { body?: unknown }).body)
+          : e instanceof Error
+            ? e.message
+            : "Generation failed";
+      const kind = classifyProviderError(raw);
+      const fallback =
+        e instanceof Error ? e.message : "Generation failed";
+      const msg = providerErrorMessage(kind, fallback);
+      const code =
+        kind === "balance"
+          ? "PROVIDER_BALANCE"
+          : kind === "rate"
+            ? "PROVIDER_RATE_LIMIT"
+            : "GENERATION_FAILED";
+      const status = kind === "balance" ? 402 : kind === "rate" ? 429 : 500;
+      return err(
+        {
+          error: msg,
+          code,
+          model,
+          session: publicSession(session),
+        },
+        status
+      );
+    }
+  } finally {
+    endJob(session.id);
   }
 }

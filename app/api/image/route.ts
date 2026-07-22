@@ -7,7 +7,12 @@ import {
   classifyProviderError,
   providerErrorMessage,
 } from "@/lib/providerError";
-import { pruneRateLimit, takeToken } from "@/lib/rateLimit";
+import {
+  endJob,
+  takeGenerateBudget,
+  tryBeginJob,
+} from "@/lib/rateLimit";
+import { clientIp } from "@/lib/requestMeta";
 import { ensureSession, publicSession, saveSession } from "@/lib/session";
 
 export const runtime = "nodejs";
@@ -43,8 +48,7 @@ export async function POST(req: Request) {
 
   let session = await ensureSession();
 
-  pruneRateLimit();
-  const rl = takeToken(`img:${session.id}`, 8, 60_000);
+  const rl = takeGenerateBudget(session.id, clientIp(req), "img");
   if (!rl.ok) {
     return NextResponse.json(
       {
@@ -60,106 +64,121 @@ export async function POST(req: Request) {
     );
   }
 
-  // Demo stills are free when no provider is configured (parity with video demos).
-  if (!process.env.FAL_KEY) {
-    await new Promise((r) => setTimeout(r, 800));
-    // placeholder gradient SVG data URL as demo (lime/black brand, not purple)
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="768" height="1024"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0a0a0a"/><stop offset="1" stop-color="#1a2e0a"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#g)"/><text x="50%" y="48%" fill="#b8ff3c" font-size="28" text-anchor="middle" font-family="sans-serif">Pikbo demo still</text><text x="50%" y="54%" fill="#b8ff3c" font-size="14" text-anchor="middle" opacity=".75">set FAL_KEY for Flux</text></svg>`;
-    const imageUrl = `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`;
-    return NextResponse.json({
-      imageUrl,
-      demo: true,
-      demoReason: "no_provider_key",
-      model: "demo",
-      session: publicSession(session),
-    });
-  }
-
-  if (session.credits < COST) {
+  if (!tryBeginJob(`img:${session.id}`)) {
     return NextResponse.json(
       {
-        error:
-          session.plan === "free"
-            ? "Free trial used up — upgrade on Pricing, or wait for monthly refresh"
-            : "Not enough credits",
-        code: "INSUFFICIENT_CREDITS",
+        error: "An image job is already running — wait for it to finish",
+        code: "JOB_IN_FLIGHT",
         session: publicSession(session),
       },
-      { status: 402 }
+      { status: 409 }
     );
   }
 
-  session = deductCredits(session, COST);
-  await saveSession(session);
-
   try {
-    fal.config({ credentials: process.env.FAL_KEY });
-    const aspect = body.aspect || "3:4";
-    // flux schnell uses image_size enums often
-    const sizeMap: Record<string, string> = {
-      "1:1": "square_hd",
-      "3:4": "portrait_4_3",
-      "9:16": "portrait_16_9",
-      "16:9": "landscape_16_9",
-    };
+    // Demo stills are free when no provider is configured (parity with video demos).
+    if (!process.env.FAL_KEY) {
+      await new Promise((r) => setTimeout(r, 800));
+      // placeholder gradient SVG data URL as demo (lime/black brand, not purple)
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="768" height="1024"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0a0a0a"/><stop offset="1" stop-color="#1a2e0a"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#g)"/><text x="50%" y="48%" fill="#b8ff3c" font-size="28" text-anchor="middle" font-family="sans-serif">Pikbo demo still</text><text x="50%" y="54%" fill="#b8ff3c" font-size="14" text-anchor="middle" opacity=".75">set FAL_KEY for Flux</text></svg>`;
+      const imageUrl = `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`;
+      return NextResponse.json({
+        imageUrl,
+        demo: true,
+        demoReason: "no_provider_key",
+        model: "demo",
+        session: publicSession(session),
+      });
+    }
 
-    const result = await fal.subscribe(IMAGE_MODEL, {
-      input: {
-        prompt: `${prompt}. Product photography style, designer toy / collectible figure, sharp detail, studio lighting.`,
-        image_size: sizeMap[aspect] || "portrait_4_3",
-        num_images: 1,
-      },
-      logs: false,
-    });
-
-    const data = result.data as {
-      images?: Array<{ url?: string }>;
-      image?: { url?: string };
-    };
-    const imageUrl = data.images?.[0]?.url || data.image?.url;
-    if (!imageUrl) {
-      session = refundCredits(session, COST);
-      await saveSession(session);
+    if (session.credits < COST) {
       return NextResponse.json(
         {
-          error: "No image returned",
-          code: "MODEL_EMPTY",
+          error:
+            session.plan === "free"
+              ? "Free trial used up — upgrade on Pricing, or wait for monthly refresh"
+              : "Not enough credits",
+          code: "INSUFFICIENT_CREDITS",
           session: publicSession(session),
         },
-        { status: 502 }
+        { status: 402 }
       );
     }
 
-    return NextResponse.json({
-      imageUrl,
-      demo: false,
-      model: IMAGE_MODEL,
-      session: publicSession(session),
-    });
-  } catch (err) {
-    console.error("image gen error:", err);
-    session = refundCredits(session, COST);
+    session = deductCredits(session, COST);
     await saveSession(session);
-    const raw =
-      err && typeof err === "object" && "body" in err
-        ? JSON.stringify((err as { body?: unknown }).body)
-        : err instanceof Error
-          ? err.message
-          : "Image generation failed";
-    const kind = classifyProviderError(raw);
-    const fallback =
-      err instanceof Error ? err.message : "Image generation failed";
-    const msg = providerErrorMessage(kind, fallback);
-    const code =
-      kind === "balance"
-        ? "PROVIDER_BALANCE"
-        : kind === "rate"
-          ? "PROVIDER_RATE_LIMIT"
-          : "GENERATION_FAILED";
-    const status = kind === "balance" ? 402 : kind === "rate" ? 429 : 500;
-    return NextResponse.json(
-      { error: msg, code, session: publicSession(session) },
-      { status }
-    );
+
+    try {
+      fal.config({ credentials: process.env.FAL_KEY });
+      const aspect = body.aspect || "3:4";
+      // flux schnell uses image_size enums often
+      const sizeMap: Record<string, string> = {
+        "1:1": "square_hd",
+        "3:4": "portrait_4_3",
+        "9:16": "portrait_16_9",
+        "16:9": "landscape_16_9",
+      };
+
+      const result = await fal.subscribe(IMAGE_MODEL, {
+        input: {
+          prompt: `${prompt}. Product photography style, designer toy / collectible figure, sharp detail, studio lighting.`,
+          image_size: sizeMap[aspect] || "portrait_4_3",
+          num_images: 1,
+        },
+        logs: false,
+      });
+
+      const data = result.data as {
+        images?: Array<{ url?: string }>;
+        image?: { url?: string };
+      };
+      const imageUrl = data.images?.[0]?.url || data.image?.url;
+      if (!imageUrl) {
+        session = refundCredits(session, COST);
+        await saveSession(session);
+        return NextResponse.json(
+          {
+            error: "No image returned",
+            code: "MODEL_EMPTY",
+            session: publicSession(session),
+          },
+          { status: 502 }
+        );
+      }
+
+      return NextResponse.json({
+        imageUrl,
+        demo: false,
+        model: IMAGE_MODEL,
+        session: publicSession(session),
+      });
+    } catch (err) {
+      console.error("image gen error:", err);
+      session = refundCredits(session, COST);
+      await saveSession(session);
+      const raw =
+        err && typeof err === "object" && "body" in err
+          ? JSON.stringify((err as { body?: unknown }).body)
+          : err instanceof Error
+            ? err.message
+            : "Image generation failed";
+      const kind = classifyProviderError(raw);
+      const fallback =
+        err instanceof Error ? err.message : "Image generation failed";
+      const msg = providerErrorMessage(kind, fallback);
+      const code =
+        kind === "balance"
+          ? "PROVIDER_BALANCE"
+          : kind === "rate"
+            ? "PROVIDER_RATE_LIMIT"
+            : "GENERATION_FAILED";
+      const status = kind === "balance" ? 402 : kind === "rate" ? 429 : 500;
+      return NextResponse.json(
+        { error: msg, code, session: publicSession(session) },
+        { status }
+      );
+    }
+  } finally {
+    endJob(`img:${session.id}`);
   }
 }

@@ -47,7 +47,8 @@ export type GenerateErrorBody = {
     | "GENERATION_FAILED"
     | "PROVIDER_BALANCE"
     | "PROVIDER_RATE_LIMIT"
-    | "RATE_LIMITED";
+    | "RATE_LIMITED"
+    | "JOB_IN_FLIGHT";
   need?: number;
   have?: number;
   model?: string;
