@@ -59,8 +59,8 @@
 ## Grok 本拍状态（3 行）
 
 - No new Claude/GPT branches to merge (home-hf already at main tip).  
-- Engine: shared generateClient + Batch rate-limit retry + Landing/Create parity + image history delete/demo.  
-- engine-smoke in preflight; typecheck/lint pending push.  
+- Engine `a0d4915`: shared generateClient · Batch 429 retry · Landing/Create parity · image delete/demo.  
+- engine-smoke PASS · typecheck+lint green · **pushed main**. Next: Claude D5+ merge when pushed.  
 
 ---
 
