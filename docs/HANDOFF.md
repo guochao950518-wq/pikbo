@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [gpt] conversion truth + unit economics (C1–C3 / T25–T26)
+- Paths: `docs/UNIT_ECONOMICS.md` plus the C1/C2 truth-label surfaces already reviewed in PR #6.
+- Decision: replace three anonymous monthly free clips with one verified 4s/480p/watermarked trial.
+- Economics: Creator `$19` supports about five 5s Fast 720p or four 5s Standard 720p clips, not 50, at the reviewed fal rates.
+- Reuse: charge credits by model + resolution + duration; implementation belongs with Grok's server-side ledger and must not be a UI-only estimate.
+- Verified: official fal/Stripe sources linked, arithmetic sensitivity included, ESLint and Next production build run on the combined C1–C3 branch.
+
 ### 2026-07-23 — [gpt] Claude promise-consistency audit (T23)
 - Paths: `app/page.tsx`, `app/explore`, `app/community`, `app/apps`, `app/models`, `app/pricing`, `components/HeroVideoBanner.tsx`, `components/SeedanceCampaign.tsx`, `components/PresetPreviewCard.tsx`, `lib/videoFeed.ts`, `lib/site.ts`
 - Why good: separates cached PIKBO Lab examples, shared motion backdrops, concept recipes, configured workspaces, and provider-backed live generation instead of presenting all five as the same proof.
