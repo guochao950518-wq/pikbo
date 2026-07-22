@@ -1,6 +1,7 @@
 import Link from "next/link";
 import {
   buildVideoFeed,
+  communityProjects,
   featuredStrip,
   suiteRail,
 } from "@/lib/videoFeed";
@@ -8,6 +9,8 @@ import { VideoTile } from "@/components/VideoTile";
 import { VideoRail } from "@/components/VideoRail";
 import { HeroVideoBanner } from "@/components/HeroVideoBanner";
 import { HeroUpload } from "@/components/HeroUpload";
+import { SeedanceCampaign } from "@/components/SeedanceCampaign";
+import { ProjectCard } from "@/components/ProjectCard";
 import { PRESETS } from "@/lib/presets";
 
 /**
@@ -21,6 +24,7 @@ export default function Home() {
   const featured = featuredStrip();
   const suite = suiteRail();
   const feed = buildVideoFeed();
+  const projects = communityProjects().slice(0, 3);
 
   return (
     <div className="pb-28">
@@ -66,6 +70,30 @@ export default function Home() {
         items={suite}
         wide
       />
+
+      <SeedanceCampaign />
+
+      <section className="border-b border-[var(--border)] px-3 py-6 sm:px-5">
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-2 px-1">
+          <div>
+            <p className="section-label">Community projects</p>
+            <h2 className="mt-1 text-xl font-bold tracking-tight">
+              Official looks · remake yours
+            </h2>
+          </div>
+          <Link
+            href="/community"
+            className="text-xs font-semibold text-[var(--mint)] hover:underline"
+          >
+            All projects →
+          </Link>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-3">
+          {projects.map((p) => (
+            <ProjectCard key={p.id} project={p} />
+          ))}
+        </div>
+      </section>
 
       {/* Quick category hops — keep scroll velocity high */}
       <section className="border-b border-[var(--border)] px-4 py-3 sm:px-6">

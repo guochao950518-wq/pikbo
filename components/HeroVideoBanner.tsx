@@ -44,24 +44,25 @@ export function HeroVideoBanner() {
 
       <div className="relative z-10 flex h-full flex-col justify-end px-4 pb-10 pt-20 sm:px-8 sm:pb-12">
         <div className="max-w-xl">
-          <p className="section-label">Seedance · toy motion</p>
+          <p className="section-label">Seedance · designer toys</p>
           <h1 className="mt-3 text-4xl font-bold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
-            One photo.
+            One figure photo.
             <br />
-            <span className="text-[var(--mint)]">Endless clips.</span>
+            <span className="text-[var(--mint)]">Listing & viral clips.</span>
           </h1>
           <p className="mt-4 max-w-md text-sm leading-relaxed text-white/70 sm:text-base">
-            {demo.title} — {demo.result} Tap recreate on any video below.
+            For sellers & collectors — {demo.result} Free watermarked tries ·
+            tap any tile to remake.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link href="/create" className="btn btn-primary px-6 py-3 text-sm">
-              Generate free
+              Upload photo — free
             </Link>
             <Link
-              href={`/effects/${demo.preset}`}
+              href={`/create?effect=${encodeURIComponent(demo.preset)}`}
               className="btn btn-ghost border-white/20 px-6 py-3 text-sm"
             >
-              Recreate this look
+              Remake this look
             </Link>
           </div>
         </div>

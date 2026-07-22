@@ -2,20 +2,38 @@ import { DEMO_VIDEOS, type DemoVideo } from "@/lib/demoVideos";
 import { PRESETS, CATEGORIES, type CategoryId } from "@/lib/presets";
 import { APPS } from "@/lib/catalog";
 import { MODELS } from "@/lib/catalog";
+import { viralName } from "@/lib/viralNames";
 
 export type FeedItem = {
   id: string;
   title: string;
   subtitle: string;
   href: string;
+  /** SEO / detail page when href is generate */
+  detailHref?: string;
   badge?: string;
   ratio: "9:16" | "1:1" | "16:9" | "video";
   demo: DemoVideo;
   kind: "demo" | "preset" | "app" | "model";
 };
 
+export type CommunityProject = {
+  id: string;
+  title: string;
+  look: string;
+  remakeHref: string;
+  detailHref: string;
+  visibility: "Public" | "Official";
+  author: { name: string; initials: string; badge?: string };
+  demo: DemoVideo;
+};
+
 function demoForIndex(i: number): DemoVideo {
   return DEMO_VIDEOS[i % DEMO_VIDEOS.length];
+}
+
+function createHref(presetSlug: string) {
+  return `/create?effect=${encodeURIComponent(presetSlug)}`;
 }
 
 /** Map every live path to looping demo video for HF-style density. */
@@ -26,9 +44,10 @@ export function buildVideoFeed(): FeedItem[] {
   for (const d of DEMO_VIDEOS) {
     items.push({
       id: `demo-${d.id}`,
-      title: d.title,
-      subtitle: d.eyebrow,
-      href: `/effects/${d.preset}`,
+      title: viralName(d.preset, d.title),
+      subtitle: d.character,
+      href: createHref(d.preset),
+      detailHref: `/effects/${d.preset}`,
       badge: "Demo",
       ratio: d.ratio,
       demo: d,
@@ -41,9 +60,10 @@ export function buildVideoFeed(): FeedItem[] {
     const demo = demoForIndex(i);
     items.push({
       id: `preset-${p.slug}`,
-      title: p.name,
+      title: viralName(p.slug, p.name),
       subtitle: p.tagline,
-      href: `/effects/${p.slug}`,
+      href: createHref(p.slug),
+      detailHref: `/effects/${p.slug}`,
       badge: p.audience === "seller" ? "Sell" : "Flex",
       ratio:
         p.aspectRatio === "1:1"
@@ -75,13 +95,32 @@ export function buildVideoFeed(): FeedItem[] {
 export function featuredStrip(): FeedItem[] {
   return DEMO_VIDEOS.map((d) => ({
     id: `feat-${d.id}`,
-    title: d.title,
+    title: viralName(d.preset, d.title),
     subtitle: d.result,
-    href: `/effects/${d.preset}`,
+    href: createHref(d.preset),
+    detailHref: `/effects/${d.preset}`,
     badge: d.eyebrow,
     ratio: d.ratio,
     demo: d,
     kind: "demo" as const,
+  }));
+}
+
+/** HF community projects — Official demos until real UGC exists */
+export function communityProjects(): CommunityProject[] {
+  return DEMO_VIDEOS.map((d) => ({
+    id: `proj-${d.id}`,
+    title: `${d.character} · ${viralName(d.preset, d.title)}`,
+    look: d.eyebrow,
+    remakeHref: createHref(d.preset),
+    detailHref: `/effects/${d.preset}`,
+    visibility: "Official" as const,
+    author: {
+      name: "Pikbo Lab",
+      initials: "P",
+      badge: "Official",
+    },
+    demo: d,
   }));
 }
 
@@ -120,9 +159,10 @@ export function feedByCategory(cat: CategoryId): FeedItem[] {
     const demo = mapped ?? demoForIndex(i + cat.length);
     return {
       id: `cat-${cat}-${p.slug}`,
-      title: p.name,
+      title: viralName(p.slug, p.name),
       subtitle: p.tagline,
-      href: `/effects/${p.slug}`,
+      href: createHref(p.slug),
+      detailHref: `/effects/${p.slug}`,
       badge: p.emoji,
       ratio:
         p.aspectRatio === "1:1"

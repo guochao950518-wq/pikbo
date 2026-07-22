@@ -22,7 +22,7 @@ export default function EffectsHub() {
           <div>
             <p className="section-label">{PRESETS.length} presets</p>
             <h1 className="text-lg font-bold tracking-tight sm:text-xl">
-              Viral looks · all play
+              Viral presets · remake in Generate
             </h1>
           </div>
           <div className="flex gap-2">
