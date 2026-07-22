@@ -4,6 +4,10 @@ import { PLANS, CREDITS_PER_VIDEO, clipsFromCredits } from "@/lib/pricing";
 import { site } from "@/lib/site";
 import { PricingUsageEstimator } from "@/components/PricingUsageEstimator";
 import { PricingPlanCards } from "@/components/PricingPlanCards";
+import {
+  PricingHeroCopy,
+  type PricingCopyVariant,
+} from "@/components/PricingHeroCopy";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -16,52 +20,56 @@ import {
 
 export const metadata: Metadata = {
   title: "Pricing",
-  description: `Simple credits for ${site.name}. Start free (Seedance Fast 480p), upgrade for 720p Seedance 2.0 and commercial use.`,
+  description: `Preview finite-credit plans for ${site.name}. Test the labeled designer-toy video workflow before live billing opens.`,
 };
 
-export default function PricingPage() {
+export default async function PricingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ copy?: string | string[] }>;
+}) {
+  const params = await searchParams;
+  const requestedCopy = Array.isArray(params.copy)
+    ? params.copy[0]
+    : params.copy;
+  const copyVariant: PricingCopyVariant =
+    requestedCopy === "cost" ? "cost-control" : "outcome";
+
   return (
     <div className="pb-24">
-      <section className="glow-bg overflow-hidden border-b border-[var(--border)]">
-        <div className="container-x relative z-10 py-14 text-center sm:py-20">
-          <Badge variant="live" className="mx-auto normal-case tracking-wider">
-            Clear credit limits · no unlimited claim
-          </Badge>
-          <h1 className="mx-auto mt-5 max-w-4xl text-4xl font-black leading-[1.02] tracking-[-0.04em] sm:text-6xl lg:text-7xl">
-            Start with three clips.
-            <br />
-            Scale to a <span className="text-grad">content engine.</span>
-          </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-[var(--fg-muted)] sm:text-lg">
-            Free starts with three watermarked test credits. Live generation
-            uses Seedance Fast when provider access is configured; demo mode is
-            labeled. Creator and Shop add export and volume benefits.
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-2">
-            <Button asChild size="lg">
-              <Link href="/create">Try free — no card</Link>
-            </Button>
-            <Button asChild variant="secondary" size="lg">
-              <Link href="#plans">See plans</Link>
-            </Button>
-          </div>
-          <div className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-[var(--fg-dim)]">
-            <span>✓ No card for Free</span>
-            <span>✓ Failed gens refund credits</span>
-            <span>✓ Paid = commercial use</span>
-          </div>
-        </div>
-      </section>
+      <PricingHeroCopy variant={copyVariant} />
 
       <div className="container-x py-12 sm:py-16">
+        <Card className="mb-8 border-[var(--mint)]/20 bg-[var(--mint)]/[0.04]">
+          <CardContent className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-bold text-[var(--fg)]">
+                Pricing preview — not a live billing commitment
+              </p>
+              <p className="mt-1 max-w-3xl text-xs leading-5 text-[var(--fg-muted)]">
+                The plan cards below mirror the current prototype. Final live
+                allowances will change to model-, resolution-, and
+                duration-aware credits after cost validation.
+              </p>
+            </div>
+            <Badge variant="outline" className="shrink-0">
+              Validation mode
+            </Badge>
+          </CardContent>
+        </Card>
+
         <PricingUsageEstimator />
 
         <div id="plans" className="mt-16 scroll-mt-24">
           <div className="mb-8 text-center">
             <p className="section-label">Plans</p>
             <h2 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
-              Pick the output level you need
+              Compare the prototype allowances
             </h2>
+            <p className="mx-auto mt-2 max-w-xl text-sm text-[var(--fg-muted)]">
+              Use these cards to compare workflow access—not as a promise of
+              launch-time clip volume.
+            </p>
           </div>
           <PricingPlanCards />
         </div>
@@ -72,7 +80,7 @@ export default function PricingPage() {
           <div className="mb-6">
             <p className="section-label">Compare</p>
             <h2 className="mt-2 text-2xl font-bold sm:text-3xl">
-              Pay for output, not vague access
+              See exactly what changes by tier
             </h2>
           </div>
           <Card className="overflow-hidden p-0">
@@ -142,24 +150,24 @@ export default function PricingPage() {
           <div className="mt-6 space-y-3">
             {[
               [
-                "What is a credit?",
-                `Each generated clip currently costs ${CREDITS_PER_VIDEO} credits. Failed generations are refunded automatically.`,
+                "What does the current credit number mean?",
+                `The prototype still estimates ${CREDITS_PER_VIDEO} credits per clip. That is not the launch quote: live credits must vary by model, resolution, and duration. Failed live generations are refunded.`,
               ],
               [
-                "Why is Free watermarked?",
-                `When provider access is configured, Free uses Seedance Fast (480p) with a ${site.name} mark on the in-app player. Demo mode returns a labeled sample. Creator and Shop remove the player mark; file burn-in watermark is coming next.`,
+                "What can I test today?",
+                `You can browse cached ${site.name} Lab examples and use the labeled Studio workflow with your own toy photo. A cached result is never presented as animation generated from your upload.`,
               ],
               [
                 "Can I use clips commercially?",
-                "Creator and Shop include commercial use for listings and ads of toys you own. Free is for personal testing.",
+                "The planned Creator and Shop tiers include commercial use for listings and ads made from toy photos you own. Confirm the final terms before using a live output commercially.",
               ],
               [
                 "Is any plan unlimited?",
                 "No. Video models have a real per-generation cost, so every plan shows a finite credit allowance.",
               ],
               [
-                "When should I choose Shop?",
-                "Choose Shop for regular product drops, multiple listings, or the batch workspace.",
+                "Why are the launch allowances not final?",
+                "Video cost changes with the chosen model, output size, and duration. PIKBO will lock the public allowance only after the same quote is enforced by the server and verified against provider billing.",
               ],
             ].map(([question, answer]) => (
               <Card key={question} className="overflow-hidden">
@@ -182,15 +190,15 @@ export default function PricingPage() {
         <Card className="mt-16 overflow-hidden border-[var(--mint)]/20 bg-gradient-to-br from-[var(--card)] to-black/40">
           <CardHeader className="sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <CardTitle className="text-xl">Ready to animate a figure?</CardTitle>
+              <CardTitle className="text-xl">Ready to test the toy workflow?</CardTitle>
               <p className="mt-2 text-sm text-[var(--fg-muted)]">
-                Upload one photo · labeled demo until live generation is
-                configured · upgrade when you need clean exports.
+                Upload one owned-toy photo. Cached output stays labeled until
+                live generation is configured and verified.
               </p>
             </div>
             <div className="mt-4 flex flex-wrap gap-2 sm:mt-0">
               <Button asChild>
-                <Link href="/create">Generate free</Link>
+                <Link href="/create?source=pricing-bottom">Open the demo</Link>
               </Button>
               <Button asChild variant="secondary">
                 <Link href="/community">See projects</Link>

@@ -16,9 +16,9 @@ export function MobileGenerateBar() {
   ) {
     return null;
   }
-  // Center Generate lives in the mobile dock — only show bar on browse walls
+  // The home hero already owns the primary CTA. Keep this extra bar only on
+  // browse walls, where users may be several cards away from Generate.
   const showBar =
-    path === "/" ||
     path.startsWith("/explore") ||
     path.startsWith("/community") ||
     path === "/effects";

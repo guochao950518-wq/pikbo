@@ -22,11 +22,11 @@ export function PricingUsageEstimator() {
     <section className="overflow-hidden rounded-3xl border border-white/10 bg-[#111016] shadow-[0_30px_80px_-45px_rgba(168,85,247,.65)]">
       <div className="grid lg:grid-cols-[1.25fr_.75fr]">
         <div className="p-6 sm:p-8">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--mint)]">Usage estimator</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--mint)]">Prototype estimator</p>
           <div className="mt-3 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
             <div>
-              <h2 className="text-2xl font-bold">How many clips do you publish?</h2>
-              <p className="mt-1 text-sm text-[var(--fg-muted)]">Slide to your real monthly output. Every plan has a finite credit allowance.</p>
+              <h2 className="text-2xl font-bold">How many clips are you planning?</h2>
+              <p className="mt-1 text-sm text-[var(--fg-muted)]">Map your target volume to the current UI plans. This is not a live model-cost quote.</p>
             </div>
             <p className="text-4xl font-black text-white">
               {clips}<span className="ml-2 text-sm font-medium text-[var(--fg-dim)]">clips / month</span>
@@ -69,7 +69,7 @@ export function PricingUsageEstimator() {
               <p className="text-xl font-bold">${recommendation.priceMonthly}<span className="text-xs font-normal text-[var(--fg-dim)]"> / mo</span></p>
             </div>
             <p className="mt-3 text-sm leading-6 text-[var(--fg-muted)]">
-              {includedClips} included clips at the current {CREDITS_PER_VIDEO}-credit estimate.
+              Prototype allowance: {includedClips} clips at the current fixed {CREDITS_PER_VIDEO}-credit estimate. Launch credits will vary by render settings.
               {recommendation.id === "shop" ? " Batch tools are included for larger drops." : ""}
             </p>
             <div className="mt-5 grid grid-cols-2 gap-3">
@@ -84,7 +84,7 @@ export function PricingUsageEstimator() {
             </div>
           </div>
           <Link href={`#plan-${recommendation.id}`} className="btn btn-primary mt-6 w-full text-sm">
-            See {recommendation.name} details ↓
+            Inspect {recommendation.name} preview ↓
           </Link>
         </div>
       </div>

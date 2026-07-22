@@ -58,12 +58,12 @@
 | C1 | 首页扫一遍：**禁止暗示无限量**（已无 Endless clips；再扫 overclaim） | **已完成（复用 PR #6）** |
 | C2 | 所有 demo/project 卡统一 **Cached / Official example** 标注 | **已完成（复用 PR #6）** |
 | C3 | 单位经济：Seedance 真实成本 vs Free 3 条 / Creator 定价 — 写 `docs/UNIT_ECONOMICS.md` + 建议是否砍免费额度 | **已完成（T26）** |
-| C4 | Pricing 页转化句 A/B（只改文案组件，**不改** checkout API） | 可选 |
-| C5 | 首页第一屏 390px 视觉验收 + 微调（不重写壳） | 可选 |
+| C4 | Pricing 页转化句 A/B（只改文案组件，**不改** checkout API） | **已完成（agent/gpt/pricing-mobile）** |
+| C5 | 首页第一屏 390px 视觉验收 + 微调（不重写壳） | **已完成（agent/gpt/pricing-mobile）** |
 
 **锁文件区：** `components/HeroVideoBanner.tsx` · `components/HomeDemoShowcase.tsx` · `components/PricingUsageEstimator.tsx` · `components/HomeModelShelf.tsx` · `docs/UNIT_ECONOMICS.md`  
 **禁止改：** `app/api/generate/**` · session/credits/stripe  
-**分支：** `agent/gpt/convert-truth`（C1–C2 快进复用 PR #6）　**提交：** `[gpt]`
+**分支：** `agent/gpt/pricing-mobile`（C4–C5）　**提交：** `[gpt]`
 
 ---
 

@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [gpt] pricing messages + 390px first-screen pass (C4–C5 / T28–T29)
+- Paths: `components/PricingHeroCopy.tsx`, pricing page/components, `HeroVideoBanner`, and `MobileGenerateBar`.
+- Reuse: default pricing message is outcome-led; `/pricing?copy=cost` selects the cost-control variant via `data-pricing-copy-variant`.
+- Truth rule: plan clip totals are prototype estimates, not launch promises; cached demos and gated billing remain explicit.
+- Mobile: 390×844 has no horizontal overflow, keeps both hero CTAs visible, and no longer overlays a duplicate floating CTA on Home.
+- Verified: all-app ESLint, TypeScript + 69-route production build, both pricing variants, demo switch, and 390px browser geometry.
+
 ### 2026-07-23 — [gpt] conversion truth + unit economics (C3 / T26)
 - Paths: `docs/UNIT_ECONOMICS.md`
 - Decision: replace three anonymous monthly free clips with one verified 4s/480p/watermarked trial (recommendation).
