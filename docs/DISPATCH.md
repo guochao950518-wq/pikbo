@@ -1,41 +1,46 @@
-# 总控 — 地基期（老板：先地基，后出片）
+# 24 小时冲刺 — 地基完成 · 软上线就绪
 
-**更新：** 2026-07-23  
+**截止：** 自 2026-07-23 起 24 小时内  
 **协调：** Grok  
+**质量：** 保质保量 — 不假 live、不假无限、build 必须绿  
 
-## 老板原话
+## 老板要求
 
-> 先把地基做好，不管套壳还是自建。出片是水到渠成的。
+> 加快，保质保量在 24 小时内完成。地基先做好，出片水到渠成。
 
-## 冻结（直到地基 DoD）
+## 24h 完成定义（DoD）
 
-- ❌ 新 Explore / 战役条 / 新套件模块  
-- ❌ 为好看大改视觉主题  
-- ❌ 假 live、假 UGC、假无限量  
+### 必须完成（代码侧）
 
-## 地基真相源
+| # | 项 | 状态 |
+|---|-----|------|
+| 1 | 地基文档 + 契约 `FOUNDATION` / `contracts` | ✅ |
+| 2 | 会话/积分/免费试玩数字一致 | ✅ |
+| 3 | generate 统一响应 + demo 本地潮玩片 | ✅ |
+| 4 | 定价文案与单位经济对齐 | 本轮合流 |
+| 5 | `npm run preflight` / build 绿 | 本轮验 |
+| 6 | 软上线清单老板 1 页可执行 | 本轮写 |
 
-→ **`docs/FOUNDATION.md`**
+### 需要老板 30 分钟（环境）
 
-## 分工
+| # | 项 |
+|---|-----|
+| A | `.env` / Vercel：`SESSION_SECRET` + `FAL_KEY` |
+| B | 按 `docs/LAUNCH.md` 部署 + 域名 |
+| C | 上传一张手办图验收一条 |
 
-| Agent | 只做地基 |
-|-------|----------|
-| **Grok** | session / credits / generate 契约 / 配置 / 合流 |
-| **Codex** | 文案数字对齐 pricing；不改 API |
-| **Claude** | presets/FAQ 数据质量；不扩壳 |
+**代码 24h 内做到「你配 key 就能上」；公网 live 取决于 A–C。**
 
-## 当前 Grok 队列
+## 冻结
 
-1. [x] FOUNDATION.md + contracts.ts  
-2. [x] generate 响应永远含 `demo`  
-3. [x] README 积分与代码一致  
-4. [ ] 可选：production 缺 SESSION_SECRET 时 health 标 degraded  
-5. [ ] 地基稳后再开 FAL 出片验收  
+- 不新开 HF 大装修分支  
+- 不硬合 `product-foundation` / `higgsfield-product-clone` 大重写  
+- Claude 省额度：无新大任务  
 
-## 给 Codex/Claude（若还在跑）
+## 给还在跑的 Codex
 
 ```text
-git pull origin main。地基期：只读 docs/FOUNDATION.md。
-不要堆新 UI 模块。有额度：对齐文案/FAQ 到 lib/pricing 数字即可。
+git pull origin main。24h 地基冲刺。
+只修定价/转化文案对齐 lib/pricing，不改 API。
+做完 push，Grok 合流。
 ```

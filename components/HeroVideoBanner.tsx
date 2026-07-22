@@ -7,21 +7,35 @@ import { DEMO_VIDEOS } from "@/lib/demoVideos";
 /** Full-bleed rotating hero — first thing users see (HF-style immersion) */
 export function HeroVideoBanner() {
   const [idx, setIdx] = useState(0);
+  const [reducedMotion, setReducedMotion] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const demo = DEMO_VIDEOS[idx % DEMO_VIDEOS.length];
 
   useEffect(() => {
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const sync = () => setReducedMotion(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
+
+  useEffect(() => {
+    if (reducedMotion) return;
     const t = window.setInterval(() => {
       setIdx((i) => (i + 1) % DEMO_VIDEOS.length);
     }, 7000);
     return () => window.clearInterval(t);
-  }, []);
+  }, [reducedMotion]);
 
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
+    if (reducedMotion) {
+      v.pause();
+      return;
+    }
     v.play().catch(() => undefined);
-  }, [idx]);
+  }, [idx, reducedMotion]);
 
   return (
     <section className="relative h-[min(72vh,640px)] w-full overflow-hidden border-b border-[var(--border)]">
@@ -33,7 +47,7 @@ export function HeroVideoBanner() {
         muted
         loop
         playsInline
-        autoPlay
+        autoPlay={!reducedMotion}
         preload="auto"
       >
         <source src={demo.webm} type="video/webm" />
@@ -51,12 +65,12 @@ export function HeroVideoBanner() {
             <span className="text-[var(--mint)]">Listing & viral clips.</span>
           </h1>
           <p className="mt-4 max-w-md text-sm leading-relaxed text-white/70 sm:text-base">
-            PIKBO Lab cached example — {demo.result} Upload your own toy to
-            open the recipe; live provider results can vary.
+            Cached PIKBO Lab example — not your upload. Open this recipe with
+            an owned-toy photo; live provider results can vary.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link href="/create" className="btn btn-primary px-6 py-3 text-sm">
-              Upload photo — free
+              Try with my photo
             </Link>
             <Link
               href={`/create?effect=${encodeURIComponent(demo.preset)}`}
@@ -74,6 +88,8 @@ export function HeroVideoBanner() {
               key={d.id}
               type="button"
               onClick={() => setIdx(i)}
+              aria-label={`Show ${d.title} cached example`}
+              aria-pressed={i === idx}
               className={`relative h-14 w-10 shrink-0 overflow-hidden rounded-lg border transition sm:h-16 sm:w-12 ${
                 i === idx
                   ? "border-[var(--mint)] ring-1 ring-[var(--mint)]"
