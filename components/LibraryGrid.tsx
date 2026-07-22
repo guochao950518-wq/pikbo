@@ -80,15 +80,15 @@ export function LibraryGrid() {
         <p className="text-3xl">▢</p>
         <p className="mt-3 text-[var(--fg-muted)]">No clips on this device yet</p>
         <p className="mt-2 max-w-sm text-xs text-[var(--fg-dim)]">
-          Generations stay in this browser. Start from a tool page or the full
-          studio — results show up here automatically.
+          Live results currently stay in this browser. Cached demos are labeled and
+          are not generated from your upload.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <Link href="/create" className="btn btn-primary text-sm">
             Open Generate
           </Link>
           <Link href="/community" className="btn btn-ghost text-sm">
-            Remake a project
+            Try a PIKBO Lab recipe
           </Link>
           <Link href="/effects" className="btn btn-ghost text-sm">
             Browse presets

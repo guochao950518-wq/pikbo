@@ -148,7 +148,7 @@ export const PRESETS: Preset[] = [
     seoDescription:
       "Make your figure float and rotate in mid-air for a high-end hero shot. One photo, no CGI, no filming — ready for ads and listings.",
     intro:
-      "A floating hero shot instantly reads as premium. Pikbo lifts your figure off the surface and gives it a slow mid-air rotation for an ad-grade product video from one photo.",
+      "A floating hero shot can give a product page a more premium feel. Pikbo uses your photo as the reference for a slow mid-air rotation; review the generated details before publishing.",
     body: [
       "Levitation shots are a staple of high-end product ads because they feel expensive and deliberate.",
       "Use it as the opening frame of a launch reel or the hero video on a product page.",
@@ -325,11 +325,11 @@ export const PRESETS: Preset[] = [
     h1: "Make Your Figure Dance — AI Video",
     seoTitle: "Make Your Figure Dance | Toy Animation Video Maker | Pikbo",
     seoDescription:
-      "Upload a photo of your figure and watch it dance. Turn any collectible into a fun, shareable animated clip for Reels and TikTok in seconds.",
+      "Upload a photo of your figure and create a playful animated clip for Reels or TikTok. Live renders usually take 30–90 seconds when the provider is configured.",
     intro:
       "Ever wish your favourite figure could come alive? Upload one photo and Pikbo animates a playful little dance — the kind of clip collectors love to share.",
     body: [
-      "This is the viral hook. A dancing collectible is instantly shareable and gets your account in front of other collectors.",
+      "A dancing collectible can be a strong social hook. Test the result with your audience; reach and engagement are not guaranteed.",
       "Works with vinyl figures, plush, sofubi, and art toys. Add it to a shelf tour or a 'new arrival' post.",
     ],
     keywords: [
@@ -340,8 +340,8 @@ export const PRESETS: Preset[] = [
     ],
     faq: [
       {
-        q: "Will it look like my exact figure?",
-        a: "Pikbo animates from your uploaded photo, so the character and colors stay true to your toy.",
+        q: "Will it preserve every detail of my figure?",
+        a: "Your upload guides the character and colors, but generated motion can change small details. Review each result before publishing.",
       },
       {
         q: "Is there a free version?",
@@ -403,7 +403,7 @@ export const PRESETS: Preset[] = [
       "A tiny wave goes a long way. Pikbo gives your figure a charming wink-and-wave from a single photo — the perfect friendly intro clip.",
     body: [
       "Micro-animations feel personal and are great as profile intros or greeting posts.",
-      "Subtle motion keeps your figure looking exactly like itself.",
+      "Subtle motion is intended to reduce visual drift, but generated details can still vary.",
     ],
     keywords: [
       "toy wave video",
@@ -434,7 +434,7 @@ export const PRESETS: Preset[] = [
     seoDescription:
       "Turn one photo of your plush toy or stuffed animal into a soft, bouncy, come-alive video. Made for plushie collectors and gifts.",
     intro:
-      "Plush toys have so much personality. Pikbo makes your plushie squish, bounce, and come alive from a single photo — soft, huggable motion that keeps its exact look.",
+      "Plush toys have so much personality. Pikbo uses one photo to create soft, bouncy motion; fabric, shape, and small details can vary in the result.",
     body: [
       "Built for the plush community: stuffed animals, beanies, and soft collectibles.",
       "A heartfelt format for gifts, keepsakes, and 'meet my plushie' posts.",
@@ -446,8 +446,8 @@ export const PRESETS: Preset[] = [
     ],
     faq: [
       {
-        q: "Does it keep my plush's exact look?",
-        a: "Yes — it animates the plush in your photo, keeping its real shape, colors, and details.",
+        q: "Will it preserve every plush detail?",
+        a: "The upload guides shape and colors, but generated fabric and small details can vary. Review the clip before sharing or selling.",
       },
     ],
     promptTemplate:
@@ -624,7 +624,7 @@ export const PRESETS: Preset[] = [
       },
     ],
     promptTemplate:
-      "The collectible figure's parts fly in from off-screen and snap together to assemble the complete figure, dynamic mechanical assembly motion, small sparks of light at each connection, clean studio background, epic satisfying build-up, the finished figure holds a confident pose at the end, keeping its exact sculpt and colors.",
+      "The collectible figure's parts fly in from off-screen and snap together to assemble the complete figure, dynamic mechanical assembly motion, small sparks of light at each connection, clean studio background, epic satisfying build-up, the finished figure holds a confident pose at the end, aiming to preserve the visible sculpt and colors.",
     duration: 5,
     aspectRatio: "9:16",
   },
@@ -690,11 +690,11 @@ export const PRESETS: Preset[] = [
     faq: [
       {
         q: "Does my figure stay recognizable?",
-        a: "Yes — it keeps its exact look and colors; only the scale and city scene around it change.",
+        a: "The photo guides the figure, but generated details and colors can drift. Review the result before publishing."
       },
     ],
     promptTemplate:
-      "The collectible figure towers as a giant kaiju over a tiny miniature city at dusk, stomping between skyscrapers, dramatic sense of massive scale, atmospheric smoke and sweeping searchlights, epic monster-movie mood, slow low-angle camera, the figure keeps its exact look and colors.",
+      "The collectible figure towers as a giant kaiju over a tiny miniature city at dusk, stomping between skyscrapers, dramatic sense of massive scale, atmospheric smoke and sweeping searchlights, epic monster-movie mood, slow low-angle camera, the scene aims to preserve the figure's visible look and colors.",
     duration: 5,
     aspectRatio: "16:9",
   },
@@ -782,7 +782,7 @@ export const PRESETS: Preset[] = [
     intro:
       "Power up your figure. Pikbo surrounds it with a glowing, crackling energy aura — the anime power-up moment — for a high-impact clip made from one photo.",
     body: [
-      "The power-up aura is instantly recognizable to anime and gaming audiences and reads as epic and dynamic.",
+      "The power-up aura uses a familiar anime and gaming visual language; test the result with your own audience.",
       "Perfect for anime figures, action figures, and mecha you want to make feel unstoppable.",
     ],
     keywords: [
@@ -797,7 +797,7 @@ export const PRESETS: Preset[] = [
       },
     ],
     promptTemplate:
-      "The collectible figure charges up with a glowing, crackling energy aura swirling around it, anime power-up moment, radiant light, floating particles and electric arcs, epic dynamic mood, the figure stays crisp and keeps its exact look and colors.",
+      "The collectible figure charges up with a glowing, crackling energy aura swirling around it, anime power-up moment, radiant light, floating particles and electric arcs, epic dynamic mood, the scene aims to keep the figure crisp and recognizable.",
     duration: 5,
     aspectRatio: "9:16",
   },
@@ -854,7 +854,7 @@ export const COMMON_FAQ: { q: string; a: string }[] = [
   },
   {
     q: "How is this different from just filming with my phone?",
-    a: "Filming a figure yourself means lighting, a steady rig, and editing — and it still can't levitate, spin in space, or come alive. Pikbo animates your real toy from one photo, keeping its exact sculpt and colors, in seconds.",
+    a: "Filming gives you direct control over the real object; Pikbo offers generated motion and scenes from one photo. Outputs can change small sculpt or color details, and configured live renders usually take 30–90 seconds."
   },
 ];
 

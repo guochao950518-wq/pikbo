@@ -292,7 +292,7 @@ export function HomeDemoShowcase() {
           </div>
           <div className="max-w-sm">
             <p className="text-sm leading-6 text-[var(--fg-muted)]">
-              Real demos. Hover on desktop or scroll on mobile. Every look opens
+              Cached PIKBO Lab demos. Hover on desktop or scroll on mobile. Every look opens
               a tool page you can remake.
             </p>
             <Link

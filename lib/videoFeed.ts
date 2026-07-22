@@ -24,7 +24,7 @@ export type CommunityProject = {
   look: string;
   remakeHref: string;
   detailHref: string;
-  visibility: "Public" | "Official";
+  visibility: "Concept" | "Official";
   author: { name: string; initials: string; badge?: string };
   demo: DemoVideo;
 };
@@ -42,7 +42,7 @@ export function buildVideoFeed(): FeedItem[] {
   const byPreset = new Map(DEMO_VIDEOS.map((d) => [d.preset, d]));
   const items: FeedItem[] = [];
 
-  // Real Lab demos first (exact footage)
+  // Cached PIKBO Lab demos first (the media shown is the media described)
   for (const d of DEMO_VIDEOS) {
     const preset = PRESETS.find((p) => p.slug === d.preset);
     items.push({
@@ -83,7 +83,7 @@ export function buildVideoFeed(): FeedItem[] {
   });
 
   // Density passes — remixed Lab loops so the wall feels full of motion
-  // (same zero-cost cached demos; every card still remakes a real recipe)
+  // (same zero-cost cached demos; these are concept previews for a recipe)
   for (const pass of [1, 2, 3]) {
     PRESETS.forEach((p, i) => {
       if ((i + pass) % 2 === 0 && pass > 1) return;
@@ -146,7 +146,7 @@ export function communityProjects(): CommunityProject[] {
       look: p.tagline,
       remakeHref: createHref(p.slug),
       detailHref: `/effects/${p.slug}`,
-      visibility: "Public" as const,
+      visibility: "Concept" as const,
       author: {
         name: "Pikbo Lab",
         initials: "P",

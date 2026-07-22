@@ -29,9 +29,9 @@
 
 ### Codex（文案 · 诚实）
 
-1. 扫剩余 overclaim（explore/community/trust 条）  
-2. FAQ/空态与 Mini free 一致  
-3. 新分支 `agent/gpt/overnight-copy` push  
+1. [x] 扫剩余 overclaim（Explore / PIKBO Lab / trust 条）  
+2. [x] FAQ/空态与 Mini Free 一致  
+3. [x] 新分支 `agent/gpt/overnight-copy` push  
 
 ### Grok（引擎 · 生产）
 

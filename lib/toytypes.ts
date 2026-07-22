@@ -61,7 +61,7 @@ export const TOY_TYPES: ToyType[] = [
     seoDescription:
       "Bring your plush toys and stuffed animals to life. Squishy, bouncy come-alive videos from one photo — made for the plushie community.",
     intro:
-      "Plush toys have endless personality. Pikbo makes your plushie squish, bounce, and come alive from a single photo, keeping its exact soft look.",
+      "Plush toys have endless personality. Pikbo uses one photo to create squishy, bouncy motion; fabric, shape, and small details can vary.",
     body: [
       "Built for stuffed animals, beanies, and soft collectibles — the huggable motion suits plush better than any generic filter.",
       "Perfect for gifts, keepsakes, and 'meet my plushie' posts.",
@@ -74,8 +74,8 @@ export const TOY_TYPES: ToyType[] = [
     recommendedEffects: ["plushie-comes-alive", "claw-machine-win", "toy-wave-hello"],
     faq: [
       {
-        q: "Does it keep my plush's exact look?",
-        a: "Yes — it animates the plush in your photo, keeping its real shape, colors, and softness.",
+        q: "Will it preserve every plush detail?",
+        a: "The upload guides shape and colors, but generated fabric and small details can vary. Review the result before publishing.",
       },
     ],
   },
@@ -148,7 +148,7 @@ export const TOY_TYPES: ToyType[] = [
       "Vinyl figures have that clean, glossy look that loves the camera. Pikbo turns one photo into a spin, dance, or glam-lit clip that shows your vinyl at its best.",
     body: [
       "Perfect for stylized designer vinyl and character collectibles where the finish and pose are the appeal.",
-      "Animate the figure you own — the exact colors and sculpt — instead of a generic look-alike.",
+      "Animate the figure you own from its photo reference. Generated colors and sculpt details can vary, so review each clip.",
     ],
     keywords: [
       "vinyl figure video",

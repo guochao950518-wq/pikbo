@@ -19,7 +19,7 @@ const LINKS = [
   { href: "/for/etsy-listing-videos", label: "For Etsy sellers" },
   { href: "/for/tiktok-shop-product-videos", label: "For TikTok Shop" },
   { href: "/explore", label: "Explore" },
-  { href: "/community", label: "Community" },
+  { href: "/community", label: "PIKBO Lab" },
   { href: "/cinema", label: "Cinema Studio" },
   { href: "/apps", label: "Apps" },
   { href: "/models", label: "Models" },

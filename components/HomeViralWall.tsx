@@ -37,7 +37,7 @@ export function HomeViralWall({ items }: { items: FeedItem[] }) {
             Viral toy presets
           </Link>
           <p className="mt-1 text-sm text-white/40">
-            Big-budget looks for figures you own — tap any card to remake
+            Cached or concept-labeled previews for figures you own — tap any card to try the recipe
           </p>
         </div>
         <Link

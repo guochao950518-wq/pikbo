@@ -11,7 +11,7 @@ export function TrustStrip() {
         <span className="hidden h-3 w-px bg-[var(--border)] sm:block" />
         <span>Toys you own</span>
         <span className="hidden h-3 w-px bg-[var(--border)] sm:block" />
-        <span>Free trial · watermarked</span>
+        <span>Free: one Mini 5s 480p trial · on-player mark</span>
         <span className="hidden h-3 w-px bg-[var(--border)] sm:block" />
         <span>
           Made for{" "}
