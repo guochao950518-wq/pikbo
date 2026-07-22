@@ -28,14 +28,14 @@ export default function PricingPage() {
             Clear credit limits · no unlimited claim
           </Badge>
           <h1 className="mx-auto mt-5 max-w-4xl text-4xl font-black leading-[1.02] tracking-[-0.04em] sm:text-6xl lg:text-7xl">
-            Start with three clips.
+            Start with one free trial.
             <br />
             Scale to a <span className="text-grad">content engine.</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-[var(--fg-muted)] sm:text-lg">
-            Free starts with three watermarked test credits. Live generation
-            uses Seedance Fast when provider access is configured; demo mode is
-            labeled. Creator and Shop add export and volume benefits.
+            Free = one watermarked Seedance Fast trial (plus unlimited cached
+            demos). Creator ~5 real clips / Shop ~15 at current credit rates —
+            priced for model cost, not fake volume.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-2">
             <Button asChild size="lg">
