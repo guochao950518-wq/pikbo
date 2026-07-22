@@ -85,7 +85,7 @@ export default function CinemaPage() {
                     onClick={() => setEffect(p.slug)}
                     className={`rounded-lg border px-2.5 py-1.5 text-xs ${
                       effect === p.slug
-                        ? "border-[var(--lime)] text-[var(--lime)]"
+                        ? "border-[var(--brand)] text-[var(--brand)]"
                         : "border-[var(--border)] text-[var(--fg-muted)]"
                     }`}
                   >
