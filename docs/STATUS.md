@@ -47,6 +47,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | T27 | Preset/SEO copy wave 2 (toy seller language) | Claude | todo | agent/claude/copy-seo-v2 | DISPATCH L1–L2 |
 | T28 | Pricing conversion copy A/B | GPT | done | agent/gpt/pricing-mobile | Outcome default; `?copy=cost` cost-control variant; plan volume explicitly prototype-only |
 | T29 | Homepage first-screen 390px acceptance + polish | GPT | done | agent/gpt/pricing-mobile | No x-overflow; primary CTA visible; duplicate home floating CTA removed; accessible demo controls |
+| T30 | Pricing UI matches active credit contract | GPT | done | agent/gpt/pricing-truth-main | Free 1 / Creator ~5 / Shop ~15; billing gate and future model-aware weights remain explicit |
 | T5 | Supabase auth + durable credits | — | todo | — | **Blocks serious Stripe** |
 | T6 | Server-side free watermark (ffmpeg) | Grok | todo | — | After T23/T24 |
 
