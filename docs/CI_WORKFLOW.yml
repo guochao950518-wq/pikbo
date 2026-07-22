@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: No unresolved merge conflict markers
+        run: |
+          if git grep -nE '^(<<<<<<<|>>>>>>>|=======)' -- app lib components 2>/dev/null; then
+            echo "Unresolved conflict markers found"
+            exit 1
+          fi
+          echo "No conflict markers"
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+        env:
+          # Build must not require live secrets
+          NEXT_TELEMETRY_DISABLED: "1"

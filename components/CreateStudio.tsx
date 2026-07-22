@@ -939,6 +939,11 @@ export function CreateStudio({
                     )}
                   </div>
                 )}
+                <p className="mx-auto mt-2 max-w-md text-center text-[11px] leading-relaxed text-[var(--fg-dim)]">
+                  {demo
+                    ? "Cached demo path (no live model call). Add FAL_KEY for real Seedance renders."
+                    : "AI motion varies — same photo can look different each run. Not happy? Regenerate; failed jobs refund credits."}
+                </p>
                 <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
                   <a
                     href={videoUrl}
