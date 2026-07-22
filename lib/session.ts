@@ -87,7 +87,17 @@ function newGuest(): UserSession {
 /** Refresh free monthly allowance when the calendar month rolls. */
 export function refreshPeriod(session: UserSession): UserSession {
   const key = currentPeriodKey();
-  if (session.periodKey === key) return session;
+  if (session.periodKey === key) {
+    // Launch pricing cut: free guests who still hold old 30-credit cookies
+    // get clamped to current free allowance (do not raise balance).
+    if (session.plan === "free") {
+      const cap = getPlan("free").credits;
+      if (session.credits > cap) {
+        return { ...session, credits: cap };
+      }
+    }
+    return session;
+  }
 
   if (session.plan === "free") {
     const plan = getPlan("free");
