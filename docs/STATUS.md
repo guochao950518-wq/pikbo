@@ -21,7 +21,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | T7 | Vercel deploy + domain pikbo.ai | — | blocked | — | Boss: **先不做上线**，先抄站 |
 | T10 | Boss one-command + Telegram bot | Grok | done | main | DISPATCH + tools/telegram_dispatch_bot.py |
 | T11 | Higgsfield-class shell + Generate | Grok | done | main | AppShell + CreateStudio + Library history |
-| T12 | Home model shelf + presets wall polish | GPT | todo | — | Home already has PresetsWall; GPT can push visuals |
+| T12 | Home model shelf + presets wall polish | GPT | done | agent/gpt/home-visuals | Live-model previews + demo-aware preset cards; roadmap models explicit |
 | T13 | Presets/community density | Claude | done | main | PresetsWall on /effects + home |
 | T14 | Local Library history | Grok | done | main | localStorage after generate |
 | T15 | Generate duration/aspect/model controls | Grok | done | main | API + CreateStudio |
@@ -45,6 +45,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | D5 | Repo published | Grok | https://github.com/guochao950518-wq/pikbo |
 | D6 | Stripe webhooks + confirm + legal pages | Grok | this branch |
 | D7 | Toy-first homepage demo theatre | GPT | `agent/gpt/homepage-demos` |
+| D8 | Model shelf + demo-aware PresetsWall | GPT | `agent/gpt/home-visuals` |
 
 ---
 

@@ -1,20 +1,19 @@
 import Link from "next/link";
-import { APPS, MODELS } from "@/lib/catalog";
+import { APPS } from "@/lib/catalog";
 import { PRESETS } from "@/lib/presets";
 import { PLANS } from "@/lib/pricing";
-import { HowItWorks } from "@/components/HowItWorks";
 import { PresetsWall } from "@/components/PresetsWall";
 import {
   HeroDemoStage,
   HomeDemoShowcase,
 } from "@/components/HomeDemoShowcase";
+import { HomeModelShelf } from "@/components/HomeModelShelf";
 
 /**
  * Home feed patterned on full AI creative suites:
  * featured model → apps row → viral presets → community → pricing.
  */
 export default function Home() {
-  const videoModels = MODELS.filter((m) => m.kind === "video");
   const liveApps = APPS.filter((a) => a.live).slice(0, 6);
 
   return (
@@ -65,9 +64,8 @@ export default function Home() {
       </section>
 
       <HomeDemoShowcase />
-      <HowItWorks />
 
-      {/* Apps strip */}
+      {/* Quick apps strip */}
       <section className="border-b border-[var(--border)] px-4 py-8 sm:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="mb-4 flex items-center justify-between">
@@ -91,41 +89,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Models */}
-      <section className="border-b border-[var(--border)] px-4 py-10 sm:px-8">
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-5 flex items-end justify-between">
-            <h2 className="text-xl font-bold">Video models</h2>
-            <Link href="/models" className="text-xs text-[var(--lime)]">
-              Browse
-            </Link>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {videoModels.map((m) => (
-              <Link
-                key={m.id}
-                href={m.href}
-                className="card overflow-hidden p-0 transition-transform hover:-translate-y-0.5"
-              >
-                <div className="h-24" style={{ background: m.gradient }} />
-                <div className="p-3">
-                  <div className="flex items-center justify-between gap-1">
-                    <h3 className="text-sm font-semibold">{m.name}</h3>
-                    {m.live && (
-                      <span className="text-[9px] font-bold text-[var(--lime)]">
-                        LIVE
-                      </span>
-                    )}
-                  </div>
-                  <p className="mt-1 line-clamp-2 text-[11px] text-[var(--fg-dim)]">
-                    {m.blurb}
-                  </p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      <HomeModelShelf />
 
       {/* Cinema + Supercomputer promos */}
       <section className="border-b border-[var(--border)] px-4 py-10 sm:px-8">
