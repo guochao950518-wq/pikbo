@@ -27,9 +27,18 @@ export function modelForTier(opts: {
 
 export type SeedanceResolution = "480p" | "720p";
 
-export function resolutionForTier(freeTier: boolean): SeedanceResolution {
-  return freeTier ? "480p" : "720p";
+export function resolutionForTier(
+  freeTier: boolean,
+  prefer?: SeedanceResolution | string | null
+): SeedanceResolution {
+  if (freeTier) return "480p";
+  if (prefer === "480p" || prefer === "720p") return prefer;
+  return "720p";
 }
+
+/** fal text-to-image for Image Studio (cheap/fast default). */
+export const IMAGE_MODEL =
+  process.env.FAL_IMAGE_MODEL || "fal-ai/flux/schnell";
 
 export type AspectRatio = "9:16" | "16:9" | "1:1" | "auto";
 

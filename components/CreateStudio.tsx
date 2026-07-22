@@ -68,6 +68,7 @@ export function CreateStudio({
   const [recent, setRecent] = useState<string[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [compare, setCompare] = useState(true);
+  const [resolution, setResolution] = useState<"480p" | "720p">("720p");
 
   const preset = useMemo(
     () => PRESETS.find((p) => p.slug === effect)!,
@@ -224,6 +225,7 @@ export function CreateStudio({
           duration,
           aspectRatio,
           model: modelId,
+          resolution: isFree ? "480p" : resolution,
         }),
       });
       const data = await res.json();
@@ -577,6 +579,39 @@ export function CreateStudio({
                   {a.label}
                 </button>
               ))}
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold text-[var(--fg-muted)]">
+              Resolution
+            </p>
+            <div className="mt-1.5 flex gap-2">
+              {(["480p", "720p"] as const).map((r) => {
+                const locked = Boolean(isFree && r === "720p");
+                return (
+                  <button
+                    key={r}
+                    type="button"
+                    onClick={() => {
+                      if (locked) {
+                        setShowPaywall(true);
+                        setError("720p is on paid plans.");
+                        return;
+                      }
+                      setResolution(r);
+                    }}
+                    className={`flex-1 rounded-lg border py-2 text-sm font-semibold ${
+                      (isFree ? "480p" : resolution) === r
+                        ? "border-[var(--brand)] bg-[var(--grad-soft)]"
+                        : "border-[var(--border)] text-[var(--fg-muted)]"
+                    } ${locked ? "opacity-60" : ""}`}
+                  >
+                    {r}
+                    {locked ? " 🔒" : ""}
+                  </button>
+                );
+              })}
             </div>
           </div>
 

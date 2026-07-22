@@ -27,6 +27,7 @@ export async function POST(req: Request) {
     duration?: number;
     aspectRatio?: string;
     model?: string;
+    resolution?: string;
   };
   try {
     body = await req.json();
@@ -34,8 +35,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 
-  const { effect, image, extra, duration, aspectRatio, model: modelPref } =
-    body;
+  const {
+    effect,
+    image,
+    extra,
+    duration,
+    aspectRatio,
+    model: modelPref,
+    resolution: resPref,
+  } = body;
 
   const preset = effect ? getPreset(effect) : undefined;
   if (!preset) {
@@ -113,7 +121,7 @@ export async function POST(req: Request) {
       image_url: imageUrl,
       duration: seedanceDuration(secs),
       aspect_ratio: aspect,
-      resolution: resolutionForTier(freeTier),
+      resolution: resolutionForTier(freeTier, resPref),
       generate_audio: !freeTier,
     };
 

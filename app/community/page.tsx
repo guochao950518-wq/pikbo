@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { DEMO_VIDEOS } from "@/lib/demoVideos";
 import { PRESETS } from "@/lib/presets";
 
 export const metadata: Metadata = {
   title: "Community",
-  description: "Explore toy video presets and public-style generations on Pikbo.",
+  description: "Explore toy video demos and presets on Pikbo.",
 };
 
 export default function CommunityPage() {
@@ -14,34 +15,68 @@ export default function CommunityPage() {
         <span className="chip">Community</span>
         <h1 className="mt-3 text-2xl font-bold">From the shelf</h1>
         <p className="mt-1 text-sm text-[var(--fg-muted)]">
-          Explore wall for collectors & sellers. Mock posts for now — each card
-          jumps into Generate with that toy preset.
+          Real Pikbo demos (no credit cost) plus every preset you can run in
+          Generate.
         </p>
 
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {PRESETS.map((p, i) => (
+        <h2 className="mt-10 text-lg font-bold">Featured demos</h2>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {DEMO_VIDEOS.map((d) => (
+            <Link
+              key={d.id}
+              href={`/create?effect=${d.preset}`}
+              className="card group overflow-hidden p-0 transition-transform hover:-translate-y-1"
+            >
+              <div className="aspect-[9/14] bg-black/50 sm:aspect-video">
+                {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+                <video
+                  className="h-full w-full object-cover"
+                  poster={d.poster}
+                  muted
+                  loop
+                  playsInline
+                  autoPlay
+                  preload="metadata"
+                >
+                  <source src={d.webm} type="video/webm" />
+                  <source src={d.mp4} type="video/mp4" />
+                </video>
+              </div>
+              <div className="p-4">
+                <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--brand)]">
+                  {d.eyebrow}
+                </p>
+                <p className="font-semibold group-hover:text-[var(--brand)]">
+                  {d.title}
+                </p>
+                <p className="mt-1 text-xs text-[var(--fg-muted)]">{d.result}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        <h2 className="mt-12 text-lg font-bold">All presets</h2>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {PRESETS.map((p) => (
             <Link
               key={p.slug}
               href={`/create?effect=${p.slug}`}
-              className="card group overflow-hidden p-0 transition-transform hover:-translate-y-1"
+              className="card flex items-center gap-3 p-3 transition-transform hover:-translate-y-0.5"
             >
-              <div
-                className="relative grid aspect-[16/10] place-items-center text-5xl"
+              <span
+                className="grid h-12 w-12 place-items-center rounded-xl text-xl"
                 style={{ background: p.gradient }}
               >
-                <span className="drop-shadow-lg">{p.emoji}</span>
-              </div>
-              <div className="p-4">
-                <p className="font-semibold group-hover:text-[var(--brand)]">
+                {p.emoji}
+              </span>
+              <span className="min-w-0">
+                <span className="block truncate text-sm font-semibold">
                   {p.name}
-                </p>
-                <p className="mt-1 text-xs text-[var(--fg-dim)]">
-                  @collector{(i % 9) + 1} · {p.audience} · public
-                </p>
-                <p className="mt-2 line-clamp-2 text-xs text-[var(--fg-muted)]">
+                </span>
+                <span className="block truncate text-[11px] text-[var(--fg-dim)]">
                   {p.tagline}
-                </p>
-              </div>
+                </span>
+              </span>
             </Link>
           ))}
         </div>

@@ -6,6 +6,7 @@ import { site } from "@/lib/site";
 import { CreditsBadge } from "@/components/CreditsBadge";
 import { MobileGenerateBar } from "@/components/MobileGenerateBar";
 import { OnboardingBanner } from "@/components/OnboardingBanner";
+import { CommandPalette } from "@/components/CommandPalette";
 
 /** Suite nav (big-app structure) + Pikbo candy brand (own style). */
 const NAV = [
@@ -19,6 +20,7 @@ const NAV = [
   { href: "/community", label: "Community", icon: "◉" },
   { href: "/pricing", label: "Pricing", icon: "$" },
   { href: "/profile", label: "Profile", icon: "○" },
+  { href: "/settings", label: "Settings", icon: "⚙" },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -95,6 +97,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </header>
 
         <OnboardingBanner />
+        <CommandPalette />
         <div className="flex-1">{children}</div>
         <MobileGenerateBar />
 

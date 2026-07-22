@@ -26,18 +26,30 @@ export function loadHistory(): HistoryItem[] {
   }
 }
 
-export function pushHistory(item: Omit<HistoryItem, "id" | "createdAt">): HistoryItem[] {
+export function saveHistory(list: HistoryItem[]): void {
+  try {
+    localStorage.setItem(KEY, JSON.stringify(list.slice(0, MAX)));
+  } catch {
+    // quota
+  }
+}
+
+export function pushHistory(
+  item: Omit<HistoryItem, "id" | "createdAt">
+): HistoryItem[] {
   const next: HistoryItem = {
     ...item,
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     createdAt: new Date().toISOString(),
   };
   const list = [next, ...loadHistory()].slice(0, MAX);
-  try {
-    localStorage.setItem(KEY, JSON.stringify(list));
-  } catch {
-    // quota
-  }
+  saveHistory(list);
+  return list;
+}
+
+export function removeHistoryItem(id: string): HistoryItem[] {
+  const list = loadHistory().filter((i) => i.id !== id);
+  saveHistory(list);
   return list;
 }
 
