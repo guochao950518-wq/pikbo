@@ -175,6 +175,62 @@ export const USE_CASES: UseCase[] = [
       },
     ],
   },
+  {
+    slug: "whatnot-live-selling",
+    emoji: "📡",
+    label: "Whatnot sellers",
+    audience: "seller",
+    h1: "Whatnot Video Maker for Toy & Collectible Sellers",
+    seoTitle: "Whatnot Live Selling Video Maker for Toys | Pikbo",
+    seoDescription:
+      "Promote your Whatnot shows and drops with quick hype videos. Turn one figure photo into an unboxing or spin clip that pulls buyers into your live.",
+    intro:
+      "Whatnot lives are won on hype. Pikbo turns one figure photo into a fast unboxing or spin clip you can post before a show to pull collectors into your stream — no filming between sales.",
+    body: [
+      "Announce a drop, tease a grail, or recap a break with a clip that matches the energy of live selling.",
+      "Vertical output fits the social posts that funnel viewers to your Whatnot show.",
+    ],
+    keywords: [
+      "whatnot seller video",
+      "whatnot promo video",
+      "live selling toy video",
+    ],
+    recommendedEffects: ["blind-box-unboxing", "360-spin-showcase", "mystery-box-reveal"],
+    faq: [
+      {
+        q: "Can I make clips between lives?",
+        a: "Yes — generate a promo from a single photo in seconds, so you can post between or during shows.",
+      },
+    ],
+  },
+  {
+    slug: "depop-shop-videos",
+    emoji: "🧵",
+    label: "Depop sellers",
+    audience: "seller",
+    h1: "Depop Video Maker for Toy & Collectible Shops",
+    seoTitle: "Depop Video Maker for Toy Sellers | Pikbo",
+    seoDescription:
+      "Make your Depop listings move. Turn one photo of a figure or collectible into a clean spin or glam video that stands out in the feed.",
+    intro:
+      "Depop is a visual, feed-first marketplace. Pikbo turns one photo of your figure or collectible into a spin or glam clip that stops the scroll and makes your shop look pro.",
+    body: [
+      "A short video on a listing signals a serious seller and helps a piece stand out from static photos.",
+      "Keep a consistent look across your whole shop with the same effect on every item.",
+    ],
+    keywords: [
+      "depop video",
+      "depop listing video",
+      "resale toy video maker",
+    ],
+    recommendedEffects: ["360-spin-showcase", "display-case-glam", "floating-hero"],
+    faq: [
+      {
+        q: "What size video does Depop use?",
+        a: "Square or vertical short clips work well on Depop — both export from Pikbo's showcase effects.",
+      },
+    ],
+  },
 ];
 
 export function getUseCase(slug: string): UseCase | undefined {
