@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { loadFavorites, toggleFavorite } from "@/lib/favorites";
 import { pushHistory } from "@/lib/history";
+import { SAMPLE_TOYS, sampleToDataUrl } from "@/lib/samples";
 import { PRESETS } from "@/lib/presets";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
 import type { PublicSession } from "@/lib/session";
@@ -101,6 +102,18 @@ export function CreateStudio({
       // ignore
     }
     setFavorites(loadFavorites());
+    // optional still from Image studio
+    try {
+      const pending = sessionStorage.getItem("pikbo_pending_still");
+      if (pending?.startsWith("http")) {
+        sessionStorage.removeItem("pikbo_pending_still");
+        sampleToDataUrl(pending)
+          .then((data) => setImage(data))
+          .catch(() => undefined);
+      }
+    } catch {
+      // ignore
+    }
   }, []);
 
   useEffect(() => {
@@ -518,6 +531,34 @@ export function CreateStudio({
                 >
                   Remove photo
                 </button>
+              )}
+              {!image && (
+                <div className="mt-2">
+                  <p className="mb-1 text-[10px] font-semibold text-[var(--fg-dim)]">
+                    Or try a sample still
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {SAMPLE_TOYS.map((s) => (
+                      <button
+                        key={s.id}
+                        type="button"
+                        className="rounded-lg border border-[var(--border)] px-2 py-1 text-[10px] hover:border-[var(--brand)]"
+                        onClick={async () => {
+                          try {
+                            setError(null);
+                            const data = await sampleToDataUrl(s.path);
+                            setImage(data);
+                            setEffect(s.effect);
+                          } catch {
+                            setError("Could not load sample photo");
+                          }
+                        }}
+                      >
+                        {s.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               )}
               <p className="mt-2 text-[10px] text-[var(--fg-dim)]">
                 Tip: only animate toys you own. Works great for blind boxes,

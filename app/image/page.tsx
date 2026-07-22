@@ -1,8 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
+import {
+  clearImageHistory,
+  loadImageHistory,
+  pushImageHistory,
+  type ImageHistoryItem,
+} from "@/lib/imageHistory";
 
 export default function ImageStudioPage() {
   const [prompt, setPrompt] = useState(
@@ -13,6 +19,11 @@ export default function ImageStudioPage() {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [demo, setDemo] = useState(false);
+  const [history, setHistory] = useState<ImageHistoryItem[]>([]);
+
+  useEffect(() => {
+    setHistory(loadImageHistory());
+  }, []);
 
   async function generate() {
     setBusy(true);
@@ -27,6 +38,15 @@ export default function ImageStudioPage() {
       if (!res.ok) throw new Error(data.error || "Failed");
       setImageUrl(data.imageUrl);
       setDemo(Boolean(data.demo));
+      if (data.imageUrl && !String(data.imageUrl).startsWith("data:image/svg")) {
+        setHistory(
+          pushImageHistory({
+            imageUrl: data.imageUrl,
+            prompt,
+            demo: data.demo,
+          })
+        );
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed");
     } finally {
@@ -40,9 +60,8 @@ export default function ImageStudioPage() {
         <span className="chip">🖼️ Stills · live</span>
         <h1 className="mt-3 text-3xl font-bold">Still studio</h1>
         <p className="mt-2 text-sm text-[var(--fg-muted)]">
-          Mock packaging & colorways before you animate. Uses Flux Schnell via
-          fal ({CREDITS_PER_VIDEO} credits). Then send the vibe to Seedance
-          motion.
+          Mock packaging & colorways before motion. Flux via fal (
+          {CREDITS_PER_VIDEO} credits). Then animate in Generate.
         </p>
 
         <div className="card mt-8 grid gap-6 p-6 lg:grid-cols-2">
@@ -90,6 +109,21 @@ export default function ImageStudioPage() {
                 Demo placeholder — add FAL_KEY for Flux stills.
               </p>
             )}
+            {imageUrl && imageUrl.startsWith("http") && (
+              <Link
+                href={`/create`}
+                className="btn btn-ghost mt-3 w-full text-sm"
+                onClick={() => {
+                  try {
+                    sessionStorage.setItem("pikbo_pending_still", imageUrl);
+                  } catch {
+                    // ignore
+                  }
+                }}
+              >
+                Use in Generate →
+              </Link>
+            )}
           </div>
           <div className="grid place-items-center overflow-hidden rounded-xl border border-dashed border-[var(--border)] bg-black/30">
             {imageUrl ? (
@@ -108,13 +142,43 @@ export default function ImageStudioPage() {
           </div>
         </div>
 
+        {history.length > 0 && (
+          <div className="mt-10">
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="font-semibold">Recent stills</h2>
+              <button
+                type="button"
+                className="text-xs text-[var(--fg-dim)] hover:text-[var(--brand)]"
+                onClick={() => {
+                  clearImageHistory();
+                  setHistory([]);
+                }}
+              >
+                Clear
+              </button>
+            </div>
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+              {history.map((h) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  key={h.id}
+                  src={h.imageUrl}
+                  alt=""
+                  className="aspect-[3/4] cursor-pointer rounded-lg object-cover ring-1 ring-[var(--border)] hover:ring-[var(--brand)]"
+                  onClick={() => setImageUrl(h.imageUrl)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
         <p className="mt-6 text-sm text-[var(--fg-muted)]">
-          Ready to move?{" "}
+          Have a real figure photo?{" "}
           <Link
             href="/create"
             className="font-semibold text-[var(--brand)] hover:underline"
           >
-            Photo → clip with Seedance
+            Animate it with Seedance
           </Link>
         </p>
       </div>

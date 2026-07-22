@@ -24,15 +24,24 @@
 | Explore with real media | Strong | Mock + demos home | strengthen community | P1 |
 | Deploy | Live domains | Boss paused | blocked | — |
 
-## This sprint closes (P0)
-1. Resolution selector (480p/720p; free locked 480p)
-2. Image generate API + live Image studio
-3. Library filter + delete item
-4. Cmd+K command palette
-5. Settings page (clear library/favorites/onboarding)
-6. Pricing monthly/annual UI toggle
-7. `/generate` → create
-8. Community uses demo media when available
+## Closed (P0)
+1. Resolution selector (480p/720p; free locked 480p) ✅
+2. Image generate API + live Image studio ✅
+3. Library filter + delete item ✅
+4. Cmd+K command palette ✅
+5. Settings page ✅
+6. Pricing monthly/annual UI toggle ✅
+7. `/generate` → create ✅
+8. Community demo media ✅
+9. Sample toy stills one-click ✅
+10. Batch duration/aspect ✅
+11. Image history + health endpoint ✅
+
+## Still open (honest)
+- Supabase auth / cloud library
+- Kling/Veo/Sora live keys
+- ffmpeg watermark burn-in
+- Deploy (boss paused)
 
 ## Won't fake
 - Real multi-model Kling/Veo/Sora without keys

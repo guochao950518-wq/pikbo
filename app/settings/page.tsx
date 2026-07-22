@@ -102,6 +102,13 @@ export default function SettingsPage() {
           >
             Reset onboarding banner
           </button>
+          <button
+            type="button"
+            className="btn btn-ghost w-full text-sm"
+            onClick={() => clearKey("pikbo_image_library_v1", "still library")}
+          >
+            Clear still library
+          </button>
           {msg && (
             <p className="text-center text-xs text-[var(--mint)]">{msg}</p>
           )}

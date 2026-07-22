@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { PRESETS } from "@/lib/presets";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
 import { pushHistory } from "@/lib/history";
+import { SAMPLE_TOYS, sampleToDataUrl } from "@/lib/samples";
 
 type Job = {
   slug: string;
@@ -34,6 +35,10 @@ export function BatchStudio() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [aspectRatio, setAspectRatio] = useState<"9:16" | "1:1" | "16:9">(
+    "9:16"
+  );
+  const [duration, setDuration] = useState<5 | 10>(5);
 
   const cost = selected.length * CREDITS_PER_VIDEO;
 
@@ -87,8 +92,8 @@ export function BatchStudio() {
           body: JSON.stringify({
             effect: queue[i].slug,
             image,
-            duration: 5,
-            aspectRatio: "9:16",
+            duration,
+            aspectRatio,
             model: "seedance-fast",
           }),
         });
@@ -151,6 +156,72 @@ export function BatchStudio() {
             onChange={(e) => loadFile(e.target.files?.[0])}
           />
         </label>
+        {!image && (
+          <div className="flex flex-wrap gap-2">
+            {SAMPLE_TOYS.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                className="rounded-lg border border-[var(--border)] px-2 py-1 text-[10px] hover:border-[var(--brand)]"
+                onClick={async () => {
+                  try {
+                    setImage(await sampleToDataUrl(s.path));
+                    setError(null);
+                  } catch {
+                    setError("Sample load failed");
+                  }
+                }}
+              >
+                Sample: {s.label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <p className="text-[10px] font-semibold text-[var(--fg-dim)]">
+              Duration
+            </p>
+            <div className="mt-1 flex gap-1">
+              {([5, 10] as const).map((d) => (
+                <button
+                  key={d}
+                  type="button"
+                  onClick={() => setDuration(d)}
+                  className={`flex-1 rounded-lg border py-1.5 text-xs font-semibold ${
+                    duration === d
+                      ? "border-[var(--brand)]"
+                      : "border-[var(--border)] text-[var(--fg-muted)]"
+                  }`}
+                >
+                  {d}s
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <p className="text-[10px] font-semibold text-[var(--fg-dim)]">
+              Aspect
+            </p>
+            <div className="mt-1 flex gap-1">
+              {(["9:16", "1:1", "16:9"] as const).map((a) => (
+                <button
+                  key={a}
+                  type="button"
+                  onClick={() => setAspectRatio(a)}
+                  className={`flex-1 rounded-lg border py-1.5 text-[10px] font-semibold ${
+                    aspectRatio === a
+                      ? "border-[var(--brand)]"
+                      : "border-[var(--border)] text-[var(--fg-muted)]"
+                  }`}
+                >
+                  {a}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
 
         <div>
           <p className="text-xs font-semibold text-[var(--fg-muted)]">
