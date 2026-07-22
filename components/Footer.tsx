@@ -71,6 +71,16 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/supercomputer" className="hover:text-[var(--fg)]">
+                  Batch
+                </Link>
+              </li>
+              <li>
+                <Link href="/library" className="hover:text-[var(--fg)]">
+                  Library
+                </Link>
+              </li>
+              <li>
                 <Link href="/privacy" className="hover:text-[var(--fg)]">
                   Privacy
                 </Link>

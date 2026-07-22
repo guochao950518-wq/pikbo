@@ -9,6 +9,7 @@ import { OnboardingBanner } from "@/components/OnboardingBanner";
 import { CommandPalette } from "@/components/CommandPalette";
 import { ToastProvider } from "@/components/Toast";
 import { StatusBadge } from "@/components/StatusBadge";
+import { Footer } from "@/components/Footer";
 
 /** Primary product path first; suite extras below. */
 const NAV = [
@@ -109,6 +110,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <OnboardingBanner />
         <CommandPalette />
         <div className="flex-1">{children}</div>
+        <Footer />
         <MobileGenerateBar />
 
         <nav className="sticky bottom-0 z-40 flex overflow-x-auto border-t border-[var(--border)] bg-[var(--bg-soft)] lg:hidden">
