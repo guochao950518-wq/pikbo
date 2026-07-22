@@ -78,14 +78,14 @@ export function LibraryGrid() {
     return (
       <div className="mt-10 grid place-items-center rounded-2xl border border-dashed border-[var(--border)] bg-[var(--bg-soft)] py-20 text-center">
         <p className="text-3xl">▢</p>
-        <p className="mt-3 text-[var(--fg-muted)]">No clips on this device yet</p>
+        <p className="mt-3 text-[var(--fg-muted)]">No saved results on this device yet</p>
         <p className="mt-2 max-w-sm text-xs text-[var(--fg-dim)]">
-          Live results currently stay in this browser. Cached demos are labeled and
-          are not generated from your upload.
+          Live results currently stay in this browser. Without provider access,
+          Studio saves a labeled cached demo that does not animate your upload.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <Link href="/create" className="btn btn-primary text-sm">
-            Open Generate
+            Open Studio
           </Link>
           <Link href="/community" className="btn btn-ghost text-sm">
             Try a PIKBO Lab recipe
@@ -259,7 +259,7 @@ export function LibraryGrid() {
       </div>
       {filtered.length === 0 && (
         <p className="py-10 text-center text-sm text-[var(--fg-dim)]">
-          No clips match filter
+          No saved results match this filter
         </p>
       )}
     </div>

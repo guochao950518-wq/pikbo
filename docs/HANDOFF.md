@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [gpt] wave2 Lab / Effects / empty-state honesty (T32)
+- Paths: Community, Explore, Effects SEO/structured copy, Lab feed provenance, onboarding, trust, Library empty states, and homepage recipe CTAs.
+- Provenance: cached media says Cached Lab; reused loops say Concept · shared loop; concept cards no longer read as Official UGC or offer a misleading Remake action.
+- Free contract: one configured Seedance Mini 5s 480p live trial with an on-player mark; current flat allowances are approximately Free 1 / Creator 5 / Shop 15.
+- Fallback: without provider access, Studio returns a labeled cached demo that does not animate the upload; effect reference clips are not claimed as exact preset outputs.
+- Verified: full ESLint and TypeScript checks pass; no `app/api/**`, session, credits, Stripe, or layout/CSS changes.
+
 ### 2026-07-23 — [gpt] overnight cached/Lab/Mini truth pass (T31)
 - Paths: Explore/navigation, PIKBO Lab cards, trust/empty states, preset/toy/use-case/guide copy, and truth-status docs.
 - Labels: cached media is never called Live or Real; remix cards are Concept; the anonymous showcase is PIKBO Lab rather than a claimed user community.

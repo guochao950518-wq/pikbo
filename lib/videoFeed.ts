@@ -51,7 +51,7 @@ export function buildVideoFeed(): FeedItem[] {
       subtitle: d.character,
       href: createHref(d.preset),
       detailHref: `/effects/${d.preset}`,
-      badge: "Lab",
+      badge: "Cached Lab",
       ratio: d.ratio,
       demo: d,
       kind: "demo",
@@ -69,7 +69,7 @@ export function buildVideoFeed(): FeedItem[] {
       subtitle: p.tagline,
       href: createHref(p.slug),
       detailHref: `/effects/${p.slug}`,
-      badge: "Recipe",
+      badge: "Concept · shared loop",
       ratio:
         p.aspectRatio === "1:1"
           ? "1:1"
@@ -94,7 +94,7 @@ export function buildVideoFeed(): FeedItem[] {
         subtitle: `${p.emoji} ${p.tagline}`,
         href: createHref(p.slug),
         detailHref: `/effects/${p.slug}`,
-        badge: "Remake",
+        badge: "Concept · shared loop",
         ratio: (i + pass) % 3 === 0 ? "9:16" : (i + pass) % 3 === 1 ? "1:1" : "16:9",
         demo,
         kind: "preset",
@@ -113,7 +113,7 @@ export function featuredStrip(): FeedItem[] {
     subtitle: d.result,
     href: createHref(d.preset),
     detailHref: `/effects/${d.preset}`,
-    badge: d.eyebrow,
+    badge: "Cached Lab",
     ratio: d.ratio,
     demo: d,
     kind: "demo" as const,
@@ -150,7 +150,7 @@ export function communityProjects(): CommunityProject[] {
       author: {
         name: "Pikbo Lab",
         initials: "P",
-        badge: "Official",
+        badge: "Concept",
       },
       demo,
     };
@@ -166,7 +166,7 @@ export function suiteRail(): FeedItem[] {
     title: a.name,
     subtitle: a.blurb,
     href: a.href,
-      badge: "Workflow",
+      badge: "Configured · cached preview",
     ratio: "16:9" as const,
     demo: demoForIndex(i),
     kind: "app" as const,
@@ -179,7 +179,7 @@ export function suiteRail(): FeedItem[] {
       title: m.name,
       subtitle: m.blurb,
       href: m.href,
-      badge: "Configured",
+      badge: "Configured · cached preview",
       ratio: "16:9" as const,
       demo: demoForIndex(i + 1),
       kind: "model" as const,

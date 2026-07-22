@@ -12,7 +12,7 @@ import { PRESETS } from "@/lib/presets";
 export const metadata: Metadata = {
   title: "Explore",
   description:
-    "Explore PIKBO Lab demos, concept recipes, and configured toy-video workflows. Exact and shared previews are labeled.",
+    "Explore cached PIKBO Lab references, concept recipes, and configured toy-video workflows. Shared preview media is labeled.",
   alternates: { canonical: "/explore" },
 };
 
@@ -29,7 +29,7 @@ export default function ExplorePage() {
           <div>
             <p className="section-label">Explore</p>
             <h1 className="text-lg font-bold tracking-tight">
-              Recipe feed · {feed.length} cards
+              Labeled recipe feed · {feed.length} cards
             </h1>
           </div>
           <div className="flex gap-2">
@@ -80,8 +80,8 @@ export default function ExplorePage() {
       />
 
       <VideoRail
-        label="Workflow previews"
-        title="Configured models & apps"
+        label="Cached workflow references"
+        title="Configured paths · preview media labeled"
         href="/apps"
         items={suite}
         wide
@@ -91,10 +91,10 @@ export default function ExplorePage() {
         <div className="mb-3 flex items-end justify-between px-1">
           <div>
             <p className="section-label">
-              {PRESETS.length}+ viral presets
+              {PRESETS.length}+ effect recipes
             </p>
             <h2 className="mt-1 text-xl font-bold tracking-tight">
-              Exact examples and shared previews are labeled
+              Cached references and shared concept loops are labeled
             </h2>
           </div>
         </div>

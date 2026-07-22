@@ -20,9 +20,9 @@ export function LandingResults({
     <section className="container-x py-12">
       <h2 className="text-2xl font-bold">{title}</h2>
       <p className="mt-2 max-w-2xl text-sm text-[var(--fg-muted)]">
-        Selected clips from one owned-toy photo — the same workflow you run in
-        the tool above. Results stay on this page so you can judge quality before
-        generating.
+        Cached Lab references for motion and framing. When this preset has no
+        verified matching sample, the shared clips below are references — not
+        outputs of this exact recipe or your upload.
       </p>
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {demos.map((d) => (
@@ -47,7 +47,7 @@ export function LandingResults({
             <div className="p-3">
               <p className="text-sm font-semibold">{d.title}</p>
               <p className="mt-0.5 text-[10px] text-[var(--fg-dim)]">
-                {d.eyebrow} · {d.character}
+                Cached PIKBO Lab reference · {d.character}
               </p>
               <p className="mt-1 text-xs text-[var(--fg-muted)]">{d.result}</p>
             </div>

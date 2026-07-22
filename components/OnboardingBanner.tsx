@@ -35,11 +35,13 @@ export function OnboardingBanner() {
     <div className="border-b border-[var(--border)] bg-[var(--bg-soft)] px-4 py-2.5 sm:px-6">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3">
         <div className="text-sm">
-          <span className="font-semibold text-[var(--mint)]">1 free trial</span>
+          <span className="font-semibold text-[var(--mint)]">
+            One Mini live trial when configured
+          </span>
           <span className="text-[var(--fg-muted)]">
             {" "}
-            — upload one figure photo · Seedance Mini trial · or tap any video to
-            remake
+            — 5s · 480p · on-player mark. Without provider access, Studio returns
+            a labeled cached demo instead of animating your upload.
           </span>
         </div>
         <div className="flex items-center gap-2">

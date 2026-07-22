@@ -35,7 +35,9 @@ export default function TermsPage() {
         <section>
           <h2 className="text-lg font-semibold text-[var(--fg)]">Credits & plans</h2>
           <p className="mt-2">
-            Free live results show an on-player mark and use a finite credit allowance.
+            When provider access is configured, Free includes one Seedance Mini
+            5-second 480p live trial with an on-player mark. Cached demo results
+            are labeled and do not animate your upload.
             Creator and Shop are presented as monthly plans, but production billing remains
             gated until durable account credits are ready. When enabled, Stripe handles the
             subscription. Credits never guarantee unlimited live generation, and we may

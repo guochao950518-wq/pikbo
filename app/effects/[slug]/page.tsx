@@ -57,7 +57,7 @@ export default async function EffectPage({
     u.recommendedEffects.includes(preset.slug)
   ).slice(0, 4);
 
-  // Preset-specific FAQ + shared objection FAQ (watermark/commercial/#photos/vs phone)
+  // Preset-specific FAQ + shared objection FAQ (allowance/watermark/commercial/input/review)
   const allFaq = [...preset.faq, ...COMMON_FAQ];
 
   // 哥飞 V2: FAQ + HowTo + SoftwareApplication JSON-LD (SSR)
@@ -85,7 +85,7 @@ export default async function EffectPage({
       {
         "@type": "HowToStep",
         name: `Generate ${preset.name}`,
-        text: `Run the ${preset.name} tool on this page to create a short video.`,
+        text: `With provider access configured, run ${preset.name} for a live render. Without it, the tool returns a labeled cached demo.`,
       },
       {
         "@type": "HowToStep",
@@ -105,7 +105,7 @@ export default async function EffectPage({
       "@type": "Offer",
       price: "0",
       priceCurrency: "USD",
-      description: "Free tier with monthly credits",
+      description: "One Seedance Mini 5-second 480p trial when live generation is configured",
     },
     description: preset.seoDescription,
     url: `${site.url}/effects/${preset.slug}`,
@@ -141,7 +141,7 @@ export default async function EffectPage({
                 href={`/create?effect=${encodeURIComponent(preset.slug)}`}
                 className="btn btn-primary !px-4 !py-2 text-xs"
               >
-                Full studio · remake
+                Open full Studio
               </Link>
               <Link
                 href="/pricing"
@@ -168,8 +168,8 @@ export default async function EffectPage({
             {preset.intro}
           </p>
           <p className="mt-3 text-xs text-[var(--fg-dim)]">
-            Tool below runs on this page (SEO V2) · Seedance Mini free · open
-            Full studio for model/aspect controls
+            Free: one Seedance Mini live trial · 5s · 480p · on-player mark.
+            Without provider access, the tool returns a labeled cached demo.
           </p>
         </div>
       </section>
@@ -208,7 +208,7 @@ export default async function EffectPage({
       {/* V2: result showcase */}
       <LandingResults
         effectSlug={preset.slug}
-        title={`${preset.name} examples`}
+        title="Cached PIKBO Lab references"
       />
 
       {/* FAQ */}

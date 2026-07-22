@@ -5,8 +5,8 @@ import { useEffect, useRef, useState } from "react";
 import type { CommunityProject } from "@/lib/videoFeed";
 
 /**
- * Higgsfield-class community project card:
- * playable media + Official author row + Remake path into Generate.
+ * PIKBO Lab recipe card:
+ * playable cached media + provenance row + preset path into Studio.
  */
 export function ProjectCard({ project }: { project: CommunityProject }) {
   const ref = useRef<HTMLVideoElement>(null);
@@ -84,7 +84,7 @@ export function ProjectCard({ project }: { project: CommunityProject }) {
             {project.title}
           </p>
           <p className="truncate text-[11px] text-[var(--fg-dim)]">
-            by {project.author.name}
+            {project.author.name}
             {project.author.badge ? (
               <span className="text-[var(--mint)]"> · {project.author.badge}</span>
             ) : null}
@@ -94,7 +94,7 @@ export function ProjectCard({ project }: { project: CommunityProject }) {
           href={project.remakeHref}
           className="shrink-0 rounded-full bg-[var(--mint)] px-3 py-1.5 text-[10px] font-bold uppercase tracking-wide text-black hover:brightness-110"
         >
-          Remake
+          Try recipe
         </Link>
       </div>
     </article>

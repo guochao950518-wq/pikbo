@@ -31,20 +31,20 @@ export function SeedanceCampaign() {
             <span className="block text-[var(--mint)]">for toys</span>
           </h2>
           <p className="mt-2 text-sm font-semibold uppercase tracking-[0.18em] text-white/50">
-            Image → video · free trial
+            Cached showcase · Mini live trial when configured
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
             <Link
               href="/create"
               className="rounded-full bg-[var(--mint)] px-7 py-3 text-sm font-black text-black"
             >
-              Try now
+              Try Mini
             </Link>
             <Link
               href="/community"
               className="rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold text-white backdrop-blur"
             >
-              Watch more
+              Open PIKBO Lab
             </Link>
           </div>
         </div>
@@ -63,7 +63,7 @@ export function SeedanceCampaign() {
                 className="absolute inset-0 h-full w-full object-cover"
               />
               <span className="absolute inset-x-0 bottom-0 bg-black/70 px-1 py-1 text-center text-[9px] font-bold uppercase text-white">
-                Remake
+                Try recipe
               </span>
             </Link>
           ))}

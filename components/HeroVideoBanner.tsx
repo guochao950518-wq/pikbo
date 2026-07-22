@@ -76,7 +76,7 @@ export function HeroVideoBanner() {
               href={`/create?effect=${encodeURIComponent(demo.preset)}`}
               className="btn btn-ghost border-white/20 px-6 py-3 text-sm"
             >
-              Remake this look
+              Try this recipe
             </Link>
           </div>
         </div>

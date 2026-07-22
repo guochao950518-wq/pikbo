@@ -345,7 +345,7 @@ export const PRESETS: Preset[] = [
       },
       {
         q: "Is there a free version?",
-        a: "Yes — Free live results show a small on-player Pikbo watermark. Creator and Shop use the 720p path without that player mark.",
+        a: "Yes. With provider access configured, Free includes one Seedance Mini 5-second 480p live trial with an on-player Pikbo mark. Without provider access, Studio returns a labeled cached demo instead.",
       },
     ],
     promptTemplate:
@@ -842,11 +842,15 @@ export const PRESETS: Preset[] = [
 export const COMMON_FAQ: { q: string; a: string }[] = [
   {
     q: "Is there a watermark?",
-    a: "Free live results show a small on-player Pikbo watermark. Creator and Shop use the 720p path without that player mark; server-burned file watermarking is still a separate launch task.",
+    a: "With provider access configured, Free includes one Seedance Mini 5-second 480p live trial with an on-player Pikbo mark. Creator and Shop use the 720p path without that player mark; server-burned file watermarking is still a separate launch task.",
+  },
+  {
+    q: "How many live clips are included?",
+    a: "At the current flat 10-credit rate, Free is about 1 Mini trial, Creator about 5 live jobs, and Shop about 15. Live generation is finite; cached Lab references can be replayed without credits. Model, duration, and resolution weighting is a future server-enforced change, not a current promise.",
   },
   {
     q: "Can I use the videos commercially — for my shop or ads?",
-    a: "Yes. Paid plans include commercial use, so you can run the clips on your Etsy, TikTok Shop, Amazon, or paid ads. Free live results are for personal use and show an on-player mark.",
+    a: "Paid plans include commercial use, so you can run reviewed clips on your Etsy, TikTok Shop, Amazon, or paid ads. The single Free Mini live trial is for personal use and shows an on-player mark.",
   },
   {
     q: "How many photos do I need?",

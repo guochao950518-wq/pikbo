@@ -96,7 +96,7 @@ export function VideoTile({
           </h3>
           {!compact && (
             <p className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-[var(--mint)]/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--mint)] ring-1 ring-[var(--mint)]/30 transition group-hover:bg-[var(--mint)] group-hover:text-black">
-              Remake
+              Try recipe
               <span aria-hidden>→</span>
             </p>
           )}

@@ -201,7 +201,7 @@ export default async function PricingPage({
                 <Link href="/create?source=pricing-bottom">Open the demo</Link>
               </Button>
               <Button asChild variant="secondary">
-                <Link href="/community">See projects</Link>
+                <Link href="/community">Browse cached Lab references</Link>
               </Button>
             </div>
           </CardHeader>

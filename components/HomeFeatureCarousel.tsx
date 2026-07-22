@@ -17,11 +17,11 @@ type Promo = {
 const PROMOS: Promo[] = [
   {
     id: "seedance",
-    title: "Seedance free trial",
-    blurb: "One figure photo → clip",
+    title: "Seedance Mini trial",
+    blurb: "Cached preview · live: 5s / 480p",
     href: "/create",
-    cta: "Try free",
-    badge: "Live",
+    cta: "Try Mini",
+    badge: "Cached Lab",
     demoIndex: 0,
   },
   {
@@ -29,7 +29,7 @@ const PROMOS: Promo[] = [
     title: "Blind-box unboxing",
     blurb: "Reveal for Reels & Shop",
     href: "/create?effect=blind-box-unboxing",
-    cta: "Remake",
+    cta: "Try recipe",
     demoIndex: 1,
   },
   {
@@ -37,7 +37,7 @@ const PROMOS: Promo[] = [
     title: "360° listing spin",
     blurb: "Marketplace packshot",
     href: "/create?effect=360-spin-showcase",
-    cta: "Remake",
+    cta: "Try recipe",
     demoIndex: 4,
   },
   {
@@ -45,7 +45,7 @@ const PROMOS: Promo[] = [
     title: "Drop-day viral hook",
     blurb: "Stop-the-scroll first second",
     href: "/create?effect=paparazzi-flash",
-    cta: "Remake",
+    cta: "Try recipe",
     demoIndex: 3,
   },
   {
@@ -62,7 +62,7 @@ const PROMOS: Promo[] = [
     title: "Miniature story world",
     blurb: "Shelf figure → scene",
     href: "/create?effect=miniature-scene",
-    cta: "Remake",
+    cta: "Try recipe",
     demoIndex: 2,
   },
   {
@@ -70,7 +70,7 @@ const PROMOS: Promo[] = [
     title: "Collector unbox cut",
     blurb: "Launch-day format",
     href: "/create?effect=mystery-box-reveal",
-    cta: "Remake",
+    cta: "Try recipe",
     demoIndex: 5,
   },
   {
@@ -78,7 +78,7 @@ const PROMOS: Promo[] = [
     title: "Zero-G product hero",
     blurb: "Premium float loop",
     href: "/create?effect=floating-hero",
-    cta: "Remake",
+    cta: "Try recipe",
     demoIndex: 0,
   },
 ];

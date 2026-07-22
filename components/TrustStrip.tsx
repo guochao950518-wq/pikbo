@@ -5,11 +5,11 @@ export function TrustStrip() {
     <section className="border-y border-[var(--border)] bg-white px-4 py-5 sm:px-8">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-10 gap-y-3 text-center text-xs tracking-wide text-[var(--fg-muted)]">
         <span>
-          Powered by{" "}
-          <strong className="font-semibold text-[var(--fg)]">Seedance</strong>
+          <strong className="font-semibold text-[var(--fg)]">Seedance</strong>{" "}
+          live path when configured
         </span>
         <span className="hidden h-3 w-px bg-[var(--border)] sm:block" />
-        <span>Toys you own</span>
+        <span>Cached demos clearly labeled</span>
         <span className="hidden h-3 w-px bg-[var(--border)] sm:block" />
         <span>Free: one Mini 5s 480p trial · on-player mark</span>
         <span className="hidden h-3 w-px bg-[var(--border)] sm:block" />

@@ -13,12 +13,12 @@ export function LandingHowItWorks({
     {
       n: "2",
       t: "Use the tool on this page",
-      d: `No extra hop. Generate the ${productLabel} right here — same URL Google ranks.`,
+      d: `With provider access configured, submit the ${productLabel} for a live render. Otherwise you receive a clearly labeled cached demo.`,
     },
     {
       n: "3",
       t: "Download & post",
-      d: "Export for TikTok, Etsy, Whatnot, or shelf flex. Free plan includes an on-player mark.",
+      d: "Review generated details before publishing. Free includes one Mini 5s 480p live trial with an on-player mark.",
     },
   ];
 
@@ -26,9 +26,8 @@ export function LandingHowItWorks({
     <section className="container-x py-12">
       <h2 className="text-2xl font-bold">How it works</h2>
       <p className="mt-2 max-w-2xl text-sm text-[var(--fg-muted)]">
-        Built as a V2 tool landing page: the generator, the explanation, and
-        sample results live together so searchers and crawlers both understand
-        the page.
+        Upload a toy photo you own, choose the recipe, and review whether Studio
+        returned a live render or a labeled cached demo.
       </p>
       <ol className="mt-8 grid gap-4 sm:grid-cols-3">
         {steps.map((s) => (

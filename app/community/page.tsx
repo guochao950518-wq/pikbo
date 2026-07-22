@@ -12,11 +12,11 @@ import { ProjectCard } from "@/components/ProjectCard";
 export const metadata: Metadata = {
   title: "PIKBO Lab",
   description:
-    "PIKBO Lab examples and toy-video recipes. These cached examples are not presented as user community uploads.",
+    "Cached PIKBO Lab references and concept recipes for owned-toy videos. No user uploads or engagement are implied.",
   alternates: { canonical: "/community" },
 };
 
-/** HF community: project cards first, then dense remake wall */
+/** PIKBO Lab: cached references first, then concept recipes. */
 export default function CommunityPage() {
   const projects = communityProjects();
   const suite = suiteRail();
@@ -29,7 +29,7 @@ export default function CommunityPage() {
           <div>
             <p className="section-label">PIKBO Lab</p>
             <h1 className="text-lg font-bold tracking-tight sm:text-xl">
-              Cached examples · remake with your figure
+              Cached references · try with your figure
             </h1>
           </div>
           <div className="flex gap-2">
@@ -45,20 +45,21 @@ export default function CommunityPage() {
           </div>
         </div>
         <p className="mt-1 text-[11px] text-[var(--fg-dim)]">
-          No fabricated users or engagement · every Remake opens Generate with
-          that recipe
+          No user accounts or engagement are shown · every card is labeled
+          Cached or Concept before it opens Studio
         </p>
       </div>
 
       <section className="border-b border-[var(--border)] px-3 py-6 sm:px-5">
         <div className="mb-4 flex flex-wrap items-end justify-between gap-2 px-1">
           <div>
-            <p className="section-label">Featured projects</p>
+            <p className="section-label">PIKBO Lab references</p>
             <h2 className="mt-1 text-xl font-bold tracking-tight">
-              Explore the inside of every look
+              Review a cached look or concept recipe
             </h2>
             <p className="mt-1 text-xs text-[var(--fg-muted)]">
-              Prompts live on effect pages · Remake jumps straight to workspace
+              Effect pages explain the recipe · Try recipe opens Studio with the
+              preset selected
             </p>
           </div>
         </div>
@@ -70,8 +71,8 @@ export default function CommunityPage() {
       </section>
 
       <VideoRail
-        label="Workflow previews"
-        title="Configured models & apps"
+        label="Cached workflow references"
+        title="Configured paths · preview media labeled"
         href="/apps"
         items={suite}
         wide
@@ -80,7 +81,7 @@ export default function CommunityPage() {
       <section className="px-2 py-6 sm:px-4">
         <div className="mb-4 flex flex-wrap items-end justify-between gap-2 px-1">
           <div>
-            <p className="section-label">Remake wall</p>
+            <p className="section-label">Recipe wall</p>
             <h2 className="mt-1 text-xl font-bold tracking-tight">
               Recipes · tap to configure
             </h2>
