@@ -19,18 +19,25 @@ type Mode = "i2v" | "t2v";
 
 const MODELS = [
   {
-    id: "seedance-2",
-    label: "Seedance 2.0",
+    id: "seedance-mini",
+    label: "Seedance Mini",
     vendor: "ByteDance",
-    blurb: "Best for figures · paid",
-    free: false,
+    blurb: "Cheapest live · free trial",
+    free: true,
   },
   {
     id: "seedance-fast",
     label: "Seedance Fast",
     vendor: "ByteDance",
-    blurb: "Quick shelf clips · free",
-    free: true,
+    blurb: "Balanced speed · paid",
+    free: false,
+  },
+  {
+    id: "seedance-2",
+    label: "Seedance 2.0",
+    vendor: "ByteDance",
+    blurb: "Best quality · paid",
+    free: false,
   },
 ] as const;
 
@@ -48,9 +55,12 @@ export function CreateStudio({
   const bootPreset =
     PRESETS.find((p) => p.slug === initialEffect) ?? PRESETS[0];
   const [mode, setMode] = useState<Mode>(initialMode ?? "i2v");
-  const [modelId, setModelId] = useState<(typeof MODELS)[number]["id"]>(
-    initialModel === "seedance-fast" ? "seedance-fast" : "seedance-2"
-  );
+  const [modelId, setModelId] = useState<(typeof MODELS)[number]["id"]>(() => {
+    if (initialModel === "seedance-mini") return "seedance-mini";
+    if (initialModel === "seedance-fast") return "seedance-fast";
+    if (initialModel === "seedance-2") return "seedance-2";
+    return "seedance-mini";
+  });
   const [effect, setEffect] = useState(bootPreset.slug);
   const [image, setImage] = useState<string | null>(null);
   const [extra, setExtra] = useState(initialPrompt ?? "");
@@ -171,9 +181,9 @@ export function CreateStudio({
       const data = (await res.json()) as PublicSession;
       setSession(data);
       setWatermark(data.watermark);
-      // Free path must land on Fast (HF: free model chip is the default)
+      // Free path: Mini (cheapest wool) + 480p
       if (data.plan === "free" || data.watermark) {
-        setModelId("seedance-fast");
+        setModelId("seedance-mini");
         setResolution("480p");
       }
     } catch {

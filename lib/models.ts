@@ -1,26 +1,39 @@
 /**
  * Video backends for Pikbo.
  * Default: ByteDance Seedance via fal.ai
- * Free  → Fast · Paid → Full (user can prefer Fast on paid too)
+ *
+ * Free / wool path → Mini (cheapest, ~$0.07/s @ 480p)
+ * Paid default     → Full Seedance 2.0
+ * Paid can prefer  → Fast or Mini via UI later
+ *
+ * There is no unlimited free i2v API. "Wool" = fal signup credits + Mini.
  */
 
+export const SEEDANCE_MINI =
+  "bytedance/seedance-2.0/mini/image-to-video";
 export const SEEDANCE_FAST =
   "bytedance/seedance-2.0/fast/image-to-video";
 export const SEEDANCE_FULL =
   "bytedance/seedance-2.0/image-to-video";
 
-export type ModelPreference = "seedance-2" | "seedance-fast";
+export type ModelPreference =
+  | "seedance-2"
+  | "seedance-fast"
+  | "seedance-mini";
 
 export function modelForTier(opts: {
   freeTier: boolean;
   prefer?: ModelPreference | string | null;
 }): string {
-  // Free plan always on Fast (cost control)
+  // Free plan: Mini by default (wool / unit economics)
   if (opts.freeTier) {
-    return process.env.FAL_MODEL_FREE || SEEDANCE_FAST;
+    return process.env.FAL_MODEL_FREE || SEEDANCE_MINI;
+  }
+  if (opts.prefer === "seedance-mini") {
+    return process.env.FAL_MODEL_FREE || SEEDANCE_MINI;
   }
   if (opts.prefer === "seedance-fast") {
-    return process.env.FAL_MODEL_FREE || SEEDANCE_FAST;
+    return process.env.FAL_MODEL_FAST || SEEDANCE_FAST;
   }
   return process.env.FAL_MODEL || SEEDANCE_FULL;
 }
