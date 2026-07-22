@@ -33,6 +33,9 @@ if [[ "$missing" -ne 0 ]]; then
 fi
 echo "OK: lab demos present"
 
+node scripts/engine-smoke.mjs
+echo "OK: engine-smoke"
+
 npm run lint
 npm run typecheck
 npm run build

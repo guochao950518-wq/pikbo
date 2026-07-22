@@ -2,9 +2,14 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import {
+  historyFieldsFromSuccess,
+  postGenerateWithRetry,
+} from "@/lib/generateClient";
+import { pushHistory } from "@/lib/history";
 import { CATEGORIES, PRESETS, type CategoryId } from "@/lib/presets";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
-import { pushHistory } from "@/lib/history";
+import { isValidImageDataUrl } from "@/lib/providerError";
 import { SAMPLE_TOYS, sampleToDataUrl } from "@/lib/samples";
 import { emitSessionRefresh } from "@/lib/sessionEvents";
 
@@ -108,8 +113,8 @@ export function BatchStudio({
   }
 
   async function runBatch() {
-    if (!image) {
-      setError("Add a toy photo first.");
+    if (!image || !isValidImageDataUrl(image)) {
+      setError("Add a toy photo first (JPEG, PNG, WebP, or GIF).");
       return;
     }
     if (selected.length === 0) {
@@ -129,51 +134,55 @@ export function BatchStudio({
       setJobs((prev) =>
         prev.map((j, idx) => (idx === i ? { ...j, status: "running" } : j))
       );
-      try {
-        const res = await fetch("/api/generate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            effect: queue[i].slug,
-            image,
-            duration,
-            aspectRatio,
-            model: "seedance-fast",
-          }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Failed");
-        pushHistory({
-          videoUrl: data.videoUrl,
+      const result = await postGenerateWithRetry(
+        {
           effect: queue[i].slug,
-          effectName: queue[i].name,
-          model: data.model,
-          watermark: data.watermark,
-          demo: data.demo,
-        });
+          image,
+          duration,
+          aspectRatio,
+          model: "seedance-fast",
+        },
+        { maxRetries: 2 }
+      );
+
+      if (!result.ok) {
         setJobs((prev) =>
           prev.map((j, idx) =>
             idx === i
-              ? { ...j, status: "done", videoUrl: data.videoUrl }
+              ? { ...j, status: "error", error: result.error }
               : j
           )
         );
-        emitSessionRefresh();
-      } catch (e) {
-        const msg = e instanceof Error ? e.message : "Error";
-        setJobs((prev) =>
-          prev.map((j, idx) =>
-            idx === i ? { ...j, status: "error", error: msg } : j
-          )
-        );
-        if (
-          msg.toLowerCase().includes("credit") ||
-          msg.includes("INSUFFICIENT")
-        ) {
-          setError(msg);
+        if (result.session) emitSessionRefresh();
+        if (result.fatal || result.paywall) {
+          setError(result.error);
+          // Leave remaining jobs queued so the user sees what did not run.
           break;
         }
+        continue;
       }
+
+      const data = result.data;
+      pushHistory(
+        historyFieldsFromSuccess(data, {
+          effect: queue[i].slug,
+          effectName: queue[i].name,
+          fallbackDuration: duration,
+          fallbackAspect: aspectRatio,
+        })
+      );
+      setJobs((prev) =>
+        prev.map((j, idx) =>
+          idx === i
+            ? {
+                ...j,
+                status: "done",
+                videoUrl: data.videoUrl,
+              }
+            : j
+        )
+      );
+      emitSessionRefresh();
     }
     setRunning(false);
   }

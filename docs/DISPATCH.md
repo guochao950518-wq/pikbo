@@ -12,6 +12,7 @@
 | Claude home-hf | 纯黑+lime、视频墙 denser、community 4-col、create stage |
 | Codex wave2 | Lab labels · Mini trial · TrustStrip honesty |
 | Grok engine | PROVIDER_* codes · MIME guard · health.ready · library import |
+| Grok engine | generateClient shared · Batch 429 retry · Landing parity · engine-smoke |
 
 ---
 

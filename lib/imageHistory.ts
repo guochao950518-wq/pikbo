@@ -44,6 +44,16 @@ export function pushImageHistory(
   return list;
 }
 
+export function removeImageHistoryItem(id: string): ImageHistoryItem[] {
+  const list = loadImageHistory().filter((i) => i.id !== id);
+  try {
+    localStorage.setItem(KEY, JSON.stringify(list));
+  } catch {
+    // ignore
+  }
+  return list;
+}
+
 export function clearImageHistory(): void {
   try {
     localStorage.removeItem(KEY);

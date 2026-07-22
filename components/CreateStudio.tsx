@@ -3,6 +3,10 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { loadFavorites, toggleFavorite } from "@/lib/favorites";
+import {
+  historyFieldsFromSuccess,
+  postGenerate,
+} from "@/lib/generateClient";
 import { pushHistory } from "@/lib/history";
 import { isValidImageDataUrl } from "@/lib/providerError";
 import { SAMPLE_TOYS, sampleToDataUrl } from "@/lib/samples";
@@ -288,87 +292,55 @@ export function CreateStudio({
     setShowPaywall(false);
     setElapsed(0);
     setStatus("generating");
-    try {
-      const res = await fetch("/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          effect,
-          image,
-          extra,
-          duration: effectiveDuration,
-          aspectRatio,
-          model: modelId,
-          resolution: isFree ? "480p" : resolution,
-          seed: seed.trim() === "" ? undefined : Number(seed),
-        }),
-      });
-      const data = await res.json();
-      if (data.session) setSession(data.session);
+    const resolvedRes = isFree ? "480p" : resolution;
+    const seedNum = seed.trim() === "" ? undefined : Number(seed);
+    const result = await postGenerate({
+      effect,
+      image,
+      extra,
+      duration: effectiveDuration,
+      aspectRatio,
+      model: modelId,
+      resolution: resolvedRes,
+      seed:
+        typeof seedNum === "number" && Number.isFinite(seedNum)
+          ? seedNum
+          : undefined,
+    });
 
-      if (
-        res.status === 402 ||
-        data.code === "INSUFFICIENT_CREDITS" ||
-        data.code === "PROVIDER_BALANCE"
-      ) {
-        // Provider balance is not a user paywall, but still blocks live gens.
-        if (data.code !== "PROVIDER_BALANCE") setShowPaywall(true);
-        setError(
-          data.error ||
-            (data.code === "PROVIDER_BALANCE"
-              ? "Provider balance empty — credits refunded."
-              : "This allowance is used up. Compare finite plans to continue.")
-        );
-        setStatus("error");
-        return;
-      }
-      if (
-        res.status === 429 ||
-        data.code === "RATE_LIMITED" ||
-        data.code === "PROVIDER_RATE_LIMIT"
-      ) {
-        const wait =
-          typeof data.retryAfterSec === "number"
-            ? ` try again in ${data.retryAfterSec}s`
-            : " wait a moment";
-        setError(data.error || `Too many generates —${wait}.`);
-        setStatus("error");
-        return;
-      }
-      if (!res.ok) throw new Error(data.error || "Generation failed");
+    if (!result.ok) {
+      if (result.session) setSession(result.session);
+      if (result.paywall) setShowPaywall(true);
+      setError(
+        result.error ||
+          (result.paywall
+            ? "This allowance is used up. Compare finite plans to continue."
+            : "Something went wrong")
+      );
+      setStatus("error");
+      void refreshSession();
+      return;
+    }
 
-      setVideoUrl(data.videoUrl);
-      setDemo(Boolean(data.demo));
-      setWatermark(Boolean(data.watermark));
-      setUsedModel(data.model || null);
-      setStatus("done");
-      rememberEffect(effect);
-      pushHistory({
-        videoUrl: data.videoUrl,
+    const data = result.data;
+    if (data.session) setSession(data.session);
+    setVideoUrl(data.videoUrl);
+    setDemo(Boolean(data.demo));
+    setWatermark(Boolean(data.watermark));
+    setUsedModel(data.model || null);
+    setStatus("done");
+    rememberEffect(effect);
+    pushHistory(
+      historyFieldsFromSuccess(data, {
         effect,
         effectName: preset.name,
-        model: data.model,
-        watermark: Boolean(data.watermark),
-        demo: Boolean(data.demo),
-        duration: typeof data.duration === "number" ? data.duration : effectiveDuration,
-        aspectRatio:
-          typeof data.aspectRatio === "string" ? data.aspectRatio : aspectRatio,
-        resolution:
-          typeof data.resolution === "string"
-            ? data.resolution
-            : isFree
-              ? "480p"
-              : resolution,
-        requestId:
-          typeof data.requestId === "string" ? data.requestId : undefined,
-      });
-      emitSessionRefresh();
-      toast(data.demo ? "Cached demo ready" : "Live clip ready · saved to Library");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
-      setStatus("error");
-      refreshSession();
-    }
+        fallbackDuration: effectiveDuration,
+        fallbackAspect: aspectRatio,
+        fallbackResolution: resolvedRes,
+      })
+    );
+    emitSessionRefresh();
+    toast(data.demo ? "Cached demo ready" : "Live clip ready · saved to Library");
   }
 
   async function copyLink() {

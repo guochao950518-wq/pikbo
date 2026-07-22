@@ -2,8 +2,13 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { CREDITS_PER_VIDEO } from "@/lib/pricing";
+import {
+  historyFieldsFromSuccess,
+  postGenerate,
+} from "@/lib/generateClient";
 import { pushHistory } from "@/lib/history";
+import { CREDITS_PER_VIDEO } from "@/lib/pricing";
+import { isValidImageDataUrl } from "@/lib/providerError";
 import { SAMPLE_TOYS, sampleToDataUrl } from "@/lib/samples";
 import type { PublicSession } from "@/lib/session";
 import { site } from "@/lib/site";
@@ -117,58 +122,55 @@ export function LandingToolPanel({
   }
 
   async function generate() {
-    if (!image) {
-      setError("Upload a toy photo first.");
+    if (!image || !isValidImageDataUrl(image)) {
+      setError("Upload a toy photo first (JPEG, PNG, WebP, or GIF).");
       return;
     }
     if (session && session.credits < CREDITS_PER_VIDEO) {
       setError("This allowance is used up — compare finite plans on Pricing.");
       return;
     }
+    const freeTier = session?.plan === "free" || session?.watermark;
+    const resolution = freeTier ? "480p" : "720p";
     setError(null);
     setVideoUrl(null);
     setElapsed(0);
     setStatus("generating");
-    try {
-      const res = await fetch("/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          effect: effectSlug,
-          image,
-          duration,
-          aspectRatio,
-          resolution:
-            session?.plan === "free" || session?.watermark ? "480p" : "720p",
-        }),
-      });
-      const data = await res.json();
-      if (data.session) setSession(data.session);
-      if (res.status === 402) {
+    const result = await postGenerate({
+      effect: effectSlug,
+      image,
+      duration,
+      aspectRatio,
+      resolution,
+    });
+    if (result.ok === false) {
+      if (result.session) setSession(result.session);
+      if (result.paywall) {
         setError("INSUFFICIENT");
-        setStatus("error");
-        return;
+      } else {
+        setError(result.error);
       }
-      if (!res.ok) throw new Error(data.error || "Generation failed");
-      setVideoUrl(data.videoUrl);
-      setDemo(Boolean(data.demo));
-      setWatermark(Boolean(data.watermark));
-      setStatus("done");
-      pushHistory({
-        videoUrl: data.videoUrl,
-        effect: effectSlug,
-        effectName,
-        model: data.model,
-        watermark: Boolean(data.watermark),
-        demo: Boolean(data.demo),
-      });
-      emitSessionRefresh();
-      toast(data.demo ? "Cached demo ready" : "Live clip ready · saved to Library");
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Generation failed");
       setStatus("error");
       void refreshSession();
+      return;
     }
+    const data = result.data;
+    if (data.session) setSession(data.session);
+    setVideoUrl(data.videoUrl);
+    setDemo(Boolean(data.demo));
+    setWatermark(Boolean(data.watermark));
+    setStatus("done");
+    pushHistory(
+      historyFieldsFromSuccess(data, {
+        effect: effectSlug,
+        effectName,
+        fallbackDuration: duration,
+        fallbackAspect: aspectRatio,
+        fallbackResolution: resolution,
+      })
+    );
+    emitSessionRefresh();
+    toast(data.demo ? "Cached demo ready" : "Live clip ready · saved to Library");
   }
 
   const busy = status === "generating";

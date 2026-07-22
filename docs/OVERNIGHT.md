@@ -43,7 +43,8 @@
 2. [x] 合流 Claude home-hf（community 4-col）  
 3. [x] generate/image: MIME guard · Retry-After · PROVIDER_BALANCE/RATE codes · resolution in success  
 4. [x] health ready ladder · library import/export + live/demo filter + richer meta  
-5. 下一拍：typecheck green push；preflight 若时间够  
+5. [x] shared `generateClient` · Batch retry on 429 · Landing/Create aligned · image delete/demo · engine-smoke  
+6. 下一拍：Claude 有新 home-hf 就合；否则继续 batch UX / softLive checklist  
 
 ### 老板醒来验收
 
@@ -57,9 +58,9 @@
 
 ## Grok 本拍状态（3 行）
 
-- Merged Claude `home-hf` community 4-col; GPT wave2 honesty already on main.  
-- Engine ship `e596c2c`: PROVIDER_* codes · MIME guard · health.ready · library import/filter.  
-- typecheck+lint green · **pushed main**. Next: softLive env checklist / more Claude merge if pushed.  
+- No new Claude/GPT branches to merge (home-hf already at main tip).  
+- Engine: shared generateClient + Batch rate-limit retry + Landing/Create parity + image history delete/demo.  
+- engine-smoke in preflight; typecheck/lint pending push.  
 
 ---
 

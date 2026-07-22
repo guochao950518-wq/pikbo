@@ -7,6 +7,7 @@ import {
   clearImageHistory,
   loadImageHistory,
   pushImageHistory,
+  removeImageHistoryItem,
   type ImageHistoryItem,
 } from "@/lib/imageHistory";
 
@@ -29,24 +30,41 @@ export default function ImageStudioPage() {
   }, []);
 
   async function generate() {
+    const trimmed = prompt.trim();
+    if (trimmed.length < 4) {
+      setError("Write a short prompt (at least 4 characters).");
+      return;
+    }
     setBusy(true);
     setError(null);
     try {
       const res = await fetch("/api/image", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, aspect }),
+        body: JSON.stringify({ prompt: trimmed, aspect }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed");
+      if (!res.ok) {
+        const wait =
+          typeof data.retryAfterSec === "number"
+            ? ` · retry in ${data.retryAfterSec}s`
+            : "";
+        throw new Error(
+          (data.error || "Image generation failed") +
+            (data.code === "RATE_LIMITED" || data.code === "PROVIDER_RATE_LIMIT"
+              ? wait
+              : "")
+        );
+      }
       setImageUrl(data.imageUrl);
       setDemo(Boolean(data.demo));
-      if (data.imageUrl && !String(data.imageUrl).startsWith("data:image/svg")) {
+      // Store live URLs + labeled demo placeholders so history stays honest.
+      if (data.imageUrl) {
         setHistory(
           pushImageHistory({
             imageUrl: data.imageUrl,
-            prompt,
-            demo: data.demo,
+            prompt: trimmed,
+            demo: Boolean(data.demo),
           })
         );
       }
@@ -177,14 +195,30 @@ export default function ImageStudioPage() {
             </div>
             <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
               {history.map((h) => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  key={h.id}
-                  src={h.imageUrl}
-                  alt=""
-                  className="aspect-[3/4] cursor-pointer rounded-lg object-cover ring-1 ring-[var(--border)] hover:ring-[var(--brand)]"
-                  onClick={() => setImageUrl(h.imageUrl)}
-                />
+                <div key={h.id} className="group relative">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={h.imageUrl}
+                    alt=""
+                    className="aspect-[3/4] w-full cursor-pointer rounded-lg object-cover ring-1 ring-[var(--border)] hover:ring-[var(--brand)]"
+                    onClick={() => {
+                      setImageUrl(h.imageUrl);
+                      setDemo(Boolean(h.demo));
+                    }}
+                  />
+                  {h.demo && (
+                    <span className="pointer-events-none absolute left-1 top-1 rounded bg-black/70 px-1 py-0.5 text-[9px] font-bold uppercase text-white/80">
+                      demo
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    className="absolute right-1 top-1 rounded bg-black/70 px-1.5 py-0.5 text-[9px] text-white/80 opacity-0 transition group-hover:opacity-100"
+                    onClick={() => setHistory(removeImageHistoryItem(h.id))}
+                  >
+                    ✕
+                  </button>
+                </div>
               ))}
             </div>
           </div>
