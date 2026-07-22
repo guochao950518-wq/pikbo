@@ -1,42 +1,118 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { loadFavorites, toggleFavorite } from "@/lib/favorites";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import {
+  createGeneration,
+  GenerationApiError,
+  retryGeneration,
+  uploadGenerationAssets,
+  waitForGeneration,
+  type GenerationJob,
+  type GenerationRequest,
+  type GenerationResponse,
+} from "@/components/studio/generation-client";
+import {
+  ToyAssetGrid,
+  type ToyAssetDraft,
+} from "@/components/studio/ToyAssetGrid";
+import { useToast } from "@/components/Toast";
+import { track } from "@/lib/analytics";
 import { pushHistory } from "@/lib/history";
-import { SAMPLE_TOYS, sampleToDataUrl } from "@/lib/samples";
 import { PRESETS } from "@/lib/presets";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
+import { SAMPLE_TOYS, sampleToDataUrl } from "@/lib/samples";
 import type { PublicSession } from "@/lib/session";
 import { site } from "@/lib/site";
-import { useToast } from "@/components/Toast";
-import { PaywallCard } from "@/components/PaywallCard";
-import { emitSessionRefresh } from "@/lib/sessionEvents";
+import { ProductUrlImport } from "@/components/ProductUrlImport";
+import { CAPABILITIES } from "@/lib/capabilities";
 
-type Status = "idle" | "uploading" | "generating" | "done" | "error";
 type Mode = "i2v" | "t2v";
+type UiStatus =
+  | "idle"
+  | "submitting"
+  | "queued"
+  | "running"
+  | "done"
+  | "validation"
+  | "error";
+type AspectRatio = GenerationRequest["aspectRatio"];
+type AssetMap = Partial<Record<ToyAssetDraft["role"], ToyAssetDraft>>;
 
 const MODELS = [
   {
     id: "seedance-2",
     label: "Seedance 2.0",
     vendor: "ByteDance",
-    blurb: "Best for figures · paid",
+    blurb: "Best identity consistency · paid",
     free: false,
   },
   {
     id: "seedance-fast",
     label: "Seedance Fast",
     vendor: "ByteDance",
-    blurb: "Quick shelf clips · free",
+    blurb: "Fast validation clips · free",
     free: true,
   },
 ] as const;
 
+const PURPOSES = [
+  {
+    id: "shop-listing",
+    label: "Shop listing",
+    detail: "Clear product motion for a listing",
+    icon: "🛍️",
+  },
+  {
+    id: "social-launch",
+    label: "Social launch",
+    detail: "A scroll-stopping vertical reveal",
+    icon: "🚀",
+  },
+  {
+    id: "live-selling",
+    label: "Live selling",
+    detail: "Hooks for Whatnot and TikTok Shop",
+    icon: "📣",
+  },
+  {
+    id: "collector-story",
+    label: "Collector story",
+    detail: "Bring a shelf favorite to life",
+    icon: "✨",
+  },
+] as const;
+
+function isPublicSession(value: unknown): value is PublicSession {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as Record<string, unknown>;
+  return (
+    typeof candidate.credits === "number" &&
+    typeof candidate.plan === "string" &&
+    typeof candidate.planName === "string" &&
+    typeof candidate.watermark === "boolean"
+  );
+}
+
+function statusLabel(status: UiStatus) {
+  if (status === "submitting") return "Creating task";
+  if (status === "queued") return "Queued";
+  if (status === "running") return "Generating";
+  if (status === "done") return "Ready";
+  if (status === "validation") return "Validated";
+  if (status === "error") return "Needs attention";
+  return "Ready to configure";
+}
+
 export function CreateStudio({
   initialEffect,
   initialModel,
-  initialMode,
   initialPrompt,
 }: {
   initialEffect?: string;
@@ -44,270 +120,404 @@ export function CreateStudio({
   initialMode?: Mode;
   initialPrompt?: string;
 }) {
-  const bootPreset =
-    PRESETS.find((p) => p.slug === initialEffect) ?? PRESETS[0];
-  const [mode, setMode] = useState<Mode>(initialMode ?? "i2v");
-  const [modelId, setModelId] = useState<(typeof MODELS)[number]["id"]>(
+  const initialPreset =
+    PRESETS.find((item) => item.slug === initialEffect) ?? PRESETS[0];
+  const [modelId, setModelId] = useState<GenerationRequest["modelId"]>(
     initialModel === "seedance-fast" ? "seedance-fast" : "seedance-2"
   );
-  const [effect, setEffect] = useState(bootPreset.slug);
-  const [image, setImage] = useState<string | null>(null);
-  const [extra, setExtra] = useState(initialPrompt ?? "");
+  const [effect, setEffect] = useState(initialPreset.slug);
+  const [purpose, setPurpose] = useState<(typeof PURPOSES)[number]["id"]>(
+    "shop-listing"
+  );
+  const [assets, setAssets] = useState<AssetMap>({});
+  const [prompt, setPrompt] = useState(
+    initialPrompt?.trim() || initialPreset.promptTemplate
+  );
   const [duration, setDuration] = useState<5 | 10>(
-    bootPreset.duration === 10 ? 10 : 5
+    initialPreset.duration === 10 ? 10 : 5
   );
-  const [aspectRatio, setAspectRatio] = useState<"9:16" | "16:9" | "1:1">(
-    bootPreset.aspectRatio === "16:9" || bootPreset.aspectRatio === "1:1"
-      ? bootPreset.aspectRatio
-      : "9:16"
+  const [aspectRatio, setAspectRatio] = useState<AspectRatio>(
+    initialPreset.aspectRatio
   );
-  const [status, setStatus] = useState<Status>("idle");
+  const [resolution, setResolution] = useState<"480p" | "720p">("720p");
+  const [presetFilter, setPresetFilter] = useState("");
+  const [status, setStatus] = useState<UiStatus>("idle");
+  const [job, setJob] = useState<GenerationJob | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [demo, setDemo] = useState(false);
-  const [watermark, setWatermark] = useState(true);
   const [session, setSession] = useState<PublicSession | null>(null);
-  const [showPaywall, setShowPaywall] = useState(false);
-  const [upgradedBanner, setUpgradedBanner] = useState(false);
+  const [demo, setDemo] = useState(false);
+  const [validationMode, setValidationMode] = useState(false);
+  const [chargedCredits, setChargedCredits] = useState<number | null>(null);
+  const [watermark, setWatermark] = useState(true);
   const [usedModel, setUsedModel] = useState<string | null>(null);
-  const [presetFilter, setPresetFilter] = useState("");
-  const [elapsed, setElapsed] = useState(0);
-  const [copied, setCopied] = useState(false);
-  const [recent, setRecent] = useState<string[]>([]);
-  const [favorites, setFavorites] = useState<string[]>([]);
+  const [showPaywall, setShowPaywall] = useState(false);
+  const [showLegacyFallback, setShowLegacyFallback] = useState(false);
+  const [legacyPreview, setLegacyPreview] = useState(false);
+  const [upgradedBanner, setUpgradedBanner] = useState(false);
   const [compare, setCompare] = useState(true);
-  const [resolution, setResolution] = useState<"480p" | "720p">("720p");
-  const [seed, setSeed] = useState<string>("");
+  const [copied, setCopied] = useState(false);
+  const pollController = useRef<AbortController | null>(null);
   const toast = useToast();
 
   const preset = useMemo(
-    () => PRESETS.find((p) => p.slug === effect)!,
+    () => PRESETS.find((item) => item.slug === effect) ?? PRESETS[0],
     [effect]
   );
-
   const filteredPresets = useMemo(() => {
-    const q = presetFilter.trim().toLowerCase();
-    if (!q) return PRESETS;
+    const query = presetFilter.trim().toLowerCase();
+    if (!query) return PRESETS;
     return PRESETS.filter(
-      (p) =>
-        p.name.toLowerCase().includes(q) ||
-        p.tagline.toLowerCase().includes(q) ||
-        p.category.includes(q)
+      (item) =>
+        item.name.toLowerCase().includes(query) ||
+        item.tagline.toLowerCase().includes(query) ||
+        item.category.includes(query)
     );
   }, [presetFilter]);
 
-  function selectEffect(slug: string) {
-    setEffect(slug);
-    const p = PRESETS.find((x) => x.slug === slug);
-    if (!p) return;
-    setDuration(p.duration === 10 ? 10 : 5);
-    if (
-      p.aspectRatio === "9:16" ||
-      p.aspectRatio === "16:9" ||
-      p.aspectRatio === "1:1"
-    ) {
-      setAspectRatio(p.aspectRatio);
-    }
-  }
-
-  useEffect(() => {
-    const t = window.setTimeout(() => {
-      try {
-        const raw = localStorage.getItem("pikbo_recent_effects");
-        if (raw) setRecent(JSON.parse(raw) as string[]);
-      } catch {
-        // ignore
-      }
-      setFavorites(loadFavorites());
-      // optional still from Image studio
-      try {
-        const pending = sessionStorage.getItem("pikbo_pending_still");
-        if (pending?.startsWith("data:image")) {
-          sessionStorage.removeItem("pikbo_pending_still");
-          setImage(pending);
-        } else if (pending?.startsWith("http")) {
-          sessionStorage.removeItem("pikbo_pending_still");
-          sampleToDataUrl(pending)
-            .then((data) => setImage(data))
-            .catch(() => undefined);
-        }
-      } catch {
-        // ignore
-      }
-    }, 0);
-    return () => window.clearTimeout(t);
-  }, []);
-
-  useEffect(() => {
-    if (status !== "generating") return;
-    const t0 = Date.now();
-    const id = window.setInterval(() => {
-      setElapsed(Math.floor((Date.now() - t0) / 1000));
-    }, 250);
-    return () => window.clearInterval(id);
-  }, [status]);
-
-  function rememberEffect(slug: string) {
-    setRecent((prev) => {
-      const next = [slug, ...prev.filter((s) => s !== slug)].slice(0, 6);
-      try {
-        localStorage.setItem("pikbo_recent_effects", JSON.stringify(next));
-      } catch {
-        // ignore
-      }
-      return next;
-    });
-  }
+  const isFree = session?.plan === "free" || session?.watermark;
+  const effectiveResolution = isFree ? "480p" : resolution;
+  const busy =
+    status === "submitting" || status === "queued" || status === "running";
+  const currentStep =
+    status === "done" || status === "validation"
+      ? 4
+      : assets.front
+        ? effect
+          ? 3
+          : 2
+        : 1;
 
   const refreshSession = useCallback(async () => {
     try {
-      const res = await fetch("/api/me");
-      const data = (await res.json()) as PublicSession;
-      setSession(data);
-      setWatermark(data.watermark);
+      const response = await fetch("/api/me", { cache: "no-store" });
+      const data = (await response.json()) as unknown;
+      if (isPublicSession(data)) {
+        setSession(data);
+        setWatermark(data.watermark);
+        if (data.plan === "free") setModelId("seedance-fast");
+      }
     } catch {
-      // ignore
+      // The studio remains usable in private validation mode.
     }
   }, []);
 
   useEffect(() => {
-    let cancelled = false;
+    let canceled = false;
     async function boot() {
       await refreshSession();
-      if (typeof window === "undefined") return;
       const params = new URLSearchParams(window.location.search);
       const checkoutId = params.get("session_id");
       if (checkoutId?.startsWith("cs_")) {
         try {
-          const res = await fetch("/api/checkout/confirm", {
+          const response = await fetch("/api/checkout/confirm", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ session_id: checkoutId }),
           });
-          const data = await res.json();
-          if (!cancelled && res.ok && data.session) {
+          const data = (await response.json()) as { session?: unknown };
+          if (!canceled && isPublicSession(data.session)) {
             setSession(data.session);
             setWatermark(data.session.watermark);
             setUpgradedBanner(true);
           }
         } catch {
-          if (!cancelled) await refreshSession();
+          if (!canceled) await refreshSession();
         }
         const url = new URL(window.location.href);
         url.searchParams.delete("session_id");
         window.history.replaceState({}, "", url.pathname + url.search);
-        return;
-      }
-      if (params.get("upgraded") === "1" && !cancelled) {
+      } else if (params.get("upgraded") === "1" && !canceled) {
         setUpgradedBanner(true);
-        await refreshSession();
+      }
+
+      try {
+        const pending = sessionStorage.getItem("pikbo_pending_still");
+        if (pending?.startsWith("http") || pending?.startsWith("data:image/")) {
+          sessionStorage.removeItem("pikbo_pending_still");
+          const pendingName = sessionStorage.getItem("pikbo_pending_still_name");
+          sessionStorage.removeItem("pikbo_pending_still_name");
+          const dataUrl = pending.startsWith("data:image/")
+            ? pending
+            : await sampleToDataUrl(pending);
+          if (!canceled) {
+            setAssets({
+              front: {
+                role: "front",
+                dataUrl,
+                fileName: pendingName || "Pikbo imported product image",
+              },
+            });
+          }
+        }
+      } catch {
+        // Optional handoff from Image Studio.
       }
     }
-    boot();
+    void boot();
     return () => {
-      cancelled = true;
+      canceled = true;
+      pollController.current?.abort();
     };
   }, [refreshSession]);
 
-  function loadFile(file: File | undefined | null) {
-    if (!file || !file.type.startsWith("image/")) {
-      setError("Please drop a PNG or JPG of your toy.");
-      return;
+  function selectEffect(slug: string) {
+    const next = PRESETS.find((item) => item.slug === slug);
+    if (!next) return;
+    setEffect(next.slug);
+    setPrompt(next.promptTemplate);
+    setDuration(next.duration === 10 ? 10 : 5);
+    setAspectRatio(next.aspectRatio);
+    track("template_select", { preset_id: next.slug, source: "studio" });
+  }
+
+  function applyResponse(response: GenerationResponse) {
+    setJob(response.job);
+    setValidationMode(response.validationMode);
+    setDemo(response.job.demo);
+    setWatermark(response.job.watermark);
+    setUsedModel(response.job.model ?? null);
+    if (isPublicSession(response.session)) setSession(response.session);
+    if (typeof response.chargedCredits === "number") {
+      setChargedCredits(response.chargedCredits);
     }
-    const reader = new FileReader();
-    reader.onload = () => {
-      setImage(reader.result as string);
-      setError(null);
-    };
-    reader.readAsDataURL(file);
+    if (response.job.status === "queued") setStatus("queued");
+    if (response.job.status === "running") setStatus("running");
   }
 
-  function onFile(e: React.ChangeEvent<HTMLInputElement>) {
-    loadFile(e.target.files?.[0]);
-  }
-
-  function onDrop(e: React.DragEvent) {
-    e.preventDefault();
-    loadFile(e.dataTransfer.files?.[0]);
-  }
-
-  const creditsLeft = session?.credits ?? null;
-  const canAfford = creditsLeft === null || creditsLeft >= CREDITS_PER_VIDEO;
-  const isFree = session?.plan === "free" || session?.watermark;
-
-  async function generate() {
-    if (mode === "t2v") {
+  function completeResponse(response: GenerationResponse) {
+    applyResponse(response);
+    const { job: completed } = response;
+    if (completed.status === "failed" || completed.status === "canceled") {
+      setStatus("error");
       setError(
-        "Text→Video is on the roadmap. Photo → video is the product core — upload a toy still."
+        completed.error ||
+          (completed.status === "canceled"
+            ? "This generation was canceled."
+            : "Generation failed. You can retry this task.")
       );
-      setMode("i2v");
+      track("generation_failed", {
+        job_id: completed.id,
+        preset_id: effect,
+        reason: completed.error || completed.status,
+      });
+      toast("Generation needs attention — no credits were lost");
       return;
     }
-    if (!image) {
-      setError("Upload a reference image first (image-to-video).");
+    if (response.validationMode) {
+      setStatus("validation");
+      setVideoUrl(completed.outputUrl ?? null);
+      track("generation_success", {
+        job_id: completed.id,
+        preset_id: effect,
+        validation_mode: true,
+      });
+      toast("Private validation completed · 0 credits charged");
       return;
     }
-    if (image.length > 12_000_000) {
-      setError("Image is too large. Use a photo under ~8MB.");
+    if (!completed.outputUrl) {
+      setStatus("error");
+      setError("The task finished without a downloadable video.");
+      track("generation_failed", {
+        job_id: completed.id,
+        preset_id: effect,
+        reason: "missing_output",
+      });
       return;
     }
-    if (session && session.credits < CREDITS_PER_VIDEO) {
-      setShowPaywall(true);
-      setError("Not enough credits.");
+    setVideoUrl(completed.outputUrl);
+    setStatus("done");
+    pushHistory({
+      videoUrl: completed.outputUrl,
+      effect,
+      effectName: preset.name,
+      model: completed.model,
+      watermark: completed.watermark,
+      demo: false,
+    });
+    track("generation_success", {
+      job_id: completed.id,
+      preset_id: effect,
+      validation_mode: false,
+    });
+    toast("Clip ready · saved to your history");
+  }
+
+  function requestBody(): GenerationRequest {
+    return {
+      presetId: effect,
+      assets: Object.values(assets).map((asset) => ({
+        role: asset.role,
+        dataUrl: asset.dataUrl,
+      })),
+      purpose,
+      prompt,
+      aspectRatio,
+      duration,
+      modelId,
+      resolution: effectiveResolution,
+    };
+  }
+
+  async function submitGenerationRequest() {
+    const request = requestBody();
+    try {
+      return await createGeneration(request);
+    } catch (caught) {
+      if (
+        caught instanceof GenerationApiError &&
+        caught.code === "live_assets_must_be_uploaded"
+      ) {
+        const uploadedAssets = await uploadGenerationAssets(Object.values(assets));
+        return createGeneration({ ...request, assets: uploadedAssets });
+      }
+      throw caught;
+    }
+  }
+
+  async function runAsyncGeneration() {
+    if (!assets.front) {
+      setError("Add a front reference of your toy before generating.");
       return;
     }
 
+    pollController.current?.abort();
+    const controller = new AbortController();
+    pollController.current = controller;
     setError(null);
     setVideoUrl(null);
+    setJob(null);
+    setDemo(false);
+    setValidationMode(false);
+    setLegacyPreview(false);
+    setChargedCredits(null);
     setShowPaywall(false);
-    setElapsed(0);
-    setStatus("generating");
+    setShowLegacyFallback(false);
+    setStatus("submitting");
+    track("studio_start", {
+      preset_id: effect,
+      purpose,
+      asset_count: Object.keys(assets).length,
+    });
+    track("generation_start", {
+      preset_id: effect,
+      model_id: modelId,
+      validation_candidate: true,
+    });
+
     try {
-      const res = await fetch("/api/generate", {
+      const created = await submitGenerationRequest();
+      applyResponse(created);
+      const completed = await waitForGeneration(created, {
+        signal: controller.signal,
+        onUpdate: applyResponse,
+      });
+      completeResponse(completed);
+      await refreshSession();
+    } catch (caught) {
+      if (caught instanceof DOMException && caught.name === "AbortError") return;
+      const apiError =
+        caught instanceof GenerationApiError ? caught : undefined;
+      if (
+        apiError?.status === 402 ||
+        apiError?.code === "INSUFFICIENT_CREDITS"
+      ) {
+        setShowPaywall(true);
+      }
+      if (apiError?.status === 404 || apiError?.status === 501) {
+        setShowLegacyFallback(true);
+      }
+      setError(
+        caught instanceof Error ? caught.message : "Generation request failed."
+      );
+      setStatus("error");
+      track("generation_failed", {
+        preset_id: effect,
+        reason:
+          caught instanceof GenerationApiError
+            ? caught.code || String(caught.status)
+            : "client_error",
+      });
+      await refreshSession();
+    }
+  }
+
+  async function retryCurrentJob() {
+    if (!job?.id) {
+      await runAsyncGeneration();
+      return;
+    }
+    pollController.current?.abort();
+    const controller = new AbortController();
+    pollController.current = controller;
+    setError(null);
+    setStatus("submitting");
+    track("generation_start", {
+      preset_id: effect,
+      retry: true,
+      job_id: job.id,
+    });
+    try {
+      const retried = await retryGeneration(job.id);
+      applyResponse(retried);
+      const completed = await waitForGeneration(retried, {
+        signal: controller.signal,
+        onUpdate: applyResponse,
+      });
+      completeResponse(completed);
+      await refreshSession();
+    } catch (caught) {
+      if (caught instanceof DOMException && caught.name === "AbortError") return;
+      setError(caught instanceof Error ? caught.message : "Retry failed.");
+      setStatus("error");
+      track("generation_failed", {
+        preset_id: effect,
+        retry: true,
+        job_id: job.id,
+      });
+    }
+  }
+
+  async function runLegacyPreview() {
+    if (!assets.front) return;
+    setStatus("submitting");
+    setError(null);
+    setShowLegacyFallback(false);
+    try {
+      const response = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           effect,
-          image,
-          extra,
+          image: assets.front.dataUrl,
+          extra: prompt,
           duration,
           aspectRatio,
           model: modelId,
-          resolution: isFree ? "480p" : resolution,
-          seed: seed.trim() === "" ? undefined : Number(seed),
+          resolution: effectiveResolution,
         }),
       });
-      const data = await res.json();
-      if (data.session) setSession(data.session);
-
-      if (res.status === 402 || data.code === "INSUFFICIENT_CREDITS") {
-        setShowPaywall(true);
-        setError("Not enough credits. Upgrade to keep creating.");
-        setStatus("error");
-        return;
+      const data = (await response.json()) as Record<string, unknown>;
+      if (!response.ok) {
+        throw new Error(
+          typeof data.error === "string" ? data.error : "Compatibility preview failed."
+        );
       }
-      if (!res.ok) throw new Error(data.error || "Generation failed");
-
-      setVideoUrl(data.videoUrl);
-      setDemo(Boolean(data.demo));
-      setWatermark(Boolean(data.watermark));
-      setUsedModel(data.model || null);
-      setStatus("done");
-      rememberEffect(effect);
-      pushHistory({
-        videoUrl: data.videoUrl,
-        effect,
-        effectName: preset.name,
-        model: data.model,
-        watermark: Boolean(data.watermark),
-        demo: Boolean(data.demo),
-      });
-      emitSessionRefresh();
-      toast(data.demo ? "Demo clip ready" : "Clip ready · saved to Library");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      const url = typeof data.videoUrl === "string" ? data.videoUrl : null;
+      setVideoUrl(url);
+      setDemo(true);
+      setValidationMode(true);
+      setLegacyPreview(true);
+      setChargedCredits(0);
+      setWatermark(Boolean(data.watermark ?? true));
+      setUsedModel(typeof data.model === "string" ? data.model : "Legacy preview");
+      setStatus("validation");
+      if (isPublicSession(data.session)) setSession(data.session);
+    } catch (caught) {
+      setError(
+        caught instanceof Error ? caught.message : "Compatibility preview failed."
+      );
       setStatus("error");
-      refreshSession();
     }
   }
 
@@ -319,15 +529,13 @@ export function CreateStudio({
       toast("Link copied");
       window.setTimeout(() => setCopied(false), 1500);
     } catch {
-      setError("Could not copy link");
+      setError("Could not copy this link.");
     }
   }
 
   function shareX() {
     if (!videoUrl) return;
-    const text = encodeURIComponent(
-      `Made with ${site.name} — ${preset.name} 🧸`
-    );
+    const text = encodeURIComponent(`Made with ${site.name} — ${preset.name} 🧸`);
     const url = encodeURIComponent(videoUrl);
     window.open(
       `https://twitter.com/intent/tweet?text=${text}&url=${url}`,
@@ -336,659 +544,658 @@ export function CreateStudio({
     );
   }
 
-  const busy = status === "generating" || status === "uploading";
-
-  // Cmd/Ctrl + Enter to generate
   useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
-        e.preventDefault();
-        if (!busy) void generate();
+    function onKey(event: KeyboardEvent) {
+      if ((event.metaKey || event.ctrlKey) && event.key === "Enter" && !busy) {
+        event.preventDefault();
+        void runAsyncGeneration();
       }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
+    // runAsyncGeneration intentionally follows the current form state.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    busy,
-    image,
-    effect,
-    duration,
-    aspectRatio,
-    modelId,
-    extra,
-    mode,
-    session,
-    seed,
-    resolution,
-  ]);
+  }, [busy, assets, effect, purpose, prompt, aspectRatio, duration, modelId]);
 
   return (
-    <div className="flex h-full min-h-[calc(100vh-3.5rem)] flex-col lg:min-h-screen">
-      {/* Top toolbar — model / mode like big AI apps */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-[var(--border)] bg-[var(--bg-soft)] px-4 py-3">
-        <div className="flex rounded-full border border-[var(--border)] p-0.5 text-xs">
-          <button
-            type="button"
-            onClick={() => setMode("i2v")}
-            className={`rounded-full px-3 py-1.5 font-semibold ${
-              mode === "i2v"
-                ? "bg-[var(--card)] text-[var(--fg)]"
-                : "text-[var(--fg-dim)]"
-            }`}
-          >
-            Image → Video
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setMode("t2v");
-              toast("Text→Video is next — toy photo → Seedance is live today");
-            }}
-            className={`rounded-full px-3 py-1.5 font-semibold ${
-              mode === "t2v"
-                ? "bg-[var(--card)] text-[var(--fg)]"
-                : "text-[var(--fg-dim)]"
-            }`}
-            title="Roadmap — photo-first is the live path"
-          >
-            Text → Video
-            <span className="ml-1 text-[9px] font-normal opacity-70">soon</span>
-          </button>
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          {MODELS.map((m) => {
-            const lockedPaid = Boolean(isFree && !m.free);
-            return (
-              <button
-                key={m.id}
-                type="button"
-                onClick={() => {
-                  if (lockedPaid) {
-                    setShowPaywall(true);
-                    setError("Seedance 2.0 is on paid plans — Free uses Fast.");
-                    setModelId("seedance-fast");
-                    return;
-                  }
-                  setModelId(m.id);
-                }}
-                className={`rounded-xl border px-3 py-1.5 text-left text-xs transition-colors ${
-                  modelId === m.id
-                    ? "border-[var(--brand)] bg-[var(--grad-soft)]"
-                    : "border-[var(--border)] bg-[var(--card)] hover:border-[var(--fg-dim)]"
-                } ${lockedPaid ? "opacity-70" : ""}`}
-              >
-                <div className="font-semibold">
-                  {m.label}
-                  {lockedPaid ? " 🔒" : ""}
+    <div className="min-h-[calc(100vh-3.5rem)] bg-[var(--bg)] pb-24 xl:pb-20">
+      <header className="sticky top-14 z-20 border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--bg)_92%,transparent)] px-4 py-3 backdrop-blur-xl lg:top-16">
+        <div className="mx-auto flex max-w-[1500px] flex-wrap items-center gap-3">
+          <div>
+            <p className="text-sm font-semibold">Toy Video Studio</p>
+            <p className="text-[10px] text-[var(--fg-dim)]">
+              One owned toy · private references · channel-ready motion
+            </p>
+          </div>
+          <div className="order-3 flex w-full items-center gap-1 sm:order-none sm:ml-5 sm:w-auto">
+            {["Assets", "Creative", "Quote", "Result"].map((label, index) => {
+              const number = index + 1;
+              const active = number === currentStep;
+              const complete = number < currentStep;
+              return (
+                <div key={label} className="flex flex-1 items-center gap-1 sm:flex-none">
+                  <span
+                    className={`grid h-5 w-5 place-items-center rounded-full text-[9px] font-bold ${
+                      active
+                        ? "bg-[var(--brand)] text-white"
+                        : complete
+                          ? "bg-[var(--mint)] text-black"
+                          : "bg-[var(--card)] text-[var(--fg-dim)]"
+                    }`}
+                  >
+                    {complete ? "✓" : number}
+                  </span>
+                  <span className="hidden text-[10px] text-[var(--fg-muted)] sm:inline">
+                    {label}
+                  </span>
+                  {index < 3 && (
+                    <span className="h-px flex-1 bg-[var(--border)] sm:w-5 sm:flex-none" />
+                  )}
                 </div>
-                <div className="text-[10px] text-[var(--fg-dim)]">
-                  {m.vendor} · {m.blurb}
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="ml-auto flex items-center gap-3 text-xs text-[var(--fg-muted)]">
-          {session && (
-            <span>
-              <span className="font-semibold text-[var(--mint)]">
-                {session.credits}
-              </span>{" "}
-              credits · {session.planName}
+              );
+            })}
+          </div>
+          <div className="ml-auto flex items-center gap-3 text-xs">
+            <span className="rounded-full border border-[var(--border)] px-2.5 py-1 text-[var(--fg-muted)]">
+              {statusLabel(status)}
             </span>
-          )}
-          <Link href="/pricing" className="text-[var(--mint)] hover:underline">
-            Upgrade
-          </Link>
+            {session && (
+              <span className="hidden text-[var(--fg-muted)] md:inline">
+                <strong className="text-[var(--mint)]">{session.credits}</strong>{" "}
+                credits
+              </span>
+            )}
+            <Link href="/pricing" className="text-[var(--mint)] hover:underline">
+              Plans
+            </Link>
+          </div>
         </div>
-      </div>
+      </header>
 
-      <div className="grid flex-1 lg:grid-cols-[280px_1fr_1.1fr]">
-        {/* Preset rail */}
-        <aside className="max-h-[40vh] overflow-y-auto border-b border-[var(--border)] p-3 lg:max-h-none lg:border-b-0 lg:border-r">
-          <p className="mb-2 px-1 text-[10px] font-bold uppercase tracking-wider text-[var(--fg-dim)]">
-            🧸 Toy presets
-          </p>
-          <input
-            value={presetFilter}
-            onChange={(e) => setPresetFilter(e.target.value)}
-            placeholder="Search spin, unbox…"
-            className="mb-2 w-full rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] px-2.5 py-1.5 text-xs outline-none focus:border-[var(--brand)]"
-          />
-          {favorites.length > 0 && !presetFilter && (
-            <div className="mb-2">
-              <p className="mb-1 px-1 text-[9px] font-bold uppercase text-[var(--fg-dim)]">
-                ★ Favorites
+      <div className="mx-auto grid max-w-[1800px] grid-cols-[minmax(0,1fr)] gap-0 xl:grid-cols-[320px_minmax(440px,1fr)_380px] xl:items-start">
+        <main className="contents">
+          {(validationMode || demo) && (
+            <div className="m-4 rounded-xl border border-[var(--mint)]/40 bg-[color-mix(in_srgb,var(--mint)_8%,transparent)] p-3 text-xs xl:col-span-3 xl:m-0 xl:rounded-none xl:border-x-0">
+              <p className="font-semibold text-[var(--mint)]">
+                Private validation · no model call · no credit charge
               </p>
-              <div className="flex flex-wrap gap-1">
-                {favorites.map((slug) => {
-                  const p = PRESETS.find((x) => x.slug === slug);
-                  if (!p) return null;
-                  return (
-                    <button
-                      key={`fav-${slug}`}
-                      type="button"
-                      onClick={() => selectEffect(slug)}
-                      className="rounded-md border border-[var(--brand)]/40 px-1.5 py-0.5 text-[10px]"
-                    >
-                      {p.emoji} {p.name}
-                    </button>
-                  );
-                })}
-              </div>
+              <p className="mt-1 text-[var(--fg-muted)]">
+                {legacyPreview
+                  ? "Compatibility preview is cached and unrelated to your uploaded toy. It only proves the player flow."
+                  : "This run validates the product workflow. It is not presented as a newly generated clip."}
+              </p>
             </div>
           )}
-          {recent.length > 0 && !presetFilter && (
-            <div className="mb-2">
-              <p className="mb-1 px-1 text-[9px] font-bold uppercase text-[var(--fg-dim)]">
-                Recent
-              </p>
-              <div className="flex flex-wrap gap-1">
-                {recent.map((slug) => {
-                  const p = PRESETS.find((x) => x.slug === slug);
-                  if (!p) return null;
-                  return (
-                    <button
-                      key={slug}
-                      type="button"
-                      onClick={() => selectEffect(slug)}
-                      className="rounded-md border border-[var(--border)] px-1.5 py-0.5 text-[10px] hover:border-[var(--brand)]"
-                    >
-                      {p.emoji} {p.name}
-                    </button>
-                  );
-                })}
-              </div>
+          {upgradedBanner && (
+            <div className="mx-4 rounded-xl border border-[var(--mint)]/40 px-3 py-2 text-xs xl:col-span-3 xl:mx-0 xl:rounded-none xl:border-x-0">
+              Paid plan active — HD generation and clean exports are available.
             </div>
           )}
-          <div className="flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible">
-            {filteredPresets.map((p) => (
-              <div
-                key={p.slug}
-                className={`flex min-w-[140px] items-stretch gap-1 rounded-xl border lg:min-w-0 ${
-                  effect === p.slug
-                    ? "border-[var(--brand)] bg-[var(--card)]"
-                    : "border-transparent bg-[var(--bg-soft)]"
-                }`}
-              >
+
+          <section className="card m-4 p-4 sm:p-5 xl:sticky xl:top-[121px] xl:col-start-1 xl:row-start-3 xl:m-0 xl:h-[calc(100vh-121px)] xl:overflow-y-auto xl:rounded-none xl:border-y-0 xl:border-l-0">
+            <div className="mb-4 flex items-start justify-between gap-3">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--brand)]">
+                  Step 1 · Product references
+                </p>
+                <h1 className="mt-1 text-xl font-semibold">Show us the exact toy</h1>
+                <p className="mt-1 text-xs text-[var(--fg-muted)]">
+                  Front drives the current Seedance clip. {CAPABILITIES.multiReference.publicNote}
+                </p>
+              </div>
+              <span className="rounded-full bg-[var(--bg-soft)] px-2 py-1 text-[9px] text-[var(--fg-dim)]">
+                PNG/JPG/WebP · 10 MB each
+              </span>
+            </div>
+            <div className="mb-4 rounded-xl border border-[var(--border)] bg-[var(--bg-soft)] p-3">
+              <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--fg-dim)]">
+                Import an authorized product listing
+              </p>
+              <ProductUrlImport
+                onImported={(product) => {
+                  setAssets({
+                    ...assets,
+                    front: {
+                      role: "front",
+                      dataUrl: product.frontImageDataUrl!,
+                      fileName: product.title,
+                    },
+                  });
+                  setError(null);
+                }}
+              />
+            </div>
+            <ToyAssetGrid assets={assets} onChange={setAssets} onError={setError} />
+            {!assets.front && (
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <span className="text-[10px] text-[var(--fg-dim)]">Try a lab sample:</span>
+                {SAMPLE_TOYS.map((sample) => (
+                  <button
+                    key={sample.id}
+                    type="button"
+                    className="rounded-lg border border-[var(--border)] px-2 py-1 text-[10px] hover:border-[var(--brand)]"
+                    onClick={async () => {
+                      try {
+                        const dataUrl = await sampleToDataUrl(sample.path);
+                        setAssets({
+                          ...assets,
+                          front: {
+                            role: "front",
+                            dataUrl,
+                            fileName: `${sample.label} lab sample`,
+                          },
+                        });
+                        selectEffect(sample.effect);
+                        setError(null);
+                      } catch {
+                        setError("Could not load this sample still.");
+                      }
+                    }}
+                  >
+                    {sample.label}
+                  </button>
+                ))}
+              </div>
+            )}
+            <p className="mt-3 text-[10px] text-[var(--fg-dim)]">
+              Upload only toys and character artwork you own or are authorized to use.
+            </p>
+          </section>
+
+          <section className="card mx-4 mb-4 p-4 sm:p-5 xl:col-start-3 xl:row-start-3 xl:m-0 xl:rounded-none xl:border-y-0 xl:border-r-0">
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--brand)]">
+              Step 2 · Creative direction
+            </p>
+            <h2 className="mt-1 text-lg font-semibold">What should this clip do?</h2>
+            <div className="mt-4 grid gap-2 sm:grid-cols-2">
+              {PURPOSES.map((item) => (
                 <button
+                  key={item.id}
                   type="button"
-                  onClick={() => selectEffect(p.slug)}
-                  className="flex flex-1 items-center gap-2 p-2.5 text-left text-sm"
+                  onClick={() => setPurpose(item.id)}
+                  className={`rounded-xl border p-3 text-left transition-colors ${
+                    purpose === item.id
+                      ? "border-[var(--brand)] bg-[var(--grad-soft)]"
+                      : "border-[var(--border)] bg-[var(--bg-soft)] hover:border-[var(--fg-dim)]"
+                  }`}
+                >
+                  <span className="text-base">{item.icon}</span>{" "}
+                  <span className="text-xs font-semibold">{item.label}</span>
+                  <span className="mt-1 block text-[10px] text-[var(--fg-dim)]">
+                    {item.detail}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            <div className="mt-5 flex items-center justify-between gap-3">
+              <p className="text-xs font-semibold text-[var(--fg-muted)]">Choose an effect</p>
+              <input
+                value={presetFilter}
+                onChange={(event) => setPresetFilter(event.target.value)}
+                placeholder="Search spin, unbox…"
+                className="w-44 rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] px-2.5 py-1.5 text-xs outline-none focus:border-[var(--brand)]"
+              />
+            </div>
+            <div className="mt-2 grid max-h-72 gap-2 overflow-y-auto pr-1 sm:grid-cols-2">
+              {filteredPresets.map((item) => (
+                <button
+                  key={item.slug}
+                  type="button"
+                  onClick={() => selectEffect(item.slug)}
+                  className={`flex items-center gap-3 rounded-xl border p-2.5 text-left ${
+                    effect === item.slug
+                      ? "border-[var(--brand)] bg-[var(--grad-soft)]"
+                      : "border-[var(--border)] bg-[var(--bg-soft)] hover:border-[var(--fg-dim)]"
+                  }`}
                 >
                   <span
                     className="grid h-10 w-10 shrink-0 place-items-center rounded-lg text-lg"
-                    style={{ background: p.gradient }}
+                    style={{ background: item.gradient }}
                   >
-                    {p.emoji}
+                    {item.emoji}
                   </span>
-                  <span className="leading-tight">
-                    <span className="block font-medium">{p.name}</span>
-                    <span className="block text-[10px] text-[var(--fg-dim)]">
-                      {p.duration}s · {p.aspectRatio}
+                  <span className="min-w-0">
+                    <span className="block truncate text-xs font-semibold">{item.name}</span>
+                    <span className="mt-0.5 block truncate text-[10px] text-[var(--fg-dim)]">
+                      {item.tagline}
                     </span>
                   </span>
                 </button>
-                <button
-                  type="button"
-                  title="Favorite"
-                  className="px-2 text-xs text-[var(--fg-dim)] hover:text-[var(--brand)]"
-                  onClick={() => setFavorites(toggleFavorite(p.slug))}
-                >
-                  {favorites.includes(p.slug) ? "★" : "☆"}
-                </button>
-              </div>
-            ))}
-            {filteredPresets.length === 0 && (
-              <p className="px-1 text-xs text-[var(--fg-dim)]">No presets match</p>
-            )}
-          </div>
-        </aside>
-
-        {/* Controls */}
-        <section className="space-y-4 overflow-y-auto border-b border-[var(--border)] p-4 lg:border-b-0 lg:border-r">
-          {upgradedBanner && (
-            <div className="rounded-xl border border-[var(--mint)]/40 bg-[color-mix(in_srgb,var(--mint)_10%,transparent)] px-3 py-2 text-xs">
-              Paid plan active — HD path, no watermark.
+              ))}
+              {filteredPresets.length === 0 && (
+                <p className="text-xs text-[var(--fg-dim)]">No effects match.</p>
+              )}
             </div>
-          )}
 
-          {mode === "i2v" ? (
-            <div>
-              <label className="text-xs font-semibold text-[var(--fg-muted)]">
-                Your toy photo
-              </label>
-              <label
-                className="mt-2 flex aspect-video cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-[var(--border)] bg-[var(--bg-soft)] transition-colors hover:border-[var(--brand)]/50"
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={onDrop}
-              >
-                {image ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={image}
-                    alt="your toy"
-                    className="h-full w-full object-contain"
-                  />
-                ) : (
-                  <span className="px-6 text-center text-sm text-[var(--fg-dim)]">
-                    🧸 Drop a photo of a figure you own
-                    <br />
-                    <span className="text-xs">
-                      or click · PNG/JPG · clean background works best
-                    </span>
+            <label className="mt-4 block text-xs font-semibold text-[var(--fg-muted)]">
+              Motion instructions
+              <textarea
+                value={prompt}
+                onChange={(event) => setPrompt(event.target.value)}
+                rows={4}
+                className="mt-2 w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--bg-soft)] px-3 py-2.5 text-sm font-normal text-[var(--fg)] outline-none focus:border-[var(--brand)]"
+              />
+            </label>
+          </section>
+
+          <section className="card mx-4 mb-4 p-4 sm:p-5 xl:col-start-3 xl:row-start-4 xl:m-0 xl:rounded-none xl:border-b-0 xl:border-r-0">
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--brand)]">
+              Step 3 · Output & quote
+            </p>
+            <div className="mt-3 grid gap-4 sm:grid-cols-2">
+              <div>
+                <p className="text-xs font-semibold text-[var(--fg-muted)]">Model</p>
+                <div className="mt-2 space-y-2">
+                  {MODELS.map((model) => {
+                    const locked = Boolean(isFree && !model.free);
+                    return (
+                      <button
+                        key={model.id}
+                        type="button"
+                        onClick={() => {
+                          if (locked) {
+                            setShowPaywall(true);
+                            setError("Seedance 2.0 requires a paid plan. Free uses Fast.");
+                            return;
+                          }
+                          setModelId(model.id);
+                        }}
+                        className={`w-full rounded-xl border p-3 text-left ${
+                          modelId === model.id
+                            ? "border-[var(--brand)] bg-[var(--grad-soft)]"
+                            : "border-[var(--border)] bg-[var(--bg-soft)]"
+                        } ${locked ? "opacity-60" : ""}`}
+                      >
+                        <span className="text-xs font-semibold">
+                          {model.label} {locked ? "🔒" : ""}
+                        </span>
+                        <span className="mt-1 block text-[10px] text-[var(--fg-dim)]">
+                          {model.vendor} · {model.blurb}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+              <div className="space-y-3">
+                <ChoiceRow
+                  label="Duration"
+                  options={["5", "10"]}
+                  value={String(duration)}
+                  onChange={(value) => setDuration(value === "10" ? 10 : 5)}
+                />
+                <ChoiceRow
+                  label="Aspect"
+                  options={["9:16", "1:1", "16:9"]}
+                  value={aspectRatio}
+                  onChange={(value) => setAspectRatio(value as AspectRatio)}
+                />
+                <ChoiceRow
+                  label="Resolution"
+                  options={["480p", "720p"]}
+                  value={effectiveResolution}
+                  onChange={(value) => {
+                    if (isFree && value === "720p") {
+                      setShowPaywall(true);
+                      setError("720p clean exports require a paid plan.");
+                      return;
+                    }
+                    setResolution(value as "480p" | "720p");
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="mt-5 rounded-xl border border-[var(--border)] bg-[var(--bg-soft)] p-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold">Generation estimate</p>
+                  <p className="mt-1 text-[10px] text-[var(--fg-dim)]">
+                    1 clip · {duration}s · {aspectRatio} · {effectiveResolution}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xl font-semibold">{CREDITS_PER_VIDEO} credits</p>
+                  <p className="text-[10px] text-[var(--fg-dim)]">
+                    Final charge is confirmed by the server
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => void runAsyncGeneration()}
+              disabled={busy || !assets.front}
+              className="btn btn-primary mt-4 w-full disabled:cursor-not-allowed disabled:opacity-45 xl:hidden"
+            >
+              {busy
+                ? `${statusLabel(status)}${job?.progress ? ` · ${job.progress}%` : "…"}`
+                : "Create video task"}
+            </button>
+            <p className="mt-2 text-center text-[10px] text-[var(--fg-dim)]">
+              Real mode may charge only after the server accepts the job. Private validation charges 0.
+            </p>
+
+            {error && (
+              <div className="mt-3 rounded-xl border border-[var(--brand)]/40 p-3 text-sm">
+                <p className="text-[var(--brand)]">{error}</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {job?.id && (
+                    <button
+                      type="button"
+                      onClick={() => void retryCurrentJob()}
+                      className="btn btn-ghost px-3 py-1.5 text-xs"
+                    >
+                      Retry task
+                    </button>
+                  )}
+                  {showLegacyFallback && (
+                    <button
+                      type="button"
+                      onClick={() => void runLegacyPreview()}
+                      className="btn btn-ghost px-3 py-1.5 text-xs"
+                    >
+                      Use compatibility preview
+                    </button>
+                  )}
+                  {showPaywall && (
+                    <Link href="/pricing" className="btn btn-primary px-3 py-1.5 text-xs">
+                      Compare plans
+                    </Link>
+                  )}
+                </div>
+                {showLegacyFallback && (
+                  <p className="mt-2 text-[10px] text-[var(--fg-dim)]">
+                    Compatibility mode is optional and clearly labeled. It never claims the cached clip matches your upload.
+                  </p>
+                )}
+              </div>
+            )}
+          </section>
+        </main>
+
+        <aside className="min-w-0 min-h-[70vh] bg-[var(--bg-soft)] p-4 xl:sticky xl:top-[121px] xl:col-start-2 xl:row-span-2 xl:row-start-3 xl:h-[calc(100vh-121px)] xl:border-r xl:border-[var(--border)] xl:p-5">
+          <div className="flex h-full flex-col">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <p className="text-sm font-semibold">Result workspace</p>
+                <p className="text-[10px] text-[var(--fg-dim)]">
+                  {preset.name} · {PURPOSES.find((item) => item.id === purpose)?.label}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                {job?.id && (
+                  <span className="rounded-full border border-[var(--border)] px-2 py-1 font-mono text-[9px] text-[var(--fg-dim)]">
+                    {job.id.slice(0, 12)}
                   </span>
                 )}
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={onFile}
-                />
-              </label>
-              {image && (
-                <button
-                  type="button"
-                  className="mt-1 text-[10px] text-[var(--fg-dim)] hover:text-[var(--brand)]"
-                  onClick={() => setImage(null)}
-                >
-                  Remove photo
-                </button>
-              )}
-              {!image && (
-                <div className="mt-2">
-                  <p className="mb-1 text-[10px] font-semibold text-[var(--fg-dim)]">
-                    Or try a sample still
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {SAMPLE_TOYS.map((s) => (
-                      <button
-                        key={s.id}
-                        type="button"
-                        className="rounded-lg border border-[var(--border)] px-2 py-1 text-[10px] hover:border-[var(--brand)]"
-                        onClick={async () => {
-                          try {
-                            setError(null);
-                            const data = await sampleToDataUrl(s.path);
-                            setImage(data);
-                            selectEffect(s.effect);
-                          } catch {
-                            setError("Could not load sample photo");
-                          }
-                        }}
-                      >
-                        {s.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-              <p className="mt-2 text-[10px] text-[var(--fg-dim)]">
-                Tip: only animate toys you own. Works great for blind boxes,
-                resin, plush, gunpla.
-              </p>
-            </div>
-          ) : (
-            <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-soft)] p-4 text-sm text-[var(--fg-muted)]">
-              Text → Video is on the roadmap. For the best figure consistency,
-              use <strong className="text-[var(--fg)]">Image → Video</strong>{" "}
-              with a real shelf photo + Seedance.
-            </div>
-          )}
-
-          <div>
-            <p className="text-xs font-semibold text-[var(--fg-muted)]">
-              Duration
-            </p>
-            <div className="mt-1.5 flex gap-2">
-              {([5, 10] as const).map((d) => (
-                <button
-                  key={d}
-                  type="button"
-                  onClick={() => setDuration(d)}
-                  className={`flex-1 rounded-lg border py-2 text-sm font-semibold ${
-                    duration === d
-                      ? "border-[var(--brand)] bg-[var(--grad-soft)]"
-                      : "border-[var(--border)] text-[var(--fg-muted)]"
-                  }`}
-                >
-                  {d}s
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <p className="text-xs font-semibold text-[var(--fg-muted)]">
-              Aspect ratio
-            </p>
-            <div className="mt-1.5 flex gap-2">
-              {(
-                [
-                  { id: "9:16" as const, label: "9:16 · TikTok" },
-                  { id: "1:1" as const, label: "1:1 · Shop" },
-                  { id: "16:9" as const, label: "16:9 · Wide" },
-                ] as const
-              ).map((a) => (
-                <button
-                  key={a.id}
-                  type="button"
-                  onClick={() => setAspectRatio(a.id)}
-                  className={`flex-1 rounded-lg border px-1 py-2 text-[11px] font-semibold ${
-                    aspectRatio === a.id
-                      ? "border-[var(--brand)] bg-[var(--grad-soft)]"
-                      : "border-[var(--border)] text-[var(--fg-muted)]"
-                  }`}
-                >
-                  {a.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <p className="text-xs font-semibold text-[var(--fg-muted)]">
-              Resolution
-            </p>
-            <div className="mt-1.5 flex gap-2">
-              {(["480p", "720p"] as const).map((r) => {
-                const locked = Boolean(isFree && r === "720p");
-                return (
-                  <button
-                    key={r}
-                    type="button"
-                    onClick={() => {
-                      if (locked) {
-                        setShowPaywall(true);
-                        setError("720p is on paid plans.");
-                        return;
-                      }
-                      setResolution(r);
-                    }}
-                    className={`flex-1 rounded-lg border py-2 text-sm font-semibold ${
-                      (isFree ? "480p" : resolution) === r
-                        ? "border-[var(--brand)] bg-[var(--grad-soft)]"
-                        : "border-[var(--border)] text-[var(--fg-muted)]"
-                    } ${locked ? "opacity-60" : ""}`}
-                  >
-                    {r}
-                    {locked ? " 🔒" : ""}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between gap-2">
-              <label className="text-xs font-semibold text-[var(--fg-muted)]">
-                Seed (optional)
-              </label>
-              <button
-                type="button"
-                className="text-[10px] text-[var(--fg-dim)] hover:text-[var(--fg)]"
-                onClick={() =>
-                  setSeed(String(Math.floor(Math.random() * 1_000_000_000)))
-                }
-              >
-                Random
-              </button>
-            </div>
-            <input
-              value={seed}
-              onChange={(e) => setSeed(e.target.value.replace(/[^\d]/g, ""))}
-              placeholder="Empty = random"
-              className="mt-1.5 w-full rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] px-3 py-2 text-sm outline-none focus:border-[var(--brand)]"
-            />
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-[var(--fg-muted)]">
-                Motion prompt
-              </label>
-              <button
-                type="button"
-                className="text-[10px] text-[var(--brand)] hover:underline"
-                onClick={() => setExtra(preset.promptTemplate)}
-              >
-                Reset to preset
-              </button>
-            </div>
-            <textarea
-              value={extra || preset.promptTemplate}
-              onChange={(e) => setExtra(e.target.value)}
-              rows={5}
-              className="mt-2 w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--bg-soft)] px-3 py-2.5 text-sm outline-none focus:border-[var(--brand)]"
-            />
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {[
-                "slow turntable",
-                "soft studio light",
-                "keep paint sharp",
-                "subtle float",
-                "no morph face",
-              ].map((chip) => (
-                <button
-                  key={chip}
-                  type="button"
-                  className="rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--fg-dim)] hover:border-[var(--brand)] hover:text-[var(--fg)]"
-                  onClick={() => {
-                    const base = extra || preset.promptTemplate;
-                    setExtra(`${base} ${chip}.`);
-                  }}
-                >
-                  + {chip}
-                </button>
-              ))}
-            </div>
-            <p className="mt-1 text-[10px] text-[var(--fg-dim)]">
-              {preset.name} · for {preset.audience}s · keep the toy as hero
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={generate}
-            disabled={
-              busy ||
-              !canAfford ||
-              mode === "t2v" ||
-              (mode === "i2v" && !image)
-            }
-            className="btn btn-primary w-full disabled:opacity-50"
-          >
-            {busy
-              ? "Generating…"
-              : mode === "t2v"
-                ? "Text→Video soon — use Image→Video"
-                : !canAfford
-                  ? "Out of credits"
-                  : `Generate · ${CREDITS_PER_VIDEO} credits · ${duration}s · ${aspectRatio}`}
-          </button>
-
-          {error && (
-            <p className="text-sm text-[var(--brand)]">{error}</p>
-          )}
-
-          {showPaywall && (
-            <PaywallCard title="Out of credits — upgrade to keep creating" />
-          )}
-        </section>
-
-        {/* Result — large preview like HF generate */}
-        <section className="flex flex-col bg-[var(--bg-soft)] p-4">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold">Output</h2>
-            <span className="rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--fg-dim)]">
-              {usedModel || MODELS.find((m) => m.id === modelId)?.label}
-            </span>
-          </div>
-          <div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-2xl border border-[var(--border)] bg-black/40">
-            {status === "generating" && (
-              <div className="p-10 text-center text-[var(--fg-muted)]">
-                <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--mint)]" />
-                <p className="font-medium text-[var(--fg)]">
-                  Animating your figure…
-                </p>
-                <p className="mt-1 text-xs text-[var(--fg-dim)]">
-                  {elapsed < 3
-                    ? "Uploading reference"
-                    : elapsed < 12
-                      ? "Seedance queue"
-                      : elapsed < 35
-                        ? "Rendering motion"
-                        : "Almost done — large clips take longer"}
-                  {" · "}
-                  {elapsed}s
-                </p>
-                <div className="mx-auto mt-4 h-1.5 w-48 overflow-hidden rounded-full bg-[var(--border)]">
-                  <div
-                    className="h-full rounded-full transition-all duration-300"
-                    style={{
-                      width: `${Math.min(95, 8 + elapsed * 2.2)}%`,
-                      background: "var(--grad)",
-                    }}
-                  />
-                </div>
+                <span className="rounded-full border border-[var(--border)] px-2 py-1 text-[9px] text-[var(--fg-dim)]">
+                  {usedModel || MODELS.find((item) => item.id === modelId)?.label}
+                </span>
               </div>
-            )}
-            {status === "done" && videoUrl && (
-              <div className="relative w-full p-3">
-                <div className="mb-2 flex justify-end">
-                  <button
-                    type="button"
-                    onClick={() => setCompare((c) => !c)}
-                    className="text-[10px] font-semibold text-[var(--brand)] hover:underline"
-                  >
-                    {compare ? "Video only" : "Photo ↔ video"}
-                  </button>
-                </div>
-                {compare && image ? (
-                  <div className="grid gap-2 sm:grid-cols-2">
-                    <div>
-                      <p className="mb-1 text-center text-[10px] font-bold uppercase text-[var(--fg-dim)]">
-                        Before
-                      </p>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={image}
-                        alt="before"
-                        className="mx-auto max-h-[50vh] rounded-lg object-contain"
+            </div>
+
+            <div className="relative flex min-h-[520px] flex-1 items-center justify-center overflow-hidden rounded-2xl border border-[var(--border)] bg-black/50">
+              {busy && (
+                <div className="w-full max-w-sm p-8 text-center">
+                  <div className="mx-auto h-11 w-11 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--mint)]" />
+                  <p className="mt-5 font-medium">{statusLabel(status)}</p>
+                  <p className="mt-1 text-xs text-[var(--fg-dim)]">
+                    {job?.status === "queued"
+                      ? "The task is waiting for provider capacity."
+                      : job?.status === "running"
+                        ? "The provider reports that rendering is in progress."
+                        : "Sending references and configuration securely."}
+                  </p>
+                  <div className="mt-5 h-1.5 overflow-hidden rounded-full bg-[var(--border)]">
+                    {job?.progress ? (
+                      <div
+                        className="h-full rounded-full bg-[var(--mint)] transition-[width]"
+                        style={{ width: `${job.progress}%` }}
                       />
-                    </div>
+                    ) : (
+                      <div className="h-full w-1/3 animate-pulse rounded-full bg-[var(--mint)]" />
+                    )}
+                  </div>
+                  <p className="mt-3 text-[10px] text-[var(--fg-dim)]">
+                    Progress comes from the task API; PIKBO does not invent a completion percentage.
+                  </p>
+                </div>
+              )}
+
+              {!busy && videoUrl && (
+                <div className="w-full p-3 sm:p-5">
+                  <div className="mb-3 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => setCompare((value) => !value)}
+                      className="text-[10px] font-semibold text-[var(--brand)] hover:underline"
+                    >
+                      {compare ? "Video only" : "Reference ↔ result"}
+                    </button>
+                  </div>
+                  <div className={compare ? "grid gap-3 sm:grid-cols-2" : ""}>
+                    {compare && assets.front && (
+                      <div>
+                        <p className="mb-2 text-center text-[9px] font-bold uppercase tracking-wider text-[var(--fg-dim)]">
+                          Front reference
+                        </p>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={assets.front.dataUrl}
+                          alt="Uploaded front toy reference"
+                          className="mx-auto max-h-[60vh] rounded-xl object-contain"
+                        />
+                      </div>
+                    )}
                     <div className="relative">
-                      <p className="mb-1 text-center text-[10px] font-bold uppercase text-[var(--fg-dim)]">
-                        After
-                      </p>
+                      {compare && (
+                        <p className="mb-2 text-center text-[9px] font-bold uppercase tracking-wider text-[var(--fg-dim)]">
+                          {validationMode ? "Validation preview" : "Generated result"}
+                        </p>
+                      )}
                       <video
                         src={videoUrl}
+                        poster={job?.posterUrl}
                         controls
-                        autoPlay
+                        autoPlay={!validationMode}
                         loop
                         muted
                         playsInline
-                        className="mx-auto max-h-[50vh] rounded-lg"
+                        className="mx-auto max-h-[60vh] rounded-xl"
                       />
-                      {watermark && (
-                        <div
-                          className="pointer-events-none absolute bottom-3 right-3 rounded-md px-2 py-1 text-[10px] font-bold text-white/90"
+                      {watermark && !validationMode && (
+                        <span
+                          className="pointer-events-none absolute bottom-3 right-3 rounded-md px-2 py-1 text-[10px] font-bold text-white"
                           style={{ background: "var(--grad)" }}
                         >
                           {site.name}
-                        </div>
+                        </span>
                       )}
                     </div>
                   </div>
-                ) : (
-                  <div className="relative">
-                    <video
-                      src={videoUrl}
-                      controls
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                      className="mx-auto max-h-[70vh] rounded-lg"
-                    />
-                    {watermark && (
-                      <div
-                        className="pointer-events-none absolute bottom-6 right-6 rounded-md px-2 py-1 text-xs font-bold text-white/90"
-                        style={{ background: "var(--grad)" }}
-                      >
-                        {site.name}
-                      </div>
-                    )}
-                  </div>
-                )}
-                <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
-                  <a
-                    href={videoUrl}
-                    download={`pikbo-${effect}.mp4`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="btn btn-primary px-4 py-2 text-xs"
-                  >
-                    Download
-                  </a>
-                  <button
-                    type="button"
-                    onClick={copyLink}
-                    className="btn btn-ghost px-4 py-2 text-xs"
-                  >
-                    {copied ? "Copied!" : "Copy link"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={shareX}
-                    className="btn btn-ghost px-4 py-2 text-xs"
-                  >
-                    Share on X
-                  </button>
-                  <button
-                    type="button"
-                    onClick={generate}
-                    className="btn btn-ghost px-4 py-2 text-xs"
-                  >
-                    Regenerate
-                  </button>
-                  <Link
-                    href="/library"
-                    className="btn btn-ghost px-4 py-2 text-xs"
-                  >
-                    Library
-                  </Link>
-                  <Link
-                    href="/supercomputer"
-                    className="btn btn-ghost px-4 py-2 text-xs"
-                  >
-                    Batch more
-                  </Link>
                 </div>
-                <p className="mt-2 text-center text-[10px] text-[var(--fg-dim)]">
-                  {duration}s · {aspectRatio} · ⌘/Ctrl+Enter
-                </p>
-                {demo && (
-                  <p className="mt-2 text-center text-xs text-[var(--fg-dim)]">
-                    Demo clip — set FAL_KEY to run real Seedance.
+              )}
+
+              {!busy && status === "validation" && !videoUrl && (
+                <div className="max-w-md p-10 text-center">
+                  <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-[color-mix(in_srgb,var(--mint)_15%,transparent)] text-2xl">
+                    ✓
+                  </span>
+                  <h2 className="mt-4 text-xl font-semibold">Workflow validated</h2>
+                  <p className="mt-2 text-sm text-[var(--fg-muted)]">
+                    Your references and recipe passed validation. No provider request was sent, no video was fabricated, and no credits were charged.
                   </p>
-                )}
-              </div>
-            )}
-            {(status === "idle" || status === "error") && !videoUrl && (
-              <div className="p-10 text-center text-sm text-[var(--fg-dim)]">
-                <p className="text-3xl">🧸</p>
-                <p className="mt-3">Your clip will land here</p>
-                <p className="mt-1 text-xs">
-                  Perfect for TikTok, Etsy, Whatnot, shelf flexes
-                </p>
+                </div>
+              )}
+
+              {!busy && !videoUrl && status !== "validation" && (
+                <div className="max-w-sm p-10 text-center">
+                  {assets.front ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={assets.front.dataUrl}
+                      alt="Toy ready to animate"
+                      className="mx-auto max-h-64 rounded-xl object-contain opacity-80"
+                    />
+                  ) : (
+                    <p className="text-4xl">🧸</p>
+                  )}
+                  <p className="mt-4 text-sm font-medium">
+                    {assets.front ? "Your toy is ready" : "Your result will land here"}
+                  </p>
+                  <p className="mt-1 text-xs text-[var(--fg-dim)]">
+                    Complete the three steps, then create one trackable task.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {(status === "done" || status === "validation") && (
+              <div className="mt-3 rounded-xl border border-[var(--border)] bg-[var(--card)] p-3">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-semibold">
+                      {validationMode ? "Private validation" : "Generation complete"}
+                    </p>
+                    <p className="mt-0.5 text-[10px] text-[var(--fg-dim)]">
+                      {validationMode
+                        ? `No model call · ${chargedCredits ?? 0} credits charged`
+                        : `${duration}s · ${aspectRatio} · ${chargedCredits ?? CREDITS_PER_VIDEO} credits`}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {videoUrl && !validationMode && (
+                      <a
+                        href={videoUrl}
+                        download={`pikbo-${effect}.mp4`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="btn btn-primary px-3 py-1.5 text-xs"
+                      >
+                        Download
+                      </a>
+                    )}
+                    {videoUrl && (
+                      <button
+                        type="button"
+                        onClick={() => void copyLink()}
+                        className="btn btn-ghost px-3 py-1.5 text-xs"
+                      >
+                        {copied ? "Copied" : "Copy link"}
+                      </button>
+                    )}
+                    {videoUrl && !validationMode && (
+                      <button
+                        type="button"
+                        onClick={shareX}
+                        className="btn btn-ghost px-3 py-1.5 text-xs"
+                      >
+                        Share on X
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => void runAsyncGeneration()}
+                      className="btn btn-ghost px-3 py-1.5 text-xs"
+                    >
+                      New version
+                    </button>
+                    <Link href="/supercomputer" className="btn btn-ghost px-3 py-1.5 text-xs">
+                      Build campaign
+                    </Link>
+                  </div>
+                </div>
               </div>
             )}
           </div>
-        </section>
+        </aside>
+      </div>
+
+      <div className="fixed inset-x-0 bottom-0 z-30 hidden border-t border-[var(--border)] bg-[color-mix(in_srgb,var(--bg)_94%,transparent)] px-5 py-3 backdrop-blur-xl xl:block">
+        <div className="mx-auto flex max-w-[1760px] items-center justify-between gap-5">
+          <div className="flex min-w-0 items-center gap-4 text-xs">
+            <span className="font-semibold">{preset.name}</span>
+            <span className="text-[var(--fg-dim)]">
+              {duration}s · {aspectRatio} · {effectiveResolution}
+            </span>
+            <span className="text-[var(--fg-dim)]">
+              {assets.front ? `${Object.keys(assets).length} asset${Object.keys(assets).length === 1 ? "" : "s"}` : "Front asset required"}
+            </span>
+          </div>
+          <div className="flex shrink-0 items-center gap-4">
+            <div className="text-right">
+              <p className="text-sm font-semibold">Live estimate · {CREDITS_PER_VIDEO} credits</p>
+              <p className="text-[9px] text-[var(--fg-dim)]">
+                Validation mode charges 0
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => void runAsyncGeneration()}
+              disabled={busy || !assets.front}
+              className="btn btn-primary min-w-56 disabled:cursor-not-allowed disabled:opacity-45"
+            >
+              {busy
+                ? `${statusLabel(status)}${job?.progress ? ` · ${job.progress}%` : "…"}`
+                : "Generate video"}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="fixed inset-x-0 bottom-[calc(3.9rem+env(safe-area-inset-bottom))] z-40 border-t border-[var(--border)] bg-[color-mix(in_srgb,var(--bg)_95%,transparent)] px-3 py-2 backdrop-blur-xl xl:hidden">
+        <div className="flex items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-xs font-semibold">{preset.name}</p>
+            <p className="text-[9px] text-[var(--fg-dim)]">
+              Live estimate {CREDITS_PER_VIDEO} credits · validation 0
+            </p>
+          </div>
+          <button
+            type="button"
+            disabled={!assets.front || busy}
+            onClick={() => void runAsyncGeneration()}
+            className="btn btn-primary min-w-32 px-4 py-2.5 text-xs disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {busy ? statusLabel(status) : assets.front ? "Generate video" : "Add front photo"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+function ChoiceRow({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  label: string;
+  options: string[];
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <div>
+      <p className="text-xs font-semibold text-[var(--fg-muted)]">{label}</p>
+      <div className="mt-1.5 flex gap-1.5">
+        {options.map((option) => (
+          <button
+            key={option}
+            type="button"
+            onClick={() => onChange(option)}
+            className={`flex-1 rounded-lg border px-2 py-2 text-[11px] font-semibold ${
+              value === option
+                ? "border-[var(--brand)] bg-[var(--grad-soft)]"
+                : "border-[var(--border)] bg-[var(--bg-soft)] text-[var(--fg-muted)]"
+            }`}
+          >
+            {option}
+          </button>
+        ))}
       </div>
     </div>
   );

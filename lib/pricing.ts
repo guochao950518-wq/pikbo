@@ -20,6 +20,8 @@ export type Plan = {
   priority: boolean;
   /** Stripe Price ID env key name (optional until wired) */
   stripePriceEnv?: string;
+  /** Annual checkout stays hidden until this price is configured. */
+  stripeAnnualPriceEnv?: string;
 };
 
 export const CREDITS_PER_VIDEO = 10; // 1 clip = 10 credits (tune to model cost)
@@ -63,6 +65,7 @@ export const PLANS: Plan[] = [
     commercial: true,
     priority: true,
     stripePriceEnv: "STRIPE_PRICE_CREATOR",
+    stripeAnnualPriceEnv: "STRIPE_PRICE_CREATOR_ANNUAL",
   },
   {
     id: "shop",
@@ -83,6 +86,7 @@ export const PLANS: Plan[] = [
     commercial: true,
     priority: true,
     stripePriceEnv: "STRIPE_PRICE_SHOP",
+    stripeAnnualPriceEnv: "STRIPE_PRICE_SHOP_ANNUAL",
   },
 ];
 

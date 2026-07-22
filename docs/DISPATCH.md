@@ -1,11 +1,11 @@
-# 老板指令板 — 先抄站，后潮玩，不上线
+# 老板指令板 — 先打磨产品闭环，暂不公开上线
 
-> **暂停部署/上线。**  
-> 目标：大站有什么模块，我们就铺什么模块（Apps/Models/Cinema/Generate/Library…）。  
-> 品牌必须是 Pikbo，**禁止盗用**对方 Logo/官网素材；功能面与信息架构对齐。
+> **暂停公开部署和真实收款。**
+> 最新目标：不再继续堆空壳模块，优先完成真实账户、持久积分、异步生成、云端资产、支付测试和服务端水印。
+> 品牌必须是 Pikbo，专注“自己的潮玩照片 → 商业短视频”；禁止盗用竞品 Logo、文案或媒体。
 
-**更新时间：** 2026-07-22  
-**规格全文：** `docs/COMPETITOR_SPEC.md`  
+**更新时间：** 2026-07-22
+**规格全文：** `docs/COMPETITOR_SPEC.md`
 **上线前门禁：** `docs/PRELAUNCH_AUDIT.md`（找毛病 → 找差异 → 诚实对齐 → 再创新 → 再上线）
 
 ---
@@ -23,29 +23,33 @@
 
 ## 拆工
 
-### Grok — App 壳 + Generate 工作台（主）
+### Grok — 生产稳定性与账务
 - [x] 规格 COMPETITOR_SPEC
 - [x] AppShell：Home / Generate / Library / Community / Pricing / Profile
 - [x] `/create` Higgsfield 级 Generate（Seedance 条、上传、prompt、结果）
 - [x] `/library` 本机历史 + `/profile` `/community` 骨架
 - [x] 首页 Hero + Models + PresetsWall 接入
 - [x] 保持 Seedance 出片 API
-- [ ] 继续抠 Generate 全屏感 / 参数条（时长比例可视化）
+- [ ] 复核异步任务、积分预扣/退款、Stripe Webhook 幂等与失败路径
+- [ ] 不得在正式环境使用 Cookie 积分或本地 JSON 冒充持久数据
 
 **分支：** `main`　**提交：** `[grok]`
 
-### GPT / Codex — 首页像模型产品站
-- [ ] 在 Grok 首页基础上再加视觉冲击（真实样片位、动效）
-- [ ] 定价转化文案 A/B 优化
-- [ ] 不要改 generate API
+### GPT / Codex — 产品闭环与 Studio
+- [x] 诚实 Demo：无 FAL 时不扣积分，不冒充模型输出
+- [x] 多素材 Studio：正面必填，侧面/背面/包装可选
+- [x] 异步任务、项目、资产上传、重试与 SKU Campaign
+- [x] 支付入口真实性、账单门户、年付配置门控、自动化测试
+- [ ] 用真实 Supabase / fal / Stripe test / ffmpeg 完成集成验收（外部配置 blocker）
 
-**分支：** `agent/gpt/clone-home`　**提交：** `[gpt]`
+**分支：** `agent/gpt/product-foundation`　**提交：** `[gpt]`
 
-### Claude — 预设密度 + 社区/内容
+### Claude — QA、内容真实性与 SEO
 - [x] PresetsWall 密铺 + effects 页
 - [x] community 墙
 - [x] 再补 4 个 viral preset（smoke-burst / paint-splash / power-aura / hologram-glitch，质量优先）
-- [ ] 文案潮玩化第二轮
+- [ ] 复核所有页面无虚构社区内容、无不实模型/客户/收入声明
+- [ ] 检查 sitemap、robots、结构化数据、内链和移动端回归
 
 **分支：** `agent/claude/clone-presets`　**提交：** `[claude]`
 
@@ -57,8 +61,8 @@
 仓库：https://github.com/guochao950518-wq/pikbo
 git fetch && git checkout main && git pull --ff-only
 必读 docs/DISPATCH.md + docs/COMPETITOR_SPEC.md
-目标：先按 Higgsfield/Yiha 的模块与交互 1:1 级复刻（自有 UI，禁止盗他们品牌素材），暂不上线。
-只做分给你的区块，分支 agent/<你>/clone-*，提交 [你]，push。
+目标：先完成 PIKBO 潮玩视频产品闭环；借鉴竞品工作流，不复制品牌素材，暂不上线。
+只做分给你的区块，分支 agent/<你>/<topic>，提交 [你]，push。
 出片模型保持字节 Seedance。
 ```
 
@@ -80,26 +84,26 @@ git fetch && git checkout main && git pull --ff-only
 2. **删重复文档**：`COLLABORATION.md` 和 `COLLAB.md` 内容重复 —— 保留 `COLLAB.md`，删掉 `COLLABORATION.md`（谁先碰谁删）。
 3. **诚信红线（重要）**：**禁止编造假的社区作品 / 假的"示例视频"当真实用户内容**。社区/首页样片要真实——而真实出片的唯一卡点是 **没有 `FAL_KEY`**。这才是当前真正的 blocker，请一起向老板要 key，别用假内容填充。
 
-**当前真 blocker：`FAL_KEY`**（没有它 = 零真实出片 = 首页/社区只能放占位）。结构可以继续搭，但"证明能用"必须等 key。
+**当前外部 blocker：**`FAL_KEY`（真实模型验收）、Supabase 项目（跨设备数据）、Stripe 测试密钥（支付回归）和可运行 ffmpeg 的私有 worker（免费文件水印）。没有这些密钥时继续使用明确标注且不扣积分的私人验证模式，不得声称已完成正式闭环。
 
 ---
 
-## 协调指令 #2 — [claude] 2026-07-22（"从铺壳 → 硬化核心"）
+## 协调指令 #2 — [claude] 2026-07-22（“从铺壳 → 硬化核心”）
 
-**现状判断:** 外壳/视觉已到旗舰级(约 9/10),但核心 **0 验证**(仍 DEMO、无 FAL_KEY、零真实出片)。**继续堆模块/视觉是边际递减,而且在拉大"承诺 vs 现实"的差距。** 从现在起,不需要 key 也能做的高价值活 = **为真实出片做好准备 + 降低上线翻车风险**。
+**现状判断：** 外壳/视觉已经足够支撑验证，但核心仍缺少带任务 ID 的真实输出。继续堆模块会拉大承诺与现实的差距；没有 key 时的高价值工作是硬化真实出片准备并降低上线风险。
 
 ### 给全体
-- **冻结净增新模块/视觉最大化。** Cinema/Apps/Explore/Models 已经够了,别再铺新的。
-- **唯一真 blocker 仍是 `FAL_KEY`** —— 一起向老板要,别拿假内容/更多空壳填时间。
+- 冻结净增空壳模块，优先验证真实链路、成本和内容真实性。
+- `FAL_KEY` 仍是实拍之外的真实模型验收 blocker；不得用假内容替代。
 
 ### Grok（壳 / Generate / 计费 / 视觉）
-1. **硬化真实出片链路**(为 key 到位那一刻做准备):确认"先扣积分 → 失败自动退"真的生效;结果区加显式提示"AI 结果会有波动,不满意免费重出";把 `cached demo → 真实输出` 做成**干净可替换的契约**(对齐 GPT handoff 里的 DemoVideo id 契约)。
-2. **收起空模块**:Models 的"coming soon"卡、Cinema/Apps、Community mock —— **要么明确 gate 成"即将上线",要么先隐藏**。"大平台但一半是空的"比"小而精"更掉价。
-3. **删重复文档 + 合并手册**(`COLLABORATION.md`、多本 handbook)。
+1. 复核先扣积分、失败退款、结果质量提示和 cached demo → 真实输出替换契约。
+2. 收起没有真实能力的 Models/Cinema/Apps/Community 空入口。
+3. 合并重复手册，避免多份协作说明漂移。
 
 ### Codex / GPT（首页 / 定价 / 转化 / product-foundation）
-1. **验单位经济**:定价估算器写的 $0.38/条,**必须覆盖 Seedance 真实单条成本 + 手续费 + 利润**——没人算过。免费层 30 积分=3 条,SEO 放量后是纯亏 GPU;建议算完再定,免费额度可能要砍到 1 条带水印。
-2. **首页样片别把胃口吊太高**:那些电影级 FEATURED 卡是缓存原型渲染。**明确标注 example/cached,并把最不真实的 1-2 张换成更接近真实 Seedance 水准的**,否则用户真生成后落差 = 差评。
-3. **product-foundation 分支别搞成又一次大重写**,小步、别撞 main 现有壳。
+1. 用真实 Seedance 成本、手续费和利润复核单位经济，避免免费额度失控。
+2. 首页缓存样片必须标注 Lab/example；真实模型质量验收后再升级证明标签。
+3. product foundation 保持小步兼容现有产品，不做脱离真实链路的大重写。
 
-**一句话:** 路都铺好了,把火力从"装修"转到"确保点火那一刻不炸"。
+**一句话：** 路已经铺好，把火力从装修转向确保真实点火不出错。

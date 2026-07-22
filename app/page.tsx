@@ -1,141 +1,87 @@
 import Link from "next/link";
-import {
-  buildVideoFeed,
-  featuredStrip,
-  suiteRail,
-} from "@/lib/videoFeed";
-import { VideoTile } from "@/components/VideoTile";
-import { VideoRail } from "@/components/VideoRail";
 import { HeroVideoBanner } from "@/components/HeroVideoBanner";
-import { HeroUpload } from "@/components/HeroUpload";
+import { ShowcaseGrid } from "@/components/ShowcaseGrid";
+import { PresetPreviewCard } from "@/components/PresetPreviewCard";
+import { SHOWCASE_PROJECTS } from "@/lib/showcase";
 import { PRESETS } from "@/lib/presets";
 
-/**
- * Higgsfield-class home:
- * 1) Immersive full-bleed hero video
- * 2) Horizontal feature / suite rails (all video)
- * 3) Dense autoplay masonry wall
- * 4) Always-visible convert paths
- */
 export default function Home() {
-  const featured = featuredStrip();
-  const suite = suiteRail();
-  const feed = buildVideoFeed();
-
   return (
-    <div className="pb-28">
+    <div className="pb-20">
       <HeroVideoBanner />
 
-      {/* Sticky convert under hero */}
-      <section className="sticky top-0 z-30 border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--bg)_92%,transparent)] backdrop-blur-xl">
-        <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 sm:px-6">
-          <p className="text-[12px] text-[var(--fg-dim)]">
-            <span className="font-semibold text-[var(--fg)]">
-              Scroll · every tile plays
-            </span>{" "}
-            · tap to remake with your toy
-          </p>
-          <div className="flex gap-2">
+      <section className="border-b border-[var(--border)] bg-[var(--bg-soft)] py-4">
+        <div className="flex gap-3 overflow-x-auto px-4 pb-2 sm:px-7">
+          {SHOWCASE_PROJECTS.slice(0, 5).map((project, index) => (
             <Link
-              href="/create"
-              className="btn btn-primary !px-4 !py-1.5 text-xs"
+              key={project.id}
+              href={`/projects/${project.slug}`}
+              className="group relative aspect-video w-[72vw] max-w-[330px] shrink-0 overflow-hidden rounded-2xl border border-[var(--border)] bg-black sm:w-[310px]"
             >
-              Generate free
+              <video muted loop playsInline preload="none" poster={project.output.poster} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]">
+                <source src={project.output.webm} type="video/webm" />
+                <source src={project.output.mp4} type="video/mp4" />
+              </video>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-4">
+                <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-white/50">0{index + 1} · {project.presetName}</p>
+                <h2 className="mt-1 text-sm font-bold text-white">{project.title}</h2>
+              </div>
             </Link>
-            <Link
-              href="/supercomputer"
-              className="btn btn-ghost !px-3 !py-1.5 text-xs"
-            >
-              Batch
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      <VideoRail
-        label="Featured demos"
-        title="Official shelf clips"
-        href="/community"
-        items={featured}
-      />
-
-      <VideoRail
-        label="Suite"
-        title="Models & live apps"
-        href="/apps"
-        items={suite}
-        wide
-      />
-
-      <section className="border-b border-[var(--border)] px-4 py-5 sm:px-6">
-        <p className="section-label mb-2">Start with your photo</p>
-        <div className="mx-auto max-w-lg">
-          <HeroUpload />
-        </div>
-      </section>
-
-      <section className="px-3 py-6 sm:px-5">
-        <div className="mb-4 flex flex-wrap items-end justify-between gap-2 px-1">
-          <div>
-            <p className="section-label">Viral presets</p>
-            <h2 className="mt-1 text-xl font-bold tracking-tight sm:text-2xl">
-              {PRESETS.length}+ looks · video on enter
-            </h2>
-          </div>
-          <Link
-            href="/effects"
-            className="text-xs font-semibold text-[var(--mint)] hover:underline"
-          >
-            All presets →
-          </Link>
-        </div>
-
-        <div className="columns-2 gap-2 sm:columns-3 sm:gap-3 lg:columns-4 xl:columns-5">
-          {feed.map((item) => (
-            <div key={item.id} className="mb-2 break-inside-avoid sm:mb-3">
-              <VideoTile item={item} />
-            </div>
           ))}
         </div>
       </section>
 
-      <section className="mx-4 mb-6 overflow-hidden rounded-2xl border border-[var(--border)] sm:mx-6">
-        <div className="grid sm:grid-cols-2">
-          <div className="relative min-h-[180px] bg-black">
-            {/* decorative loop using first demo */}
-            <video
-              className="absolute inset-0 h-full w-full object-cover opacity-70"
-              autoPlay
-              muted
-              loop
-              playsInline
-              poster={featured[0]?.demo.poster}
-            >
-              {featured[0] && (
-                <>
-                  <source src={featured[0].demo.webm} type="video/webm" />
-                  <source src={featured[0].demo.mp4} type="video/mp4" />
-                </>
-              )}
-            </video>
-            <div className="absolute inset-0 bg-gradient-to-r from-black via-black/40 to-transparent sm:bg-gradient-to-r" />
+      <section className="container-x py-14 sm:py-20">
+        <div className="mb-7 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+          <div>
+            <p className="section-label">Pikbo Lab · Explore inside every project</p>
+            <h2 className="mt-3 max-w-2xl text-3xl font-black tracking-[-0.035em] sm:text-5xl">Watch the output. Inspect the recipe.</h2>
+            <p className="mt-3 max-w-xl text-sm leading-6 text-[var(--fg-muted)]">Every visible project opens its owned-toy input, effect, format, prompt summary, and an honest proof label.</p>
           </div>
-          <div className="flex flex-col justify-center bg-[var(--card)] p-6 sm:p-8">
-            <p className="section-label">Convert</p>
-            <p className="mt-2 text-lg font-bold tracking-tight">
-              Stop scrolling. Animate your figure.
-            </p>
-            <p className="mt-2 text-sm text-[var(--fg-muted)]">
-              Free · ~3 clips · Seedance Fast · watermark on free
-            </p>
-            <div className="mt-5 flex flex-wrap gap-2">
-              <Link href="/create" className="btn btn-primary text-sm">
-                Open Generate
-              </Link>
-              <Link href="/pricing" className="btn btn-ghost text-sm">
-                Pricing
-              </Link>
+          <Link href="/explore" className="btn btn-ghost self-start px-5 py-2.5 text-xs sm:self-auto">Explore all →</Link>
+        </div>
+        <ShowcaseGrid projects={SHOWCASE_PROJECTS} />
+      </section>
+
+      <section className="border-y border-[var(--border)] bg-[var(--bg-soft)] py-14 sm:py-20">
+        <div className="container-x">
+          <div className="mb-7 flex items-end justify-between gap-4">
+            <div>
+              <p className="section-label">Viral toy presets</p>
+              <h2 className="mt-3 text-3xl font-black tracking-[-0.035em] sm:text-5xl">Pick a motion recipe.</h2>
+              <p className="mt-3 text-sm text-[var(--fg-muted)]">Lab clips play. Unverified ideas stay clearly marked as concept recipes.</p>
             </div>
+            <Link href="/effects" className="hidden text-xs font-bold text-[var(--mint)] sm:block">View all {PRESETS.length} →</Link>
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+            {PRESETS.slice(0, 12).map((preset) => <PresetPreviewCard key={preset.slug} preset={preset} />)}
+          </div>
+          <Link href="/effects" className="btn btn-ghost mt-6 w-full py-3 text-xs sm:hidden">View all effects</Link>
+        </div>
+      </section>
+
+      <section className="container-x py-16 sm:py-24">
+        <div className="grid gap-8 rounded-3xl border border-[var(--border)] bg-[var(--card)] p-6 sm:p-10 lg:grid-cols-[1fr_1.25fr] lg:items-end">
+          <div>
+            <p className="section-label">One owned SKU</p>
+            <h2 className="mt-3 text-3xl font-black tracking-[-0.035em] sm:text-5xl">Upload. Direct. Compare. Ship.</h2>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-3">
+            {[
+              ["01", "Add the toy", "Front photo required. Extra references are saved honestly."],
+              ["02", "Pick the job", "Listing spin, unboxing, story scene, or shop hook."],
+              ["03", "Keep the best", "Compare versions, retry failures, then build a SKU campaign."],
+            ].map(([number, title, copy]) => (
+              <div key={number} className="rounded-2xl border border-[var(--border)] bg-[var(--bg-soft)] p-4">
+                <span className="text-xs font-black text-[var(--mint)]">{number}</span>
+                <h3 className="mt-5 text-sm font-bold">{title}</h3>
+                <p className="mt-2 text-xs leading-5 text-[var(--fg-muted)]">{copy}</p>
+              </div>
+            ))}
+          </div>
+          <div className="lg:col-start-2">
+            <Link href="/create" className="btn btn-primary px-7 py-3 text-sm">Open Toy Video Studio</Link>
           </div>
         </div>
       </section>

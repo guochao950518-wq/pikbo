@@ -25,6 +25,22 @@ export async function POST(req: Request) {
   }
 
   let session = await ensureSession();
+  // The no-key path is a UI validation preview, not a generation. It must not
+  // spend credits or imply that Flux produced the placeholder.
+  if (!process.env.FAL_KEY) {
+    await new Promise((resolve) => setTimeout(resolve, 250));
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="768" height="1024"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ff4d8d"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#g)"/><text x="50%" y="46%" fill="white" font-size="28" text-anchor="middle" font-family="sans-serif">Pikbo Lab preview</text><text x="50%" y="52%" fill="white" font-size="14" text-anchor="middle" opacity=".8">No provider call · no credit charge</text></svg>`;
+    const imageUrl = `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`;
+    return NextResponse.json({
+      imageUrl,
+      demo: true,
+      provenance: "local-placeholder",
+      chargedCredits: 0,
+      model: "demo-no-provider-call",
+      session: publicSession(session),
+    });
+  }
+
   if (session.credits < COST) {
     return NextResponse.json(
       {
@@ -38,19 +54,6 @@ export async function POST(req: Request) {
 
   session = deductCredits(session, COST);
   await saveSession(session);
-
-  if (!process.env.FAL_KEY) {
-    await new Promise((r) => setTimeout(r, 800));
-    // placeholder gradient SVG data URL as demo
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="768" height="1024"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ff4d8d"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#g)"/><text x="50%" y="48%" fill="white" font-size="28" text-anchor="middle" font-family="sans-serif">Pikbo demo still</text><text x="50%" y="54%" fill="white" font-size="14" text-anchor="middle" opacity=".8">set FAL_KEY for Flux</text></svg>`;
-    const imageUrl = `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`;
-    return NextResponse.json({
-      imageUrl,
-      demo: true,
-      model: "demo",
-      session: publicSession(session),
-    });
-  }
 
   try {
     fal.config({ credentials: process.env.FAL_KEY });

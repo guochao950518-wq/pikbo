@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { upsertEntitlement } from "@/lib/entitlements";
 import { type PlanId } from "@/lib/pricing";
 import {
-  creditsForPlan,
   planFromPriceId,
   stripeGet,
 } from "@/lib/stripe";
@@ -45,7 +44,10 @@ export async function POST(req: Request) {
       `/checkout/sessions/${encodeURIComponent(checkoutId)}`
     );
 
-    if (cs.payment_status !== "paid" && cs.status !== "complete") {
+    if (
+      cs.status !== "complete" ||
+      (cs.payment_status !== "paid" && cs.payment_status !== "no_payment_required")
+    ) {
       return NextResponse.json(
         { error: "Checkout not completed" },
         { status: 402 }
@@ -57,8 +59,11 @@ export async function POST(req: Request) {
       metadata.pikbo_session_id ||
       (cs.client_reference_id as string | undefined);
 
-    let plan = (metadata.plan as PlanId | undefined) || null;
-    if (!plan || plan === "free") {
+    let plan: PlanId | null =
+      metadata.plan === "creator" || metadata.plan === "shop"
+        ? metadata.plan
+        : null;
+    if (!plan) {
       // try line items
       try {
         const items = await stripeGet(
@@ -81,22 +86,13 @@ export async function POST(req: Request) {
         : undefined;
 
     let session = await ensureSession();
-    // Prefer Stripe metadata session; if cookie differs, still upgrade this browser
-    const periodKey = currentPeriodKey();
-    const credits = creditsForPlan(plan);
-
-    if (localId && localId !== session.id) {
-      await upsertEntitlement({
-        sessionId: localId,
-        plan,
-        credits,
-        periodKey,
-        stripeCustomerId: customer,
-        stripeSubscriptionId: subscription,
-        status: "active",
-        updatedAt: new Date().toISOString(),
-      });
+    if (!localId || localId !== session.id) {
+      return NextResponse.json(
+        { error: "Checkout does not belong to this signed-in workspace" },
+        { status: 403 }
+      );
     }
+    const periodKey = currentPeriodKey();
 
     session = setPlan(session, plan, { resetCredits: true });
     await saveSession(session);

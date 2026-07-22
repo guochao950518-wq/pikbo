@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { ProductUrlImport } from "@/components/ProductUrlImport";
 
 const PRESETS_QUICK = [
   { slug: "360-spin-showcase", label: "360°" },
@@ -9,7 +10,7 @@ const PRESETS_QUICK = [
   { slug: "floating-hero", label: "Float" },
 ] as const;
 
-/** Compact drop zone for video-home conversion */
+/** Home drop zone: stash the owned-toy still, then open the selected Studio look. */
 export function HeroUpload() {
   const router = useRouter();
   const [hover, setHover] = useState(false);
@@ -19,11 +20,11 @@ export function HeroUpload() {
 
   function goWithFile(file: File | undefined | null) {
     if (!file || !file.type.startsWith("image/")) {
-      setErr("PNG or JPG of a toy you own.");
+      setErr("Use a PNG or JPG of a toy you own.");
       return;
     }
     if (file.size > 8_000_000) {
-      setErr("Max ~8MB.");
+      setErr("Max ~8MB photo.");
       return;
     }
     setBusy(true);
@@ -98,6 +99,26 @@ export function HeroUpload() {
       {err && (
         <p className="mt-2 text-center text-xs text-[var(--brand)]">{err}</p>
       )}
+      <div className="my-3 flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.14em] text-[var(--fg-dim)]">
+        <span className="h-px flex-1 bg-[var(--border)]" /> or import your listing <span className="h-px flex-1 bg-[var(--border)]" />
+      </div>
+      <ProductUrlImport
+        compact
+        onImported={(product) => {
+          try {
+            sessionStorage.setItem("pikbo_pending_still", product.frontImageDataUrl!);
+            sessionStorage.setItem("pikbo_pending_still_name", product.title);
+            sessionStorage.setItem("pikbo_pending_product", JSON.stringify({
+              sourceUrl: product.sourceUrl,
+              title: product.title,
+              description: product.description,
+            }));
+            router.push(`/create?effect=${encodeURIComponent(effect)}&source=product-import`);
+          } catch {
+            setErr("Storage full — upload the image directly in Studio.");
+          }
+        }}
+      />
     </div>
   );
 }
