@@ -8,19 +8,21 @@ import { PRESETS } from "@/lib/presets";
 const LINKS = [
   { href: "/", label: "Home" },
   { href: "/create", label: "Generate" },
-  { href: "/supercomputer", label: "Batch agent" },
-  { href: "/cinema", label: "Cinema Studio" },
   { href: "/effects", label: "Toy presets" },
+  { href: "/library", label: "Library" },
+  { href: "/image", label: "Still studio" },
+  { href: "/cinema", label: "Cinema Studio" },
+  { href: "/supercomputer", label: "Batch agent" },
+  { href: "/guides", label: "Guides" },
+  { href: "/for/etsy-listing-videos", label: "For Etsy sellers" },
+  { href: "/for/tiktok-shop-product-videos", label: "For TikTok Shop" },
   { href: "/apps", label: "Apps" },
   { href: "/models", label: "Models" },
-  { href: "/image", label: "Still studio" },
-  { href: "/library", label: "Library" },
   { href: "/community", label: "Community" },
   { href: "/explore", label: "Explore" },
   { href: "/pricing", label: "Pricing" },
   { href: "/profile", label: "Profile" },
   { href: "/settings", label: "Settings" },
-  { href: "/supercomputer", label: "Batch" },
 ];
 
 export function CommandPalette() {
@@ -54,7 +56,7 @@ export function CommandPalette() {
     )
       .slice(0, 8)
       .map((p) => ({
-        href: `/create?effect=${p.slug}`,
+        href: `/effects/${p.slug}`,
         label: `${p.emoji} ${p.name}`,
         kind: "preset" as const,
       }));

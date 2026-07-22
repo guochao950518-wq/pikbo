@@ -47,6 +47,23 @@ export default function Home() {
               <span>✓ No card to try</span>
               <span>✓ Free exports show a Pikbo watermark</span>
             </div>
+            <div className="mt-6 flex flex-wrap gap-2">
+              <Link href="/effects/360-spin-showcase" className="chip hover:border-[var(--brand)]">
+                🌀 360° spin
+              </Link>
+              <Link href="/effects/blind-box-unboxing" className="chip hover:border-[var(--brand)]">
+                📦 Blind box
+              </Link>
+              <Link href="/for/etsy-listing-videos" className="chip hover:border-[var(--brand)]">
+                🛍️ Etsy listings
+              </Link>
+              <Link href="/for/tiktok-shop-product-videos" className="chip hover:border-[var(--brand)]">
+                🎵 TikTok Shop
+              </Link>
+              <Link href="/guides" className="chip hover:border-[var(--brand)]">
+                📖 Guides
+              </Link>
+            </div>
             <div className="mt-10 grid max-w-lg grid-cols-3 border-y border-white/10 py-4">
               <div>
                 <p className="text-xl font-bold text-white">1 photo</p>
@@ -124,10 +141,10 @@ export default function Home() {
               Supercomputer
             </p>
             <h2 className="mt-2 text-2xl font-bold group-hover:text-[var(--lime)]">
-              Agents & automation
+              Batch generate
             </h2>
             <p className="mt-2 text-sm text-[var(--fg-muted)]">
-              Multi-step creative jobs surface (roadmap live as shell).
+              Queue multiple toy references into trackable channel-ready jobs.
             </p>
           </Link>
         </div>

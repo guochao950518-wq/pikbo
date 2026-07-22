@@ -21,7 +21,7 @@ export function PresetCard({ preset }: { preset: Preset }) {
       </div>
       <p className="mt-1.5 text-sm text-[var(--fg-muted)]">{preset.tagline}</p>
       <span className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-[var(--mint)] opacity-0 transition-opacity group-hover:opacity-100">
-        Try this effect →
+        Open tool page →
       </span>
     </Link>
   );

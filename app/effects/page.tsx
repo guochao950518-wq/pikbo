@@ -20,12 +20,18 @@ export default function EffectsHub() {
             Toy video presets
           </h1>
           <p className="mt-4 text-lg text-[var(--fg-muted)]">
-            One photo of a toy you own → a clip that sells or goes viral. Tap
-            any card to open Generate with that effect loaded.
+            One photo of a toy you own → a clip that sells or goes viral. Each
+            card is a full tool page: generate on the spot, then dig into how-to
+            and FAQ.
           </p>
-          <Link href="/create" className="btn btn-primary mt-6">
-            Open Generate →
-          </Link>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link href="/create" className="btn btn-primary">
+              Open full studio →
+            </Link>
+            <Link href="/for/etsy-listing-videos" className="btn btn-ghost">
+              For sellers
+            </Link>
+          </div>
         </div>
       </div>
 

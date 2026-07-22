@@ -115,19 +115,34 @@ export default function ImageStudioPage() {
               </p>
             )}
             {imageUrl && imageUrl.startsWith("http") && (
-              <Link
-                href={`/create`}
-                className="btn btn-ghost mt-3 w-full text-sm"
-                onClick={() => {
-                  try {
-                    sessionStorage.setItem("pikbo_pending_still", imageUrl);
-                  } catch {
-                    // ignore
-                  }
-                }}
-              >
-                Use in Generate →
-              </Link>
+              <div className="mt-3 flex flex-col gap-2">
+                <Link
+                  href="/create"
+                  className="btn btn-primary w-full text-sm"
+                  onClick={() => {
+                    try {
+                      sessionStorage.setItem("pikbo_pending_still", imageUrl);
+                    } catch {
+                      // ignore
+                    }
+                  }}
+                >
+                  Animate in Generate →
+                </Link>
+                <Link
+                  href="/effects/360-spin-showcase"
+                  className="btn btn-ghost w-full text-sm"
+                  onClick={() => {
+                    try {
+                      sessionStorage.setItem("pikbo_pending_still", imageUrl);
+                    } catch {
+                      // ignore
+                    }
+                  }}
+                >
+                  Or spin on effect page →
+                </Link>
+              </div>
             )}
           </div>
           <div className="grid place-items-center overflow-hidden rounded-xl border border-dashed border-[var(--border)] bg-black/30">

@@ -6,7 +6,14 @@ import { usePathname } from "next/navigation";
 /** Sticky mobile CTA when not already on Generate */
 export function MobileGenerateBar() {
   const path = usePathname() || "/";
-  if (path.startsWith("/create") || path.startsWith("/supercomputer")) {
+  // Hide when a full tool surface is already on-screen
+  if (
+    path.startsWith("/create") ||
+    path.startsWith("/supercomputer") ||
+    path.startsWith("/effects/") ||
+    path.startsWith("/for/") ||
+    path.startsWith("/toys/")
+  ) {
     return null;
   }
   return (

@@ -4,6 +4,9 @@ import type { Metadata } from "next";
 import { USE_CASES, getUseCase } from "@/lib/usecases";
 import { getPreset } from "@/lib/presets";
 import { PresetCard } from "@/components/PresetCard";
+import { LandingToolPanel } from "@/components/LandingToolPanel";
+import { LandingHowItWorks } from "@/components/LandingHowItWorks";
+import { LandingResults } from "@/components/LandingResults";
 import { site } from "@/lib/site";
 
 export function generateStaticParams() {
@@ -21,6 +24,7 @@ export async function generateMetadata({
   return {
     title: { absolute: uc.seoTitle },
     description: uc.seoDescription,
+    keywords: uc.keywords,
     alternates: { canonical: `/for/${uc.slug}` },
     openGraph: {
       title: uc.seoTitle,
@@ -39,6 +43,8 @@ export default async function UseCasePage({
   const uc = getUseCase(slug);
   if (!uc) notFound();
 
+  const primarySlug = uc.recommendedEffects[0];
+  const primary = primarySlug ? getPreset(primarySlug) : undefined;
   const effects = uc.recommendedEffects
     .map((s) => getPreset(s))
     .filter((p) => p !== undefined);
@@ -53,17 +59,46 @@ export default async function UseCasePage({
     })),
   };
 
+  const howToJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: uc.h1,
+    description: uc.seoDescription,
+    step: [
+      {
+        "@type": "HowToStep",
+        name: "Upload a product photo",
+        text: "Use one clear photo of the toy or collectible you sell or own.",
+      },
+      {
+        "@type": "HowToStep",
+        name: "Generate on this page",
+        text: "Run the tool below without leaving this landing page.",
+      },
+      {
+        "@type": "HowToStep",
+        name: "Post to your channel",
+        text: `Download and use the clip for ${uc.label}.`,
+      },
+    ],
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
+      />
 
       <section className="glow-bg">
-        <div className="container-x relative z-10 pt-16 pb-10">
+        <div className="container-x relative z-10 pt-14 pb-8">
           <span className="chip">
-            {uc.emoji} For {uc.audience === "seller" ? "sellers" : "collectors"}
+            {uc.emoji} For {uc.audience === "seller" ? "sellers" : "collectors"}{" "}
+            · Tool landing
           </span>
           <h1 className="mt-4 max-w-3xl text-4xl font-bold leading-tight sm:text-5xl">
             {uc.h1}
@@ -71,23 +106,46 @@ export default async function UseCasePage({
           <p className="mt-4 max-w-2xl text-lg text-[var(--fg-muted)]">
             {uc.intro}
           </p>
-          <Link href="/create" className="btn btn-primary mt-7">
-            Create a clip →
-          </Link>
         </div>
       </section>
 
+      {/* V2: tool on page — default recommended effect */}
+      {primary && (
+        <section className="container-x py-8">
+          <LandingToolPanel
+            effectSlug={primary.slug}
+            effectName={primary.name}
+            duration={primary.duration}
+            aspectRatio={primary.aspectRatio}
+          />
+        </section>
+      )}
+
+      <LandingHowItWorks productLabel="listing-ready clip" />
+
       <section className="container-x py-10">
-        <div className="max-w-2xl space-y-5 text-[var(--fg-muted)]">
+        <h2 className="text-2xl font-bold">Why this works for {uc.label}</h2>
+        <div className="mt-5 max-w-2xl space-y-5 text-[var(--fg-muted)]">
           {uc.body.map((para, i) => (
             <p key={i} className="leading-relaxed">
               {para}
             </p>
           ))}
         </div>
+        <div className="mt-8 flex flex-wrap gap-2">
+          {uc.keywords.map((k) => (
+            <span key={k} className="chip">
+              {k}
+            </span>
+          ))}
+        </div>
       </section>
 
-      {/* cross-link to effect pages */}
+      <LandingResults
+        effectSlug={primary?.slug}
+        title="Sample clips for this use case"
+      />
+
       <section className="container-x py-8">
         <h2 className="text-2xl font-bold">Best effects for this</h2>
         <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -109,7 +167,6 @@ export default async function UseCasePage({
         </div>
       </section>
 
-      {/* link to other use cases */}
       <section className="container-x py-10">
         <h2 className="text-2xl font-bold">Also made for</h2>
         <div className="mt-6 flex flex-wrap gap-3">
@@ -118,6 +175,9 @@ export default async function UseCasePage({
               {u.emoji} {u.label}
             </Link>
           ))}
+          <Link href="/guides" className="chip">
+            Guides →
+          </Link>
         </div>
       </section>
     </>
