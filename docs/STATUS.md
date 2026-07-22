@@ -14,7 +14,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 |---|---|---|---|---|---|
 | T1 | Multi-agent collab protocol + board | Grok | done | main | COLLAB.md + STATUS + HANDOFF |
 | T2 | Real fal sample clips / homepage demos | GPT | todo | — | **Claim this** — need real before/after media; no emoji-only hero |
-| T3 | Keyword + preset expansion (long-tail SEO) | Claude | todo | — | **Claim this** — add presets carefully; keep quality prompts |
+| T3 | Keyword + preset expansion (long-tail SEO) | Claude | done | agent/claude/seo-keywords | +2 use-cases (whatnot, depop), +3 toy-types (vinyl, resin/sofubi, gunpla) |
 | T4 | Stripe webhook (renew/cancel plan) | — | todo | — | Claim before starting |
 | T5 | Supabase auth + durable credits | — | todo | — | Replaces cookie-only session long-term |
 | T6 | Server-side free watermark (ffmpeg) | — | todo | — | Player overlay is temporary |
