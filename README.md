@@ -5,7 +5,9 @@ Niche: **designer toys / collectibles**, English/global market, Google-SEO first
 
 ## Stack
 - **Next.js 16** (App Router) + **Tailwind v4**
-- **fal.ai** image-to-video (`@fal-ai/client`) — the generation backend
+- **ByteDance Seedance** image-to-video via **fal.ai** (`@fal-ai/client`)
+  - Free tier → `bytedance/seedance-2.0/fast/image-to-video`
+  - Paid → `bytedance/seedance-2.0/image-to-video`
 - **Signed cookie session** — guest credits + plan (no DB required yet)
 - **Stripe Checkout** (optional) — Creator / Shop subscriptions
 - Programmatic SEO landing pages at `/effects/[slug]`, `/for/[slug]`, `/toys/[slug]`

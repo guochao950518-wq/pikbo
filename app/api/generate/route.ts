@@ -3,24 +3,21 @@ import { fal } from "@fal-ai/client";
 import { getPreset } from "@/lib/presets";
 import { getPlan } from "@/lib/pricing";
 import { checkCredits, deductCredits, refundCredits } from "@/lib/credits";
+import {
+  modelForTier,
+  resolutionForTier,
+  seedanceDuration,
+} from "@/lib/models";
 import { ensureSession, publicSession, saveSession } from "@/lib/session";
 
 export const runtime = "nodejs";
-export const maxDuration = 120;
+// Seedance can take longer than Kling on cold queue
+export const maxDuration = 180;
 
 // A tiny CC0 sample clip used when no FAL_KEY is set, so the flow is
 // fully demoable before you plug in a real model + billing.
 const DEMO_VIDEO =
   "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
-
-// Paid / priority model. Override with FAL_MODEL.
-const MODEL_PAID =
-  process.env.FAL_MODEL || "fal-ai/kling-video/v1.6/standard/image-to-video";
-// Cheaper model for free tier — keep margin positive. Falls back to paid model.
-const MODEL_FREE =
-  process.env.FAL_MODEL_FREE ||
-  process.env.FAL_MODEL ||
-  "fal-ai/kling-video/v1.6/standard/image-to-video";
 
 export async function POST(req: Request) {
   let body: { effect?: string; image?: string; extra?: string };
@@ -64,6 +61,7 @@ export async function POST(req: Request) {
   await saveSession(session);
 
   const plan = getPlan(session.plan);
+  const freeTier = plan.watermark; // free plan → cheaper ByteDance fast tier
   const prompt = extra?.trim()
     ? `${preset.promptTemplate} Additional direction: ${extra.trim()}.`
     : preset.promptTemplate;
@@ -75,11 +73,13 @@ export async function POST(req: Request) {
       videoUrl: DEMO_VIDEO,
       demo: true,
       watermark: plan.watermark,
+      model: "demo",
       session: publicSession(session),
     });
   }
 
-  // --- Real generation via fal.ai ---
+  // --- Real generation: ByteDance Seedance via fal.ai ---
+  const model = modelForTier({ freeTier });
   try {
     fal.config({ credentials: process.env.FAL_KEY });
 
@@ -89,15 +89,19 @@ export async function POST(req: Request) {
     });
     const imageUrl = await fal.storage.upload(file);
 
-    const model = plan.watermark ? MODEL_FREE : MODEL_PAID;
+    const input: Record<string, unknown> = {
+      prompt,
+      image_url: imageUrl,
+      // Seedance 2.x schema
+      duration: seedanceDuration(preset.duration),
+      aspect_ratio: preset.aspectRatio || "auto",
+      resolution: resolutionForTier(freeTier),
+      // Free: skip audio noise; paid can keep ambient SFX if model supports
+      generate_audio: !freeTier,
+    };
 
     const result = await fal.subscribe(model, {
-      input: {
-        prompt,
-        image_url: imageUrl,
-        duration: String(preset.duration),
-        aspect_ratio: preset.aspectRatio,
-      },
+      input,
       logs: false,
     });
 
@@ -109,6 +113,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           error: "Model returned no video",
+          model,
           session: publicSession(session),
         },
         { status: 502 }
@@ -119,15 +124,17 @@ export async function POST(req: Request) {
       videoUrl,
       requestId: result.requestId,
       watermark: plan.watermark,
+      model,
+      provider: "bytedance-seedance",
       session: publicSession(session),
     });
   } catch (err) {
-    console.error("generate error:", err);
+    console.error("generate error:", model, err);
     session = refundCredits(session, check.cost);
     await saveSession(session);
     const msg = err instanceof Error ? err.message : "Generation failed";
     return NextResponse.json(
-      { error: msg, session: publicSession(session) },
+      { error: msg, model, session: publicSession(session) },
       { status: 500 }
     );
   }

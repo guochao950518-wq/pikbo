@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-22 — [grok] ByteDance Seedance as default video model
+- Paths: `lib/models.ts`, `app/api/generate/route.ts`, `.env.example`
+- Why: boss wants 字节模型出片. Defaults are Seedance 2.0 full (paid) + Fast (free) on fal.
+- Reuse: change models only via `FAL_MODEL` / `FAL_MODEL_FREE`; keep input `prompt` + `image_url` + duration/aspect/resolution.
+- Cost: Seedance is not free — always meter credits; free tier uses Fast + 480p + no audio.
+
 ### 2026-07-22 — [grok] Stripe billing + entitlements (T4)
 - Paths: `lib/entitlements.ts`, `lib/stripe.ts`, `lib/session.ts` (merge), `app/api/webhooks/stripe`, `app/api/checkout`, `app/api/checkout/confirm`, CreateStudio confirm on return, `/privacy` `/terms`, homepage pipeline demo
 - Why good: real subscription path without Supabase yet. Webhooks update durable plan; browser confirm upgrades cookie; credits not clobbered on every request (periodKey reset only).
