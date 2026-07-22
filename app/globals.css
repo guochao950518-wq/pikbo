@@ -241,3 +241,93 @@ select {
 .media-well {
   background: #050508;
 }
+
+/* ---------- Deep polish: interaction & detail craft ----------
+   The last 20% of "质感" — chrome, focus, selection, motion.
+------------------------------------------------------------- */
+
+/* Thin dark custom scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.22);
+  background-clip: content-box;
+}
+
+/* On-brand text selection */
+::selection {
+  background: rgba(200, 255, 61, 0.85);
+  color: #07070a;
+}
+
+/* Accessible, on-brand keyboard focus ring */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Inputs — refined placeholder + subtle lime focus ring (no border clash) */
+input::placeholder,
+textarea::placeholder {
+  color: var(--fg-dim);
+}
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(200, 255, 61, 0.14);
+}
+
+/* Editorial eyebrow — uppercase tracked with a lime lead line */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+.eyebrow::before {
+  content: "";
+  width: 1.4rem;
+  height: 1px;
+  background: var(--mint);
+}
+
+/* Interactive card — subtle premium lift */
+.card-i {
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.25s ease;
+}
+.card-i:hover {
+  transform: translateY(-2px);
+  border-color: rgba(200, 255, 61, 0.28);
+  box-shadow: 0 24px 60px -28px rgba(0, 0, 0, 0.85);
+}
+
+/* Smoother links */
+a {
+  transition:
+    color 0.15s ease,
+    opacity 0.15s ease;
+}
