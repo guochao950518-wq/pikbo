@@ -315,19 +315,19 @@ function ViralGrid({ items }: { items: FeedItem[] }) {
           </button>
         ))}
       </div>
-      <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-        {wall.map((item, i) => (
+      <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7">
+        {wall.map((item) => (
           <Link
             key={item.id}
             href={item.href}
-            className="relative aspect-[3/4] overflow-hidden rounded-xl bg-neutral-900 sm:aspect-[9/14]"
+            className="group relative aspect-[3/4] overflow-hidden rounded-xl bg-neutral-900 ring-1 ring-white/5 transition-all duration-300 hover:z-10 hover:-translate-y-1 hover:ring-2 hover:ring-[#c8ff3d]/40 sm:aspect-[9/14]"
           >
             <Clip
               demo={item.demo}
-              className="absolute inset-0 h-full w-full object-cover"
+              className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.06]"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
-            <p className="absolute inset-x-0 bottom-0 p-2 text-[11px] font-bold uppercase leading-tight tracking-wide text-white sm:text-xs">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-transparent" />
+            <p className="absolute inset-x-0 bottom-0 p-2 text-[11px] font-bold uppercase leading-tight tracking-wide text-white transition-colors group-hover:text-[#c8ff3d] sm:text-xs">
               {item.title}
             </p>
           </Link>
