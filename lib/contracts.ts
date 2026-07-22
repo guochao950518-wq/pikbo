@@ -59,6 +59,7 @@ export type JobMeterInput = {
  * Credit cost for one generation job.
  * Today: flat CREDITS_PER_VIDEO. Tomorrow: branch on model/duration/resolution.
  */
-export function jobCostCredits(_job?: JobMeterInput): number {
+export function jobCostCredits(job?: JobMeterInput): number {
+  void job; // reserved for model×duration metering
   return CREDITS_PER_VIDEO;
 }

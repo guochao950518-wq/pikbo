@@ -1,46 +1,72 @@
-# 24 小时冲刺 — 地基完成 · 软上线就绪
+# DISPATCH — 第一性原理 · 五步工作法
 
-**截止：** 自 2026-07-23 起 24 小时内  
+**Last human intent (2026-07-23):**  
+按马斯克第一性原理 + 五步工作法落实网站：需求不蠢 → 删 → 简 → 快 → 最后自动。  
+权威文档：`docs/FIRST_PRINCIPLES.md`
+
 **协调：** Grok  
-**质量：** 保质保量 — 不假 live、不假无限、build 必须绿  
+**质量：** 不假 live、不假无限、build 绿  
 
-## 老板要求
+---
 
-> 加快，保质保量在 24 小时内完成。地基先做好，出片水到渠成。
+## 五步进度
 
-## 24h 完成定义（DoD）
+| Step | 含义 | 状态 |
+|------|------|------|
+| 1 需求 | 产品 = 玩具图→短视频；非 HF 全套 | ✅ 已写死 |
+| 2 删除 | 主 nav 只留关键路径；套件进 More | ✅ 本轮 |
+| 3 简化 | Mini free / 契约 / 1·5·15 积分 | ✅ |
+| 4 加速 | 本机 live ✅；**公网 = 老板阻塞** | ⏳ T7 |
+| 5 自动 | preflight + critical-path smoke | ✅ 脚本；CI 次要 |
 
-### 必须完成（代码侧）
+---
 
-| # | 项 | 状态 |
-|---|-----|------|
-| 1 | 地基文档 + 契约 `FOUNDATION` / `contracts` | ✅ |
-| 2 | 会话/积分/免费试玩数字一致 | ✅ |
-| 3 | generate 统一响应 + demo 本地潮玩片 | ✅ |
-| 4 | 定价文案与单位经济对齐 | 本轮合流 |
-| 5 | `npm run preflight` / build 绿 | 本轮验 |
-| 6 | 软上线清单老板 1 页可执行 | 本轮写 |
+## Now（只排关键路径）
 
-### 需要老板 30 分钟（环境）
+| ID | Task | Owner | Status | Notes |
+|----|------|-------|--------|-------|
+| FP0 | FIRST_PRINCIPLES 文档 + nav 降级 + Mini 文案 | Grok | done | 本轮 |
+| FP1 | `npm run critical-path` 绿 | Grok | doing | scripts/critical-path.sh |
+| T7 | Vercel + 域名 pikbo.ai | **老板** | blocked | `docs/LAUNCH.md` |
+| T5 | Auth + durable credits | — | todo | **挡真 Stripe** |
+| T6 | ffmpeg 硬水印 | — | todo | soft 不挡；文案已写 on-player |
 
-| # | 项 |
-|---|-----|
-| A | `.env` / Vercel：`SESSION_SECRET` + `FAL_KEY` |
-| B | 按 `docs/LAUNCH.md` 部署 + 域名 |
-| C | 上传一张手办图验收一条 |
+---
 
-**代码 24h 内做到「你配 key 就能上」；公网 live 取决于 A–C。**
+## 冻结（Step 2 删除令）
 
-## 冻结
+- 不新开 HF 大装修 / 大重写合流  
+- 不主推 Cinema / Apps / Models / 假社区内容  
+- 不生产 Stripe 收款（等 T5）  
+- Claude 省额度：无新大页  
+- Codex：只允许文案对齐 `lib/pricing.ts`，不改 API  
 
-- 不新开 HF 大装修分支  
-- 不硬合 `product-foundation` / `higgsfield-product-clone` 大重写  
-- Claude 省额度：无新大任务  
+---
 
-## 给还在跑的 Codex
+## 关键路径（唯一）
 
 ```text
-git pull origin main。24h 地基冲刺。
-只修定价/转化文案对齐 lib/pricing，不改 API。
+Home → Create → 出片 → Pricing
+SEO /effects /for /toys 只为喂 Create
+```
+
+---
+
+## 给 Codex / Claude 的开工口令
+
+```text
+git pull origin main。
+读 docs/FIRST_PRINCIPLES.md。
+只做关键路径：Home/Create/出片/Pricing 相关文案或 SEO 质量。
+禁止新套件页、禁止改 generate 契约。
 做完 push，Grok 合流。
 ```
+
+---
+
+## 老板 30 分钟（Step 4 真加速）
+
+1. 按 `docs/LAUNCH.md` 部署 Vercel  
+2. Env：`SESSION_SECRET` + `FAL_KEY`  
+3. 域名 pikbo.ai  
+4. 公网 `/create` 上传一张手办图验收  

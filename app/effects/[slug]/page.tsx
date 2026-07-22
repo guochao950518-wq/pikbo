@@ -168,7 +168,7 @@ export default async function EffectPage({
             {preset.intro}
           </p>
           <p className="mt-3 text-xs text-[var(--fg-dim)]">
-            Tool below runs on this page (SEO V2) · Seedance Fast free · open
+            Tool below runs on this page (SEO V2) · Seedance Mini free · open
             Full studio for model/aspect controls
           </p>
         </div>

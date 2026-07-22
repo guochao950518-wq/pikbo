@@ -52,9 +52,9 @@ export function Footer() {
             <ul className="space-y-2 text-sm text-[var(--fg-muted)]">
               {[
                 ["/create", "Generate"],
-                ["/supercomputer", "Batch"],
                 ["/library", "Library"],
                 ["/pricing", "Pricing"],
+                ["/effects", "Presets"],
                 ["/guides", "Guides"],
                 ["/privacy", "Privacy"],
                 ["/terms", "Terms"],

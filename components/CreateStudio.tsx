@@ -255,11 +255,8 @@ export function CreateStudio({
   const creditsLeft = session?.credits ?? null;
   const canAfford = creditsLeft === null || creditsLeft >= CREDITS_PER_VIDEO;
   const isFree = session?.plan === "free" || session?.watermark;
-
-  useEffect(() => {
-    if (isFree && duration === 10) setDuration(5);
-  }, [isFree, duration]);
-
+  // Free tier is hard-locked to 5s server-side; keep UI in sync without an effect.
+  const effectiveDuration = isFree ? 5 : duration;
 
   async function generate() {
     if (mode === "t2v") {
@@ -296,7 +293,7 @@ export function CreateStudio({
           effect,
           image,
           extra,
-          duration,
+          duration: effectiveDuration,
           aspectRatio,
           model: modelId,
           resolution: isFree ? "480p" : resolution,
@@ -379,7 +376,7 @@ export function CreateStudio({
     busy,
     image,
     effect,
-    duration,
+    effectiveDuration,
     aspectRatio,
     modelId,
     extra,
@@ -691,7 +688,7 @@ export function CreateStudio({
                       setDuration(d);
                     }}
                     className={`flex-1 rounded-lg border py-2 text-sm font-semibold ${
-                      duration === d
+                      effectiveDuration === d
                         ? "border-[var(--brand)] bg-[var(--grad-soft)]"
                         : "border-[var(--border)] text-[var(--fg-muted)]"
                     } ${freeLock ? "cursor-not-allowed opacity-50" : ""}`}
@@ -854,7 +851,7 @@ export function CreateStudio({
                 ? "Text→Video soon — use Image→Video"
                 : !canAfford
                   ? "Out of credits"
-                  : `Generate · ${CREDITS_PER_VIDEO} credits · ${duration}s · ${aspectRatio}`}
+                  : `Generate · ${CREDITS_PER_VIDEO} credits · ${effectiveDuration}s · ${aspectRatio}`}
           </button>
 
           {error && (
@@ -1021,7 +1018,7 @@ export function CreateStudio({
                   </Link>
                 </div>
                 <p className="mt-2 text-center text-[10px] text-[var(--fg-dim)]">
-                  {duration}s · {aspectRatio} · ⌘/Ctrl+Enter
+                  {effectiveDuration}s · {aspectRatio} · ⌘/Ctrl+Enter
                 </p>
                 {demo && (
                   <p className="mt-2 text-center text-xs text-[var(--fg-dim)]">

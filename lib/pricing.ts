@@ -35,10 +35,10 @@ export const PLANS: Plan[] = [
     name: "Free",
     priceMonthly: 0,
     credits: 10,
-    blurb: "One watermarked trial on Seedance Fast 480p. Demo clips stay free.",
+    blurb: "One watermarked trial on Seedance Mini 480p. Demo clips stay free.",
     perks: [
       "10 credits (~1 live trial clip / month)",
-      "Seedance Fast · 480p · watermark",
+      "Seedance Mini · 480p · player watermark",
       "All toy effect presets",
       "Unlimited cached demo playback",
     ],

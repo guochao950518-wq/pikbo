@@ -1,6 +1,6 @@
 # Pikbo board — claim before you code
 
-**Last human intent:** three agents (Grok / GPT / Claude) parallelize; always pull each other’s GitHub work.
+**Last human intent:** Musk first-principles + 5-step algorithm — critical path only; soft launch blocked on boss deploy (LAUNCH.md). See `docs/FIRST_PRINCIPLES.md`.
 
 Update this file in the same PR/commit as your work start/finish.
 
@@ -18,7 +18,9 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | T4 | Stripe webhook (renew/cancel plan) | Grok | done | agent/grok/ship-billing-launch | webhook + confirm + entitlements |
 | T5 | Supabase auth + durable credits | — | todo | — | **Block real Stripe** — file entitlements ephemeral on Vercel |
 | T6 | Server-side free watermark (ffmpeg) | — | todo | — | Player overlay is temporary |
-| T7 | Vercel deploy + domain pikbo.ai | — | blocked | — | Boss gate: audit first (PRELAUNCH_AUDIT) |
+| T7 | Vercel deploy + domain pikbo.ai | boss | blocked | — | **Step-4 bottleneck** — LAUNCH.md; code soft-ready |
+| FP0 | First-principles nav + Mini truth + doctrine | Grok | done | main | AppShell primary/more; docs/FIRST_PRINCIPLES.md |
+| FP1 | critical-path smoke script | Grok | done | main | `npm run critical-path` |
 | T10 | Boss one-command + Telegram bot | Grok | done | main | DISPATCH + tools/telegram_dispatch_bot.py |
 | T11 | Higgsfield-class shell + Generate | Grok | done | main | AppShell + CreateStudio + Library history |
 | T12 | Home model shelf + presets wall polish | GPT | done | agent/gpt/home-visuals | Live-model previews + demo-aware preset cards; roadmap models explicit |

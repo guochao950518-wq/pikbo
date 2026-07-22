@@ -14,31 +14,38 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
-/** Higgsfield-class suite rail — full sidebar */
-const NAV = [
+/**
+ * First-principles nav (docs/FIRST_PRINCIPLES.md):
+ * Critical path only in primary rail. Suite pages demoted — routes kept for deep links.
+ */
+const NAV_PRIMARY = [
   { href: "/", label: "Home", icon: "⌂" },
   { href: "/create", label: "Generate", icon: "✦" },
   { href: "/effects", label: "Presets", icon: "▶" },
+  { href: "/library", label: "Library", icon: "▢" },
+  { href: "/pricing", label: "Pricing", icon: "$" },
+  { href: "/profile", label: "Profile", icon: "○" },
+] as const;
+
+/** Secondary — discoverable, not sold as the product */
+const NAV_MORE = [
+  { href: "/image", label: "Image", icon: "▣" },
+  { href: "/supercomputer", label: "Batch", icon: "⚡" },
   { href: "/explore", label: "Explore", icon: "✧" },
   { href: "/community", label: "Community", icon: "◉" },
   { href: "/cinema", label: "Cinema", icon: "◎" },
-  { href: "/supercomputer", label: "Batch", icon: "⚡" },
-  { href: "/image", label: "Image", icon: "▣" },
-  { href: "/library", label: "Library", icon: "▢" },
   { href: "/apps", label: "Apps", icon: "▦" },
   { href: "/models", label: "Models", icon: "◎" },
-  { href: "/pricing", label: "Pricing", icon: "$" },
-  { href: "/profile", label: "Profile", icon: "○" },
   { href: "/settings", label: "Settings", icon: "⚙" },
-];
+] as const;
 
-/** Mobile dock — video destinations + center Generate */
+/** Mobile dock — critical path only */
 const MOBILE_NAV = [
   { href: "/", label: "Home", icon: "⌂" },
   { href: "/effects", label: "Presets", icon: "▶" },
   { href: "/create", label: "Generate", icon: "✦", primary: true },
-  { href: "/explore", label: "Explore", icon: "✧" },
   { href: "/library", label: "Library", icon: "▢" },
+  { href: "/pricing", label: "Plans", icon: "$" },
 ];
 
 function isActive(path: string, href: string) {
@@ -74,7 +81,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <StatusBadge />
           </div>
           <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto">
-            {NAV.map((item) => {
+            {NAV_PRIMARY.map((item) => {
               const active = isActive(path, item.href);
               return (
                 <Link
@@ -88,6 +95,29 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   )}
                 >
                   <span className="w-5 text-center text-sm opacity-90">
+                    {item.icon}
+                  </span>
+                  <span className="hidden xl:inline">{item.label}</span>
+                </Link>
+              );
+            })}
+            <p className="mb-0.5 mt-3 hidden px-2.5 text-[10px] font-bold uppercase tracking-wider text-[var(--fg-dim)]/70 xl:block">
+              More
+            </p>
+            {NAV_MORE.map((item) => {
+              const active = isActive(path, item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "flex items-center justify-center gap-2.5 rounded-xl px-0 py-2 text-[12px] font-medium transition-colors xl:justify-start xl:px-2.5",
+                    active
+                      ? "bg-white/5 text-[var(--fg-muted)]"
+                      : "text-[var(--fg-dim)]/80 hover:bg-white/[0.03] hover:text-[var(--fg-dim)]"
+                  )}
+                >
+                  <span className="w-5 text-center text-xs opacity-70">
                     {item.icon}
                   </span>
                   <span className="hidden xl:inline">{item.label}</span>

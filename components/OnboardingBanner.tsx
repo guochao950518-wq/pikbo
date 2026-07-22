@@ -38,7 +38,7 @@ export function OnboardingBanner() {
           <span className="font-semibold text-[var(--mint)]">1 free trial</span>
           <span className="text-[var(--fg-muted)]">
             {" "}
-            — upload one figure photo · Seedance Fast · or tap any video to
+            — upload one figure photo · Seedance Mini trial · or tap any video to
             remake
           </span>
         </div>

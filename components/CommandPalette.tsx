@@ -5,23 +5,24 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PRESETS } from "@/lib/presets";
 
+/** Critical path first — first-principles command palette */
 const LINKS = [
   { href: "/", label: "Home" },
   { href: "/create", label: "Generate" },
   { href: "/effects", label: "Toy presets" },
   { href: "/library", label: "Library" },
+  { href: "/pricing", label: "Pricing" },
+  { href: "/profile", label: "Profile" },
   { href: "/image", label: "Still studio" },
-  { href: "/cinema", label: "Cinema Studio" },
   { href: "/supercomputer", label: "Batch agent" },
   { href: "/guides", label: "Guides" },
   { href: "/for/etsy-listing-videos", label: "For Etsy sellers" },
   { href: "/for/tiktok-shop-product-videos", label: "For TikTok Shop" },
+  { href: "/explore", label: "Explore" },
+  { href: "/community", label: "Community" },
+  { href: "/cinema", label: "Cinema Studio" },
   { href: "/apps", label: "Apps" },
   { href: "/models", label: "Models" },
-  { href: "/community", label: "Community" },
-  { href: "/explore", label: "Explore" },
-  { href: "/pricing", label: "Pricing" },
-  { href: "/profile", label: "Profile" },
   { href: "/settings", label: "Settings" },
 ];
 

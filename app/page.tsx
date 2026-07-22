@@ -185,7 +185,7 @@ export default function Home() {
               Stop scrolling. Animate your figure.
             </p>
             <p className="mt-2 text-sm text-[var(--fg-muted)]">
-              Free · ~1 trial clip · Seedance Fast · watermark on free
+              Free · ~1 trial clip · Seedance Mini · watermark on free
             </p>
             <div className="mt-5 flex flex-wrap gap-2">
               <Link href="/create" className="btn btn-primary text-sm">

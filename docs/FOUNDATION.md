@@ -97,8 +97,11 @@
 
 ## 6. 下一步地基任务（有序）
 
-1. ~~统一 generate 响应类型~~（本轮）  
-2. README / 文档与 pricing 数字对齐  
-3. 可选：credits 预留 `costForJob({model,duration,resolution})` 接口（先 flat 10）  
-4. 部署前：SESSION_SECRET 生产强制（已有 warn）  
-5. 地基稳后再：FAL_KEY → 出片验收  
+1. ~~统一 generate 响应类型~~  
+2. ~~README / 文档与 pricing 数字对齐~~（Free Mini / 1·5·15）  
+3. ~~FAL_KEY 本机 live 验收~~（2026-07-23）  
+4. **按 `docs/FIRST_PRINCIPLES.md` 五步：** 删导航噪音 → 公网部署（老板 LAUNCH）→ 再 T5 auth  
+5. 可选：`costForJob({model,duration,resolution})`（仍 flat 10 可上 soft）  
+6. 生产：SESSION_SECRET + FAL_KEY 必配  
+
+**作战令：** 物理学只要求图进片出、成本盖住、公网可及。其余先删。  

@@ -68,7 +68,7 @@ export function ProfilePanel() {
       </div>
 
       <p className="text-xs text-[var(--fg-muted)]">
-        Free tier uses Seedance Fast + watermark. Upgrade for HD Seedance 2.0
+        Free tier uses Seedance Mini + player watermark. Upgrade for HD Seedance 2.0
         and commercial listings.
       </p>
 

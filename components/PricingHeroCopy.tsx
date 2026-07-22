@@ -27,7 +27,7 @@ const COPY: Record<
       </>
     ),
     description:
-      "Free: one watermarked Seedance Fast trial (5s · 480p). Creator ~5 / Shop ~15 at current credit rates. Cached demos unlimited. No fake unlimited live gens.",
+      "Free: one watermarked Seedance Mini trial (5s · 480p). Creator ~5 / Shop ~15 at current credit rates. Cached demos unlimited. No fake unlimited live gens.",
     primary: "Start free trial",
     secondary: "Compare plans",
   },

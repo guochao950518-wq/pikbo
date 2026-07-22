@@ -14,7 +14,7 @@ export function CreateSeoFooter({ effectSlug }: { effectSlug?: string }) {
     preset?.intro ??
     "Pikbo provides a Seedance-ready workflow for turning an owned figure photo into a listing or social-video recipe — spin, unbox, float, and more.";
   const body = preset?.body ?? [
-    "Upload a photo of a toy you own and pick a preset. When provider access is configured, the free path uses Seedance Fast with an on-player mark; otherwise the Studio returns a labeled demo sample.",
+    "Upload a photo of a toy you own and pick a preset. When provider access is configured, the free path uses Seedance Mini with an on-player mark; otherwise the Studio returns a labeled demo sample.",
     "Use clips for Etsy, TikTok Shop, Whatnot, shelf flexes, and drop-day posts — without a camera rig.",
   ];
   const keywords = preset?.keywords ?? [

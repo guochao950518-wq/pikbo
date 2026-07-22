@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# Critical-path smoke (FIRST_PRINCIPLES step 4) — no generate cost.
+set -euo pipefail
+# Local Next must not go through Clash/socks ALL_PROXY
+export NO_PROXY="*"
+export no_proxy="*"
+unset ALL_PROXY all_proxy HTTP_PROXY HTTPS_PROXY http_proxy https_proxy 2>/dev/null || true
+BASE="${1:-http://127.0.0.1:3000}"
+
+need() {
+  local path="$1"
+  local code
+  code=$(curl --noproxy '*' -sS -o /tmp/pikbo-cp-body -w "%{http_code}" -m 20 "${BASE}${path}" || echo "000")
+  if [[ "$code" != "200" ]]; then
+    echo "FAIL ${path} → HTTP ${code}"
+    head -c 200 /tmp/pikbo-cp-body 2>/dev/null || true
+    echo
+    exit 1
+  fi
+  echo "OK   ${path} → ${code}"
+}
+
+echo "Pikbo critical path @ ${BASE}"
+need "/"
+need "/create"
+need "/effects"
+need "/library"
+need "/pricing"
+need "/api/health"
+need "/api/me"
+
+curl --noproxy '*' -sS -m 10 "${BASE}/api/health" | tee /tmp/pikbo-health.json
+echo
+
+if command -v python3 >/dev/null 2>&1; then
+  python3 - <<'PY'
+import json
+h=json.load(open("/tmp/pikbo-health.json"))
+assert h.get("ok") is True or h.get("degraded") is False or h.get("ok")
+mode=h.get("mode","?")
+fal=h.get("fal")
+print(f"health mode={mode} fal={fal} foundation={h.get('foundation')}")
+if not h.get("ok") and h.get("degraded"):
+    raise SystemExit("health degraded")
+PY
+fi
+
+echo "critical-path: PASS"
