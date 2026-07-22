@@ -61,8 +61,8 @@
 ## Grok 本拍状态（3 行）
 
 - No agent merges (home-hf still at main tip).  
-- SoftLive harden: session+IP rate limit · in-flight job lock · /api/me mode · softlive-checklist.  
-- smoke+typecheck+lint green · pushing main.
+- SoftLive : session+IP rate limit · in-flight lock · /api/me mode · checklist.  
+- smoke+typecheck+lint green · **pushed main**. Next: Claude D5+ when pushed.
 
 ---
 
