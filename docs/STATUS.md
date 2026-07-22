@@ -13,14 +13,20 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | ID | Task | Owner | Status | Branch | Notes |
 |---|---|---|---|---|---|
 | T1 | Multi-agent collab protocol + board | Grok | done | main | COLLAB.md + STATUS + HANDOFF |
-| T2 | Real fal sample clips / homepage demos | GPT | doing | agent/gpt/homepage-demos | Started 2026-07-22; real before/after demo experience |
+| T2 | Real fal sample clips / homepage demos | GPT | done | agent/gpt/homepage-demos | 6 original encoded demos; cached/no FAL cost; verified fal renders can replace assets later |
 | T3 | Keyword + preset expansion (long-tail SEO) | Claude | done | agent/claude/seo-keywords | +use-cases + toy-types |
 | T4 | Stripe webhook (renew/cancel plan) | Grok | done | agent/grok/ship-billing-launch | webhook + confirm + entitlements |
 | T5 | Supabase auth + durable credits | — | todo | — | Replaces file entitlements long-term |
 | T6 | Server-side free watermark (ffmpeg) | — | todo | — | Player overlay is temporary |
-| T7 | Vercel deploy + env checklist | Grok | doing | agent/grok/ship-billing-launch | .env.example ready; human adds keys |
+| T7 | Vercel deploy + domain pikbo.ai | — | blocked | — | Boss: **先不做上线**，先抄站 |
+| T10 | Boss one-command + Telegram bot | Grok | done | main | DISPATCH + tools/telegram_dispatch_bot.py |
+| T11 | Higgsfield-class shell + Generate | Grok | done | main | AppShell + CreateStudio + Library history |
+| T12 | Home model shelf + presets wall polish | GPT | todo | — | Home already has PresetsWall; GPT can push visuals |
+| T13 | Presets/community density | Claude | done | main | PresetsWall on /effects + home |
+| T14 | Local Library history | Grok | done | main | localStorage after generate |
 | T8 | Batch generate for Shop plan | — | todo | — | After auth/credits DB |
 | T9 | Effect preset expansion (studio + SEO landing) | Claude | done | agent/claude/seo-presets | +3 effects |
+| T11 | Guides: informational long-tail content | Claude | done | agent/claude/guides | 3 how-to/tips/ideas articles at /guides; Article+FAQ JSON-LD; cross-linked to effects |
 
 ---
 
@@ -34,6 +40,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | D4 | Guest credits + paywall + pricing page | Grok | session cookie + `/pricing` |
 | D5 | Repo published | Grok | https://github.com/guochao950518-wq/pikbo |
 | D6 | Stripe webhooks + confirm + legal pages | Grok | this branch |
+| D7 | Toy-first homepage demo theatre | GPT | `agent/gpt/homepage-demos` |
 
 ---
 
@@ -41,7 +48,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 
 | Path / area | Locked by | Until |
 |---|---|---|
-| `app/page.tsx`, `components/HomeDemoShowcase.tsx`, `public/demos/` | GPT | T2 / `agent/gpt/homepage-demos` |
+| — | — | — |
 
 When you start: add a row. When you merge: clear it.
 

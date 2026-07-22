@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { PRESETS } from "@/lib/presets";
 import { USE_CASES } from "@/lib/usecases";
 import { TOY_TYPES } from "@/lib/toytypes";
+import { GUIDES } from "@/lib/guides";
 import { site } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -9,10 +10,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages = [
     "",
     "/effects",
+    "/guides",
     "/create",
     "/pricing",
     "/privacy",
     "/terms",
+    "/apps",
+    "/models",
+    "/cinema",
+    "/image",
+    "/library",
+    "/community",
+    "/profile",
+    "/supercomputer",
   ].map((path) => ({
     url: `${site.url}${path}`,
     lastModified: now,
@@ -41,5 +51,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  return [...staticPages, ...effectPages, ...useCasePages, ...toyTypePages];
+  const guidePages = GUIDES.map((g) => ({
+    url: `${site.url}/guides/${g.slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
+
+  return [
+    ...staticPages,
+    ...effectPages,
+    ...useCasePages,
+    ...toyTypePages,
+    ...guidePages,
+  ];
 }

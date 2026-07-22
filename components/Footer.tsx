@@ -66,6 +66,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/guides" className="hover:text-[var(--fg)]">
+                  Guides
+                </Link>
+              </li>
+              <li>
                 <Link href="/privacy" className="hover:text-[var(--fg)]">
                   Privacy
                 </Link>

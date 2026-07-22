@@ -1,106 +1,122 @@
 import Link from "next/link";
-import { PRESETS, CATEGORIES, presetsByCategory } from "@/lib/presets";
-import { USE_CASES } from "@/lib/usecases";
+import { APPS, MODELS } from "@/lib/catalog";
+import { PRESETS } from "@/lib/presets";
 import { PLANS } from "@/lib/pricing";
-import { site } from "@/lib/site";
+import { PresetsWall } from "@/components/PresetsWall";
+import {
+  HeroDemoStage,
+  HomeDemoShowcase,
+} from "@/components/HomeDemoShowcase";
 
+/**
+ * Home feed patterned on full AI creative suites:
+ * featured model → apps row → viral presets → community → pricing.
+ */
 export default function Home() {
-  return (
-    <>
-      {/* ---------- Hero ---------- */}
-      <section className="glow-bg">
-        <div className="container-x relative z-10 pt-20 pb-16 text-center">
-          <span className="chip mx-auto">🧸 Built for designer toys & blind boxes</span>
-          <h1 className="mx-auto mt-6 max-w-3xl text-5xl font-bold leading-[1.05] sm:text-6xl">
-            Bring your <span className="text-grad">designer toys</span> to life
-          </h1>
-          <p className="mx-auto mt-5 max-w-xl text-lg text-[var(--fg-muted)]">
-            One photo of your figure, blind box, or art toy becomes a
-            scroll-stopping video. Pick an effect, upload, done in seconds.
-          </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <Link href="/create" className="btn btn-primary">
-              Create a clip free →
-            </Link>
-            <Link href="#effects" className="btn btn-ghost">
-              See the effects
-            </Link>
-          </div>
-          <p className="mt-4 text-xs text-[var(--fg-dim)]">
-            No filming. No rig. Free clips include a small watermark.
-          </p>
+  const videoModels = MODELS.filter((m) => m.kind === "video");
+  const liveApps = APPS.filter((a) => a.live).slice(0, 6);
 
-          {/* Photo → Clip pipeline demo */}
-          <div className="mx-auto mt-14 max-w-3xl">
-            <div className="grid items-center gap-3 sm:grid-cols-[1fr_auto_1fr_auto_1fr]">
-              <div className="card overflow-hidden p-0">
-                <div
-                  className="grid aspect-[3/4] place-items-center text-5xl"
-                  style={{ background: PRESETS[0]?.gradient }}
-                >
-                  {PRESETS[0]?.emoji ?? "🧸"}
-                </div>
-                <p className="px-3 py-2 text-xs font-semibold text-[var(--fg-muted)]">
-                  1. Your photo
-                </p>
+  return (
+    <div className="pb-16">
+      {/* Toy-first conversion hero inside the shared AI-suite shell. */}
+      <section className="glow-bg overflow-hidden border-b border-[var(--border)]">
+        <div className="container-x relative z-10 grid items-center gap-12 py-14 sm:py-18 lg:min-h-[760px] lg:grid-cols-[.86fr_1.14fr] lg:py-20">
+          <div>
+            <span className="chip">✦ AI video for toys you already own</span>
+            <h1 className="mt-6 max-w-2xl text-5xl font-bold leading-[.98] tracking-[-0.045em] sm:text-6xl xl:text-7xl">
+              One toy photo.
+              <br />
+              A whole <span className="text-grad">content drop.</span>
+            </h1>
+            <p className="mt-6 max-w-xl text-lg leading-8 text-[var(--fg-muted)]">
+              Turn a figure, blind box, plush, or custom toy you own into listing videos, launch hooks, and collector reels—without a camera rig.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <Link href="/create" className="btn btn-primary px-6 py-3.5 text-sm">
+                Animate my toy free →
+              </Link>
+              <Link href="#examples" className="btn btn-ghost px-6 py-3.5 text-sm">
+                Watch real examples
+              </Link>
+            </div>
+            <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-xs text-[var(--fg-dim)]">
+              <span>✓ 3 free clips</span>
+              <span>✓ No card to try</span>
+              <span>✓ Free exports show a Pikbo watermark</span>
+            </div>
+            <div className="mt-10 grid max-w-lg grid-cols-3 border-y border-white/10 py-4">
+              <div>
+                <p className="text-xl font-bold text-white">1 photo</p>
+                <p className="mt-1 text-[11px] text-[var(--fg-dim)]">Your owned toy</p>
               </div>
-              <span className="hidden text-2xl text-[var(--fg-dim)] sm:block">
-                →
-              </span>
-              <div className="card overflow-hidden p-0">
-                <div
-                  className="grid aspect-[3/4] place-items-center text-5xl"
-                  style={{ background: PRESETS[1]?.gradient }}
-                >
-                  {PRESETS[1]?.emoji ?? "✨"}
-                </div>
-                <p className="px-3 py-2 text-xs font-semibold text-[var(--fg-muted)]">
-                  2. Pick effect
-                </p>
+              <div className="border-x border-white/10 px-4">
+                <p className="text-xl font-bold text-white">{PRESETS.length} looks</p>
+                <p className="mt-1 text-[11px] text-[var(--fg-dim)]">Toy-first presets</p>
               </div>
-              <span className="hidden text-2xl text-[var(--fg-dim)] sm:block">
-                →
-              </span>
-              <div className="card overflow-hidden p-0 ring-2 ring-[var(--mint)]/40">
-                <div
-                  className="relative grid aspect-[3/4] place-items-center text-5xl"
-                  style={{ background: PRESETS[2]?.gradient }}
-                >
-                  {PRESETS[2]?.emoji ?? "🎬"}
-                  <span className="absolute bottom-2 left-2 rounded bg-black/50 px-2 py-0.5 text-[10px] font-bold text-white">
-                    ▶ clip
-                  </span>
-                </div>
-                <p className="px-3 py-2 text-xs font-semibold text-[var(--mint)]">
-                  3. Share / list
-                </p>
+              <div className="pl-4">
+                <p className="text-xl font-bold text-white">3 formats</p>
+                <p className="mt-1 text-[11px] text-[var(--fg-dim)]">Post, list, launch</p>
               </div>
             </div>
-            <p className="mt-4 text-center text-sm text-[var(--fg-dim)]">
-              Built for toys you already own — not generic AI video playgrounds.
-            </p>
           </div>
+          <HeroDemoStage />
+        </div>
+      </section>
 
-          {/* effect chips */}
-          <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {PRESETS.slice(0, 4).map((p) => (
+      <HomeDemoShowcase />
+
+      {/* Quick apps strip */}
+      <section className="border-b border-[var(--border)] px-4 py-8 sm:px-8">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-lg font-bold">Apps</h2>
+            <Link href="/apps" className="text-xs text-[var(--lime)]">
+              View all
+            </Link>
+          </div>
+          <div className="flex gap-3 overflow-x-auto pb-1">
+            {liveApps.map((a) => (
               <Link
-                key={p.slug}
-                href={`/create?effect=${p.slug}`}
-                className="card group overflow-hidden p-0 transition-transform hover:-translate-y-1"
+                key={a.id}
+                href={a.href}
+                className="flex min-w-[140px] flex-col gap-2 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 hover:border-[var(--lime)]/40"
               >
-                <div
-                  className="grid aspect-[4/3] place-items-center text-4xl"
-                  style={{ background: p.gradient }}
-                >
-                  <span className="drop-shadow-lg">{p.emoji}</span>
-                </div>
-                <div className="px-3 py-2 text-left">
-                  <p className="text-sm font-semibold group-hover:text-[var(--mint)]">
-                    {p.name}
-                  </p>
-                  <p className="truncate text-xs text-[var(--fg-dim)]">
-                    {p.tagline}
+                <span className="text-2xl">{a.emoji}</span>
+                <span className="text-xs font-semibold">{a.name}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Models */}
+      <section className="border-b border-[var(--border)] px-4 py-10 sm:px-8">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-5 flex items-end justify-between">
+            <h2 className="text-xl font-bold">Video models</h2>
+            <Link href="/models" className="text-xs text-[var(--lime)]">
+              Browse
+            </Link>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {videoModels.map((m) => (
+              <Link
+                key={m.id}
+                href={m.href}
+                className="card overflow-hidden p-0 transition-transform hover:-translate-y-0.5"
+              >
+                <div className="h-24" style={{ background: m.gradient }} />
+                <div className="p-3">
+                  <div className="flex items-center justify-between gap-1">
+                    <h3 className="text-sm font-semibold">{m.name}</h3>
+                    {m.live && (
+                      <span className="text-[9px] font-bold text-[var(--lime)]">
+                        LIVE
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-1 line-clamp-2 text-[11px] text-[var(--fg-dim)]">
+                    {m.blurb}
                   </p>
                 </div>
               </Link>
@@ -109,170 +125,103 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ---------- Effects ---------- */}
-      <section id="effects" className="container-x py-16">
-        <div className="mb-8 flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h2 className="text-3xl font-bold">{PRESETS.length} effects, 4 ways to use them</h2>
-            <p className="mt-2 text-[var(--fg-muted)]">
-              Each effect is one tap. Some sell, some go viral — use both.
-            </p>
-          </div>
-          <Link href="/effects" className="btn btn-ghost text-sm">
-            Browse all effects
-          </Link>
-        </div>
-        <div className="grid gap-5 sm:grid-cols-2">
-          {CATEGORIES.map((cat) => {
-            const items = presetsByCategory(cat.id);
-            return (
-              <Link
-                key={cat.id}
-                href={`/effects#${cat.id}`}
-                className="card group p-6 transition-transform hover:-translate-y-1"
-              >
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold">{cat.label}</h3>
-                  <span className="text-2xl">
-                    {items.map((p) => p.emoji).join(" ")}
-                  </span>
-                </div>
-                <p className="mt-2 text-sm text-[var(--fg-muted)]">{cat.blurb}</p>
-                <span className="mt-4 inline-flex text-sm font-medium text-[var(--mint)]">
-                  {items.length} effects →
-                </span>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* ---------- Made for ---------- */}
-      <section className="container-x py-8">
-        <h2 className="text-2xl font-bold">Made for</h2>
-        <div className="mt-5 flex flex-wrap gap-3">
-          {USE_CASES.map((u) => (
-            <Link
-              key={u.slug}
-              href={`/for/${u.slug}`}
-              className="card px-4 py-3 text-sm font-medium transition-transform hover:-translate-y-0.5"
-            >
-              {u.emoji} {u.label}
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* ---------- How it works ---------- */}
-      <section id="how" className="container-x py-16">
-        <h2 className="text-3xl font-bold text-center">Three steps</h2>
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
-          {[
-            {
-              n: "1",
-              t: "Upload one photo",
-              d: "A clean shot of a toy you own — figure, plush, blind box, custom.",
-            },
-            {
-              n: "2",
-              t: "Pick an effect",
-              d: "Spin, unbox, dance, glam lighting, stop-motion, or a mini world.",
-            },
-            {
-              n: "3",
-              t: "Get your clip",
-              d: "A shareable video in seconds. Post it, list it, or send it out.",
-            },
-          ].map((s) => (
-            <div key={s.n} className="card p-6">
-              <span
-                className="grid h-10 w-10 place-items-center rounded-full font-bold text-[var(--bg)]"
-                style={{ background: "var(--grad)" }}
-              >
-                {s.n}
-              </span>
-              <h3 className="mt-4 text-lg font-semibold">{s.t}</h3>
-              <p className="mt-1.5 text-sm text-[var(--fg-muted)]">{s.d}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ---------- Pricing ---------- */}
-      <section id="pricing" className="container-x py-16">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold">Simple credits</h2>
-          <p className="mt-2 text-[var(--fg-muted)]">
-            1 clip ≈ 10 credits. Start free, upgrade when you post more.
-          </p>
-        </div>
-        <div className="mt-10 grid gap-5 md:grid-cols-3">
-          {PLANS.map((plan) => (
-            <div
-              key={plan.id}
-              className={`card relative flex flex-col p-6 ${
-                plan.featured ? "ring-2 ring-[var(--brand)]" : ""
-              }`}
-            >
-              {plan.featured && (
-                <span
-                  className="absolute -top-3 left-6 rounded-full px-3 py-1 text-xs font-semibold text-white"
-                  style={{ background: "var(--grad)" }}
-                >
-                  Most popular
-                </span>
-              )}
-              <h3 className="text-lg font-semibold">{plan.name}</h3>
-              <div className="mt-2 flex items-end gap-1">
-                <span className="text-4xl font-bold">${plan.priceMonthly}</span>
-                <span className="mb-1 text-sm text-[var(--fg-dim)]">/mo</span>
-              </div>
-              <p className="mt-2 text-sm text-[var(--fg-muted)]">{plan.blurb}</p>
-              <ul className="mt-5 flex-1 space-y-2 text-sm">
-                {plan.perks.map((perk) => (
-                  <li key={perk} className="flex items-start gap-2">
-                    <span className="text-[var(--mint)]">✓</span>
-                    <span className="text-[var(--fg-muted)]">{perk}</span>
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href={plan.id === "free" ? "/create" : "/pricing"}
-                className={`btn mt-6 w-full ${
-                  plan.featured ? "btn-primary" : "btn-ghost"
-                }`}
-              >
-                {plan.cta}
-              </Link>
-            </div>
-          ))}
-        </div>
-        <p className="mx-auto mt-6 max-w-2xl text-center text-xs text-[var(--fg-dim)]">
-          Animate toys you own by uploading your own photos. {site.name} is not
-          affiliated with any toy brand.
-        </p>
-      </section>
-
-      {/* ---------- Final CTA ---------- */}
-      <section className="container-x py-16">
-        <div
-          className="rounded-3xl p-10 text-center sm:p-16"
-          style={{ background: "var(--grad)" }}
-        >
-          <h2 className="text-3xl font-bold text-white sm:text-4xl">
-            Your shelf is full of content
-          </h2>
-          <p className="mx-auto mt-3 max-w-md text-white/90">
-            Turn the toys you already own into videos people stop to watch.
-          </p>
+      {/* Cinema + Supercomputer promos */}
+      <section className="border-b border-[var(--border)] px-4 py-10 sm:px-8">
+        <div className="mx-auto grid max-w-6xl gap-4 md:grid-cols-2">
           <Link
-            href="/create"
-            className="btn mt-7 bg-white px-7 py-3 font-semibold text-[var(--bg)] hover:opacity-90"
+            href="/cinema"
+            className="card group relative overflow-hidden p-6"
           >
-            Create your first clip →
+            <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--lime)]">
+              Cinema Studio
+            </p>
+            <h2 className="mt-2 text-2xl font-bold group-hover:text-[var(--lime)]">
+              Direct the shot
+            </h2>
+            <p className="mt-2 text-sm text-[var(--fg-muted)]">
+              Lens, camera move, grade → render with Seedance.
+            </p>
+          </Link>
+          <Link
+            href="/supercomputer"
+            className="card group relative overflow-hidden p-6"
+          >
+            <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--lime)]">
+              Supercomputer
+            </p>
+            <h2 className="mt-2 text-2xl font-bold group-hover:text-[var(--lime)]">
+              Agents & automation
+            </h2>
+            <p className="mt-2 text-sm text-[var(--fg-muted)]">
+              Multi-step creative jobs surface (roadmap live as shell).
+            </p>
           </Link>
         </div>
       </section>
-    </>
+
+      <div className="border-b border-[var(--border)]">
+        <PresetsWall
+          heading="Viral presets"
+          subheading="One tap → Generate with motion recipe loaded"
+        />
+      </div>
+
+      {/* Community */}
+      <section className="border-b border-[var(--border)] px-4 py-10 sm:px-8">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-5 flex justify-between">
+            <h2 className="text-xl font-bold">Community</h2>
+            <Link href="/community" className="text-xs text-[var(--lime)]">
+              Explore
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+            {PRESETS.slice(0, 4).map((p, i) => (
+              <Link
+                key={p.slug}
+                href={`/create?effect=${p.slug}`}
+                className="overflow-hidden rounded-xl border border-[var(--border)]"
+              >
+                <div
+                  className="aspect-[4/3]"
+                  style={{ background: p.gradient }}
+                />
+                <div className="p-2 text-[11px]">
+                  <p className="font-semibold">{p.name}</p>
+                  <p className="text-[var(--fg-dim)]">@user{i + 1}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing teaser */}
+      <section className="px-4 py-12 sm:px-8">
+        <div className="mx-auto max-w-6xl text-center">
+          <h2 className="text-2xl font-bold">Upgrade your plan</h2>
+          <p className="mt-2 text-sm text-[var(--fg-muted)]">
+            Credits for Seedance · free watermarked trials
+          </p>
+          <div className="mt-8 grid gap-4 text-left md:grid-cols-3">
+            {PLANS.map((plan) => (
+              <div
+                key={plan.id}
+                className={`card p-5 ${plan.featured ? "ring-2 ring-[var(--lime)]" : ""}`}
+              >
+                <h3 className="font-semibold">{plan.name}</h3>
+                <p className="mt-1 text-3xl font-bold">${plan.priceMonthly}</p>
+                <Link
+                  href="/pricing"
+                  className="mt-4 inline-block text-sm font-semibold text-[var(--lime)]"
+                >
+                  {plan.cta} →
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </div>
   );
 }

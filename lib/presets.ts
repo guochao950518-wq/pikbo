@@ -698,6 +698,143 @@ export const PRESETS: Preset[] = [
     duration: 5,
     aspectRatio: "16:9",
   },
+  // ---------------- VIRAL (added, quality-first) ----------------
+  {
+    slug: "smoke-burst-entrance",
+    emoji: "💨",
+    name: "Smoke Burst Entrance",
+    gradient: "linear-gradient(135deg,#6a5cff,#a855f7)",
+    category: "comealive",
+    audience: "collector",
+    tagline: "Your figure bursts out of a cloud of smoke and poses.",
+    h1: "Smoke Burst Reveal Video Maker",
+    seoTitle: "Smoke Burst Reveal Video Maker for Figures | Pikbo",
+    seoDescription:
+      "Give your figure a dramatic entrance — bursting out of a cloud of smoke into a hero pose. A cinematic viral reveal from one photo.",
+    intro:
+      "Every hero needs an entrance. Pikbo bursts your figure out of a swirling cloud of smoke into a confident hero pose — a dramatic, cinematic reveal made from a single photo.",
+    body: [
+      "The smoke-burst is a staple of action trailers and viral edits because it builds anticipation and lands on a strong beat.",
+      "Great for action figures, mecha, and any grail you want to introduce with impact.",
+    ],
+    keywords: [
+      "smoke reveal video",
+      "dramatic entrance video",
+      "figure reveal effect",
+    ],
+    faq: [
+      {
+        q: "Does it hide my figure in smoke?",
+        a: "Only for a beat — the smoke clears to reveal your figure crisp and centered in a hero pose.",
+      },
+    ],
+    promptTemplate:
+      "The collectible figure bursts out of a swirling cloud of atmospheric smoke into a confident hero pose, dramatic backlight and volumetric haze, cinematic slow-motion reveal, the smoke clears to show the figure crisp and centered, keeping its exact look and colors.",
+    duration: 5,
+    aspectRatio: "9:16",
+  },
+  {
+    slug: "paint-splash",
+    emoji: "💦",
+    name: "Paint Splash",
+    gradient: "linear-gradient(135deg,#ff4d8d,#d6ff4d)",
+    category: "showcase",
+    audience: "seller",
+    tagline: "Vivid paint and liquid splash frozen around your figure.",
+    h1: "Paint Splash Product Video Maker",
+    seoTitle: "Paint / Color Splash Product Video Maker | Pikbo",
+    seoDescription:
+      "Wrap your figure in a vivid, frozen paint and liquid splash for a bold, high-energy product video. One photo, no studio.",
+    intro:
+      "Add some energy and color. Pikbo surrounds your figure with a vivid, dynamic splash of paint and liquid — a bold, ad-grade look that pops in a feed — all from one photo.",
+    body: [
+      "Colorful splash shots are a favourite in sneaker and product advertising because they read as premium and kinetic.",
+      "Works for bright vinyl toys, sporty figures, and any drop where you want maximum visual punch.",
+    ],
+    keywords: [
+      "paint splash product video",
+      "color splash figure video",
+      "liquid splash toy video",
+    ],
+    faq: [
+      {
+        q: "Will the splash cover my figure?",
+        a: "No — the splash frames and surrounds the figure while keeping it clear and in focus.",
+      },
+    ],
+    promptTemplate:
+      "Vivid dynamic splashes of colorful paint and liquid burst and freeze in mid-air around the collectible figure, high-energy commercial product look, dramatic studio lighting, the figure stays crisp, centered, and fully in focus, bold vibrant colors.",
+    duration: 5,
+    aspectRatio: "1:1",
+  },
+  {
+    slug: "power-aura",
+    emoji: "⚡",
+    name: "Power Aura",
+    gradient: "linear-gradient(135deg,#d6ff4d,#ff4d8d)",
+    category: "comealive",
+    audience: "collector",
+    tagline: "Your figure charges up with a glowing energy aura.",
+    h1: "Power-Up / Energy Aura Video Maker",
+    seoTitle: "Power-Up Energy Aura Video Maker for Figures | Pikbo",
+    seoDescription:
+      "Charge your figure with a glowing anime-style energy aura and crackling power. A high-impact viral effect from a single photo.",
+    intro:
+      "Power up your figure. Pikbo surrounds it with a glowing, crackling energy aura — the anime power-up moment — for a high-impact clip made from one photo.",
+    body: [
+      "The power-up aura is instantly recognizable to anime and gaming audiences and reads as epic and dynamic.",
+      "Perfect for anime figures, action figures, and mecha you want to make feel unstoppable.",
+    ],
+    keywords: [
+      "power up video effect",
+      "energy aura figure video",
+      "anime power up video",
+    ],
+    faq: [
+      {
+        q: "Is the aura over the top?",
+        a: "It's a bold anime-style glow. Ask for a subtler aura in the studio prompt box if you prefer.",
+      },
+    ],
+    promptTemplate:
+      "The collectible figure charges up with a glowing, crackling energy aura swirling around it, anime power-up moment, radiant light, floating particles and electric arcs, epic dynamic mood, the figure stays crisp and keeps its exact look and colors.",
+    duration: 5,
+    aspectRatio: "9:16",
+  },
+  {
+    slug: "hologram-glitch",
+    emoji: "🔮",
+    name: "Hologram Glitch",
+    gradient: "linear-gradient(135deg,#6ee7c7,#6a5cff)",
+    category: "scene",
+    audience: "collector",
+    tagline: "Your figure as a flickering cyber hologram.",
+    h1: "Hologram / Glitch Video Maker for Figures",
+    seoTitle: "Hologram Glitch Video Maker for Figures | Pikbo",
+    seoDescription:
+      "Turn your figure into a flickering cyber hologram — scan lines, glitches, and neon projection. A futuristic viral look from one photo.",
+    intro:
+      "Go full sci-fi. Pikbo renders your figure as a flickering cyber hologram — scan lines, glitch flickers, and a neon projection glow — for a futuristic look made from a single photo.",
+    body: [
+      "The hologram-glitch aesthetic suits tech, mecha, and edgier art toys, and stands out in a feed full of clean product shots.",
+      "A striking format for a bold reveal or a cyberpunk-themed drop.",
+    ],
+    keywords: [
+      "hologram video effect",
+      "glitch figure video",
+      "cyberpunk projection video",
+    ],
+    faq: [
+      {
+        q: "Is my figure still recognizable?",
+        a: "Yes — the hologram and glitch are stylized overlays; your figure's shape and colors stay readable.",
+      },
+    ],
+    promptTemplate:
+      "The collectible figure appears as a flickering translucent cyber hologram projection, glowing scan lines, subtle glitch flickers and chromatic aberration, neon projection light in a dark space, futuristic sci-fi mood, the figure keeps its recognizable shape and colors.",
+    duration: 5,
+    aspectRatio: "16:9",
+  },
 ];
 
 export function getPreset(slug: string): Preset | undefined {

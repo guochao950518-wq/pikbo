@@ -4,6 +4,33 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-22 — [gpt] toy-first homepage demo theatre (T2)
+- Paths: `app/page.tsx`, `components/HomeDemoShowcase.tsx`, `lib/demoVideos.ts`, `public/demos/`
+- Why good: replaces the model-name-only hero with a real encoded before/after stage and six playable toy clips while preserving the shared AppShell, Apps, Models, Cinema, Supercomputer, PresetsWall, community, Library, and billing paths. Copy stays vertical to owned-toy photos and makes Free watermark, trial allowance, and subscription expansion explicit.
+- Reuse / pitfalls:
+  - Demo assets are cached original PIKBO prototype footage, so playback never calls fal or spends credits. Do not relabel them as newly generated model output.
+  - `DemoVideo` IDs and `/create?effect=...` deep links are the stable contract; verified fal renders can replace the files later without rebuilding the component.
+  - Hero preloads one clip; gallery clips use posters plus viewport/hover playback, pause off-screen, and honor reduced-motion preferences.
+  - Keep both MP4 and WebM plus a poster for every replacement clip.
+- Verified: production build; 1440px and 390px browser passes; Studio deep-link selects `Floating Hero`; no browser warnings/errors.
+- Depends on: latest shared AppShell/catalog home, existing preset slugs, and Create Studio query-param selection. No credits, session, generate API, history, or billing code changed.
+
+### 2026-07-22 — [claude] +4 viral presets (density)
+- Paths: `lib/presets.ts` (+smoke-burst-entrance, +paint-splash, +power-aura, +hologram-glitch)
+- Why good: 4 distinct high-impact viral effects for the presets wall / clone density; each is a studio effect AND SEO page (full fields + promptTemplate). No IP/brand, no human-hand generation. Now 22 effects.
+- Reuse / pitfalls: data-only → auto pages+sitemap+wall+footer; keep prompts on the user's own figure; quality-first, avoid thin duplicates.
+
+### 2026-07-22 — [grok] Library history + denser HF-class home
+- Paths: `lib/history.ts`, `components/LibraryGrid.tsx`, `CreateStudio` pushHistory, `app/page.tsx` + PresetsWall, pricing app padding
+- Why: generate → appears in Library (device-local); home matches model shelf + viral wall pattern
+- Reuse: don't replace localStorage until Supabase; keep `pushHistory` on successful generate only
+
+### 2026-07-22 — [grok] ByteDance Seedance as default video model
+- Paths: `lib/models.ts`, `app/api/generate/route.ts`, `.env.example`
+- Why: boss wants 字节模型出片. Defaults are Seedance 2.0 full (paid) + Fast (free) on fal.
+- Reuse: change models only via `FAL_MODEL` / `FAL_MODEL_FREE`; keep input `prompt` + `image_url` + duration/aspect/resolution.
+- Cost: Seedance is not free — always meter credits; free tier uses Fast + 480p + no audio.
+
 ### 2026-07-22 — [grok] Stripe billing + entitlements (T4)
 - Paths: `lib/entitlements.ts`, `lib/stripe.ts`, `lib/session.ts` (merge), `app/api/webhooks/stripe`, `app/api/checkout`, `app/api/checkout/confirm`, CreateStudio confirm on return, `/privacy` `/terms`, homepage pipeline demo
 - Why good: real subscription path without Supabase yet. Webhooks update durable plan; browser confirm upgrades cookie; credits not clobbered on every request (periodKey reset only).
@@ -13,6 +40,12 @@ Newest first. One block per meaningful landing.
   - Entitlements file default `data/entitlements.json` (gitignored); serverless should move to Redis/Supabase (T5)
   - Never overwrite cookie credits from entitlement unless `periodKey` changes or free→paid upgrade
 - Depends on: existing pricing plans + cookie session
+
+### 2026-07-22 — [claude] guides / informational content axis (T11)
+- Paths: `lib/guides.ts` (3 articles), `app/guides/page.tsx` (index), `app/guides/[slug]/page.tsx` (article + Article/FAQ JSON-LD), `app/sitemap.ts` (+guides), `components/Footer.tsx` (+Guides link)
+- Why good: adds a 4th, top-of-funnel keyword axis (informational how-to / tips / ideas) that funnels readers into /create + related effects. Data-driven — add a `Guide` object to get a new page + sitemap entry. Build green (52 static pages).
+- Reuse / pitfalls: keep `relatedEffects` to valid preset slugs; write genuinely useful prose (no thin filler) or it won't rank; guides link out to effects to spread internal-link equity. Footer Guides link makes them crawlable from every page.
+- Depends on: `getPreset` + `PresetCard`.
 
 ### 2026-07-22 — [claude] effect preset expansion (T9)
 - Paths: `lib/presets.ts` (+assemble-reveal, +paparazzi-flash, +kaiju-rampage); internal-link rewire in `lib/toytypes.ts` (model-kits, action-figures) + `lib/usecases.ts` (instagram)

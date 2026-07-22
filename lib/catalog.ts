@@ -1,0 +1,226 @@
+/**
+ * Suite catalog (big-app structure) with Pikbo toy-native copy (own style).
+ */
+
+export type CatalogModel = {
+  id: string;
+  name: string;
+  vendor: string;
+  kind: "video" | "image" | "audio" | "agent";
+  tag?: string;
+  blurb: string;
+  href: string;
+  gradient: string;
+  live?: boolean;
+  falId?: string;
+};
+
+export type CatalogApp = {
+  id: string;
+  name: string;
+  emoji: string;
+  blurb: string;
+  href: string;
+  category: "video" | "image" | "edit" | "studio";
+  live?: boolean;
+};
+
+export const MODELS: CatalogModel[] = [
+  {
+    id: "seedance-2",
+    name: "Seedance 2.0",
+    vendor: "ByteDance",
+    kind: "video",
+    tag: "Best for toys",
+    blurb: "Keeps paint lines & sculpt readable while the figure moves.",
+    href: "/create?model=seedance-2",
+    gradient: "linear-gradient(135deg,#ff4d8d,#a855f7)",
+    live: true,
+    falId: "bytedance/seedance-2.0/image-to-video",
+  },
+  {
+    id: "seedance-fast",
+    name: "Seedance Fast",
+    vendor: "ByteDance",
+    kind: "video",
+    tag: "Free tier",
+    blurb: "Quick shelf clips when you're batching listings.",
+    href: "/create?model=seedance-fast",
+    gradient: "linear-gradient(135deg,#6ee7c7,#a855f7)",
+    live: true,
+    falId: "bytedance/seedance-2.0/fast/image-to-video",
+  },
+  {
+    id: "kling",
+    name: "Kling",
+    vendor: "Kuaishou",
+    kind: "video",
+    tag: "Soon",
+    blurb: "Extra physics for action poses — slot reserved.",
+    href: "/models",
+    gradient: "linear-gradient(135deg,#3b82f6,#1e1b4b)",
+  },
+  {
+    id: "veo",
+    name: "Veo",
+    vendor: "Google",
+    kind: "video",
+    tag: "Soon",
+    blurb: "Longer cinematic shelves — coming later.",
+    href: "/models",
+    gradient: "linear-gradient(135deg,#60a5fa,#312e81)",
+  },
+  {
+    id: "sora",
+    name: "Sora",
+    vendor: "OpenAI",
+    kind: "video",
+    tag: "Soon",
+    blurb: "Narrative world shots for dioramas — catalog only.",
+    href: "/models",
+    gradient: "linear-gradient(135deg,#a78bfa,#4c1d95)",
+  },
+  {
+    id: "seedream",
+    name: "Seedream",
+    vendor: "ByteDance",
+    kind: "image",
+    tag: "Image",
+    blurb: "Still mockups before you animate the figure.",
+    href: "/image",
+    gradient: "linear-gradient(135deg,#f472b6,#7c3aed)",
+  },
+  {
+    id: "nano-banana",
+    name: "Nano Banana Pro",
+    vendor: "Partner",
+    kind: "image",
+    tag: "Image",
+    blurb: "Fast concept stills for colorways & packaging.",
+    href: "/image",
+    gradient: "linear-gradient(135deg,#fbbf24,#f97316)",
+  },
+  {
+    id: "flux",
+    name: "Flux",
+    vendor: "Black Forest",
+    kind: "image",
+    tag: "Image",
+    blurb: "High-detail product boards and box art tests.",
+    href: "/image",
+    gradient: "linear-gradient(135deg,#34d399,#0f766e)",
+  },
+];
+
+export const APPS: CatalogApp[] = [
+  {
+    id: "image-to-video",
+    name: "Photo → Clip",
+    emoji: "🎬",
+    blurb: "One toy photo in, scroll-stopping video out.",
+    href: "/create",
+    category: "video",
+    live: true,
+  },
+  {
+    id: "text-to-video",
+    name: "Text → Video",
+    emoji: "✍️",
+    blurb: "Prompt-only (UI ready; photo path is live).",
+    href: "/create?mode=t2v",
+    category: "video",
+  },
+  {
+    id: "cinema",
+    name: "Cinema Studio",
+    emoji: "🎥",
+    blurb: "Lens & camera moves for premium figure shots.",
+    href: "/cinema",
+    category: "studio",
+    live: true,
+  },
+  {
+    id: "viral-presets",
+    name: "Toy presets",
+    emoji: "🧸",
+    blurb: "Spin, unbox, dance, shelf pan — one tap.",
+    href: "/effects",
+    category: "video",
+    live: true,
+  },
+  {
+    id: "product-spin",
+    name: "360° Spin",
+    emoji: "🌀",
+    blurb: "Turntable showcase for listings.",
+    href: "/create?effect=360-spin-showcase",
+    category: "video",
+    live: true,
+  },
+  {
+    id: "unbox",
+    name: "Blind-box reveal",
+    emoji: "📦",
+    blurb: "The open-box beat collectors stop for.",
+    href: "/create?effect=blind-box-unboxing",
+    category: "video",
+    live: true,
+  },
+  {
+    id: "image-studio",
+    name: "Still studio",
+    emoji: "🖼️",
+    blurb: "Mock product photos before motion.",
+    href: "/image",
+    category: "image",
+  },
+  {
+    id: "face-swap",
+    name: "Face swap",
+    emoji: "🎭",
+    blurb: "Optional edit tool (stub — not core toy flow).",
+    href: "/apps/face-swap",
+    category: "edit",
+  },
+  {
+    id: "lipsync",
+    name: "Lipsync",
+    emoji: "🎙️",
+    blurb: "Talking figure experiments (stub).",
+    href: "/apps/lipsync",
+    category: "edit",
+  },
+  {
+    id: "upscale",
+    name: "Upscale",
+    emoji: "🔍",
+    blurb: "Sharpen exports for shops (stub).",
+    href: "/apps/upscale",
+    category: "edit",
+  },
+  {
+    id: "storyboard",
+    name: "Storyboard",
+    emoji: "📋",
+    blurb: "Multi-shot board for a full drop video.",
+    href: "/cinema",
+    category: "studio",
+    live: true,
+  },
+  {
+    id: "supercomputer",
+    name: "Batch agent",
+    emoji: "🧠",
+    blurb: "Whole-shop clip runs (coming).",
+    href: "/supercomputer",
+    category: "studio",
+  },
+];
+
+export function modelsByKind(kind: CatalogModel["kind"]) {
+  return MODELS.filter((m) => m.kind === kind);
+}
+
+export function appsByCategory(cat: CatalogApp["category"]) {
+  return APPS.filter((a) => a.category === cat);
+}
