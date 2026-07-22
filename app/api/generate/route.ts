@@ -57,6 +57,13 @@ export async function POST(req: Request) {
       { status: 400 }
     );
   }
+  // ~8–9MB decoded; reject huge payloads that blow memory / fal upload
+  if (image.length > 12_000_000) {
+    return NextResponse.json(
+      { error: "Image too large (max ~8MB)" },
+      { status: 413 }
+    );
+  }
 
   let session = await ensureSession();
   const check = checkCredits(session);

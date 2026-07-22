@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { fal } from "@fal-ai/client";
-import { checkCredits, deductCredits, refundCredits } from "@/lib/credits";
+import { deductCredits, refundCredits } from "@/lib/credits";
 import { IMAGE_MODEL } from "@/lib/models";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
 import { ensureSession, publicSession, saveSession } from "@/lib/session";
@@ -25,8 +25,6 @@ export async function POST(req: Request) {
   }
 
   let session = await ensureSession();
-  const check = checkCredits(session);
-  // reuse check but force cost
   if (session.credits < COST) {
     return NextResponse.json(
       {

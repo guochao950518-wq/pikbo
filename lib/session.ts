@@ -22,11 +22,16 @@ export type PublicSession = UserSession & {
 };
 
 function secret(): string {
-  return (
-    process.env.SESSION_SECRET ||
-    process.env.CREDITS_SECRET ||
-    "pikbo-dev-secret-change-me"
-  );
+  const s = process.env.SESSION_SECRET || process.env.CREDITS_SECRET;
+  if (!s) {
+    if (process.env.NODE_ENV === "production") {
+      console.error(
+        "[pikbo] SESSION_SECRET is missing — using insecure default. Set it before real traffic."
+      );
+    }
+    return "pikbo-dev-secret-change-me";
+  }
+  return s;
 }
 
 export function currentPeriodKey(d = new Date()): string {

@@ -28,7 +28,7 @@ export default function CommunityPage() {
               className="card group overflow-hidden p-0 transition-transform hover:-translate-y-1"
             >
               <div className="aspect-[9/14] bg-black/50 sm:aspect-video">
-                {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+                { }
                 <video
                   className="h-full w-full object-cover"
                   poster={d.poster}

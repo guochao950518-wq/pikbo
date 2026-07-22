@@ -15,7 +15,10 @@ export function ProfilePanel() {
       .then((r) => r.json())
       .then((d: PublicSession) => setSession(d))
       .catch(() => {});
-    setClips(loadHistory().length);
+    const t = window.setTimeout(() => {
+      setClips(loadHistory().length);
+    }, 0);
+    return () => window.clearTimeout(t);
   }, []);
 
   return (

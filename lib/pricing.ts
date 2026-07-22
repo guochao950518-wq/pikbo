@@ -14,7 +14,8 @@ export type Plan = {
   featured?: boolean;
   cta: string;
   watermark: boolean;
-  resolution: "720p" | "1080p";
+  /** Honest engine cap: Seedance ships 480p (free) / 720p (paid). */
+  resolution: "480p" | "720p";
   commercial: boolean;
   priority: boolean;
   /** Stripe Price ID env key name (optional until wired) */
@@ -32,13 +33,13 @@ export const PLANS: Plan[] = [
     blurb: "Try it out. Clips carry a small Pikbo watermark.",
     perks: [
       "30 credits / month",
-      "~3 clips on the fast model",
-      "720p, watermarked",
-      "All effect presets",
+      "~3 clips on Seedance Fast",
+      "480p, watermarked",
+      "All toy effect presets",
     ],
     cta: "Start free",
     watermark: true,
-    resolution: "720p",
+    resolution: "480p",
     commercial: false,
     priority: false,
   },
@@ -51,14 +52,14 @@ export const PLANS: Plan[] = [
     perks: [
       "500 credits / month",
       "~50 clips",
-      "1080p, no watermark",
+      "720p Seedance 2.0, no watermark",
       "Priority queue",
       "Commercial use",
     ],
     featured: true,
     cta: "Go Creator",
     watermark: false,
-    resolution: "1080p",
+    resolution: "720p",
     commercial: true,
     priority: true,
     stripePriceEnv: "STRIPE_PRICE_CREATOR",
@@ -72,13 +73,13 @@ export const PLANS: Plan[] = [
     perks: [
       "1,500 credits / month",
       "~150 clips",
-      "1080p, no watermark",
+      "720p Seedance 2.0, no watermark",
       "Batch generate",
       "Lowest cost per clip",
     ],
     cta: "Go Shop",
     watermark: false,
-    resolution: "1080p",
+    resolution: "720p",
     commercial: true,
     priority: true,
     stripePriceEnv: "STRIPE_PRICE_SHOP",

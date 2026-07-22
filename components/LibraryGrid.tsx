@@ -15,8 +15,11 @@ export function LibraryGrid() {
   const [filter, setFilter] = useState("");
 
   useEffect(() => {
-    setItems(loadHistory());
-    setReady(true);
+    const t = window.setTimeout(() => {
+      setItems(loadHistory());
+      setReady(true);
+    }, 0);
+    return () => window.clearTimeout(t);
   }, []);
 
   const filtered = useMemo(() => {
@@ -74,7 +77,6 @@ export function LibraryGrid() {
         {filtered.map((item) => (
           <article key={item.id} className="card overflow-hidden p-0">
             <div className="aspect-video bg-black/50">
-              {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
               <video
                 src={item.videoUrl}
                 className="h-full w-full object-contain"

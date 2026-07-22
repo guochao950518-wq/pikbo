@@ -85,7 +85,7 @@ export function HeroDemoStage() {
 
           <div className="relative overflow-hidden bg-[#08070b]">
             {!failed ? (
-              // eslint-disable-next-line jsx-a11y/media-has-caption
+               
               <video
                 key={active.id}
                 ref={videoRef}
@@ -236,7 +236,7 @@ function ShowcaseCard({ demo, index }: { demo: DemoVideo; index: number }) {
         }`}
       >
         {!failed ? (
-          // eslint-disable-next-line jsx-a11y/media-has-caption
+           
           <video
             ref={videoRef}
             poster={demo.poster}

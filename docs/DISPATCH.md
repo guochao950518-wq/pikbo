@@ -5,7 +5,8 @@
 > 品牌必须是 Pikbo，**禁止盗用**对方 Logo/官网素材；功能面与信息架构对齐。
 
 **更新时间：** 2026-07-22  
-**规格全文：** `docs/COMPETITOR_SPEC.md`
+**规格全文：** `docs/COMPETITOR_SPEC.md`  
+**上线前门禁：** `docs/PRELAUNCH_AUDIT.md`（找毛病 → 找差异 → 诚实对齐 → 再创新 → 再上线）
 
 ---
 

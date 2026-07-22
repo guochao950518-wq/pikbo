@@ -42,18 +42,22 @@ export function CreateStudio({
   initialMode?: Mode;
   initialPrompt?: string;
 }) {
+  const bootPreset =
+    PRESETS.find((p) => p.slug === initialEffect) ?? PRESETS[0];
   const [mode, setMode] = useState<Mode>(initialMode ?? "i2v");
   const [modelId, setModelId] = useState<(typeof MODELS)[number]["id"]>(
     initialModel === "seedance-fast" ? "seedance-fast" : "seedance-2"
   );
-  const [effect, setEffect] = useState(
-    PRESETS.find((p) => p.slug === initialEffect)?.slug ?? PRESETS[0].slug
-  );
+  const [effect, setEffect] = useState(bootPreset.slug);
   const [image, setImage] = useState<string | null>(null);
   const [extra, setExtra] = useState(initialPrompt ?? "");
-  const [duration, setDuration] = useState<5 | 10>(5);
+  const [duration, setDuration] = useState<5 | 10>(
+    bootPreset.duration === 10 ? 10 : 5
+  );
   const [aspectRatio, setAspectRatio] = useState<"9:16" | "16:9" | "1:1">(
-    "9:16"
+    bootPreset.aspectRatio === "16:9" || bootPreset.aspectRatio === "1:1"
+      ? bootPreset.aspectRatio
+      : "9:16"
   );
   const [status, setStatus] = useState<Status>("idle");
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
@@ -90,40 +94,47 @@ export function CreateStudio({
     );
   }, [presetFilter]);
 
-  // When preset changes, adopt its defaults (unless user already mid-edit of same)
-  useEffect(() => {
-    setDuration(preset.duration === 10 ? 10 : 5);
-    const ar = preset.aspectRatio;
-    if (ar === "9:16" || ar === "16:9" || ar === "1:1") setAspectRatio(ar);
-  }, [preset.slug, preset.duration, preset.aspectRatio]);
+  function selectEffect(slug: string) {
+    setEffect(slug);
+    const p = PRESETS.find((x) => x.slug === slug);
+    if (!p) return;
+    setDuration(p.duration === 10 ? 10 : 5);
+    if (
+      p.aspectRatio === "9:16" ||
+      p.aspectRatio === "16:9" ||
+      p.aspectRatio === "1:1"
+    ) {
+      setAspectRatio(p.aspectRatio);
+    }
+  }
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem("pikbo_recent_effects");
-      if (raw) setRecent(JSON.parse(raw) as string[]);
-    } catch {
-      // ignore
-    }
-    setFavorites(loadFavorites());
-    // optional still from Image studio
-    try {
-      const pending = sessionStorage.getItem("pikbo_pending_still");
-      if (pending?.startsWith("http")) {
-        sessionStorage.removeItem("pikbo_pending_still");
-        sampleToDataUrl(pending)
-          .then((data) => setImage(data))
-          .catch(() => undefined);
+    const t = window.setTimeout(() => {
+      try {
+        const raw = localStorage.getItem("pikbo_recent_effects");
+        if (raw) setRecent(JSON.parse(raw) as string[]);
+      } catch {
+        // ignore
       }
-    } catch {
-      // ignore
-    }
+      setFavorites(loadFavorites());
+      // optional still from Image studio
+      try {
+        const pending = sessionStorage.getItem("pikbo_pending_still");
+        if (pending?.startsWith("http")) {
+          sessionStorage.removeItem("pikbo_pending_still");
+          sampleToDataUrl(pending)
+            .then((data) => setImage(data))
+            .catch(() => undefined);
+        }
+      } catch {
+        // ignore
+      }
+    }, 0);
+    return () => window.clearTimeout(t);
   }, []);
 
   useEffect(() => {
-    if (status !== "generating") {
-      setElapsed(0);
-      return;
-    }
+    if (status !== "generating") return;
     const t0 = Date.now();
     const id = window.setInterval(() => {
       setElapsed(Math.floor((Date.now() - t0) / 1000));
@@ -215,9 +226,24 @@ export function CreateStudio({
     loadFile(e.dataTransfer.files?.[0]);
   }
 
+  const creditsLeft = session?.credits ?? null;
+  const canAfford = creditsLeft === null || creditsLeft >= CREDITS_PER_VIDEO;
+  const isFree = session?.plan === "free" || session?.watermark;
+
   async function generate() {
-    if (mode === "i2v" && !image) {
+    if (mode === "t2v") {
+      setError(
+        "Text→Video is on the roadmap. Photo → video is the product core — upload a toy still."
+      );
+      setMode("i2v");
+      return;
+    }
+    if (!image) {
       setError("Upload a reference image first (image-to-video).");
+      return;
+    }
+    if (image.length > 12_000_000) {
+      setError("Image is too large. Use a photo under ~8MB.");
       return;
     }
     if (session && session.credits < CREDITS_PER_VIDEO) {
@@ -229,6 +255,7 @@ export function CreateStudio({
     setError(null);
     setVideoUrl(null);
     setShowPaywall(false);
+    setElapsed(0);
     setStatus("generating");
     try {
       const res = await fetch("/api/generate", {
@@ -304,9 +331,6 @@ export function CreateStudio({
   }
 
   const busy = status === "generating" || status === "uploading";
-  const creditsLeft = session?.credits ?? null;
-  const canAfford = creditsLeft === null || creditsLeft >= CREDITS_PER_VIDEO;
-  const isFree = session?.plan === "free" || session?.watermark;
 
   // Cmd/Ctrl + Enter to generate
   useEffect(() => {
@@ -351,14 +375,19 @@ export function CreateStudio({
           </button>
           <button
             type="button"
-            onClick={() => setMode("t2v")}
+            onClick={() => {
+              setMode("t2v");
+              toast("Text→Video is next — toy photo → Seedance is live today");
+            }}
             className={`rounded-full px-3 py-1.5 font-semibold ${
               mode === "t2v"
                 ? "bg-[var(--card)] text-[var(--fg)]"
                 : "text-[var(--fg-dim)]"
             }`}
+            title="Roadmap — photo-first is the live path"
           >
             Text → Video
+            <span className="ml-1 text-[9px] font-normal opacity-70">soon</span>
           </button>
         </div>
 
@@ -436,7 +465,7 @@ export function CreateStudio({
                     <button
                       key={`fav-${slug}`}
                       type="button"
-                      onClick={() => setEffect(slug)}
+                      onClick={() => selectEffect(slug)}
                       className="rounded-md border border-[var(--brand)]/40 px-1.5 py-0.5 text-[10px]"
                     >
                       {p.emoji} {p.name}
@@ -459,7 +488,7 @@ export function CreateStudio({
                     <button
                       key={slug}
                       type="button"
-                      onClick={() => setEffect(slug)}
+                      onClick={() => selectEffect(slug)}
                       className="rounded-md border border-[var(--border)] px-1.5 py-0.5 text-[10px] hover:border-[var(--brand)]"
                     >
                       {p.emoji} {p.name}
@@ -481,7 +510,7 @@ export function CreateStudio({
               >
                 <button
                   type="button"
-                  onClick={() => setEffect(p.slug)}
+                  onClick={() => selectEffect(p.slug)}
                   className="flex flex-1 items-center gap-2 p-2.5 text-left text-sm"
                 >
                   <span
@@ -579,7 +608,7 @@ export function CreateStudio({
                             setError(null);
                             const data = await sampleToDataUrl(s.path);
                             setImage(data);
-                            setEffect(s.effect);
+                            selectEffect(s.effect);
                           } catch {
                             setError("Could not load sample photo");
                           }
@@ -854,7 +883,6 @@ export function CreateStudio({
                       <p className="mb-1 text-center text-[10px] font-bold uppercase text-[var(--fg-dim)]">
                         After
                       </p>
-                      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
                       <video
                         src={videoUrl}
                         controls
@@ -876,7 +904,6 @@ export function CreateStudio({
                   </div>
                 ) : (
                   <div className="relative">
-                    {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
                     <video
                       src={videoUrl}
                       controls

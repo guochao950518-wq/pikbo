@@ -9,11 +9,15 @@ export function OnboardingBanner() {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    try {
-      if (!localStorage.getItem(KEY)) setShow(true);
-    } catch {
-      setShow(true);
-    }
+    // Defer localStorage read to avoid sync setState-in-effect (React 19 lint)
+    const t = window.setTimeout(() => {
+      try {
+        if (!localStorage.getItem(KEY)) setShow(true);
+      } catch {
+        setShow(true);
+      }
+    }, 0);
+    return () => window.clearTimeout(t);
   }, []);
 
   if (!show) return null;

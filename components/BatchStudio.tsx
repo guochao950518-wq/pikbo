@@ -300,7 +300,7 @@ export function BatchStudio() {
               <p className="mt-1 text-xs text-[var(--brand)]">{j.error}</p>
             )}
             {j.videoUrl && (
-              // eslint-disable-next-line jsx-a11y/media-has-caption
+               
               <video
                 src={j.videoUrl}
                 controls

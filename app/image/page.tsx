@@ -22,7 +22,10 @@ export default function ImageStudioPage() {
   const [history, setHistory] = useState<ImageHistoryItem[]>([]);
 
   useEffect(() => {
-    setHistory(loadImageHistory());
+    const t = window.setTimeout(() => {
+      setHistory(loadImageHistory());
+    }, 0);
+    return () => window.clearTimeout(t);
   }, []);
 
   async function generate() {

@@ -28,7 +28,8 @@ export function PricingPlanCards() {
               annual ? "bg-[var(--card)] text-[var(--fg)]" : "text-[var(--fg-dim)]"
             }`}
           >
-            Annual <span className="text-[var(--mint)]">−20%</span>
+            Annual{" "}
+            <span className="text-[var(--mint)]">−20% preview</span>
           </button>
         </div>
       </div>
@@ -87,6 +88,21 @@ export function PricingPlanCards() {
                 <Link href="/create" className="btn btn-ghost mt-6 w-full">
                   {plan.cta}
                 </Link>
+              ) : annual ? (
+                <div className="mt-6">
+                  <button
+                    type="button"
+                    disabled
+                    className="btn btn-ghost w-full cursor-not-allowed opacity-60"
+                    title="Annual Stripe prices not wired yet"
+                  >
+                    Annual soon — switch to Monthly
+                  </button>
+                  <p className="mt-2 text-center text-[10px] text-[var(--fg-dim)]">
+                    Checkout is monthly today. Annual billing ships with Stripe
+                    yearly prices.
+                  </p>
+                </div>
               ) : (
                 <PricingCheckoutButton
                   planId={plan.id}

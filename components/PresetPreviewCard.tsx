@@ -32,7 +32,7 @@ export function PresetPreviewCard({ preset }: { preset: Preset }) {
       >
         <div className="relative grid aspect-[3/4] place-items-center overflow-hidden text-4xl" style={{ background: preset.gradient }}>
           {demo && !failed ? (
-            // eslint-disable-next-line jsx-a11y/media-has-caption
+             
             <video
               ref={videoRef}
               muted

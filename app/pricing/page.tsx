@@ -6,7 +6,7 @@ import { PricingPlanCards } from "@/components/PricingPlanCards";
 
 export const metadata: Metadata = {
   title: "Pricing",
-  description: `Simple credits for ${site.name}. Start free with watermarked clips, upgrade for HD and commercial use.`,
+  description: `Simple credits for ${site.name}. Start free (Seedance Fast 480p), upgrade for 720p Seedance 2.0 and commercial use.`,
 };
 
 export default function PricingPage() {
@@ -113,7 +113,7 @@ export default function PricingPage() {
               ],
               [
                 "Why is Free watermarked?",
-                `Free uses Seedance Fast (480p) and carries a small ${site.name} mark. Creator and Shop remove it.`,
+                `Free uses Seedance Fast (480p) with a ${site.name} mark on the in-app player. Creator and Shop remove it. File burn-in watermark is coming next.`,
               ],
               [
                 "Can I use clips commercially?",

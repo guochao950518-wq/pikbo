@@ -39,7 +39,7 @@ export default function ExplorePage() {
                 className="card overflow-hidden p-0 transition-transform hover:-translate-y-1"
               >
                 <div className="aspect-video bg-black/40">
-                  {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+                  { }
                   <video
                     className="h-full w-full object-cover"
                     poster={d.poster}

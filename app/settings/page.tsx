@@ -19,7 +19,10 @@ export default function SettingsPage() {
       .then((r) => r.json())
       .then(setSession)
       .catch(() => {});
-    refreshLocal();
+    const t = window.setTimeout(() => {
+      refreshLocal();
+    }, 0);
+    return () => window.clearTimeout(t);
   }, []);
 
   function clearKey(key: string, label: string) {
