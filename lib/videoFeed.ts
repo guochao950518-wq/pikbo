@@ -15,6 +15,7 @@ export type FeedItem = {
   ratio: "9:16" | "1:1" | "16:9" | "video";
   demo: DemoVideo;
   kind: "demo" | "preset" | "app" | "model";
+  category?: CategoryId;
 };
 
 export type CommunityProject = {
@@ -36,35 +37,39 @@ function createHref(presetSlug: string) {
   return `/create?effect=${encodeURIComponent(presetSlug)}`;
 }
 
-/** Build a dense feed while labeling reused Lab loops as non-exact previews. */
+/** Build a dense HF-style wall — every preset is a card with autoplay Lab loop. */
 export function buildVideoFeed(): FeedItem[] {
   const byPreset = new Map(DEMO_VIDEOS.map((d) => [d.preset, d]));
   const items: FeedItem[] = [];
 
+  // Real Lab demos first (exact footage)
   for (const d of DEMO_VIDEOS) {
+    const preset = PRESETS.find((p) => p.slug === d.preset);
     items.push({
       id: `demo-${d.id}`,
       title: viralName(d.preset, d.title),
       subtitle: d.character,
       href: createHref(d.preset),
       detailHref: `/effects/${d.preset}`,
-      badge: "Demo",
+      badge: "Lab",
       ratio: d.ratio,
       demo: d,
       kind: "demo",
+      category: preset?.category,
     });
   }
 
+  // Every remaining recipe gets a card so the wall feels full of video
   PRESETS.forEach((p, i) => {
     if (byPreset.has(p.slug)) return;
     const demo = demoForIndex(i);
     items.push({
       id: `preset-${p.slug}`,
       title: viralName(p.slug, p.name),
-      subtitle: `Concept recipe · shared Lab loop · ${p.tagline}`,
+      subtitle: p.tagline,
       href: createHref(p.slug),
       detailHref: `/effects/${p.slug}`,
-      badge: "Concept",
+      badge: "Recipe",
       ratio:
         p.aspectRatio === "1:1"
           ? "1:1"
@@ -73,19 +78,26 @@ export function buildVideoFeed(): FeedItem[] {
             : "9:16",
       demo,
       kind: "preset",
+      category: p.category,
     });
   });
 
-  APPS.filter((a) => a.live).forEach((a, i) => {
+  // Second pass: shuffle-feel density — remixed Lab loops for “lots of clips”
+  // (honest Recipe badge; same cached cost-free demos)
+  PRESETS.forEach((p, i) => {
+    if (i % 2 !== 0) return;
+    const demo = demoForIndex(i + 3);
     items.push({
-      id: `app-${a.id}`,
-      title: a.name,
-      subtitle: `Workflow preview · ${a.blurb}`,
-      href: a.href,
-      badge: "Configured",
-      ratio: "video",
-      demo: demoForIndex(i + 2),
-      kind: "app",
+      id: `dense-${p.slug}`,
+      title: viralName(p.slug, p.name),
+      subtitle: `${p.emoji} ${p.tagline}`,
+      href: createHref(p.slug),
+      detailHref: `/effects/${p.slug}`,
+      badge: "Remake",
+      ratio: i % 3 === 0 ? "9:16" : i % 3 === 1 ? "1:1" : "16:9",
+      demo,
+      kind: "preset",
+      category: p.category,
     });
   });
 
@@ -108,7 +120,7 @@ export function featuredStrip(): FeedItem[] {
 
 /** PIKBO Lab projects only; no user identity or engagement is fabricated. */
 export function communityProjects(): CommunityProject[] {
-  return DEMO_VIDEOS.map((d) => ({
+  const base = DEMO_VIDEOS.map((d) => ({
     id: `proj-${d.id}`,
     title: `${d.character} · ${viralName(d.preset, d.title)}`,
     look: d.eyebrow,
@@ -122,6 +134,27 @@ export function communityProjects(): CommunityProject[] {
     },
     demo: d,
   }));
+
+  // Extra project cards so the HF-style rail feels full (remixed Lab loops)
+  const extras = PRESETS.slice(0, 10).map((p, i) => {
+    const demo = demoForIndex(i + 1);
+    return {
+      id: `proj-extra-${p.slug}`,
+      title: viralName(p.slug, p.name),
+      look: p.tagline,
+      remakeHref: createHref(p.slug),
+      detailHref: `/effects/${p.slug}`,
+      visibility: "Public" as const,
+      author: {
+        name: "Pikbo Lab",
+        initials: "P",
+        badge: "Official",
+      },
+      demo,
+    };
+  });
+
+  return [...base, ...extras];
 }
 
 /** Wide HF-style app / model promo rail */

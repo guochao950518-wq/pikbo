@@ -77,7 +77,7 @@ export default function CommunityPage() {
         wide
       />
 
-      <section className="px-3 py-6 sm:px-5">
+      <section className="px-2 py-6 sm:px-4">
         <div className="mb-4 flex flex-wrap items-end justify-between gap-2 px-1">
           <div>
             <p className="section-label">Remake wall</p>
@@ -92,10 +92,10 @@ export default function CommunityPage() {
             Full explore →
           </Link>
         </div>
-        <div className="columns-2 gap-2 sm:columns-3 sm:gap-3 lg:columns-4 xl:columns-5">
+        <div className="columns-2 gap-2 sm:columns-3 sm:gap-2.5 md:columns-4 lg:columns-5 xl:columns-6">
           {wall.map((item) => (
-            <div key={item.id} className="mb-2 break-inside-avoid sm:mb-3">
-              <VideoTile item={item} />
+            <div key={item.id} className="mb-2 break-inside-avoid sm:mb-2.5">
+              <VideoTile item={item} compact />
             </div>
           ))}
         </div>

@@ -18,34 +18,35 @@ import { cn } from "@/lib/utils";
  * First-principles nav (docs/FIRST_PRINCIPLES.md):
  * Critical path only in primary rail. Suite pages demoted — routes kept for deep links.
  */
+/** HF-class primary rail — Home / Generate / Community first */
 const NAV_PRIMARY = [
   { href: "/", label: "Home", icon: "⌂" },
   { href: "/create", label: "Generate", icon: "✦" },
+  { href: "/community", label: "Community", icon: "◉" },
   { href: "/effects", label: "Presets", icon: "▶" },
+  { href: "/explore", label: "Explore", icon: "✧" },
   { href: "/library", label: "Library", icon: "▢" },
   { href: "/pricing", label: "Pricing", icon: "$" },
   { href: "/profile", label: "Profile", icon: "○" },
 ] as const;
 
-/** Secondary — discoverable, not sold as the product */
+/** Secondary suite tools */
 const NAV_MORE = [
   { href: "/image", label: "Image", icon: "▣" },
   { href: "/supercomputer", label: "Batch", icon: "⚡" },
-  { href: "/explore", label: "Explore", icon: "✧" },
-  { href: "/community", label: "Community", icon: "◉" },
   { href: "/cinema", label: "Cinema", icon: "◎" },
   { href: "/apps", label: "Apps", icon: "▦" },
   { href: "/models", label: "Models", icon: "◎" },
   { href: "/settings", label: "Settings", icon: "⚙" },
 ] as const;
 
-/** Mobile dock — critical path only */
+/** Mobile dock — Higgsfield chrome: Home · Community · Generate · Library · Profile */
 const MOBILE_NAV = [
   { href: "/", label: "Home", icon: "⌂" },
-  { href: "/effects", label: "Presets", icon: "▶" },
+  { href: "/community", label: "Community", icon: "◉" },
   { href: "/create", label: "Generate", icon: "✦", primary: true },
   { href: "/library", label: "Library", icon: "▢" },
-  { href: "/pricing", label: "Plans", icon: "$" },
+  { href: "/profile", label: "Profile", icon: "○" },
 ];
 
 function isActive(path: string, href: string) {
