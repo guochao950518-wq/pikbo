@@ -49,7 +49,7 @@ export function CreditsBadge({ compact }: { compact?: boolean }) {
         href="/pricing"
         className={`grid h-8 min-w-8 place-items-center rounded-full border px-1.5 text-[10px] font-bold ${
           low
-            ? "border-pink-500/50 text-pink-300"
+            ? "border-amber-400/50 text-amber-300"
             : "border-white/10 text-[var(--mint)]"
         }`}
         title={`${session.credits} credits`}

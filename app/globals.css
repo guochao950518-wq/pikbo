@@ -13,18 +13,20 @@
   --fg-muted: #a1a1aa;
   --fg-dim: #71717a;
 
-  --brand: #ff4d8d;
-  --brand-2: #a855f7;
+  /* HF palette = pure black + lime ONLY. No pink/purple anywhere.
+     --brand kept as an alias of lime so every legacy text-[var(--brand)] goes lime. */
+  --brand: #c8ff3d;
+  --brand-2: #7fe6b4;
   --mint: #c8ff3d; /* HF-style lime live accent */
   --lime: #c8ff3d;
 
-  --grad: linear-gradient(135deg, #ff4d8d 0%, #a855f7 55%, #6a5cff 100%);
+  --grad: linear-gradient(135deg, #eafcb0 0%, #c8ff3d 50%, #9be870 100%);
   --grad-soft: linear-gradient(
     135deg,
-    rgba(255, 77, 141, 0.18),
-    rgba(168, 85, 247, 0.12)
+    rgba(200, 255, 61, 0.16),
+    rgba(127, 230, 180, 0.1)
   );
-  --brand-glow: 0 0 40px rgba(255, 77, 141, 0.28);
+  --brand-glow: 0 0 40px rgba(200, 255, 61, 0.28);
 
   --shadow-sm: 0 0 0 1px rgba(255, 255, 255, 0.04);
   --shadow-md: 0 12px 40px -16px rgba(0, 0, 0, 0.75);
@@ -149,7 +151,7 @@ h1,
 }
 .btn-accent {
   background: var(--grad);
-  color: #fff;
+  color: #07070a;
   padding: 0.8rem 1.4rem;
 }
 .btn-ghost {
