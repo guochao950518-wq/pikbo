@@ -107,10 +107,10 @@ function PromoRail({ demos }: { demos: DemoVideo[] }) {
             </span>
           )}
           <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
-            <h3 className="text-[19px] font-bold leading-tight text-white sm:text-[22px]">
+            <h3 className="font-display text-[18px] font-bold uppercase leading-[1.04] tracking-tight text-white sm:text-[21px]">
               {c.title}
             </h3>
-            <p className="mt-1 text-[13px] text-white/60">{c.blurb}</p>
+            <p className="mt-1 text-[12px] uppercase tracking-[0.14em] text-white/55">{c.blurb}</p>
             <span className="mt-4 inline-flex rounded-full bg-white/15 px-3.5 py-1.5 text-[12px] font-bold text-white backdrop-blur-md">
               Open →
             </span>
