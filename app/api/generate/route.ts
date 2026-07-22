@@ -189,15 +189,28 @@ export async function POST(req: Request) {
     console.error("generate error:", model, e);
     session = refundCredits(session, check.cost);
     await saveSession(session);
-    const msg = e instanceof Error ? e.message : "Generation failed";
+    const raw =
+      e && typeof e === "object" && "body" in e
+        ? JSON.stringify((e as { body?: unknown }).body)
+        : e instanceof Error
+          ? e.message
+          : "Generation failed";
+    const exhausted =
+      /Exhausted balance|locked|top up|insufficient.*credit/i.test(raw) ||
+      /Forbidden/i.test(raw);
+    const msg = exhausted
+      ? "fal.ai balance empty or account locked — top up at fal.ai/dashboard/billing (credits refunded)."
+      : e instanceof Error
+        ? e.message
+        : "Generation failed";
     return err(
       {
         error: msg,
-        code: "GENERATION_FAILED",
+        code: exhausted ? "GENERATION_FAILED" : "GENERATION_FAILED",
         model,
         session: publicSession(session),
       },
-      500
+      exhausted ? 402 : 500
     );
   }
 }
