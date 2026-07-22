@@ -104,7 +104,9 @@ export function CreateStudio({
     setEffect(slug);
     const p = PRESETS.find((x) => x.slug === slug);
     if (!p) return;
-    setDuration(p.duration === 10 ? 10 : 5);
+    // Free trial: always 5s (unit economics)
+    const free = session?.plan === "free" || session?.watermark;
+    setDuration(!free && p.duration === 10 ? 10 : 5);
     if (
       p.aspectRatio === "9:16" ||
       p.aspectRatio === "16:9" ||
@@ -243,6 +245,11 @@ export function CreateStudio({
   const creditsLeft = session?.credits ?? null;
   const canAfford = creditsLeft === null || creditsLeft >= CREDITS_PER_VIDEO;
   const isFree = session?.plan === "free" || session?.watermark;
+
+  useEffect(() => {
+    if (isFree && duration === 10) setDuration(5);
+  }, [isFree, duration]);
+
 
   async function generate() {
     if (mode === "t2v") {
@@ -659,21 +666,36 @@ export function CreateStudio({
               Duration
             </p>
             <div className="mt-1.5 flex gap-2">
-              {([5, 10] as const).map((d) => (
-                <button
-                  key={d}
-                  type="button"
-                  onClick={() => setDuration(d)}
-                  className={`flex-1 rounded-lg border py-2 text-sm font-semibold ${
-                    duration === d
-                      ? "border-[var(--brand)] bg-[var(--grad-soft)]"
-                      : "border-[var(--border)] text-[var(--fg-muted)]"
-                  }`}
-                >
-                  {d}s
-                </button>
-              ))}
+              {([5, 10] as const).map((d) => {
+                const freeLock = Boolean(isFree && d === 10);
+                return (
+                  <button
+                    key={d}
+                    type="button"
+                    disabled={freeLock}
+                    onClick={() => {
+                      if (freeLock) {
+                        setShowPaywall(true);
+                        return;
+                      }
+                      setDuration(d);
+                    }}
+                    className={`flex-1 rounded-lg border py-2 text-sm font-semibold ${
+                      duration === d
+                        ? "border-[var(--brand)] bg-[var(--grad-soft)]"
+                        : "border-[var(--border)] text-[var(--fg-muted)]"
+                    } ${freeLock ? "cursor-not-allowed opacity-50" : ""}`}
+                  >
+                    {d}s{freeLock ? " · paid" : ""}
+                  </button>
+                );
+              })}
             </div>
+            {isFree && (
+              <p className="mt-1 text-[10px] text-[var(--fg-dim)]">
+                Free trial locked to 5s · 480p · watermark
+              </p>
+            )}
           </div>
 
           <div>

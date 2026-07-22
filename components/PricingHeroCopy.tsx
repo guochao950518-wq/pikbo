@@ -16,7 +16,7 @@ const COPY: Record<
   }
 > = {
   outcome: {
-    badge: "Prelaunch plans · finite credits",
+    badge: "One free trial · finite paid credits",
     eyebrow: "For owned designer-toy photos",
     title: (
       <>
@@ -26,9 +26,9 @@ const COPY: Record<
       </>
     ),
     description:
-      "Preview cached PIKBO Lab examples, then test the labeled workflow with your own toy. Live allowances will be locked to model, duration, and resolution before billing opens.",
-    primary: "Test the workflow",
-    secondary: "Compare plan previews",
+      "Preview cached PIKBO Lab examples, then test the workflow with your own toy. Free includes one watermarked live trial when the provider is configured; Creator and Shop stay finite.",
+    primary: "Start one free trial",
+    secondary: "Compare allowances",
   },
   "cost-control": {
     badge: "Know the cost before Generate",
@@ -41,9 +41,9 @@ const COPY: Record<
       </>
     ),
     description:
-      "Choose a model, resolution, and duration; the live product will show a finite credit quote before a paid render. Today, use the labeled demo while those allowances are validated.",
-    primary: "Open the labeled demo",
-    secondary: "Review planned allowances",
+      "The current foundation meters each eligible job at 10 credits: Free includes one trial, Creator about five clips, and Shop about fifteen. Model-aware weights come next.",
+    primary: "Open the trial workflow",
+    secondary: "Review current allowances",
   },
 };
 
@@ -83,9 +83,9 @@ export function PricingHeroCopy({
           </Button>
         </div>
         <div className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-[var(--fg-dim)]">
-          <span>✓ Cached examples use no credits</span>
+          <span>✓ One 5s watermarked Free trial</span>
           <span>✓ Failed live jobs refund credits</span>
-          <span>✓ Billing remains gated for validation</span>
+          <span>✓ No unlimited model usage</span>
         </div>
       </div>
     </section>

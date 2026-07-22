@@ -44,16 +44,16 @@ export default async function PricingPage({
           <CardContent className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-bold text-[var(--fg)]">
-                Pricing preview — not a live billing commitment
+                Allowance contract — billing is still gated
               </p>
               <p className="mt-1 max-w-3xl text-xs leading-5 text-[var(--fg-muted)]">
-                The plan cards below mirror the current prototype. Final live
-                allowances will change to model-, resolution-, and
-                duration-aware credits after cost validation.
+                These cards match the current server grants: one Free trial,
+                about five Creator clips, or about fifteen Shop clips at the
+                flat 10-credit rate. Model-aware metering is the next step.
               </p>
             </div>
             <Badge variant="outline" className="shrink-0">
-              Validation mode
+              Foundation aligned
             </Badge>
           </CardContent>
         </Card>
@@ -64,11 +64,11 @@ export default async function PricingPage({
           <div className="mb-8 text-center">
             <p className="section-label">Plans</p>
             <h2 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
-              Compare the prototype allowances
+              Compare the current allowances
             </h2>
             <p className="mx-auto mt-2 max-w-xl text-sm text-[var(--fg-muted)]">
-              Use these cards to compare workflow access—not as a promise of
-              launch-time clip volume.
+              Every tier is finite and matches the current credit contract. No
+              plan promises unlimited model usage.
             </p>
           </div>
           <PricingPlanCards />
@@ -151,23 +151,23 @@ export default async function PricingPage({
             {[
               [
                 "What does the current credit number mean?",
-                `The prototype still estimates ${CREDITS_PER_VIDEO} credits per clip. That is not the launch quote: live credits must vary by model, resolution, and duration. Failed live generations are refunded.`,
+                `The current foundation charges ${CREDITS_PER_VIDEO} credits per eligible generation. Model-, resolution-, and duration-aware weights are next. Failed live generations are refunded.`,
               ],
               [
                 "What can I test today?",
-                `You can browse cached ${site.name} Lab examples and use the labeled Studio workflow with your own toy photo. A cached result is never presented as animation generated from your upload.`,
+                `You can browse cached ${site.name} Lab examples and use the labeled Studio workflow with your own toy photo. With provider access configured, Free includes one 5-second, 480p, watermarked live trial; otherwise the result stays a labeled cached demo.`,
               ],
               [
                 "Can I use clips commercially?",
-                "The planned Creator and Shop tiers include commercial use for listings and ads made from toy photos you own. Confirm the final terms before using a live output commercially.",
+                "Creator and Shop include commercial use for listings and ads made from toy photos you own. Confirm the final terms before using a live output commercially.",
               ],
               [
                 "Is any plan unlimited?",
                 "No. Video models have a real per-generation cost, so every plan shows a finite credit allowance.",
               ],
               [
-                "Why are the launch allowances not final?",
-                "Video cost changes with the chosen model, output size, and duration. PIKBO will lock the public allowance only after the same quote is enforced by the server and verified against provider billing.",
+                "Can the credit rate change?",
+                "Yes. Provider cost changes with model, output size, and duration. PIKBO will only change public weights when the same quote is enforced by the server and verified against provider billing.",
               ],
             ].map(([question, answer]) => (
               <Card key={question} className="overflow-hidden">

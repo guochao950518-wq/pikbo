@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { TOY_TYPES, getToyType } from "@/lib/toytypes";
-import { getPreset } from "@/lib/presets";
+import { COMMON_FAQ, getPreset } from "@/lib/presets";
 import { PresetCard } from "@/components/PresetCard";
 import { LandingToolPanel } from "@/components/LandingToolPanel";
 import { LandingHowItWorks } from "@/components/LandingHowItWorks";
@@ -48,10 +48,11 @@ export default async function ToyTypePage({
     .map((s) => getPreset(s))
     .filter((p) => p !== undefined);
 
+  const allFaq = [...t.faq, ...COMMON_FAQ];
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: t.faq.map((f) => ({
+    mainEntity: allFaq.map((f) => ({
       "@type": "Question",
       name: f.q,
       acceptedAnswer: { "@type": "Answer", text: f.a },
@@ -120,7 +121,7 @@ export default async function ToyTypePage({
       <section className="container-x py-8">
         <h2 className="text-2xl font-bold">Questions</h2>
         <div className="mt-6 divide-y divide-[var(--border)]">
-          {t.faq.map((f) => (
+          {allFaq.map((f) => (
             <div key={f.q} className="py-5">
               <h3 className="font-semibold">{f.q}</h3>
               <p className="mt-1.5 text-[var(--fg-muted)]">{f.a}</p>

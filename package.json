@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "preflight": "bash scripts/preflight.sh",
+    "check:conflicts": "git grep -nE \"^(<<<<<<<|>>>>>>>|=======)\" -- app lib components && exit 1 || exit 0"
   },
   "dependencies": {
     "@fal-ai/client": "^1.10.1",

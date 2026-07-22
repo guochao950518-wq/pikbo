@@ -2,7 +2,7 @@
 
 **Reviewed:** 2026-07-23
 
-**Scope:** C3 / T26 planning only. This document does not change generation, credits, sessions, Stripe, or production pricing.
+**Scope:** C3 / T26. **Partial product apply 2026-07-23 by Grok:** Free `10` credits (~1 clip), Creator `50` (~5), Shop `150` (~15) at 10 credits/clip — see `lib/pricing.ts`. Full model×duration metering still TODO.
 
 **Launch rule:** re-check provider and payment pricing before enabling real charges.
 

@@ -40,7 +40,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | T25 | Homepage truth labels + overclaim sweep | GPT | done | agent/gpt/claude-copy-audit | PR #6; cached/shared previews and provider-gated paths labeled |
 | T26 | Unit economics doc + free-tier recommendation | GPT | done | agent/gpt/convert-truth | Free: 1 verified 4s trial; Creator: ~5 Fast or 4 Standard 5s clips at $19 |
 | T27 | Preset/SEO copy wave 2 (toy seller language) | Claude | todo | agent/claude/copy-seo-v2 | DISPATCH L1–L2 |
-| T28 | Pricing conversion copy A/B | GPT | done | agent/gpt/pricing-mobile | Outcome default; `?copy=cost` cost-control variant; plan volume explicitly prototype-only |
+| T28 | Pricing conversion copy A/B | GPT | done | agent/gpt/pricing-mobile | Outcome default; `?copy=cost` cost-control variant; UI aligned to Free 1 / Creator ~5 / Shop ~15 |
 | T29 | Homepage first-screen 390px acceptance + polish | GPT | done | agent/gpt/pricing-mobile | No x-overflow; primary CTA visible; duplicate home floating CTA removed; accessible demo controls |
 | T5 | Supabase auth + durable credits | — | todo | — | **Blocks serious Stripe** |
 | T6 | Server-side free watermark (ffmpeg) | Grok | todo | — | After T23/T24 |
