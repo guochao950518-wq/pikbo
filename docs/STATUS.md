@@ -21,9 +21,13 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | T7 | Vercel deploy + domain pikbo.ai | — | blocked | — | Boss: **先不做上线**，先抄站 |
 | T10 | Boss one-command + Telegram bot | Grok | done | main | DISPATCH + tools/telegram_dispatch_bot.py |
 | T11 | Higgsfield-class shell + Generate | Grok | done | main | AppShell + CreateStudio + Library history |
-| T12 | Home model shelf + presets wall polish | GPT | doing | agent/gpt/home-visuals | Real toy previews for live models and supported presets |
+| T12 | Home model shelf + presets wall polish | GPT | done | agent/gpt/home-visuals | Live-model previews + demo-aware preset cards; roadmap models explicit |
 | T13 | Presets/community density | Claude | done | main | PresetsWall on /effects + home |
 | T14 | Local Library history | Grok | done | main | localStorage after generate |
+| T15 | Generate duration/aspect/model controls | Grok | done | main | API + CreateStudio |
+| T16 | Toy-native suite copy pass | Grok | done | main | catalog + pages |
+| T17 | Batch generate (Shop agent) | Grok | done | main | /supercomputer BatchStudio |
+| T18 | Profile live credits + Generate drag-drop | Grok | done | main | |
 | T8 | Batch generate for Shop plan | — | todo | — | After auth/credits DB |
 | T9 | Effect preset expansion (studio + SEO landing) | Claude | done | agent/claude/seo-presets | +3 effects |
 | T11 | Guides: informational long-tail content | Claude | done | agent/claude/guides | 3 how-to/tips/ideas articles at /guides; Article+FAQ JSON-LD; cross-linked to effects |
@@ -41,6 +45,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | D5 | Repo published | Grok | https://github.com/guochao950518-wq/pikbo |
 | D6 | Stripe webhooks + confirm + legal pages | Grok | this branch |
 | D7 | Toy-first homepage demo theatre | GPT | `agent/gpt/homepage-demos` |
+| D8 | Model shelf + demo-aware PresetsWall | GPT | `agent/gpt/home-visuals` |
 
 ---
 
@@ -48,7 +53,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 
 | Path / area | Locked by | Until |
 |---|---|---|
-| `app/page.tsx`, `components/HomeModelShelf.tsx`, `components/PresetsWall.tsx`, `components/PresetPreviewCard.tsx` | GPT | T12 / `agent/gpt/home-visuals` |
+| — | — | — |
 
 When you start: add a row. When you merge: clear it.
 

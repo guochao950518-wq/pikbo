@@ -124,12 +124,26 @@ export function CreateStudio({
     };
   }, [refreshSession]);
 
-  function onFile(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  function loadFile(file: File | undefined | null) {
+    if (!file || !file.type.startsWith("image/")) {
+      setError("Please drop a PNG or JPG of your toy.");
+      return;
+    }
     const reader = new FileReader();
-    reader.onload = () => setImage(reader.result as string);
+    reader.onload = () => {
+      setImage(reader.result as string);
+      setError(null);
+    };
     reader.readAsDataURL(file);
+  }
+
+  function onFile(e: React.ChangeEvent<HTMLInputElement>) {
+    loadFile(e.target.files?.[0]);
+  }
+
+  function onDrop(e: React.DragEvent) {
+    e.preventDefault();
+    loadFile(e.dataTransfer.files?.[0]);
   }
 
   async function generate() {
@@ -307,7 +321,11 @@ export function CreateStudio({
               <label className="text-xs font-semibold text-[var(--fg-muted)]">
                 Your toy photo
               </label>
-              <label className="mt-2 flex aspect-video cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-[var(--border)] bg-[var(--bg-soft)]">
+              <label
+                className="mt-2 flex aspect-video cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-[var(--border)] bg-[var(--bg-soft)] transition-colors hover:border-[var(--brand)]/50"
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={onDrop}
+              >
                 {image ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -320,7 +338,7 @@ export function CreateStudio({
                     🧸 Drop a photo of a figure you own
                     <br />
                     <span className="text-xs">
-                      Clean background · even light · full toy in frame
+                      or click · PNG/JPG · clean background works best
                     </span>
                   </span>
                 )}
@@ -331,6 +349,15 @@ export function CreateStudio({
                   onChange={onFile}
                 />
               </label>
+              {image && (
+                <button
+                  type="button"
+                  className="mt-1 text-[10px] text-[var(--fg-dim)] hover:text-[var(--brand)]"
+                  onClick={() => setImage(null)}
+                >
+                  Remove photo
+                </button>
+              )}
               <p className="mt-2 text-[10px] text-[var(--fg-dim)]">
                 Tip: only animate toys you own. Works great for blind boxes,
                 resin, plush, gunpla.

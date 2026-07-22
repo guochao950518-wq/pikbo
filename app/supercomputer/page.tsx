@@ -1,32 +1,36 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BatchStudio } from "@/components/BatchStudio";
 
 export const metadata: Metadata = {
-  title: "Supercomputer",
-  description: "Agent automation surface for creative workflows.",
+  title: "Batch agent",
+  description:
+    "Run multiple toy video presets from one photo — Pikbo batch generate for shops.",
 };
 
 export default function SupercomputerPage() {
   return (
     <div className="px-4 py-10 sm:px-8">
-      <div className="mx-auto max-w-3xl">
-        <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--lime)]">
-          Supercomputer
+      <div className="mx-auto max-w-6xl">
+        <span className="chip">🧠 Batch agent</span>
+        <h1 className="mt-3 text-3xl font-bold">One photo · many clips</h1>
+        <p className="mt-2 max-w-2xl text-sm text-[var(--fg-muted)]">
+          Shop workflow: upload a figure once, queue spin / float / unbox /
+          glam, render with Seedance. Same idea as suite “agents” — focused on
+          seller batches.
         </p>
-        <h1 className="mt-1 text-3xl font-bold">Agents & automation</h1>
-        <p className="mt-3 text-sm text-[var(--fg-muted)]">
-          Large platforms ship an agent layer (skills, multi-step jobs, free
-          modes). This page reserves that product surface. For now use Generate
-          + Cinema + Apps.
-        </p>
-        <div className="card mt-8 space-y-3 p-6 text-sm text-[var(--fg-muted)]">
-          <p>· Batch listing videos for a whole shop</p>
-          <p>· Auto storyboard → multi-shot render</p>
-          <p>· Scheduled social exports</p>
-          <Link href="/create" className="btn btn-primary mt-4 inline-flex text-sm">
-            Use Generate for now
+        <p className="mt-2 text-xs text-[var(--fg-dim)]">
+          Need a single careful shot?{" "}
+          <Link href="/create" className="text-[var(--brand)] hover:underline">
+            Open Generate
+          </Link>{" "}
+          or{" "}
+          <Link href="/cinema" className="text-[var(--brand)] hover:underline">
+            Cinema Studio
           </Link>
-        </div>
+          .
+        </p>
+        <BatchStudio />
       </div>
     </div>
   );

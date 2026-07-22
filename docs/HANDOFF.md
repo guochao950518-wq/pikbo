@@ -4,6 +4,17 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-22 — [gpt] live model shelf + demo-aware preset wall (T12)
+- Paths: `app/page.tsx`, `components/HomeModelShelf.tsx`, `components/PresetPreviewCard.tsx`, `components/PresetsWall.tsx`
+- Why good: live Seedance cards use cached toy footage on hover/focus, while Kling/Veo stay visibly marked `Roadmap`; six presets with matching T2 assets show real video/posters and all remaining presets stay honest `Recipe` cards.
+- Reuse / pitfalls:
+  - `MODEL_DEMOS` is presentation-only. Cached previews do not prove which provider rendered them and must retain the `Cached preview` badge.
+  - Preset video matching is by `DemoVideo.preset`; adding a verified demo automatically upgrades that recipe card without changing the wall.
+  - Touch layouts intentionally keep posters still; the immersive T2 showcase remains the single autoplay surface on mobile.
+  - Do not mark a roadmap model live until its generate route/provider capability is wired.
+- Verified: production build; desktop and 390px model/preset visual passes; no browser warnings/errors.
+- Depends on: T2 `DemoVideo` registry, shared `MODELS` catalog, Claude `PresetsWall`. No generation, credits, history, batch, session, or billing code changed.
+
 ### 2026-07-22 — [gpt] toy-first homepage demo theatre (T2)
 - Paths: `app/page.tsx`, `components/HomeDemoShowcase.tsx`, `lib/demoVideos.ts`, `public/demos/`
 - Why good: replaces the model-name-only hero with a real encoded before/after stage and six playable toy clips while preserving the shared AppShell, Apps, Models, Cinema, Supercomputer, PresetsWall, community, Library, and billing paths. Copy stays vertical to owned-toy photos and makes Free watermark, trial allowance, and subscription expansion explicit.
