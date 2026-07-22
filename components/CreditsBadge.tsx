@@ -67,7 +67,7 @@ export function CreditsBadge({ compact }: { compact?: boolean }) {
           ? "border-[var(--brand)]/50 bg-[var(--grad-soft)] text-[var(--fg)]"
           : "border-[var(--border)] bg-white/5 text-[var(--fg-muted)] hover:border-white/20 hover:text-[var(--fg)]"
       }`}
-      title={`${session.planName} · ${session.credits} credits · ~${clips} clips`}
+      title={`${session.planName} · ${session.credits} credits · ~${clips} current jobs`}
     >
       <span className={low ? "text-[var(--brand)]" : "text-[var(--mint)]"}>
         {session.credits}

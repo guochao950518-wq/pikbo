@@ -35,9 +35,11 @@ export default function TermsPage() {
         <section>
           <h2 className="text-lg font-semibold text-[var(--fg)]">Credits & plans</h2>
           <p className="mt-2">
-            Free plans include a watermark and limited credits. Paid plans are billed by
-            Stripe on a subscription basis. Credits do not guarantee unlimited generation
-            if abuse or cost spikes occur; we may rate-limit to protect the service.
+            Free live results show an on-player mark and use a finite credit allowance.
+            Creator and Shop are presented as monthly plans, but production billing remains
+            gated until durable account credits are ready. When enabled, Stripe handles the
+            subscription. Credits never guarantee unlimited live generation, and we may
+            rate-limit to protect the service.
           </p>
         </section>
 

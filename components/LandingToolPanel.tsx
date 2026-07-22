@@ -122,7 +122,7 @@ export function LandingToolPanel({
       return;
     }
     if (session && session.credits < CREDITS_PER_VIDEO) {
-      setError("Not enough credits — upgrade on Pricing.");
+      setError("This allowance is used up — compare finite plans on Pricing.");
       return;
     }
     setError(null);
@@ -163,7 +163,7 @@ export function LandingToolPanel({
         demo: Boolean(data.demo),
       });
       emitSessionRefresh();
-      toast(data.demo ? "Demo clip ready" : "Clip ready · saved to Library");
+      toast(data.demo ? "Cached demo ready" : "Live clip ready · saved to Library");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Generation failed");
       setStatus("error");
@@ -198,7 +198,7 @@ export function LandingToolPanel({
                 {session.credits} credits
               </p>
               <p className="text-[var(--fg-dim)]">
-                ~{Math.floor(session.credits / CREDITS_PER_VIDEO)} clips ·{" "}
+                ≈ {Math.floor(session.credits / CREDITS_PER_VIDEO)}-job allowance ·{" "}
                 {session.planName}
               </p>
             </div>
@@ -300,7 +300,7 @@ export function LandingToolPanel({
             </span>
             {(session?.plan === "free" || session?.watermark) && (
               <span className="rounded-md border border-[var(--border)] px-2 py-1">
-                480p · mark
+                Mini · 480p · on-player mark
               </span>
             )}
           </div>
@@ -348,10 +348,10 @@ export function LandingToolPanel({
                   className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-white/20 border-t-[var(--brand)]"
                 />
                 <p className="mt-4 text-sm text-[var(--fg-muted)]">
-                  Seedance is rendering…
+                  Preparing your result…
                 </p>
                 <p className="mt-1 text-xs text-[var(--fg-dim)]">
-                  Usually 30–90s · {elapsed}s elapsed
+                  Live renders usually take 30–90s; cached demos return faster · {elapsed}s
                 </p>
               </div>
             </div>
@@ -377,12 +377,12 @@ export function LandingToolPanel({
               )}
               {demo ? (
                 <p className="mt-2 text-center text-[10px] text-[var(--fg-dim)]">
-                  Cached demo path — set FAL_KEY for live Seedance.
+                  Cached demo — it does not animate your upload or call a live model. Configure FAL_KEY for a live Seedance render.
                 </p>
               ) : (
                 <p className="mt-2 text-center text-[10px] text-[var(--fg-dim)]">
-                  AI motion varies. Regenerate free on failed jobs (credits
-                  refunded). Free path is short 480p + watermark.
+                  AI motion varies. Failed live jobs refund their credit charge.
+                  Free live jobs use Mini at 480p with an on-player mark.
                 </p>
               )}
               <div className="mt-3 flex flex-wrap justify-center gap-2">

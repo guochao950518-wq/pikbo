@@ -38,7 +38,7 @@
 
 - I2V Seedance path live  
 - Credits deduct + refund on fail  
-- Free → Fast + 480p server-enforced  
+- Free → Mini + 480p server-enforced
 - Pricing cards honest  
 - Demo mode if no `FAL_KEY`  
 
