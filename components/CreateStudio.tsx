@@ -442,7 +442,7 @@ export function CreateStudio({
                   if (lockedPaid) {
                     setShowPaywall(true);
                     setError("Paid models are locked — Free live jobs use Seedance Mini at 480p.");
-                    setModelId("seedance-fast");
+                    setModelId("seedance-mini");
                     return;
                   }
                   setModelId(m.id);
