@@ -6,6 +6,7 @@ import { CATEGORIES, PRESETS, type CategoryId } from "@/lib/presets";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
 import { pushHistory } from "@/lib/history";
 import { SAMPLE_TOYS, sampleToDataUrl } from "@/lib/samples";
+import { emitSessionRefresh } from "@/lib/sessionEvents";
 
 type Job = {
   slug: string;
@@ -157,6 +158,7 @@ export function BatchStudio({
               : j
           )
         );
+        emitSessionRefresh();
       } catch (e) {
         const msg = e instanceof Error ? e.message : "Error";
         setJobs((prev) =>

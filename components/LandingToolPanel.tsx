@@ -8,6 +8,8 @@ import { SAMPLE_TOYS, sampleToDataUrl } from "@/lib/samples";
 import type { PublicSession } from "@/lib/session";
 import { site } from "@/lib/site";
 import { useToast } from "@/components/Toast";
+import { PaywallCard } from "@/components/PaywallCard";
+import { emitSessionRefresh } from "@/lib/sessionEvents";
 
 type Status = "idle" | "generating" | "done" | "error";
 
@@ -143,7 +145,7 @@ export function LandingToolPanel({
       const data = await res.json();
       if (data.session) setSession(data.session);
       if (res.status === 402) {
-        setError("Not enough credits. Upgrade to keep creating.");
+        setError("INSUFFICIENT");
         setStatus("error");
         return;
       }
@@ -160,6 +162,7 @@ export function LandingToolPanel({
         watermark: Boolean(data.watermark),
         demo: Boolean(data.demo),
       });
+      emitSessionRefresh();
       toast(data.demo ? "Demo clip ready" : "Clip ready · saved to Library");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Generation failed");
@@ -313,16 +316,12 @@ export function LandingToolPanel({
               : `Generate ${effectName} · ${CREDITS_PER_VIDEO} credits`}
           </button>
 
-          {error && (
-            <p className="text-center text-xs text-[var(--brand)]">
-              {error}{" "}
-              {error.toLowerCase().includes("credit") && (
-                <Link href="/pricing" className="underline">
-                  Pricing
-                </Link>
-              )}
-            </p>
-          )}
+          {error === "INSUFFICIENT" ||
+          (error && error.toLowerCase().includes("credit")) ? (
+            <PaywallCard />
+          ) : error ? (
+            <p className="text-center text-xs text-[var(--brand)]">{error}</p>
+          ) : null}
 
           <p className="text-center text-[10px] text-[var(--fg-dim)]">
             <Link

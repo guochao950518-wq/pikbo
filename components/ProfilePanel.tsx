@@ -5,20 +5,26 @@ import { useEffect, useState } from "react";
 import type { PublicSession } from "@/lib/session";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
 import { loadHistory } from "@/lib/history";
+import { SESSION_EVENT } from "@/lib/sessionEvents";
 
 export function ProfilePanel() {
   const [session, setSession] = useState<PublicSession | null>(null);
   const [clips, setClips] = useState(0);
 
   useEffect(() => {
-    fetch("/api/me")
-      .then((r) => r.json())
-      .then((d: PublicSession) => setSession(d))
-      .catch(() => {});
-    const t = window.setTimeout(() => {
+    function refresh() {
+      fetch("/api/me")
+        .then((r) => r.json())
+        .then((d: PublicSession) => setSession(d))
+        .catch(() => {});
       setClips(loadHistory().length);
-    }, 0);
-    return () => window.clearTimeout(t);
+    }
+    const t = window.setTimeout(refresh, 0);
+    window.addEventListener(SESSION_EVENT, refresh);
+    return () => {
+      window.clearTimeout(t);
+      window.removeEventListener(SESSION_EVENT, refresh);
+    };
   }, []);
 
   return (

@@ -10,6 +10,8 @@ import { CREDITS_PER_VIDEO } from "@/lib/pricing";
 import type { PublicSession } from "@/lib/session";
 import { site } from "@/lib/site";
 import { useToast } from "@/components/Toast";
+import { PaywallCard } from "@/components/PaywallCard";
+import { emitSessionRefresh } from "@/lib/sessionEvents";
 
 type Status = "idle" | "uploading" | "generating" | "done" | "error";
 type Mode = "i2v" | "t2v";
@@ -300,6 +302,7 @@ export function CreateStudio({
         watermark: Boolean(data.watermark),
         demo: Boolean(data.demo),
       });
+      emitSessionRefresh();
       toast(data.demo ? "Demo clip ready" : "Clip ready · saved to Library");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
@@ -812,12 +815,7 @@ export function CreateStudio({
           )}
 
           {showPaywall && (
-            <div className="rounded-xl border border-[var(--brand)]/40 p-3 text-sm">
-              <p className="font-semibold">Out of free credits</p>
-              <Link href="/pricing" className="btn btn-primary mt-2 text-sm">
-                See plans
-              </Link>
-            </div>
+            <PaywallCard title="Out of credits — upgrade to keep creating" />
           )}
         </section>
 

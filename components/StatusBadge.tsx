@@ -13,10 +13,13 @@ export function StatusBadge() {
   const [h, setH] = useState<Health | null>(null);
 
   useEffect(() => {
-    fetch("/api/health")
-      .then((r) => r.json())
-      .then((d) => setH(d))
-      .catch(() => setH({ ok: false, fal: false, stripe: false }));
+    const t = window.setTimeout(() => {
+      fetch("/api/health")
+        .then((r) => r.json())
+        .then((d) => setH(d))
+        .catch(() => setH({ ok: false, fal: false, stripe: false }));
+    }, 0);
+    return () => window.clearTimeout(t);
   }, []);
 
   if (!h) return null;
