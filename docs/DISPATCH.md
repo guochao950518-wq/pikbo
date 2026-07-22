@@ -37,7 +37,7 @@
 
 | ID | 任务 | 状态 |
 |----|------|------|
-| G1 | CI：`npm run build` + 冲突标记扫描 | 本轮做 |
+| G1 | CI：`npm run build` + 冲突标记扫描 | 模板在 `docs/CI_WORKFLOW.yml`（GitHub OAuth 无 workflow 权限时不能自动推 `.github/`；老板可网页创建 Actions） |
 | G2 | 生成链路：扣费/失败退款契约 + 结果区诚实提示 | 本轮做 |
 | G3 | LIVE/SOON 货架诚实、Pricing chrome、UI kit | 已完成 |
 | G4 | ffmpeg 水印 burn-in（T6） | 下一刀 |
