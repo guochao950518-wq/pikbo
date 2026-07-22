@@ -32,10 +32,16 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | T20 | Favorites, before/after, onboarding, trust strip | Grok | done | main | |
 | T21 | Gap close: image API, resolution, settings, cmd-K, library, annual UI | Grok | done | main | docs/GAP_AUDIT.md |
 | T22 | Pre-launch audit: lint green, pricing honesty, size guard, T2V honesty | Grok | done | main | docs/PRELAUNCH_AUDIT.md |
-| T23 | Claude audit: homepage/pricing promise consistency sweep | GPT | done | agent/gpt/claude-copy-audit | cached/shared previews, concept recipes, and provider-gated paths labeled honestly |
 | T8 | Batch generate for Shop plan | — | todo | — | After auth/credits DB |
 | T9 | Effect preset expansion (studio + SEO landing) | Claude | done | agent/claude/seo-presets | +3 effects |
 | T11 | Guides: informational long-tail content | Claude | done | agent/claude/guides | 3 how-to/tips/ideas articles at /guides; Article+FAQ JSON-LD; cross-linked to effects |
+| T23 | CI build + conflict-marker gate | Grok | doing | main | `.github/workflows/ci.yml` |
+| T24 | Generate honesty: demo vs live + regen/refund copy | Grok | doing | main | CreateStudio result strip |
+| T25 | Homepage truth labels + overclaim sweep | GPT | done | agent/gpt/claude-copy-audit | PR #6; cached/shared previews and provider-gated paths labeled |
+| T26 | Unit economics doc + free-tier recommendation | GPT | todo | agent/gpt/convert-truth | DISPATCH C3 → `docs/UNIT_ECONOMICS.md` |
+| T27 | Preset/SEO copy wave 2 (toy seller language) | Claude | todo | agent/claude/copy-seo-v2 | DISPATCH L1–L2 |
+| T5 | Supabase auth + durable credits | — | todo | — | **Blocks serious Stripe** |
+| T6 | Server-side free watermark (ffmpeg) | Grok | todo | — | After T23/T24 |
 
 ---
 

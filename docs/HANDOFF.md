@@ -14,6 +14,16 @@ Newest first. One block per meaningful landing.
   - `StatusBadge` is the runtime source for `Seedance live` versus `Demo mode`; static marketing copy should not override it.
 - Verified: ESLint clean; Next.js 16 production build passed with 69 routes.
 
+### 2026-07-23 — [grok] three-agent max push + CI + generate honesty
+- Paths: `docs/DISPATCH.md`, `docs/STATUS.md`, `.github/workflows/ci.yml`, `components/CreateStudio.tsx`
+- Why: boss wants Grok+Codex+Claude at full capacity; shared board is the coordination channel.
+- Reuse:
+  - Codex: only DISPATCH C1–C5; branch `agent/gpt/convert-truth`
+  - Claude: only DISPATCH L1–L4; branch `agent/claude/copy-seo-v2`
+  - Do not invent fake community clips; Official/Cached labels stay.
+  - Generate result strip explains demo vs live and refund-on-fail.
+- CI: push/PR runs lint + build + conflict-marker scan.
+
 ### 2026-07-22 — [gpt] pricing conversion + usage estimator (T21)
 - Paths: `app/pricing/page.tsx`, `components/PricingUsageEstimator.tsx`
 - Why good: turns a static three-card page into a transparent monthly-output calculator, recommendation flow, plan comparison table, and clear FAQ while preserving the real checkout buttons.
