@@ -36,7 +36,7 @@ function createHref(presetSlug: string) {
   return `/create?effect=${encodeURIComponent(presetSlug)}`;
 }
 
-/** Map every live path to looping demo video for HF-style density. */
+/** Build a dense feed while labeling reused Lab loops as non-exact previews. */
 export function buildVideoFeed(): FeedItem[] {
   const byPreset = new Map(DEMO_VIDEOS.map((d) => [d.preset, d]));
   const items: FeedItem[] = [];
@@ -61,10 +61,10 @@ export function buildVideoFeed(): FeedItem[] {
     items.push({
       id: `preset-${p.slug}`,
       title: viralName(p.slug, p.name),
-      subtitle: p.tagline,
+      subtitle: `Concept recipe · shared Lab loop · ${p.tagline}`,
       href: createHref(p.slug),
       detailHref: `/effects/${p.slug}`,
-      badge: p.audience === "seller" ? "Sell" : "Flex",
+      badge: "Concept",
       ratio:
         p.aspectRatio === "1:1"
           ? "1:1"
@@ -80,9 +80,9 @@ export function buildVideoFeed(): FeedItem[] {
     items.push({
       id: `app-${a.id}`,
       title: a.name,
-      subtitle: a.blurb,
+      subtitle: `Workflow preview · ${a.blurb}`,
       href: a.href,
-      badge: "Live",
+      badge: "Configured",
       ratio: "video",
       demo: demoForIndex(i + 2),
       kind: "app",
@@ -106,7 +106,7 @@ export function featuredStrip(): FeedItem[] {
   }));
 }
 
-/** HF community projects — Official demos until real UGC exists */
+/** PIKBO Lab projects only; no user identity or engagement is fabricated. */
 export function communityProjects(): CommunityProject[] {
   return DEMO_VIDEOS.map((d) => ({
     id: `proj-${d.id}`,
@@ -131,7 +131,7 @@ export function suiteRail(): FeedItem[] {
     title: a.name,
     subtitle: a.blurb,
     href: a.href,
-    badge: "App",
+      badge: "Workflow",
     ratio: "16:9" as const,
     demo: demoForIndex(i),
     kind: "app" as const,
@@ -144,7 +144,7 @@ export function suiteRail(): FeedItem[] {
       title: m.name,
       subtitle: m.blurb,
       href: m.href,
-      badge: "Model",
+      badge: "Configured",
       ratio: "16:9" as const,
       demo: demoForIndex(i + 1),
       kind: "model" as const,
@@ -160,10 +160,12 @@ export function feedByCategory(cat: CategoryId): FeedItem[] {
     return {
       id: `cat-${cat}-${p.slug}`,
       title: viralName(p.slug, p.name),
-      subtitle: p.tagline,
+      subtitle: mapped
+        ? p.tagline
+        : `Concept recipe · shared Lab loop · ${p.tagline}`,
       href: createHref(p.slug),
       detailHref: `/effects/${p.slug}`,
-      badge: p.emoji,
+      badge: mapped ? "Lab example" : "Concept",
       ratio:
         p.aspectRatio === "1:1"
           ? "1:1"

@@ -12,7 +12,7 @@ import { PRESETS } from "@/lib/presets";
 export const metadata: Metadata = {
   title: "Explore",
   description:
-    "Explore Pikbo video feed — demos, presets, and live toy tools. Tap any clip to recreate.",
+    "Explore PIKBO Lab demos, concept recipes, and configured toy-video workflows. Exact and shared previews are labeled.",
   alternates: { canonical: "/explore" },
 };
 
@@ -29,7 +29,7 @@ export default function ExplorePage() {
           <div>
             <p className="section-label">Explore</p>
             <h1 className="text-lg font-bold tracking-tight">
-              Video feed · {feed.length} clips
+              Recipe feed · {feed.length} cards
             </h1>
           </div>
           <div className="flex gap-2">
@@ -73,15 +73,15 @@ export default function ExplorePage() {
       </div>
 
       <VideoRail
-        label="Featured"
-        title="Start here"
+        label="PIKBO Lab examples"
+        title="Cached motion studies"
         href="/community"
         items={featured}
       />
 
       <VideoRail
-        label="Suite"
-        title="Models & apps"
+        label="Workflow previews"
+        title="Configured models & apps"
         href="/apps"
         items={suite}
         wide
@@ -94,7 +94,7 @@ export default function ExplorePage() {
               {PRESETS.length}+ viral presets
             </p>
             <h2 className="mt-1 text-xl font-bold tracking-tight">
-              Scroll · every tile plays
+              Exact examples and shared previews are labeled
             </h2>
           </div>
         </div>

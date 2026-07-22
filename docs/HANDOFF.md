@@ -4,6 +4,16 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [gpt] Claude promise-consistency audit (T23)
+- Paths: `app/page.tsx`, `app/explore`, `app/community`, `app/apps`, `app/models`, `app/pricing`, `components/HeroVideoBanner.tsx`, `components/SeedanceCampaign.tsx`, `components/PresetPreviewCard.tsx`, `lib/videoFeed.ts`, `lib/site.ts`
+- Why good: separates cached PIKBO Lab examples, shared motion backdrops, concept recipes, configured workspaces, and provider-backed live generation instead of presenting all five as the same proof.
+- Reuse / pitfalls:
+  - `live` in the catalog means an implemented workspace, not proof that provider credentials exist; UI now says `Configured`/`Wired` where appropriate.
+  - Presets without an exact `DemoVideo.preset` match retain a dense visual preview but must show `Concept · shared loop`.
+  - Community remains `PIKBO Lab` until real accounts and submissions exist; do not add fictional authors or engagement.
+  - `StatusBadge` is the runtime source for `Seedance live` versus `Demo mode`; static marketing copy should not override it.
+- Verified: ESLint clean; Next.js 16 production build passed with 69 routes.
+
 ### 2026-07-22 — [gpt] pricing conversion + usage estimator (T21)
 - Paths: `app/pricing/page.tsx`, `components/PricingUsageEstimator.tsx`
 - Why good: turns a static three-card page into a transparent monthly-output calculator, recommendation flow, plan comparison table, and clear FAQ while preserving the real checkout buttons.

@@ -10,9 +10,9 @@ import { VideoRail } from "@/components/VideoRail";
 import { ProjectCard } from "@/components/ProjectCard";
 
 export const metadata: Metadata = {
-  title: "Community",
+  title: "PIKBO Lab",
   description:
-    "Pikbo community projects — official toy clips you can remake with Seedance. Tap Remake to open Generate.",
+    "PIKBO Lab examples and toy-video recipes. These cached examples are not presented as user community uploads.",
   alternates: { canonical: "/community" },
 };
 
@@ -27,9 +27,9 @@ export default function CommunityPage() {
       <div className="sticky top-0 z-20 border-b border-[var(--border)] bg-[var(--bg)]/90 px-4 py-3 backdrop-blur sm:px-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="section-label">Community</p>
+            <p className="section-label">PIKBO Lab</p>
             <h1 className="text-lg font-bold tracking-tight sm:text-xl">
-              Projects · remake with your figure
+              Cached examples · remake with your figure
             </h1>
           </div>
           <div className="flex gap-2">
@@ -45,8 +45,8 @@ export default function CommunityPage() {
           </div>
         </div>
         <p className="mt-1 text-[11px] text-[var(--fg-dim)]">
-          Official Lab projects until user accounts ship · every Remake opens
-          Generate with that look
+          No fabricated users or engagement · every Remake opens Generate with
+          that recipe
         </p>
       </div>
 
@@ -70,8 +70,8 @@ export default function CommunityPage() {
       </section>
 
       <VideoRail
-        label="Live suite"
-        title="Models & apps"
+        label="Workflow previews"
+        title="Configured models & apps"
         href="/apps"
         items={suite}
         wide
@@ -82,7 +82,7 @@ export default function CommunityPage() {
           <div>
             <p className="section-label">Remake wall</p>
             <h2 className="mt-1 text-xl font-bold tracking-tight">
-              Viral looks · tap to generate
+              Recipes · tap to configure
             </h2>
           </div>
           <Link

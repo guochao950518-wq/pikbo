@@ -51,8 +51,8 @@ export function HeroVideoBanner() {
             <span className="text-[var(--mint)]">Listing & viral clips.</span>
           </h1>
           <p className="mt-4 max-w-md text-sm leading-relaxed text-white/70 sm:text-base">
-            For sellers & collectors — {demo.result} Free watermarked tries ·
-            tap any tile to remake.
+            PIKBO Lab cached example — {demo.result} Upload your own toy to
+            open the recipe; live provider results can vary.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link href="/create" className="btn btn-primary px-6 py-3 text-sm">
