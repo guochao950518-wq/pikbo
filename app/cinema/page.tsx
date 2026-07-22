@@ -32,7 +32,24 @@ export default function CinemaPage() {
   const href = `/create?effect=${encodeURIComponent(effect)}&prompt=${encodeURIComponent(composed)}`;
 
   return (
-    <div className="px-4 py-8 sm:px-8">
+    <div className="relative pb-24">
+      {/* Ambient video wash — HF immersion even on tool pages */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-56 overflow-hidden opacity-40">
+        <video
+          className="h-full w-full object-cover"
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster="/demos/scout-still.webp"
+        >
+          <source src="/demos/scout-packshot-spin.webm" type="video/webm" />
+          <source src="/demos/scout-packshot-spin.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-[var(--bg)]/80 to-[var(--bg)]" />
+      </div>
+
+      <div className="relative px-4 py-8 sm:px-8">
       <div className="mx-auto max-w-6xl">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
@@ -130,6 +147,7 @@ export default function CinemaPage() {
             </Link>
           </aside>
         </div>
+      </div>
       </div>
     </div>
   );

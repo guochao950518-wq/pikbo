@@ -67,6 +67,31 @@ export default function Home() {
         wide
       />
 
+      {/* Quick category hops — keep scroll velocity high */}
+      <section className="border-b border-[var(--border)] px-4 py-3 sm:px-6">
+        <div className="flex items-center gap-2 overflow-x-auto pb-0.5">
+          <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--fg-dim)]">
+            Jump
+          </span>
+          {[
+            { href: "/effects", label: "All presets" },
+            { href: "/explore", label: "Explore wall" },
+            { href: "/community", label: "Community" },
+            { href: "/cinema", label: "Cinema" },
+            { href: "/supercomputer", label: "Batch" },
+            { href: "/create", label: "Upload photo" },
+          ].map((chip) => (
+            <Link
+              key={chip.href}
+              href={chip.href}
+              className="shrink-0 rounded-full border border-[var(--border)] bg-white/[0.03] px-3 py-1.5 text-[11px] font-semibold text-[var(--fg-muted)] transition hover:border-[var(--mint)] hover:text-[var(--mint)]"
+            >
+              {chip.label}
+            </Link>
+          ))}
+        </div>
+      </section>
+
       <section className="border-b border-[var(--border)] px-4 py-5 sm:px-6">
         <p className="section-label mb-2">Start with your photo</p>
         <div className="mx-auto max-w-lg">

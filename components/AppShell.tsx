@@ -11,22 +11,31 @@ import { ToastProvider } from "@/components/Toast";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Footer } from "@/components/Footer";
 
-/** Higgsfield-class suite rail */
+/** Higgsfield-class suite rail — full sidebar */
 const NAV = [
   { href: "/", label: "Home", icon: "⌂" },
   { href: "/create", label: "Generate", icon: "✦" },
   { href: "/effects", label: "Presets", icon: "▶" },
+  { href: "/explore", label: "Explore", icon: "✧" },
+  { href: "/community", label: "Community", icon: "◉" },
   { href: "/cinema", label: "Cinema", icon: "◎" },
   { href: "/supercomputer", label: "Batch", icon: "⚡" },
   { href: "/image", label: "Image", icon: "▣" },
   { href: "/library", label: "Library", icon: "▢" },
-  { href: "/explore", label: "Explore", icon: "✧" },
-  { href: "/community", label: "Community", icon: "◉" },
   { href: "/apps", label: "Apps", icon: "▦" },
   { href: "/models", label: "Models", icon: "◎" },
   { href: "/pricing", label: "Pricing", icon: "$" },
   { href: "/profile", label: "Profile", icon: "○" },
   { href: "/settings", label: "Settings", icon: "⚙" },
+];
+
+/** Mobile dock — video destinations + center Generate */
+const MOBILE_NAV = [
+  { href: "/", label: "Home", icon: "⌂" },
+  { href: "/effects", label: "Presets", icon: "▶" },
+  { href: "/create", label: "Generate", icon: "✦", primary: true },
+  { href: "/explore", label: "Explore", icon: "✧" },
+  { href: "/library", label: "Library", icon: "▢" },
 ];
 
 function isActive(path: string, href: string) {
@@ -121,14 +130,35 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           {!hideFooter && <Footer />}
           <MobileGenerateBar />
 
-          <nav className="sticky bottom-0 z-40 flex overflow-x-auto border-t border-[var(--border)] bg-[var(--bg-soft)] lg:hidden">
-            {NAV.slice(0, 6).map((item) => {
+          <nav className="sticky bottom-0 z-40 flex items-end border-t border-[var(--border)] bg-[var(--bg-soft)]/95 px-1 pb-[env(safe-area-inset-bottom)] backdrop-blur-md lg:hidden">
+            {MOBILE_NAV.map((item) => {
               const active = isActive(path, item.href);
+              if (item.primary) {
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="flex flex-1 flex-col items-center gap-0.5 py-1.5"
+                  >
+                    <span
+                      className={`grid h-11 w-11 place-items-center rounded-2xl text-base font-black text-black shadow-[0_0_24px_rgba(200,255,61,0.35)] ${
+                        active ? "ring-2 ring-white/40" : ""
+                      }`}
+                      style={{ background: "var(--mint)" }}
+                    >
+                      {item.icon}
+                    </span>
+                    <span className="text-[9px] font-bold text-[var(--mint)]">
+                      {item.label}
+                    </span>
+                  </Link>
+                );
+              }
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex min-w-[4.2rem] flex-1 flex-col items-center gap-0.5 py-2 text-[9px] font-semibold ${
+                  className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 text-[9px] font-semibold ${
                     active ? "text-[var(--mint)]" : "text-[var(--fg-dim)]"
                   }`}
                 >

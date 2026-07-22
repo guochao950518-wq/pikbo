@@ -65,14 +65,15 @@ export function VideoTile({ item }: { item: FeedItem }) {
           </span>
         )}
         <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4">
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/50">
+          <p className="line-clamp-1 text-[10px] font-bold uppercase tracking-[0.16em] text-white/50">
             {item.subtitle}
           </p>
-          <h3 className="mt-0.5 text-sm font-semibold text-white sm:text-base">
+          <h3 className="mt-0.5 line-clamp-2 text-sm font-semibold text-white sm:text-base">
             {item.title}
           </h3>
-          <p className="mt-1 text-[11px] font-semibold text-[var(--mint)] opacity-0 transition-opacity group-hover:opacity-100">
-            Recreate →
+          <p className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-[var(--mint)]/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--mint)] ring-1 ring-[var(--mint)]/30 transition group-hover:bg-[var(--mint)] group-hover:text-black">
+            Recreate
+            <span aria-hidden>→</span>
           </p>
         </div>
       </div>
