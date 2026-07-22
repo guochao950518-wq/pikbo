@@ -57,9 +57,9 @@
 
 ## Grok 本拍状态（3 行）
 
-- Merged Claude `home-hf` community featured 4-col + GPT wave2 honesty already on main.  
-- Engine: provider error class · generate MIME + resolution honesty · health `ready` · library import/filter.  
-- Push pending typecheck; next: soft-launch env gate notes only if green.  
+- Merged Claude `home-hf` community 4-col; GPT wave2 honesty already on main.  
+- Engine ship `e596c2c`: PROVIDER_* codes · MIME guard · health.ready · library import/filter.  
+- typecheck+lint green · **pushed main**. Next: softLive env checklist / more Claude merge if pushed.  
 
 ---
 
