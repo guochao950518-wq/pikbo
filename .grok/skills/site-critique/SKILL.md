@@ -1,108 +1,86 @@
 ---
 name: site-critique
 description: >
-  Multi-expert website / landing-page critique for Pikbo (and similar AI tool sites).
-  Synthesizes X/建站大神 frameworks: 哥飞 (SEO+keyword landings), Namya/Supafast (SaaS conversion),
-  Oliver Kenyon AIDA CRO, indie "show the product" conversion. Use when user asks for site review,
-  落地页意见, conversion audit, SEO page check, /site-critique, or "大神意见 / 审站".
+  Competitor-first website/product-surface critique for Pikbo. Primary evidence:
+  market-validated AI creative suites (Higgsfield, similar tool shelves) — modules
+  that already earn traffic and money. Secondary: SEO/CRO ideas (哥飞, Namya) only
+  as copy/SEO overlays. Use for 竞品对比, site review, /site-critique, 审站.
 ---
 
-# Site Critique (X 建站大神合集)
+# Site Critique — 竞品站优先
 
-You are a **product + SEO + CRO review panel** for this repo's live marketing surface.
-Do **not** only praise design density. Score clarity, traffic path, and money path.
+## Principle (boss-aligned)
+
+**竞品网站 = 已经被市场验证的产品形态。**  
+流量与付费能力在他们那边成立 → 我们优先抄 **信息架构 / 模块 / 路径**，再潮玩化。
+
+X 建站大神（哥飞、Namya 等）的观点 **只作辅料**：
+
+- 用来写清 ICP、工具 SEO 内页、CTA 措辞  
+- **不得**用「理论更清晰的营销站」推翻竞品已验证的 App/Explore 壳  
+
+权威顺序：
+
+1. 实站 + `docs/COMPETITOR_SITE_PATTERNS.md` + `docs/COMPETITOR_SPEC.md`  
+2. `docs/GAP_AUDIT.md`  
+3. 哥飞/Namya/AIDA（`references/experts.md`）  
 
 ## When invoked
 
-1. Read `lib/site.ts`, `app/page.tsx`, key landings under `app/effects/`, `app/for/`, `app/create/`, pricing, and existing docs `docs/GEFEI_KEYWORD_LANDING.md`, `docs/SEO_PLAYBOOK.md` if present.
-2. Optionally hit local `http://127.0.0.1:3000` with `curl --noproxy '*'` for rendered titles/CTAs.
-3. Run all four expert lenses below (see `references/experts.md`).
-4. Output a **prioritized action list** (P0/P1/P2) mapped to concrete files. Prefer shipping fixes over abstract advice when the user wants implementation.
+1. Open competitor URLs (at least Higgsfield.ai home; pricing/community if reachable).  
+2. Diff against Pikbo: `app/page.tsx`, AppShell, create, effects, community, library, pricing.  
+3. Score **module parity with money path**, not aesthetic theory.  
+4. Output P0/P1/P2 with file paths. Prefer implementable gaps.
 
-## Panel lenses (always run all four)
+## Primary lens · Market-validated suite (Higgsfield-class)
 
-### A · 哥飞 SEO / 工具站 (@gefei55)
+Check presence and quality of:
 
-- Keyword intent: is this **tool page** or **suite homepage**? Separate domain vs inner page?
-- SERP-shaped content: H1 matches search language, tool above fold, results/social proof, FAQ for long-tail.
-- V1→V2: tool+SSR results on same URL when possible; not brochure-only.
-- Multi-page SEO: `/effects/[slug]`, `/for/[audience]`, guides — each page one job + internal links.
-- Honesty: free tier limits, watermark, real model names (no fake multi-model).
-- Ask: *If someone lands from Google on this URL alone, can they complete the job and understand price?*
+| Module | Why market cares |
+|--------|------------------|
+| Explore home of **playable** media | Retention + proof |
+| Model/App shelf → one click generate | ARPU / discovery |
+| Viral presets wall + view all | Session depth |
+| Community **projects** (real users) | Trust + UGC SEO |
+| Center **Generate** chrome | Activation |
+| Library + Profile | Retention + billing |
+| Free try / credits language | Funnel top |
+| Pricing discoverable | Revenue |
+| Flagship model campaign strip | Upgrade narrative |
+| (Optional) Academy / contests | Growth loops |
 
-### B · Namya / Supafast SaaS conversion (@namyakhann)
+Legal: recreate patterns only — no logos, copy, or media theft. No fake multi-model.
 
-Five fails if present:
+## Secondary lens · SEO (哥飞)
 
-1. Headline about us, not them  
-2. Features not outcomes  
-3. CTA = "Learn more" instead of the real action  
-4. No social proof near fold  
-5. Trying to explain everything instead of one promise  
+Apply to **inner tool pages** (`/effects/[slug]`, `/for/*`), not to force homepage into a brochure.
 
-Six-part structure check: Nav+sticky CTA → benefit H1 → subhead (features supporting claim) → primary CTA → proof → product image/video.
+## Secondary lens · CRO copy (Namya / AIDA)
 
-Also: pricing discoverable; how-it-works in 3–5 steps; buyers get depth (demo video, FAQ, thorough footer) — not designed for "everyone's short attention".
-
-### C · CRO structure (Oliver Kenyon-style AIDA)
-
-| Block | Must have |
-|-------|-----------|
-| Attention | Value prop, proof, trust, media, CTA |
-| Transformation | 3 steps: start → process → outcome |
-| Interest | Benefits + key features (short) |
-| Desire | Testimonials / UGC / cases |
-| FAQ | Kill objections |
-| Action | Repeat value prop + CTA |
-
-### D · Indie / product-led conversion
-
-- Remove decoration that hides **what you get after pay**.
-- Show real outputs (clips, before/after), not only brand film.
-- One primary CTA path; secondary is optional.
-- ICP mirror: designer-toy sellers / collectors must *see themselves*.
-- Clarity > clever. Transformation > feature dump.
+Fix headlines/CTAs/proof **inside** the suite structure. Do not replace video-first home with long-form SaaS landing unless data says so.
 
 ## Output format
 
 ```markdown
-# Site critique — <url or surface>
+# Competitor-first critique — Pikbo
 
-## Scorecard (1–5)
-| Lens | Score | One-line |
-|------|-------|----------|
-| 哥飞 SEO | | |
-| Namya convert | | |
-| AIDA CRO | | |
-| Product-led | | |
+## Competitor snapshot
+| Site | What market validates | Steal pattern | Don't steal |
 
-## What's working
-- …
+## Parity scorecard (vs HF-class)
+| Module | Competitor | Pikbo | Gap | Priority |
 
-## P0 (this week)
-1. … → files: …
+## Money-path gaps (P0)
+1. …
 
-## P1
+## SEO/copy overlays (P1, secondary)
 …
-
-## P2 / later
-…
-
-## Copy rewrites (optional)
-| Where | Current | Suggested |
-|-------|---------|-----------|
 
 ## Do not do
-- …
+- Theory-driven redesign that undoes suite shell
+- Fake models / fake social counts
 ```
-
-## Guardrails for Pikbo specifically
-
-- Product is **designer-toy AI video** (Seedance via fal). Stay niche; do not become generic "AI video for everyone".
-- HF-style **video-first** is good for retention — still need **who / problem / outcome** in first screen text for cold SEO traffic.
-- Free credits + watermark honesty already product policy — critique must not invent unpaid features.
-- Prefer English primary UI if site is EN; Chinese only when targeting CN channels.
 
 ## Slash
 
-User can run: `/site-critique` or say "用建站大神 skill 审站".
+`/site-critique` or 「按竞品审站」「竞品优先意见」

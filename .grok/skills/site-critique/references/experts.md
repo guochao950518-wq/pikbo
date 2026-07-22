@@ -1,4 +1,7 @@
-# Expert sources (X / 实践派) — 2026 panel notes
+# Expert sources — secondary only
+
+**Primary evidence is competitor sites** (`docs/COMPETITOR_SITE_PATTERNS.md`).
+Use this file for SEO/copy overlays after module parity is clear.
 
 Synthesized for agents. Not affiliated; names for attribution only.
 
