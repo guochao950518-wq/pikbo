@@ -22,6 +22,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | T10 | Boss one-command + Telegram bot | Grok | done | main | DISPATCH + tools/telegram_dispatch_bot.py |
 | T8 | Batch generate for Shop plan | — | todo | — | After auth/credits DB |
 | T9 | Effect preset expansion (studio + SEO landing) | Claude | done | agent/claude/seo-presets | +3 effects |
+| T11 | Guides: informational long-tail content | Claude | done | agent/claude/guides | 3 how-to/tips/ideas articles at /guides; Article+FAQ JSON-LD; cross-linked to effects |
 
 ---
 
