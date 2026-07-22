@@ -4,6 +4,33 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-22 — [gpt + grok + claude] Higgsfield-class toy product shell and workflow (T24)
+- Paths: `app/page.tsx`, `app/explore`, `app/projects`, `app/effects`, `app/create`, `components/AppShell.tsx`, `components/HeroVideoBanner.tsx`, `components/ShowcaseGrid.tsx`, `components/CreateStudio.tsx`, `components/BatchStudio.tsx`, `components/ProductUrlImport.tsx`, `lib/showcase.ts`, `lib/capabilities.ts`, `lib/product-import.ts`.
+- Why good: reduces the product to Create / Explore / Effects / Library, adds an immersive video-led homepage, inspectable Lab projects, a three-column toy Studio, mobile generate bar, 30 effect recipes, and SKU Campaign density while retaining the asynchronous generation/credits/Supabase foundation.
+- Reuse / pitfalls:
+  - Six cached videos are labeled PIKBO Lab and have no provider task claim. The other 24 effects are `Concept recipe`; do not hash-reuse footage or call them verified.
+  - `POST /api/products/import` requires an explicit rights confirmation and blocks private/reserved targets, unsafe redirects, oversized HTML/images, invalid media signatures, and unsupported formats. Keep security logic in `lib/product-import.ts` because Next route modules cannot export arbitrary helpers.
+  - Homepage file and product-link imports hand a private data URL to Studio through `sessionStorage`; Studio accepts front/side/back/packaging while stating that the current provider only consumes the actual submitted roles.
+  - Legacy `/apps`, `/cinema`, `/models`, and `/image` surfaces now redirect into Create/Effects instead of competing with the four primary entries.
+  - Payment, DNS, and production launch were deliberately not changed in this task.
+- Verified: ESLint, TypeScript, 12 Node tests, 97-route Next production build; browser QA at 1440/768/390; one active viewport video; Explore modal, project detail, preset deep-link, validation task, mobile fixed quote/action; no console warnings/errors.
+- External gate: replace Lab footage only with saved real task IDs/model parameters; real fal/Supabase/Stripe credentials remain separate gated work.
+
+---
+
+### 2026-07-22 — [gpt] product foundation: async jobs, durable credits, auth, Studio and billing safety (T5/T6/T8/T22)
+- Paths: `lib/product-*`, `lib/supabaseAuth.ts`, `lib/videoWatermark.ts`, `app/api/generations`, `app/api/assets`, `app/api/auth`, `app/api/webhooks/fal`, `supabase/migrations/202607220001_product_foundation.sql`, `components/CreateStudio.tsx`, `components/BatchStudio.tsx`, `components/LibraryGrid.tsx`.
+- Why good: converts the synchronous demo shell into a trackable owned-toy pipeline: multi-angle references, asynchronous fal queue, verified Webhook, atomic reservation/refund ledger, private signed media, burned Free watermark, cross-device owner identity, cloud Library, and SKU Campaign partial retry.
+- Reuse / pitfalls:
+  - No `FAL_KEY` means an honest cached Lab validation result, `chargedCredits: 0`, `persisted: false`; never push it into Library as a new model output.
+  - Live jobs require the Supabase migration and private uploaded asset IDs. The service-role key stays server-only.
+  - fal Webhooks use the official ED25519/JWKS verification contract and an atomic database claim. Late results cannot charge a timed-out/refunded reservation.
+  - Stripe entitlements and event claims use Supabase in production. Local JSON remains development-only.
+  - Annual billing stays hidden until both annual Price IDs exist. Production cannot be upgraded with a request-body `dev` flag.
+  - Free live completion fails/refunds unless `FFMPEG_PATH` can burn the watermark; provider URLs are never exposed.
+- Verified: TypeScript, clean ESLint, product-integrity tests, 80-page production build; desktop Studio and 390px browser pass; no-key task returned the same ID on idempotent replay and kept 30 credits before/after.
+- External gate: run the SQL migration, then test real Supabase browser upload/CORS, fal output, ffmpeg result, and Stripe test lifecycle before changing these tasks from `review` to `done`.
+
 ### 2026-07-22 — [gpt] pricing conversion + usage estimator (T21)
 - Paths: `app/pricing/page.tsx`, `components/PricingUsageEstimator.tsx`
 - Why good: turns a static three-card page into a transparent monthly-output calculator, recommendation flow, plan comparison table, and clear FAQ while preserving the real checkout buttons.
@@ -59,7 +86,7 @@ Newest first. One block per meaningful landing.
 - Reuse / pitfalls:
   - Set `STRIPE_SECRET_KEY`, `STRIPE_PRICE_*`, `STRIPE_WEBHOOK_SECRET`
   - Webhook URL: `/api/webhooks/stripe`
-  - Entitlements file default `data/entitlements.json` (gitignored); serverless should move to Redis/Supabase (T5)
+  - Superseded by the T5 product foundation above: production entitlements now require Supabase; the JSON file is development-only.
   - Never overwrite cookie credits from entitlement unless `periodKey` changes or free→paid upgrade
 - Depends on: existing pricing plans + cookie session
 
@@ -88,12 +115,12 @@ Newest first. One block per meaningful landing.
 
 ### 2026-07-22 — [grok] guest credits + checkout scaffolding
 - Paths: `lib/session.ts`, `lib/credits.ts`, `lib/pricing.ts`, `app/api/me`, `app/api/generate`, `app/api/checkout`, `app/pricing`, `components/CreateStudio.tsx`
-- Why good: no DB required; 402 when out of credits; free watermark flag; Stripe-ready; dev upgrade without keys
+- Why good: original no-DB validation scaffold; superseded for production by the T5 product foundation above.
 - Reuse rules:
   - Deduct credits **before** fal call; **refund** on failure
   - Free plan → `watermark: true`; paid → false
   - Keep `CREDITS_PER_VIDEO = 10` unless pricing doc updates
-  - Demo mode (no `FAL_KEY`) must still deduct/refund consistently
+  - Current rule: validation mode (no `FAL_KEY`) never deducts credits and must be labelled as cached PIKBO Lab media.
 
 ### 2026-07-22 — [mixed] 3-axis pSEO
 - Paths: `lib/presets.ts`, `lib/usecases.ts`, `lib/toytypes.ts` + `app/effects|for|toys`

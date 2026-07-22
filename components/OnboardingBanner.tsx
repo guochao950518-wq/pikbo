@@ -38,7 +38,7 @@ export function OnboardingBanner() {
           <span className="font-semibold text-[var(--mint)]">Tip</span>
           <span className="text-[var(--fg-muted)]">
             {" "}
-            — scroll videos, tap any clip to remake with your toy photo
+            — upload a toy you own · pick a look · generate with Seedance
           </span>
         </div>
         <div className="flex items-center gap-2">

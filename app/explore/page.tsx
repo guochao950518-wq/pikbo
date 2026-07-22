@@ -1,35 +1,34 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { buildVideoFeed } from "@/lib/videoFeed";
-import { VideoTile } from "@/components/VideoTile";
+import { ShowcaseGrid } from "@/components/ShowcaseGrid";
+import { SHOWCASE_PROJECTS } from "@/lib/showcase";
 
 export const metadata: Metadata = {
-  title: "Explore",
-  description:
-    "Explore Pikbo video feed — demos, presets, and live toy tools. Tap any clip to recreate.",
+  title: "Explore toy video projects",
+  description: "Open PIKBO Lab toy-video projects, inspect their inputs and recipes, then reuse an effect in Studio.",
 };
 
 export default function ExplorePage() {
-  const feed = buildVideoFeed();
-
   return (
-    <div className="pb-20">
-      <div className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border)] bg-[var(--bg)]/90 px-4 py-3 backdrop-blur sm:px-6">
-        <div>
-          <p className="section-label">Explore</p>
-          <h1 className="text-lg font-bold">Video feed</h1>
-        </div>
-        <Link href="/create" className="btn btn-primary !px-4 !py-2 text-xs">
-          Generate
-        </Link>
-      </div>
-      <div className="columns-2 gap-2 p-3 sm:columns-3 sm:gap-3 lg:columns-4 xl:columns-5">
-        {feed.map((item) => (
-          <div key={item.id} className="mb-2 break-inside-avoid sm:mb-3">
-            <VideoTile item={item} />
+    <div className="pb-24">
+      <header className="sticky top-14 z-30 border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--bg)_90%,transparent)] backdrop-blur-xl lg:top-16">
+        <div className="container-x flex items-center justify-between gap-4 py-3">
+          <div>
+            <p className="section-label">PIKBO Lab</p>
+            <h1 className="mt-1 text-lg font-black tracking-tight sm:text-xl">Explore toy video projects</h1>
           </div>
-        ))}
-      </div>
+          <Link href="/create" className="btn btn-primary !px-4 !py-2 text-xs">Create</Link>
+        </div>
+      </header>
+
+      <section className="container-x py-8 sm:py-12">
+        <div className="mb-7 max-w-3xl">
+          <span className="chip !border-amber-200/20 !text-amber-100/70">Official cached prototypes</span>
+          <h2 className="mt-4 text-3xl font-black tracking-[-0.035em] sm:text-5xl">See the motion. Open the recipe.</h2>
+          <p className="mt-3 text-sm leading-6 text-[var(--fg-muted)]">These are PIKBO-owned lab examples, not public user posts. Each card states whether it has provider proof.</p>
+        </div>
+        <ShowcaseGrid projects={SHOWCASE_PROJECTS} filters />
+      </section>
     </div>
   );
 }

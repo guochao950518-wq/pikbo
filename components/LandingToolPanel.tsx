@@ -121,10 +121,6 @@ export function LandingToolPanel({
       setError("Upload a toy photo first.");
       return;
     }
-    if (session && session.credits < CREDITS_PER_VIDEO) {
-      setError("Not enough credits — upgrade on Pricing.");
-      return;
-    }
     setError(null);
     setVideoUrl(null);
     setElapsed(0);
@@ -186,10 +182,10 @@ export function LandingToolPanel({
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <p className="text-xs font-bold uppercase tracking-wider text-[var(--fg-dim)]">
-              Try free · {effectName}
+              Try on this page · {effectName}
             </p>
             <p className="mt-0.5 text-sm text-[var(--fg-muted)]">
-              Upload one photo → clip on this page (no extra hop).
+              Upload one authorized toy photo, review the settings, then submit.
             </p>
           </div>
           {session && (
@@ -203,6 +199,18 @@ export function LandingToolPanel({
               </p>
             </div>
           )}
+        </div>
+        <div className="mt-3 grid gap-2 text-[10px] leading-relaxed sm:grid-cols-2">
+          <p className="rounded-lg border border-[var(--border)] bg-black/15 px-3 py-2 text-[var(--fg-muted)]">
+            <strong className="text-[var(--fg)]">Live mode:</strong> Seedance
+            uses the uploaded photo and the run reserves {CREDITS_PER_VIDEO}
+            credits.
+          </p>
+          <p className="rounded-lg border border-[var(--border)] bg-black/15 px-3 py-2 text-[var(--fg-muted)]">
+            <strong className="text-[var(--fg)]">Validation fallback:</strong>{" "}
+            returns unrelated cached PIKBO Lab media, charges 0 credits, and is
+            not saved as a new model output.
+          </p>
         </div>
         {busy && (
           <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-black/30">
@@ -377,7 +385,8 @@ export function LandingToolPanel({
               )}
               {demo && (
                 <p className="mt-2 text-center text-[10px] text-[var(--fg-dim)]">
-                  Demo clip — set FAL_KEY for real Seedance.
+                  Cached validation preview · unrelated to the uploaded toy · 0
+                  credits. Set FAL_KEY for live Seedance.
                 </p>
               )}
               <div className="mt-3 flex flex-wrap justify-center gap-2">

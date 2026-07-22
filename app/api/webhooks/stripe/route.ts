@@ -11,6 +11,7 @@ import {
   planFromPriceId,
   verifyStripeSignature,
 } from "@/lib/stripe";
+import { claimWebhookEvent } from "@/lib/webhookEvents";
 
 export const runtime = "nodejs";
 
@@ -46,11 +47,20 @@ export async function POST(req: Request) {
     );
   }
 
-  let event: { type?: string; data?: { object?: StripeObject } };
+  let event: { id?: string; type?: string; data?: { object?: StripeObject } };
   try {
     event = JSON.parse(rawBody);
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+
+  if (!event.id?.startsWith("evt_")) {
+    return NextResponse.json({ error: "Missing Stripe event id" }, { status: 400 });
+  }
+
+  const claim = await claimWebhookEvent("stripe", event.id);
+  if (claim.duplicate) {
+    return NextResponse.json({ received: true, duplicate: true });
   }
 
   const type = event.type || "";
@@ -67,6 +77,9 @@ export async function POST(req: Request) {
       await handleSubscriptionUpdated(obj);
     }
   } catch (err) {
+    // Let Stripe retry a handler failure. Successful claims remain as the
+    // durable idempotency marker.
+    await claim.release();
     console.error("stripe webhook error:", type, err);
     return NextResponse.json({ error: "Handler failed" }, { status: 500 });
   }
@@ -191,6 +204,8 @@ async function handleSubscriptionUpdated(obj: StripeObject) {
     await upsertEntitlement({
       ...existing,
       plan,
+      credits:
+        plan !== existing.plan ? creditsForPlan(plan) : existing.credits,
       status: "active",
       updatedAt: new Date().toISOString(),
     });

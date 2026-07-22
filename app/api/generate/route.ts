@@ -12,12 +12,11 @@ import {
   type ModelPreference,
 } from "@/lib/models";
 import { ensureSession, publicSession, saveSession } from "@/lib/session";
+import { DEMO_VIDEOS } from "@/lib/demoVideos";
+import { watermarkWorkerConfigured } from "@/lib/videoWatermark";
 
 export const runtime = "nodejs";
 export const maxDuration = 180;
-
-const DEMO_VIDEO =
-  "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
 
 export async function POST(req: Request) {
   let body: {
@@ -66,6 +65,28 @@ export async function POST(req: Request) {
   }
 
   let session = await ensureSession();
+
+  // Validation mode must be truthful and free: return an owned Pikbo Lab
+  // preview, never a generic third-party clip, and never consume credits.
+  if (!process.env.FAL_KEY) {
+    const demo =
+      DEMO_VIDEOS.find((item) => item.preset === preset.slug) ?? DEMO_VIDEOS[0];
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    return NextResponse.json({
+      videoUrl: demo.mp4,
+      posterUrl: demo.poster,
+      demo: true,
+      provenance: "cached-pikbo-lab",
+      chargedCredits: 0,
+      watermark: true,
+      model: "demo-no-provider-call",
+      duration: clampDuration(duration, preset.duration),
+      aspectRatio: normalizeAspect(aspectRatio, preset.aspectRatio),
+      session: publicSession(session),
+      message: "Private validation preview — no model request or credit charge.",
+    });
+  }
+
   const check = checkCredits(session);
   if (!check.ok) {
     return NextResponse.json(
@@ -80,11 +101,26 @@ export async function POST(req: Request) {
     );
   }
 
-  session = deductCredits(session, check.cost);
-  await saveSession(session);
-
   const plan = getPlan(session.plan);
   const freeTier = plan.watermark;
+  if (process.env.NODE_ENV === "production" && freeTier) {
+    const workerReady = watermarkWorkerConfigured();
+    return NextResponse.json(
+      {
+        error: workerReady
+          ? "Free exports use the asynchronous generation pipeline"
+          : "Free export processing is not configured",
+        code: workerReady
+          ? "USE_ASYNC_GENERATION_PIPELINE"
+          : "WATERMARK_WORKER_NOT_CONFIGURED",
+        session: publicSession(session),
+      },
+      { status: workerReady ? 409 : 503 }
+    );
+  }
+
+  session = deductCredits(session, check.cost);
+  await saveSession(session);
   const secs = clampDuration(duration, preset.duration);
   const aspect = normalizeAspect(aspectRatio, preset.aspectRatio);
 
@@ -97,19 +133,6 @@ export async function POST(req: Request) {
       : custom
         ? `${preset.promptTemplate} Additional direction: ${custom}.`
         : preset.promptTemplate;
-
-  if (!process.env.FAL_KEY) {
-    await new Promise((r) => setTimeout(r, 1200));
-    return NextResponse.json({
-      videoUrl: DEMO_VIDEO,
-      demo: true,
-      watermark: plan.watermark,
-      model: "demo",
-      duration: secs,
-      aspectRatio: aspect,
-      session: publicSession(session),
-    });
-  }
 
   const model = modelForTier({
     freeTier,

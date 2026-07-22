@@ -1,7 +1,7 @@
 # Pre-launch audit — find every problem before innovating
 
-**Date:** 2026-07-22  
-**Gate rule:** bugs → diffs → honesty → residual risk → then innovate → then deploy.  
+**Date:** 2026-07-22
+**Gate rule:** bugs → diffs → honesty → residual risk → then innovate → then deploy.
 **Build / lint:** green after this pass.
 
 ---
@@ -36,19 +36,19 @@
 
 ### OK for **demo / soft launch** (FAL_KEY + free only)
 
-- I2V Seedance path live  
-- Credits deduct + refund on fail  
-- Free → Fast + 480p server-enforced  
-- Pricing cards honest  
-- Demo mode if no `FAL_KEY`  
+- I2V Seedance path live
+- Credits deduct + refund on fail
+- Free → Fast + 480p server-enforced
+- Pricing cards honest
+- Demo mode if no `FAL_KEY`
 
 ### Explicitly **not** claiming
 
-- Multi-model Kling/Veo/Sora live  
-- Cloud library / auth  
-- Face-swap / lipsync / upscale (catalog stubs)  
-- Annual billing  
-- 1080p  
+- Multi-model Kling/Veo/Sora live
+- Cloud library / auth
+- Face-swap / lipsync / upscale (catalog stubs)
+- Annual billing
+- 1080p
 
 ---
 
@@ -70,14 +70,14 @@
 
 ## 4. Product honesty checklist (ship criteria)
 
-- [x] Free resolution matches server (480p)  
-- [x] Paid resolution matches server (720p)  
-- [x] Annual not sellable without yearly prices  
-- [x] T2V not sold as live  
-- [x] Stub apps labeled  
-- [ ] Watermark copy says “on-player” until ffmpeg (still soft)  
-- [ ] Production env: `SESSION_SECRET`, `FAL_KEY`  
-- [ ] Stripe only after R1 store is durable  
+- [x] Free resolution matches server (480p)
+- [x] Paid resolution matches server (720p)
+- [x] Annual not sellable without yearly prices
+- [x] T2V not sold as live
+- [x] Stub apps labeled
+- [ ] Watermark copy says “on-player” until ffmpeg (still soft)
+- [ ] Production env: `SESSION_SECRET`, `FAL_KEY`
+- [ ] Stripe only after R1 store is durable
 
 ---
 
@@ -85,18 +85,18 @@
 
 Do these **after** residual R1–R4 are accepted or fixed — not instead of:
 
-1. **Toy-native presets** that HF/Yiha won’t own (blind-box pull, shelf flex, Whatnot thrift)  
-2. **One-click sample stills** → effect chains already started — deepen  
-3. **Seller pack**: spin + unbox + listing crop as one batch template  
-4. **Community explore** of real user clips (needs auth + storage)  
-5. Brand polish: motion, empty states, “own toys only” trust  
+1. **Toy-native presets** that HF/Yiha won’t own (blind-box pull, shelf flex, Whatnot thrift)
+2. **One-click sample stills** → effect chains already started — deepen
+3. **Seller pack**: spin + unbox + listing crop as one batch template
+4. **Community explore** of real user clips (needs auth + storage)
+5. Brand polish: motion, empty states, “own toys only” trust
 
 ---
 
 ## 6. Recommended launch ladder
 
-1. **Soft public** — domain + Vercel + `SESSION_SECRET` + `FAL_KEY`, free + demo paywall  
-2. **Charge** — only after durable entitlements (Supabase)  
-3. **Scale** — auth, rate limit, burn-in watermark, multi-model keys  
+1. **Soft public** — domain + Vercel + `SESSION_SECRET` + `FAL_KEY`, free + demo paywall
+2. **Charge** — only after durable entitlements (Supabase)
+3. **Scale** — auth, rate limit, burn-in watermark, multi-model keys
 
 Boss: deploy is still **your** button when product gate passes — agents do not push DNS/Vercel creds.

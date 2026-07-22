@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { GUIDES, getGuide } from "@/lib/guides";
 import { getPreset } from "@/lib/presets";
 import { PresetCard } from "@/components/PresetCard";
+import { LandingToolPanel } from "@/components/LandingToolPanel";
 import { site } from "@/lib/site";
 
 export function generateStaticParams() {
@@ -43,6 +44,7 @@ export default async function GuidePage({
   const effects = g.relatedEffects
     .map((s) => getPreset(s))
     .filter((p) => p !== undefined);
+  const primary = effects[0];
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -87,6 +89,17 @@ export default async function GuidePage({
           </span>
           <h1 className="mt-4 text-4xl font-bold leading-tight">{g.title}</h1>
           <p className="mt-3 text-lg text-[var(--fg-muted)]">{g.dek}</p>
+
+          {primary && (
+            <div className="mt-8">
+              <LandingToolPanel
+                effectSlug={primary.slug}
+                effectName={primary.name}
+                duration={primary.duration}
+                aspectRatio={primary.aspectRatio}
+              />
+            </div>
+          )}
 
           <p className="mt-8 leading-relaxed text-[var(--fg-muted)]">{g.intro}</p>
 

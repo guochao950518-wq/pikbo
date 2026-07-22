@@ -16,8 +16,8 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | T2 | Real fal sample clips / homepage demos | GPT | done | agent/gpt/homepage-demos | 6 original encoded demos; cached/no FAL cost; verified fal renders can replace assets later |
 | T3 | Keyword + preset expansion (long-tail SEO) | Claude | done | agent/claude/seo-keywords | +use-cases + toy-types |
 | T4 | Stripe webhook (renew/cancel plan) | Grok | done | agent/grok/ship-billing-launch | webhook + confirm + entitlements |
-| T5 | Supabase auth + durable credits | — | todo | — | **Block real Stripe** — file entitlements ephemeral on Vercel |
-| T6 | Server-side free watermark (ffmpeg) | — | todo | — | Player overlay is temporary |
+| T5 | Supabase auth + durable credits | GPT | review | agent/gpt/product-foundation | Auth adapter, private data model, transactional ledger done; migration + real two-browser test pending |
+| T6 | Server-side free watermark (ffmpeg) | GPT | review | agent/gpt/product-foundation | Burn-and-private-delivery path done; real ffmpeg/fal output test pending |
 | T7 | Vercel deploy + domain pikbo.ai | — | blocked | — | Boss gate: audit first (PRELAUNCH_AUDIT) |
 | T10 | Boss one-command + Telegram bot | Grok | done | main | DISPATCH + tools/telegram_dispatch_bot.py |
 | T11 | Higgsfield-class shell + Generate | Grok | done | main | AppShell + CreateStudio + Library history |
@@ -31,10 +31,12 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | T19 | Generate search/recent/progress/copy + mobile CTA | Grok | done | main | |
 | T20 | Favorites, before/after, onboarding, trust strip | Grok | done | main | |
 | T21 | Gap close: image API, resolution, settings, cmd-K, library, annual UI | Grok | done | main | docs/GAP_AUDIT.md |
-| T22 | Pre-launch audit: lint green, pricing honesty, size guard, T2V honesty | Grok | done | main | docs/PRELAUNCH_AUDIT.md |
-| T8 | Batch generate for Shop plan | — | todo | — | After auth/credits DB |
+| T8 | Batch generate for Shop plan | GPT | review | agent/gpt/product-foundation | SKU Campaign queue, partial retry, CSV done; ZIP waits for live Storage |
 | T9 | Effect preset expansion (studio + SEO landing) | Claude | done | agent/claude/seo-presets | +3 effects |
 | T11 | Guides: informational long-tail content | Claude | done | agent/claude/guides | 3 how-to/tips/ideas articles at /guides; Article+FAQ JSON-LD; cross-linked to effects |
+| T22 | Async generation + SKU Studio product polish | GPT | review | agent/gpt/product-foundation | Product flow + browser validation passed; real Supabase/fal integration remains gated by credentials |
+| T23 | Pre-launch audit: lint green, pricing honesty, size guard, T2V honesty | Grok | done | main | docs/PRELAUNCH_AUDIT.md |
+| T24 | Higgsfield-class toy product rebuild: shell, Explore, projects, Studio, Effects, safe URL import | GPT + Grok + Claude | done | agent/gpt/higgsfield-product-clone | 30 recipes, 6 honest Lab projects, responsive QA, 97-route build; payment/DNS intentionally untouched |
 
 ---
 
@@ -58,7 +60,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 
 | Path / area | Locked by | Until |
 |---|---|---|
-| — | — | — |
+| — | — | No active locks after T24 handoff |
 
 When you start: add a row. When you merge: clear it.
 

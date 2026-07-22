@@ -2,51 +2,74 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { useToast } from "@/components/Toast";
 import {
   clearHistory,
   loadHistory,
   removeHistoryItem,
   type HistoryItem,
 } from "@/lib/history";
-import { useToast } from "@/components/Toast";
+
+type CloudJob = {
+  id: string;
+  presetId: string;
+  status: "queued" | "running" | "succeeded" | "failed" | "canceled";
+  progress: number;
+  outputUrl?: string;
+  posterUrl?: string;
+  demo: boolean;
+  watermark: boolean;
+  model: string;
+  error?: string;
+  chargedCredits: number;
+  updatedAt: string;
+};
 
 export function LibraryGrid() {
   const [items, setItems] = useState<HistoryItem[]>([]);
   const [ready, setReady] = useState(false);
   const [filter, setFilter] = useState("");
   const [sort, setSort] = useState<"new" | "name">("new");
+  const [cloudJobs, setCloudJobs] = useState<CloudJob[]>([]);
+  const [cloudReady, setCloudReady] = useState(false);
+  const [cloudPersisted, setCloudPersisted] = useState(false);
   const toast = useToast();
 
   useEffect(() => {
-    const t = window.setTimeout(() => {
+    const timer = window.setTimeout(() => {
       setItems(loadHistory());
       setReady(true);
     }, 0);
-    return () => window.clearTimeout(t);
+    fetch("/api/generations", { cache: "no-store" })
+      .then((response) => response.json())
+      .then((data: { jobs?: CloudJob[]; persisted?: boolean }) => {
+        setCloudJobs(data.jobs ?? []);
+        setCloudPersisted(Boolean(data.persisted));
+      })
+      .catch(() => {})
+      .finally(() => setCloudReady(true));
+    return () => window.clearTimeout(timer);
   }, []);
 
   const effectNames = useMemo(() => {
-    const map = new Map<string, string>();
-    for (const i of items) map.set(i.effect, i.effectName);
-    return [...map.entries()];
+    const names = new Map<string, string>();
+    for (const item of items) names.set(item.effect, item.effectName);
+    return [...names.entries()];
   }, [items]);
 
   const filtered = useMemo(() => {
     const q = filter.trim().toLowerCase();
-    let list = items;
-    if (q) {
-      list = items.filter(
-        (i) =>
-          i.effectName.toLowerCase().includes(q) ||
-          i.effect.toLowerCase().includes(q)
-      );
-    }
+    let next = q
+      ? items.filter(
+          (item) =>
+            item.effectName.toLowerCase().includes(q) ||
+            item.effect.toLowerCase().includes(q)
+        )
+      : items;
     if (sort === "name") {
-      list = [...list].sort((a, b) =>
-        a.effectName.localeCompare(b.effectName)
-      );
+      next = [...next].sort((a, b) => a.effectName.localeCompare(b.effectName));
     }
-    return list;
+    return next;
   }, [items, filter, sort]);
 
   async function copyLink(url: string) {
@@ -54,37 +77,34 @@ export function LibraryGrid() {
       await navigator.clipboard.writeText(url);
       toast("Link copied");
     } catch {
-      toast("Could not copy");
+      toast("Could not copy link");
     }
   }
 
-  if (!ready) {
+  if (!ready || !cloudReady) {
     return (
       <p className="py-20 text-center text-sm text-[var(--fg-dim)]">Loading…</p>
     );
   }
 
-  if (items.length === 0) {
+  if (items.length === 0 && cloudJobs.length === 0) {
     return (
       <div className="mt-10 grid place-items-center rounded-2xl border border-dashed border-[var(--border)] bg-[var(--bg-soft)] py-20 text-center">
         <p className="text-3xl">▢</p>
-        <p className="mt-3 text-[var(--fg-muted)]">No clips on this device yet</p>
+        <p className="mt-3 text-[var(--fg-muted)]">No clips yet</p>
         <p className="mt-2 max-w-sm text-xs text-[var(--fg-dim)]">
-          Generations stay in this browser. Start from a tool page or the full
-          studio — results show up here automatically.
+          Signed-in generations appear here from the cloud. Guest legacy clips
+          remain on this browser only.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <Link href="/create" className="btn btn-primary text-sm">
             Open Generate
           </Link>
-          <Link
-            href="/effects/360-spin-showcase"
-            className="btn btn-ghost text-sm"
-          >
-            360° spin tool
+          <Link href="/effects/360-spin-showcase" className="btn btn-ghost text-sm">
+            360° spin recipe
           </Link>
           <Link href="/supercomputer" className="btn btn-ghost text-sm">
-            Batch
+            SKU Campaign
           </Link>
         </div>
       </div>
@@ -93,6 +113,88 @@ export function LibraryGrid() {
 
   return (
     <div className="mt-8">
+      <section>
+        <div className="mb-4 flex items-end justify-between gap-3">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--mint)]">
+              {cloudPersisted ? "Cloud library" : "Validation tasks"}
+            </p>
+            <h2 className="mt-1 text-lg font-semibold">Tracked generation jobs</h2>
+          </div>
+          <Link href="/create" className="text-xs text-[var(--brand)] hover:underline">
+            New clip →
+          </Link>
+        </div>
+        {cloudJobs.length > 0 ? (
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {cloudJobs.map((job) => (
+              <article key={job.id} className="card overflow-hidden p-0">
+                <div className="grid aspect-video place-items-center bg-black/50">
+                  {job.outputUrl ? (
+                    <video
+                      src={job.outputUrl}
+                      poster={job.posterUrl}
+                      className="h-full w-full object-contain"
+                      controls
+                      muted
+                      playsInline
+                      preload="metadata"
+                    />
+                  ) : (
+                    <div className="px-4 text-center text-xs text-[var(--fg-dim)]">
+                      {job.status === "failed" ? job.error || "Generation failed" : `${job.status} · ${job.progress}%`}
+                    </div>
+                  )}
+                </div>
+                <div className="p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-semibold">{job.presetId.replaceAll("-", " ")}</p>
+                    <span className="chip text-[9px]">{job.demo ? "validation" : job.status}</span>
+                  </div>
+                  <p className="mt-1 text-[10px] text-[var(--fg-dim)]">
+                    {job.model} · {job.chargedCredits} credits
+                    {job.watermark ? " · watermarked" : ""}
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
+                    <Link href={`/create?effect=${job.presetId}`} className="text-xs text-[var(--mint)] hover:underline">
+                      New version
+                    </Link>
+                    {job.outputUrl && (
+                      <>
+                        <a
+                          href={job.outputUrl}
+                          download={`pikbo-${job.presetId}.mp4`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-xs text-[var(--fg-muted)] hover:text-[var(--mint)]"
+                        >
+                          Download
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => void copyLink(job.outputUrl!)}
+                          className="text-xs text-[var(--fg-muted)] hover:text-[var(--mint)]"
+                        >
+                          Copy link
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className="rounded-xl border border-dashed border-[var(--border)] px-4 py-8 text-center text-xs text-[var(--fg-dim)]">
+            No tracked cloud jobs yet.
+          </p>
+        )}
+      </section>
+
+      <div className="my-8 border-t border-[var(--border)]" />
+      <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--fg-dim)]">
+        Legacy device library
+      </p>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <input
@@ -117,7 +219,7 @@ export function LibraryGrid() {
           type="button"
           className="text-xs text-[var(--fg-dim)] hover:text-[var(--brand)]"
           onClick={() => {
-            if (confirm("Clear all clips from this browser?")) {
+            if (window.confirm("Clear all legacy clips from this browser?")) {
               clearHistory();
               setItems([]);
             }
@@ -157,7 +259,7 @@ export function LibraryGrid() {
         </div>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {filtered.map((item) => (
           <article key={item.id} className="card group overflow-hidden p-0">
             <div className="relative aspect-video bg-black/50">
@@ -211,7 +313,7 @@ export function LibraryGrid() {
                   href={`/effects/${item.effect}`}
                   className="text-xs text-[var(--fg-muted)] hover:text-[var(--mint)]"
                 >
-                  Tool page
+                  Recipe
                 </Link>
                 <Link
                   href={`/create?effect=${item.effect}`}
