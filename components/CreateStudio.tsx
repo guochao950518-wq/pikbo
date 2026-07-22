@@ -878,7 +878,7 @@ export function CreateStudio({
               {usedModel || MODELS.find((m) => m.id === modelId)?.label}
             </span>
           </div>
-          <div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-2xl border border-[var(--border)] bg-black/40">
+          <div className="relative flex min-h-[440px] flex-1 items-center justify-center overflow-hidden rounded-2xl border border-[var(--mint)]/15 bg-black bg-[radial-gradient(120%_80%_at_50%_0%,rgba(200,255,61,0.07),transparent_60%)] ring-1 ring-inset ring-white/5">
             {status === "generating" && (
               <div className="p-10 text-center text-[var(--fg-muted)]">
                 <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--mint)]" />
@@ -1035,12 +1035,22 @@ export function CreateStudio({
               </div>
             )}
             {(status === "idle" || status === "error") && !videoUrl && (
-              <div className="p-10 text-center text-sm text-[var(--fg-dim)]">
-                <p className="text-3xl">🧸</p>
-                <p className="mt-3">Your clip will land here</p>
-                <p className="mt-1 text-xs">
-                  Perfect for TikTok, Etsy, Whatnot, shelf flexes
+              <div className="flex flex-col items-center p-10 text-center">
+                <span className="grid h-16 w-16 place-items-center rounded-2xl border border-[var(--mint)]/30 bg-[var(--mint)]/[0.06] text-[var(--mint)] shadow-[0_0_40px_-8px_rgba(200,255,61,0.35)]">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M8 5.5v13l11-6.5-11-6.5Z" />
+                  </svg>
+                </span>
+                <p className="mt-5 font-display text-lg font-bold uppercase tracking-tight text-white">
+                  Your clip lands here
                 </p>
+                <p className="mt-1.5 text-xs text-[var(--fg-muted)]">
+                  Built for TikTok · Etsy · Whatnot · shelf flexes
+                </p>
+                <span className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-[var(--mint)]/25 bg-black/40 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--mint)]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--mint)]" />
+                  {aspectRatio} · {effectiveDuration}s
+                </span>
               </div>
             )}
           </div>
