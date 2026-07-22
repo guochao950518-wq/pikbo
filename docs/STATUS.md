@@ -1,6 +1,6 @@
 # Pikbo board — claim before you code
 
-**Last human intent:** Musk first-principles + 5-step algorithm — critical path only; soft launch blocked on boss deploy (LAUNCH.md). See `docs/FIRST_PRINCIPLES.md`.
+**Last human intent:** Three-lane: Claude design UI; Codex conversion/truth copy (C1–C5); Grok engine + merge. Nobody idle.
 
 Update this file in the same PR/commit as your work start/finish.
 
@@ -21,6 +21,9 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | T7 | Vercel deploy + domain pikbo.ai | boss | blocked | — | **Step-4 bottleneck** — LAUNCH.md; code soft-ready |
 | FP0 | First-principles nav + Mini truth + doctrine | Grok | done | main | AppShell primary/more; docs/FIRST_PRINCIPLES.md |
 | FP1 | critical-path smoke script | Grok | done | main | `npm run critical-path` |
+| G-ops | demo map + rate limit + dev topup + preflight demos | Grok | done | agent/grok/foundation-ops | no UI aesthetic conflict |
+| UI-q | UI quality r1–r3 aesthetic | Claude | doing | agent/claude/ui-quality | font/grain/craft — Grok hands off |
+| C1–C5 | truth-sync: pricing numbers, estimator, economics, microcopy | Codex | todo | agent/gpt/truth-sync | claim + ship; Grok merges |
 | T10 | Boss one-command + Telegram bot | Grok | done | main | DISPATCH + tools/telegram_dispatch_bot.py |
 | T11 | Higgsfield-class shell + Generate | Grok | done | main | AppShell + CreateStudio + Library history |
 | T12 | Home model shelf + presets wall polish | GPT | done | agent/gpt/home-visuals | Live-model previews + demo-aware preset cards; roadmap models explicit |
@@ -44,6 +47,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | T27 | Preset/SEO copy wave 2 (toy seller language) | Claude | todo | agent/claude/copy-seo-v2 | DISPATCH L1–L2 |
 | T28 | Pricing conversion copy A/B | GPT | done | agent/gpt/pricing-mobile | Outcome default; `?copy=cost` cost-control variant; plan volume explicitly prototype-only |
 | T29 | Homepage first-screen 390px acceptance + polish | GPT | done | agent/gpt/pricing-mobile | No x-overflow; primary CTA visible; duplicate home floating CTA removed; accessible demo controls |
+| T30 | Pricing UI matches active credit contract | GPT | done | agent/gpt/pricing-truth-main | Free 1 / Creator ~5 / Shop ~15; billing gate and future model-aware weights remain explicit |
 | T5 | Supabase auth + durable credits | — | todo | — | **Blocks serious Stripe** |
 | T6 | Server-side free watermark (ffmpeg) | Grok | todo | — | After T23/T24 |
 

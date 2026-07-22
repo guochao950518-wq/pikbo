@@ -40,7 +40,8 @@ export type GenerateErrorBody = {
     | "IMAGE_TOO_LARGE"
     | "UNKNOWN_EFFECT"
     | "MODEL_EMPTY"
-    | "GENERATION_FAILED";
+    | "GENERATION_FAILED"
+    | "RATE_LIMITED";
   need?: number;
   have?: number;
   model?: string;

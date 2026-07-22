@@ -22,6 +22,10 @@ export async function GET() {
     stripe,
     sessionSecret,
     mode: fal ? "live-generate" : "demo-cached",
+    rateLimit: "memory-8rpm",
+    devTopup:
+      process.env.NODE_ENV === "development" ||
+      process.env.PIKBO_DEV_TOPUP === "1",
     video: {
       free:
         process.env.FAL_MODEL_FREE ||

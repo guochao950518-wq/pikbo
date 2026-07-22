@@ -12,6 +12,8 @@ import {
   type ModelPreference,
 } from "@/lib/models";
 import { ensureSession, publicSession, saveSession } from "@/lib/session";
+import { demoClipForEffect } from "@/lib/demoClips";
+import { pruneRateLimit, takeToken } from "@/lib/rateLimit";
 import type {
   GenerateErrorBody,
   GenerateRequestBody,
@@ -20,22 +22,6 @@ import type {
 
 export const runtime = "nodejs";
 export const maxDuration = 180;
-
-/** Local toy demos when FAL_KEY missing — product-relevant, never random stock */
-const DEMO_CLIPS = [
-  "/demos/scout-packshot-spin.mp4",
-  "/demos/orbit-hyper-cgi.mp4",
-  "/demos/moon-box-reveal.mp4",
-  "/demos/beatbot-viral-hook.mp4",
-] as const;
-
-function demoClipForEffect(effect: string): string {
-  let h = 0;
-  for (let i = 0; i < effect.length; i++) {
-    h = (h + effect.charCodeAt(i) * 17) % DEMO_CLIPS.length;
-  }
-  return DEMO_CLIPS[h] ?? DEMO_CLIPS[0];
-}
 
 function err(
   body: GenerateErrorBody,
@@ -81,11 +67,28 @@ export async function POST(req: Request) {
   }
 
   let session = await ensureSession();
+
+  pruneRateLimit();
+  const rl = takeToken(`gen:${session.id}`, 8, 60_000);
+  if (!rl.ok) {
+    return err(
+      {
+        error: `Too many generates — try again in ${rl.retryAfterSec}s`,
+        code: "RATE_LIMITED",
+        session: publicSession(session),
+      },
+      429
+    );
+  }
+
   const check = checkCredits(session);
   if (!check.ok) {
     return err(
       {
-        error: "Not enough credits",
+        error:
+          session.plan === "free"
+            ? "Free trial used up — upgrade on Pricing, or wait for monthly refresh"
+            : "Not enough credits",
         code: "INSUFFICIENT_CREDITS",
         need: check.need,
         have: check.have,

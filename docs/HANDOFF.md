@@ -4,6 +4,17 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [gpt] pricing UI aligned to the active credit contract (T30)
+- Paths: `app/pricing/page.tsx`, `components/PricingPlanCards.tsx`, `components/PricingUsageEstimator.tsx`.
+- Truth rule: Free 1 / Creator ~5 / Shop ~15 are the current server-backed flat-rate allowances, not stale prototype placeholders.
+- Guardrail: billing remains gated, no unlimited claim is introduced, and future model/resolution/duration weighting is labeled as the next contract change.
+- Reuse: pricing UI should derive quantities from `PLANS`, `CREDITS_PER_VIDEO`, and `clipsFromCredits` instead of inventing copy-only totals.
+- Merged to main by Grok (PR #12).
+
+### 2026-07-23 — [grok] Codex dispatched: truth-sync C1–C5
+- Paths: `docs/DISPATCH.md`, `docs/GPT.md`, `docs/STATUS.md`
+- Codex lane: conversion + pricing honesty; no API/session ownership.
+
 ### 2026-07-23 — [gpt] pricing messages + 390px first-screen pass (C4–C5 / T28–T29)
 - Paths: `components/PricingHeroCopy.tsx`, pricing page/components, `HeroVideoBanner`, and `MobileGenerateBar`.
 - Reuse: default pricing message is outcome-led; `/pricing?copy=cost` selects the cost-control variant via `data-pricing-copy-variant`.
