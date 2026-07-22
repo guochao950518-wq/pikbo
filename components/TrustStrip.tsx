@@ -1,25 +1,33 @@
 import Link from "next/link";
 
-/** Social proof / trust row for conversion */
 export function TrustStrip() {
   return (
-    <section className="border-b border-[var(--border)] bg-[var(--bg-soft)]/50 px-4 py-6 sm:px-8">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-8 gap-y-3 text-center text-xs text-[var(--fg-muted)]">
+    <section className="border-y border-[var(--border)] bg-white px-4 py-5 sm:px-8">
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-10 gap-y-3 text-center text-xs tracking-wide text-[var(--fg-muted)]">
         <span>
-          <strong className="text-[var(--fg)]">Seedance</strong> by ByteDance
+          Powered by{" "}
+          <strong className="font-semibold text-[var(--fg)]">Seedance</strong>
         </span>
-        <span>Photo of toys you own only</span>
-        <span>Free tier · watermarked</span>
+        <span className="hidden h-3 w-px bg-[var(--border)] sm:block" />
+        <span>Toys you own</span>
+        <span className="hidden h-3 w-px bg-[var(--border)] sm:block" />
+        <span>Free trial · watermarked</span>
+        <span className="hidden h-3 w-px bg-[var(--border)] sm:block" />
         <span>
-          Built for{" "}
-          <Link href="/for/etsy-listing-videos" className="text-[var(--brand)] hover:underline">
+          Made for{" "}
+          <Link
+            href="/for/etsy-listing-videos"
+            className="font-medium text-[var(--fg)] underline-offset-2 hover:underline"
+          >
             Etsy
           </Link>
-          ,{" "}
-          <Link href="/for/tiktok-shop-product-videos" className="text-[var(--brand)] hover:underline">
+          {" · "}
+          <Link
+            href="/for/tiktok-shop-product-videos"
+            className="font-medium text-[var(--fg)] underline-offset-2 hover:underline"
+          >
             TikTok Shop
           </Link>
-          , collectors
         </span>
       </div>
     </section>

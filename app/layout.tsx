@@ -1,10 +1,17 @@
 import type { Metadata } from "next";
-import { Space_Grotesk } from "next/font/google";
+import { Outfit, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { site } from "@/lib/site";
 import { AppShell } from "@/components/AppShell";
 
-const display = Space_Grotesk({
+/** Display: fashion/retail impact · Body: clean readable */
+const display = Outfit({
+  variable: "--font-display",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const body = DM_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
   display: "swap",
@@ -13,7 +20,7 @@ const display = Space_Grotesk({
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} — AI Video Studio`,
+    default: `${site.name} — Designer toy AI video`,
     template: `%s | ${site.name}`,
   },
   description: site.description,
@@ -26,7 +33,7 @@ export const metadata: Metadata = {
     "collectible product video",
   ],
   openGraph: {
-    title: `${site.name} — AI Video Studio`,
+    title: `${site.name} — Designer toy AI video`,
     description: site.description,
     url: site.url,
     siteName: site.name,
@@ -34,7 +41,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: `${site.name} — AI Video Studio`,
+    title: `${site.name} — Designer toy AI video`,
     description: site.description,
   },
 };
@@ -45,8 +52,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${display.variable} h-full`}>
-      <body className="min-h-full bg-[var(--bg)] text-[var(--fg)]">
+    <html lang="en" className={`${display.variable} ${body.variable} h-full`}>
+      <body className="min-h-full bg-[var(--bg)] font-sans text-[var(--fg)] antialiased">
         <AppShell>{children}</AppShell>
       </body>
     </html>

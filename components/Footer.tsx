@@ -4,34 +4,34 @@ import { CATEGORIES } from "@/lib/presets";
 import { USE_CASES } from "@/lib/usecases";
 import { TOY_TYPES } from "@/lib/toytypes";
 
-// The footer doubles as an internal-linking hub for SEO — every effect page
-// is linked from every page. This is the pSEO backbone.
 export function Footer() {
   return (
-    <footer className="border-t border-[var(--border)] mt-24">
-      <div className="container-x py-14">
-        <div className="grid gap-10 md:grid-cols-6">
+    <footer className="mt-20 border-t border-[var(--border)] bg-white">
+      <div className="container-x py-16">
+        <div className="grid gap-12 md:grid-cols-6">
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2 font-bold text-lg">
+            <div className="flex items-center gap-2.5">
               <span
-                className="grid h-8 w-8 place-items-center rounded-xl"
+                className="grid h-9 w-9 place-items-center rounded-full text-xs font-black text-white"
                 style={{ background: "var(--grad)" }}
               >
-                🧸
+                P
               </span>
-              {site.name}
+              <span className="font-[family-name:var(--font-display)] text-xl font-semibold tracking-tight">
+                {site.name}
+              </span>
             </div>
-            <p className="mt-3 text-sm text-[var(--fg-dim)] max-w-xs">
-              {site.tagline}. Made for collectors and toy sellers.
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-[var(--fg-muted)]">
+              {site.tagline}. Premium motion for designer toys you already own.
             </p>
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold mb-3">Effects</h4>
-            <ul className="space-y-2 text-sm text-[var(--fg-muted)]">
+            <h4 className="section-label mb-4">Effects</h4>
+            <ul className="space-y-2.5 text-sm text-[var(--fg-muted)]">
               <li>
                 <Link href="/effects" className="hover:text-[var(--fg)]">
-                  All effects
+                  All presets
                 </Link>
               </li>
               {CATEGORIES.map((c) => (
@@ -48,26 +48,16 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold mb-3">Product</h4>
-            <ul className="space-y-2 text-sm text-[var(--fg-muted)]">
+            <h4 className="section-label mb-4">Product</h4>
+            <ul className="space-y-2.5 text-sm text-[var(--fg-muted)]">
               <li>
                 <Link href="/create" className="hover:text-[var(--fg)]">
-                  Create a clip
+                  Create
                 </Link>
               </li>
               <li>
                 <Link href="/pricing" className="hover:text-[var(--fg)]">
                   Pricing
-                </Link>
-              </li>
-              <li>
-                <Link href="/#how" className="hover:text-[var(--fg)]">
-                  How it works
-                </Link>
-              </li>
-              <li>
-                <Link href="/guides" className="hover:text-[var(--fg)]">
-                  Guides
                 </Link>
               </li>
               <li>
@@ -78,6 +68,11 @@ export function Footer() {
               <li>
                 <Link href="/library" className="hover:text-[var(--fg)]">
                   Library
+                </Link>
+              </li>
+              <li>
+                <Link href="/guides" className="hover:text-[var(--fg)]">
+                  Guides
                 </Link>
               </li>
               <li>
@@ -94,8 +89,8 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold mb-3">For</h4>
-            <ul className="space-y-2 text-sm text-[var(--fg-muted)]">
+            <h4 className="section-label mb-4">For</h4>
+            <ul className="space-y-2.5 text-sm text-[var(--fg-muted)]">
               {USE_CASES.map((u) => (
                 <li key={u.slug}>
                   <Link
@@ -110,8 +105,8 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold mb-3">Toys</h4>
-            <ul className="space-y-2 text-sm text-[var(--fg-muted)]">
+            <h4 className="section-label mb-4">Toys</h4>
+            <ul className="space-y-2.5 text-sm text-[var(--fg-muted)]">
               {TOY_TYPES.map((t) => (
                 <li key={t.slug}>
                   <Link
@@ -126,12 +121,11 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col gap-2 border-t border-[var(--border)] pt-6 text-xs text-[var(--fg-dim)] sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-14 flex flex-col gap-2 border-t border-[var(--border)] pt-8 text-xs text-[var(--fg-dim)] sm:flex-row sm:items-center sm:justify-between">
           <p>
-            © {new Date().getFullYear()} {site.name}. Animate the toys you own —
-            upload your own photos.
+            © {new Date().getFullYear()} {site.name}. Animate toys you own.
           </p>
-          <p>{site.domain}</p>
+          <p className="tracking-wide">{site.domain}</p>
         </div>
       </div>
     </footer>

@@ -53,14 +53,13 @@ export function HeroDemoStage() {
 
   return (
     <div className="relative mx-auto w-full max-w-[640px]">
-      <div className="absolute -inset-8 -z-10 rounded-[3rem] bg-[radial-gradient(circle_at_50%_50%,rgba(168,85,247,.28),transparent_68%)] blur-2xl" />
-      <div className="overflow-hidden rounded-[1.8rem] border border-white/12 bg-black shadow-[0_35px_90px_-35px_rgba(0,0,0,.95)]">
-        <div className="flex items-center justify-between border-b border-white/10 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/55">
+      <div className="display-case">
+        <div className="flex items-center justify-between border-b border-[var(--border)] bg-[var(--card-2)] px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--fg-dim)]">
           <span className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-[var(--mint)] shadow-[0_0_14px_var(--mint)]" />
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand)]" />
             Photo → motion
           </span>
-          <span>Cached demo · no credits used</span>
+          <span>Demo · no credits</span>
         </div>
 
         <div className="grid min-h-[420px] grid-cols-[31%_69%] sm:min-h-[520px]">
@@ -167,10 +166,10 @@ export function HeroDemoStage() {
             type="button"
             onClick={() => selectDemo(index)}
             aria-pressed={index === activeIndex}
-            className={`rounded-xl border px-2 py-2 text-left transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--mint)] ${
+            className={`rounded-xl border px-2 py-2 text-left transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)] ${
               index === activeIndex
-                ? "border-white/35 bg-white/10 text-white"
-                : "border-white/8 bg-white/[.035] text-white/45 hover:bg-white/[.07] hover:text-white/75"
+                ? "border-[var(--fg)] bg-white text-[var(--fg)] shadow-[var(--shadow-sm)]"
+                : "border-[var(--border)] bg-white/70 text-[var(--fg-dim)] hover:border-[var(--fg)]/20 hover:text-[var(--fg)]"
             }`}
           >
             <span
@@ -222,7 +221,7 @@ function ShowcaseCard({ demo, index }: { demo: DemoVideo; index: number }) {
 
   return (
     <article
-      className={`group overflow-hidden rounded-[1.4rem] border border-white/10 bg-white/[.035] ${
+      className={`card group overflow-hidden p-0 ${
         index === 0 || index === 3 ? "sm:row-span-2" : ""
       }`}
       onMouseEnter={playPreview}
@@ -270,10 +269,10 @@ function ShowcaseCard({ demo, index }: { demo: DemoVideo; index: number }) {
       <div className="flex items-center justify-between gap-3 p-4">
         <p className="text-xs leading-5 text-[var(--fg-muted)]">{demo.result}</p>
         <Link
-          href={`/create?effect=${demo.preset}`}
-          className="shrink-0 rounded-full border border-white/12 bg-white/[.06] px-3 py-2 text-xs font-semibold text-white transition hover:border-[var(--mint)]/55 hover:text-[var(--mint)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--mint)]"
+          href={`/effects/${demo.preset}`}
+          className="shrink-0 rounded-full border border-[var(--border)] bg-[var(--fg)] px-3 py-2 text-xs font-semibold text-white transition hover:opacity-90"
         >
-          Use look →
+          Open →
         </Link>
       </div>
     </article>
@@ -282,23 +281,25 @@ function ShowcaseCard({ demo, index }: { demo: DemoVideo; index: number }) {
 
 export function HomeDemoShowcase() {
   return (
-    <section id="examples" className="border-y border-white/8 bg-[#08070b] py-20 sm:py-28">
+    <section id="examples" className="border-b border-[var(--border)] bg-white py-16 sm:py-24">
       <div className="container-x">
         <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[var(--mint)]">
-              Real encoded previews
-            </p>
-            <h2 className="mt-3 max-w-2xl text-3xl font-bold leading-tight sm:text-5xl">
+            <p className="section-label">Collection</p>
+            <h2 className="mt-3 max-w-xl font-[family-name:var(--font-display)] text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
               One shelf. More content than you thought.
             </h2>
           </div>
           <div className="max-w-sm">
             <p className="text-sm leading-6 text-[var(--fg-muted)]">
-              Hover a clip on desktop or scroll it into view on mobile. Every look opens with the matching Studio preset.
+              Real demos. Hover on desktop or scroll on mobile. Every look opens
+              a tool page you can remake.
             </p>
-            <Link href="/pricing" className="mt-4 inline-flex text-sm font-semibold text-[var(--mint)] hover:text-white">
-              Compare plans for more clips →
+            <Link
+              href="/pricing"
+              className="mt-4 inline-flex text-sm font-semibold text-[var(--brand)] hover:underline"
+            >
+              Compare plans →
             </Link>
           </div>
         </div>

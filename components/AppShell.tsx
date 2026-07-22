@@ -11,130 +11,149 @@ import { ToastProvider } from "@/components/Toast";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Footer } from "@/components/Footer";
 
-/** Primary product path first; suite extras below. */
-const NAV = [
-  { href: "/", label: "Home", icon: "⌂" },
-  { href: "/create", label: "Generate", icon: "✦" },
-  { href: "/effects", label: "Presets", icon: "🧸" },
-  { href: "/library", label: "Library", icon: "▢" },
-  { href: "/image", label: "Stills", icon: "🖼" },
-  { href: "/cinema", label: "Cinema", icon: "🎞" },
-  { href: "/supercomputer", label: "Batch", icon: "⚡" },
-  { href: "/guides", label: "Guides", icon: "📖" },
-  { href: "/apps", label: "Apps", icon: "▦" },
-  { href: "/models", label: "Models", icon: "◎" },
-  { href: "/explore", label: "Explore", icon: "✧" },
-  { href: "/community", label: "Community", icon: "◉" },
-  { href: "/pricing", label: "Pricing", icon: "$" },
-  { href: "/profile", label: "Profile", icon: "○" },
-  { href: "/settings", label: "Settings", icon: "⚙" },
+/** Retail-style primary nav (POP MART–like top bar, not AI-suite chrome). */
+const NAV_PRIMARY = [
+  { href: "/", label: "Home" },
+  { href: "/create", label: "Create" },
+  { href: "/effects", label: "Presets" },
+  { href: "/explore", label: "Explore" },
+  { href: "/library", label: "Library" },
+  { href: "/pricing", label: "Pricing" },
 ];
+
+const NAV_MORE = [
+  { href: "/image", label: "Stills" },
+  { href: "/cinema", label: "Cinema" },
+  { href: "/supercomputer", label: "Batch" },
+  { href: "/guides", label: "Guides" },
+  { href: "/apps", label: "Apps" },
+  { href: "/models", label: "Models" },
+  { href: "/community", label: "Community" },
+  { href: "/profile", label: "Profile" },
+  { href: "/settings", label: "Settings" },
+];
+
+const MOBILE_TABS = [
+  { href: "/", label: "Home" },
+  { href: "/create", label: "Create" },
+  { href: "/effects", label: "Presets" },
+  { href: "/library", label: "Library" },
+  { href: "/pricing", label: "Plans" },
+];
+
+function isActive(path: string, href: string) {
+  if (href === "/") return path === "/";
+  return path === href || path.startsWith(href + "/");
+}
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const path = usePathname() || "/";
+  const isStudio =
+    path.startsWith("/create") || path.startsWith("/supercomputer");
 
   return (
     <ToastProvider>
-    <div className="flex min-h-screen bg-[var(--bg)] text-[var(--fg)]">
-      <aside className="sticky top-0 z-50 hidden h-screen w-[72px] shrink-0 flex-col border-r border-[var(--border)] bg-[var(--bg-soft)] py-3 lg:flex xl:w-[200px] xl:px-2">
-        <Link
-          href="/"
-          className="mb-4 flex items-center justify-center gap-2 xl:justify-start xl:px-2"
-        >
-          <span
-            className="grid h-9 w-9 place-items-center rounded-xl text-sm font-black text-white shadow-lg"
-            style={{ background: "var(--grad)", boxShadow: "var(--brand-glow)" }}
-          >
-            🧸
-          </span>
-          <span className="hidden text-base font-bold tracking-tight xl:inline">
-            {site.name}
-          </span>
-        </Link>
-        <div className="mb-3 hidden px-2 xl:block">
-          <StatusBadge />
-        </div>
-
-        <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto">
-          {NAV.map((item) => {
-            const active =
-              item.href === "/"
-                ? path === "/"
-                : path === item.href || path.startsWith(item.href + "/");
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center justify-center gap-2.5 rounded-xl px-0 py-2.5 text-[13px] font-medium transition-colors xl:justify-start xl:px-2.5 ${
-                  active
-                    ? "bg-[var(--grad-soft)] text-[var(--fg)] ring-1 ring-[var(--brand)]/35"
-                    : "text-[var(--fg-muted)] hover:bg-[var(--card)] hover:text-[var(--fg)]"
-                }`}
-              >
-                <span className="w-5 text-center text-sm opacity-90">
-                  {item.icon}
+      <div className="flex min-h-screen flex-col bg-[var(--bg)] text-[var(--fg)]">
+        {/* Top retail header */}
+        <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--bg-soft)_92%,transparent)] backdrop-blur-xl">
+          <div className="mx-auto flex h-14 max-w-[1280px] items-center justify-between gap-4 px-4 sm:h-16 sm:px-6">
+            <div className="flex min-w-0 items-center gap-6 lg:gap-10">
+              <Link href="/" className="group flex shrink-0 items-center gap-2.5">
+                <span
+                  className="grid h-8 w-8 place-items-center rounded-full text-[11px] font-black tracking-tight text-white shadow-md sm:h-9 sm:w-9"
+                  style={{ background: "var(--grad)" }}
+                >
+                  P
                 </span>
-                <span className="hidden xl:inline">{item.label}</span>
+                <span
+                  className="font-[family-name:var(--font-display)] text-lg font-semibold tracking-tight sm:text-xl"
+                >
+                  {site.name}
+                </span>
               </Link>
-            );
-          })}
-        </nav>
 
-        <div className="mt-2 hidden border-t border-[var(--border)] pt-3 xl:block">
-          <CreditsBadge />
-          <Link href="/create" className="btn btn-primary mt-3 w-full py-2 text-xs">
-            Generate
-          </Link>
-        </div>
-      </aside>
+              <nav className="hidden items-center gap-0.5 md:flex">
+                {NAV_PRIMARY.map((item) => {
+                  const active = isActive(path, item.href);
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`rounded-full px-3 py-1.5 text-[13px] font-medium transition-colors ${
+                        active
+                          ? "bg-[var(--fg)] text-white"
+                          : "text-[var(--fg-muted)] hover:bg-black/[0.04] hover:text-[var(--fg)]"
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                })}
+                <details className="relative">
+                  <summary className="cursor-pointer list-none rounded-full px-3 py-1.5 text-[13px] font-medium text-[var(--fg-muted)] hover:bg-black/[0.04] hover:text-[var(--fg)] [&::-webkit-details-marker]:hidden">
+                    More
+                  </summary>
+                  <div className="absolute left-0 top-full z-50 mt-2 min-w-[160px] rounded-2xl border border-[var(--border)] bg-white p-1.5 shadow-[var(--shadow-lg)]">
+                    {NAV_MORE.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className="block rounded-xl px-3 py-2 text-[13px] text-[var(--fg-muted)] hover:bg-[var(--bg)] hover:text-[var(--fg)]"
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                </details>
+              </nav>
+            </div>
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-40 flex h-12 items-center justify-between border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--bg)_88%,transparent)] px-3 backdrop-blur-md lg:hidden">
-          <Link href="/" className="flex items-center gap-2 text-sm font-bold">
-            <span
-              className="grid h-7 w-7 place-items-center rounded-lg text-xs"
-              style={{ background: "var(--grad)" }}
-            >
-              🧸
-            </span>
-            {site.name}
-          </Link>
-          <div className="flex items-center gap-2">
-            <CreditsBadge />
-            <Link href="/create" className="btn btn-primary px-3 py-1 text-xs">
-              Generate
-            </Link>
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="hidden lg:block">
+                <StatusBadge />
+              </div>
+              <CreditsBadge />
+              <Link
+                href="/create"
+                className="btn btn-primary !px-4 !py-2 text-xs sm:text-sm"
+              >
+                Create
+              </Link>
+            </div>
           </div>
         </header>
 
         <OnboardingBanner />
         <CommandPalette />
-        <div className="flex-1">{children}</div>
-        <Footer />
+
+        <main className="flex-1">{children}</main>
+
+        {!isStudio && <Footer />}
         <MobileGenerateBar />
 
-        <nav className="sticky bottom-0 z-40 flex overflow-x-auto border-t border-[var(--border)] bg-[var(--bg-soft)] lg:hidden">
-          {NAV.slice(0, 6).map((item) => {
-            const active =
-              item.href === "/"
-                ? path === "/"
-                : path === item.href || path.startsWith(item.href + "/");
+        {/* Mobile bottom tabs — minimal retail */}
+        <nav className="sticky bottom-0 z-40 flex border-t border-[var(--border)] bg-white/95 backdrop-blur-md md:hidden">
+          {MOBILE_TABS.map((item) => {
+            const active = isActive(path, item.href);
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex min-w-[4.2rem] flex-1 flex-col items-center gap-0.5 py-2 text-[9px] ${
+                className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 text-[10px] font-semibold tracking-wide ${
                   active ? "text-[var(--brand)]" : "text-[var(--fg-dim)]"
                 }`}
               >
-                <span className="text-sm">{item.icon}</span>
+                <span
+                  className={`h-1 w-1 rounded-full ${
+                    active ? "bg-[var(--brand)]" : "bg-transparent"
+                  }`}
+                />
                 {item.label}
               </Link>
             );
           })}
         </nav>
       </div>
-    </div>
     </ToastProvider>
   );
 }

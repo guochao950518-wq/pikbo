@@ -13,74 +13,58 @@ import { TrustStrip } from "@/components/TrustStrip";
 import { HeroUpload } from "@/components/HeroUpload";
 
 /**
- * Home feed patterned on full AI creative suites:
- * featured model → apps row → viral presets → community → pricing.
+ * POP MART–inspired home: product theatre first, clean retail hierarchy.
  */
 export default function Home() {
   const liveApps = APPS.filter((a) => a.live).slice(0, 6);
+  const creator = PLANS.find((p) => p.id === "creator");
 
   return (
-    <div className="pb-16">
-      {/* Toy-first conversion hero inside the shared AI-suite shell. */}
-      <section className="glow-bg overflow-hidden border-b border-[var(--border)]">
-        <div className="container-x relative z-10 grid items-center gap-12 py-14 sm:py-18 lg:min-h-[760px] lg:grid-cols-[.86fr_1.14fr] lg:py-20">
+    <div className="pb-20">
+      <section className="glow-bg overflow-hidden">
+        <div className="container-x relative z-10 grid items-center gap-12 py-16 lg:min-h-[720px] lg:grid-cols-[1fr_1.05fr] lg:gap-16 lg:py-20">
           <div>
-            <span className="chip">✦ AI video for toys you already own</span>
-            <h1 className="mt-6 max-w-2xl text-5xl font-bold leading-[.98] tracking-[-0.045em] sm:text-6xl xl:text-7xl">
-              One toy photo.
+            <p className="section-label">Designer toy video</p>
+            <h1 className="mt-5 max-w-xl font-[family-name:var(--font-display)] text-5xl font-semibold leading-[1.02] tracking-[-0.03em] text-[var(--fg)] sm:text-6xl lg:text-[3.75rem]">
+              One photo.
               <br />
-              A whole <span className="text-grad">content drop.</span>
+              A shelf that{" "}
+              <span className="text-grad">moves.</span>
             </h1>
-            <p className="mt-6 max-w-xl text-lg leading-8 text-[var(--fg-muted)]">
-              Turn a figure, blind box, plush, or custom toy you own into listing videos, launch hooks, and collector reels—without a camera rig.
+            <p className="mt-6 max-w-md text-base leading-7 text-[var(--fg-muted)] sm:text-lg sm:leading-8">
+              Turn figures, blind boxes, and plush you own into listing clips and
+              drop-day reels — no camera rig, no studio day.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link href="/create" className="btn btn-primary px-6 py-3.5 text-sm">
-                Animate my toy free →
+              <Link href="/create" className="btn btn-primary px-7 py-3.5 text-sm">
+                Start free
               </Link>
-              <Link href="#examples" className="btn btn-ghost px-6 py-3.5 text-sm">
-                Watch real examples
+              <Link
+                href="#examples"
+                className="btn btn-ghost px-7 py-3.5 text-sm"
+              >
+                Watch demos
               </Link>
             </div>
-            <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-xs text-[var(--fg-dim)]">
-              <span>✓ ~3 free clips / month</span>
-              <span>✓ No card to try</span>
-              <span>✓ Free plan: 480p + on-player mark</span>
-            </div>
+            <p className="mt-4 text-xs text-[var(--fg-dim)]">
+              ~3 free clips / month · No card · 480p with on-player mark
+            </p>
             <HeroUpload />
-            <div className="mt-6 flex flex-wrap gap-2">
-              <Link href="/effects/360-spin-showcase" className="chip hover:border-[var(--brand)]">
-                🌀 360° spin
-              </Link>
-              <Link href="/effects/blind-box-unboxing" className="chip hover:border-[var(--brand)]">
-                📦 Blind box
-              </Link>
-              <Link href="/for/etsy-listing-videos" className="chip hover:border-[var(--brand)]">
-                🛍️ Etsy listings
-              </Link>
-              <Link href="/for/tiktok-shop-product-videos" className="chip hover:border-[var(--brand)]">
-                🎵 TikTok Shop
-              </Link>
-              <Link href="/guides" className="chip hover:border-[var(--brand)]">
-                📖 Guides
-              </Link>
-              <Link href="/supercomputer" className="chip hover:border-[var(--brand)]">
-                ⚡ Batch pack
-              </Link>
-            </div>
-            <div className="mt-10 grid max-w-lg grid-cols-3 border-y border-white/10 py-4">
-              <div>
-                <p className="text-xl font-bold text-white">1 photo</p>
-                <p className="mt-1 text-[11px] text-[var(--fg-dim)]">Your owned toy</p>
-              </div>
-              <div className="border-x border-white/10 px-4">
-                <p className="text-xl font-bold text-white">{PRESETS.length} looks</p>
-                <p className="mt-1 text-[11px] text-[var(--fg-dim)]">Toy-first presets</p>
-              </div>
-              <div className="pl-4">
-                <p className="text-xl font-bold text-white">3 formats</p>
-                <p className="mt-1 text-[11px] text-[var(--fg-dim)]">Post, list, launch</p>
-              </div>
+            <div className="mt-8 flex flex-wrap gap-2">
+              {[
+                { href: "/effects/360-spin-showcase", t: "360° Spin" },
+                { href: "/effects/blind-box-unboxing", t: "Blind box" },
+                { href: "/for/etsy-listing-videos", t: "Etsy" },
+                { href: "/for/tiktok-shop-product-videos", t: "TikTok Shop" },
+              ].map((x) => (
+                <Link
+                  key={x.href}
+                  href={x.href}
+                  className="rounded-full border border-[var(--border)] bg-white px-3.5 py-1.5 text-xs font-medium text-[var(--fg-muted)] transition hover:border-[var(--fg)]/20 hover:text-[var(--fg)]"
+                >
+                  {x.t}
+                </Link>
+              ))}
             </div>
           </div>
           <HeroDemoStage />
@@ -91,27 +75,33 @@ export default function Home() {
       <HomeDemoShowcase />
       <HowItWorks />
 
-      {/* Quick apps strip */}
-      <section className="border-b border-[var(--border)] px-4 py-8 sm:px-8">
+      <section className="border-b border-[var(--border)] bg-white px-4 py-12 sm:px-8">
         <div className="mx-auto max-w-6xl">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-bold">Apps</h2>
+          <div className="mb-6 flex items-end justify-between">
+            <div>
+              <p className="section-label">Studio</p>
+              <h2 className="mt-2 font-[family-name:var(--font-display)] text-2xl font-semibold tracking-tight">
+                Tools
+              </h2>
+            </div>
             <Link
               href="/apps"
-              className="text-xs font-medium text-[var(--brand)] hover:underline"
+              className="text-xs font-semibold text-[var(--brand)] hover:underline"
             >
               View all
             </Link>
           </div>
-          <div className="flex gap-3 overflow-x-auto pb-1">
+          <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
             {liveApps.map((a) => (
               <Link
                 key={a.id}
                 href={a.href}
-                className="card flex min-w-[140px] flex-col gap-2 p-4 transition-transform hover:-translate-y-0.5"
+                className="card flex flex-col items-start gap-3 p-4 transition-transform hover:-translate-y-0.5"
               >
                 <span className="text-2xl">{a.emoji}</span>
-                <span className="text-xs font-semibold">{a.name}</span>
+                <span className="text-sm font-semibold tracking-tight">
+                  {a.name}
+                </span>
               </Link>
             ))}
           </div>
@@ -120,70 +110,71 @@ export default function Home() {
 
       <HomeModelShelf />
 
-      {/* Cinema + Supercomputer promos */}
-      <section className="border-b border-[var(--border)] px-4 py-10 sm:px-8">
+      <section className="border-b border-[var(--border)] px-4 py-14 sm:px-8">
         <div className="mx-auto grid max-w-6xl gap-4 md:grid-cols-2">
-          <Link
-            href="/cinema"
-            className="card group relative overflow-hidden p-6"
-          >
-            <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--lime)]">
-              Cinema Studio
-            </p>
-            <h2 className="mt-2 text-2xl font-bold group-hover:text-[var(--lime)]">
+          <Link href="/cinema" className="card group p-8 transition-transform hover:-translate-y-0.5">
+            <p className="section-label">Cinema</p>
+            <h2 className="mt-3 font-[family-name:var(--font-display)] text-2xl font-semibold tracking-tight group-hover:text-[var(--brand)]">
               Direct the shot
             </h2>
-            <p className="mt-2 text-sm text-[var(--fg-muted)]">
-              Lens, camera move, grade → render with Seedance.
+            <p className="mt-2 text-sm leading-relaxed text-[var(--fg-muted)]">
+              Lens, camera move, grade — then render with Seedance.
             </p>
           </Link>
           <Link
             href="/supercomputer"
-            className="card group relative overflow-hidden p-6"
+            className="card group p-8 transition-transform hover:-translate-y-0.5"
           >
-            <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--lime)]">
-              Supercomputer
-            </p>
-            <h2 className="mt-2 text-2xl font-bold group-hover:text-[var(--lime)]">
-              Batch generate
+            <p className="section-label">Batch</p>
+            <h2 className="mt-3 font-[family-name:var(--font-display)] text-2xl font-semibold tracking-tight group-hover:text-[var(--brand)]">
+              Shop packs
             </h2>
-            <p className="mt-2 text-sm text-[var(--fg-muted)]">
-              Queue multiple toy photos → sequential Seedance clips for shops.
+            <p className="mt-2 text-sm leading-relaxed text-[var(--fg-muted)]">
+              One figure photo → spin, float, unbox in one queue.
             </p>
           </Link>
         </div>
       </section>
 
-      <div className="border-b border-[var(--border)]">
+      <div className="border-b border-[var(--border)] bg-white">
         <PresetsWall
-          heading="Viral presets"
-          subheading="One tap → tool page with generate on the spot"
+          heading="Looks"
+          subheading="Gallery of motion recipes — open any card to generate on-page"
         />
       </div>
 
-      {/* Community */}
-      <section className="border-b border-[var(--border)] px-4 py-10 sm:px-8">
+      <section className="border-b border-[var(--border)] px-4 py-14 sm:px-8">
         <div className="mx-auto max-w-6xl">
-          <div className="mb-5 flex justify-between">
-            <h2 className="text-xl font-bold">Community</h2>
-            <Link href="/community" className="text-xs text-[var(--lime)]">
+          <div className="mb-6 flex items-end justify-between">
+            <div>
+              <p className="section-label">Shelf</p>
+              <h2 className="mt-2 font-[family-name:var(--font-display)] text-2xl font-semibold">
+                From the community
+              </h2>
+            </div>
+            <Link
+              href="/community"
+              className="text-xs font-semibold text-[var(--brand)] hover:underline"
+            >
               Explore
             </Link>
           </div>
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            {PRESETS.slice(0, 4).map((p, i) => (
+            {PRESETS.slice(0, 4).map((p) => (
               <Link
                 key={p.slug}
                 href={`/effects/${p.slug}`}
-                className="overflow-hidden rounded-xl border border-[var(--border)]"
+                className="card overflow-hidden p-0"
               >
                 <div
-                  className="aspect-[4/3]"
+                  className="aspect-[4/5]"
                   style={{ background: p.gradient }}
                 />
-                <div className="p-2 text-[11px]">
-                  <p className="font-semibold">{p.name}</p>
-                  <p className="text-[var(--fg-dim)]">@user{i + 1}</p>
+                <div className="p-3">
+                  <p className="text-sm font-semibold tracking-tight">{p.name}</p>
+                  <p className="mt-0.5 text-[11px] text-[var(--fg-dim)]">
+                    {p.tagline}
+                  </p>
                 </div>
               </Link>
             ))}
@@ -191,30 +182,19 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pricing teaser */}
-      <section className="px-4 py-12 sm:px-8">
-        <div className="mx-auto max-w-6xl text-center">
-          <h2 className="text-2xl font-bold">Upgrade your plan</h2>
-          <p className="mt-2 text-sm text-[var(--fg-muted)]">
-            Credits for Seedance · free watermarked trials
+      <section className="px-4 py-16 sm:px-8">
+        <div className="mx-auto max-w-xl text-center">
+          <p className="section-label mx-auto">Membership</p>
+          <h2 className="mt-3 font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight">
+            Simple credits
+          </h2>
+          <p className="mt-3 text-sm leading-relaxed text-[var(--fg-muted)]">
+            Free to try. Creator from ${creator?.priceMonthly ?? 19}/mo for HD
+            Seedance 2.0 and commercial listings.
           </p>
-          <div className="mt-8 grid gap-4 text-left md:grid-cols-3">
-            {PLANS.map((plan) => (
-              <div
-                key={plan.id}
-                className={`card p-5 ${plan.featured ? "ring-2 ring-[var(--lime)]" : ""}`}
-              >
-                <h3 className="font-semibold">{plan.name}</h3>
-                <p className="mt-1 text-3xl font-bold">${plan.priceMonthly}</p>
-                <Link
-                  href="/pricing"
-                  className="mt-4 inline-block text-sm font-semibold text-[var(--lime)]"
-                >
-                  {plan.cta} →
-                </Link>
-              </div>
-            ))}
-          </div>
+          <Link href="/pricing" className="btn btn-primary mt-8 px-8">
+            View pricing
+          </Link>
         </div>
       </section>
     </div>
