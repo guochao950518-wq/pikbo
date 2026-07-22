@@ -42,7 +42,7 @@
 ### Claude — 预设密度 + 社区/内容
 - [x] PresetsWall 密铺 + effects 页
 - [x] community 墙
-- [ ] 再补 3～5 个 viral 向 preset（质量优先）
+- [x] 再补 4 个 viral preset（smoke-burst / paint-splash / power-aura / hologram-glitch，质量优先）
 - [ ] 文案潮玩化第二轮
 
 **分支：** `agent/claude/clone-presets`　**提交：** `[claude]`
