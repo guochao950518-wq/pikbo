@@ -8,6 +8,7 @@ import { LandingToolPanel } from "@/components/LandingToolPanel";
 import { LandingHowItWorks } from "@/components/LandingHowItWorks";
 import { LandingResults } from "@/components/LandingResults";
 import { site } from "@/lib/site";
+import { viralName } from "@/lib/viralNames";
 
 // Pre-render every effect page at build time -> static, fast, indexable.
 export function generateStaticParams() {
@@ -125,22 +126,47 @@ export default async function EffectPage({
       {/* Hero — H1 + intro SSR for crawlers */}
       <section className="glow-bg">
         <div className="container-x relative z-10 pt-14 pb-8">
-          <Link
-            href="/effects"
-            className="block w-fit text-sm text-[var(--fg-dim)] hover:text-[var(--fg)]"
-          >
-            ← All effects
-          </Link>
-          <span className="chip mt-4">
-            {preset.emoji}{" "}
-            {preset.audience === "seller" ? "For sellers" : "For collectors"} ·
-            Tool landing
-          </span>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <Link
+              href="/effects"
+              className="block w-fit text-sm text-[var(--fg-dim)] hover:text-[var(--fg)]"
+            >
+              ← All effects
+            </Link>
+            <div className="flex flex-wrap gap-2">
+              <Link
+                href={`/create?effect=${encodeURIComponent(preset.slug)}`}
+                className="btn btn-primary !px-4 !py-2 text-xs"
+              >
+                Full studio · remake
+              </Link>
+              <Link
+                href="/pricing"
+                className="btn btn-ghost !px-3 !py-2 text-xs"
+              >
+                Pricing
+              </Link>
+            </div>
+          </div>
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <span className="chip">
+              {preset.emoji}{" "}
+              {preset.audience === "seller" ? "For sellers" : "For collectors"} ·
+              Tool landing
+            </span>
+            <span className="rounded-full border border-[var(--mint)]/30 bg-[var(--mint)]/10 px-2.5 py-0.5 text-[10px] font-bold tracking-wide text-[var(--mint)]">
+              {viralName(preset.slug, preset.name)}
+            </span>
+          </div>
           <h1 className="mt-4 max-w-3xl text-4xl font-bold leading-tight sm:text-5xl">
             {preset.h1}
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-[var(--fg-muted)]">
             {preset.intro}
+          </p>
+          <p className="mt-3 text-xs text-[var(--fg-dim)]">
+            Tool below runs on this page (SEO V2) · Seedance Fast free · open
+            Full studio for model/aspect controls
           </p>
         </div>
       </section>

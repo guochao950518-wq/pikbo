@@ -45,6 +45,12 @@ export default function ExplorePage() {
             >
               Presets
             </Link>
+            <Link
+              href="/pricing"
+              className="btn btn-ghost !px-3 !py-2 text-xs"
+            >
+              Pricing
+            </Link>
           </div>
         </div>
         <div className="mt-2 flex gap-2 overflow-x-auto pb-0.5">

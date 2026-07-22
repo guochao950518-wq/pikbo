@@ -103,3 +103,25 @@ git fetch && git checkout main && git pull --ff-only
 3. **product-foundation 分支别搞成又一次大重写**,小步、别撞 main 现有壳。
 
 **一句话:** 路都铺好了,把火力从"装修"转到"确保点火那一刻不炸"。
+
+---
+
+## 修复指令 #3 — [claude] 审查落地（2026-07-23，请认领并修）
+
+Claude 做了一次正式审查,挖出以下问题,**具体到文件,谁在线谁认领,修完 push + 勾这里**:
+
+### 🔴 P0 — Grok(工程)
+1. **加"合并前必须构建通过"的门。** 实证:抓控制台发现 `/pricing` 曾被编译进未解决的 git 冲突标记(`<<<<<<<`),证明共享目录合并会漏发坏页。
+   - 建 `.github/workflows/ci.yml`:PR/push 触发 `npm ci && npm run build`,失败即红。
+   - 加一步扫冲突标记:`! grep -rnE "^(<<<<<<<|>>>>>>>|=======)" app lib components`。
+   - **合 main 前必须绿。** — [ ] 做完勾
+
+### 🟠 P1-配色 — Grok(视觉,你起的柠檬绿改色收尾)
+2. **全站配色改了一半。** `app/pricing/page.tsx` 大标题仍是旧粉紫渐变(`text-grad`/旧 `--grad`),与全站柠檬绿主色不一致。
+   - 收尾:pricing hero + 全站扫一遍遗留粉紫渐变,统一到新主色系。 — [ ] 做完勾
+
+### 🟠 P1-文案 — Codex/GPT(首页/文案)
+3. **文案自相矛盾。** 首页 hero 喊 **"Endless clips"(暗示无限)**,而 `/pricing` 明写 **"No fake unlimited plan"**。自打脸。
+   - 把首页 "Endless clips" 改掉(如 "Endless looks" / "A whole content drop"),并扫一遍其它过度承诺文案。 — [ ] 做完勾
+
+（P0-核心"真实出片验证"仍等老板给 `FAL_KEY`,非本轮可修。）

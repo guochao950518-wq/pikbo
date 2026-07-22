@@ -77,6 +77,12 @@ export function LibraryGrid() {
           <Link href="/create" className="btn btn-primary text-sm">
             Open Generate
           </Link>
+          <Link href="/community" className="btn btn-ghost text-sm">
+            Remake a project
+          </Link>
+          <Link href="/effects" className="btn btn-ghost text-sm">
+            Browse presets
+          </Link>
           <Link
             href="/effects/360-spin-showcase"
             className="btn btn-ghost text-sm"
