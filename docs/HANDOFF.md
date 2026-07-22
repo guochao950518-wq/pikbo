@@ -4,21 +4,27 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [gpt] conversion truth + unit economics (C3 / T26)
+- Paths: `docs/UNIT_ECONOMICS.md`
+- Decision: replace three anonymous monthly free clips with one verified 4s/480p/watermarked trial (recommendation).
+- Economics: Creator `$19` supports about five 5s Fast 720p or four 5s Standard 720p clips, not 50, at the reviewed fal rates.
+- Reuse: charge credits by model + resolution + duration; **Grok implements** server-side ledger (not UI-only).
+- Verified: sources linked in doc; arithmetic sensitivity included.
+
 ### 2026-07-23 — [claude] copy-seo-v2: taglines + shared objection FAQ (L1/L2)
 - Paths: `lib/presets.ts` (all 22 taglines rewritten collector/seller-voiced; new `COMMON_FAQ` export), `app/effects/[slug]/page.tsx` (append `COMMON_FAQ` to render + FAQ JSON-LD).
-- Reuse: import `COMMON_FAQ` and spread after page-specific FAQ (`[...preset.faq, ...COMMON_FAQ]`) on any tool landing (for/toys pages too) so watermark/commercial/#photos/vs-phone objections + rich-result FAQ ship everywhere — no per-page copy.
-- Pitfall: keep `COMMON_FAQ` generic (no effect-specific claims); don't duplicate a question already in a preset's own `faq`.
-- Did NOT touch: CreateStudio / generate API / tool logic. Intros left as-is (already collector-voiced; rewrite = churn per "不灌水").
+- Reuse: import `COMMON_FAQ` and spread after page-specific FAQ on any tool landing.
+- Pitfall: keep `COMMON_FAQ` generic; don't duplicate preset-local FAQ questions.
+- Did NOT touch CreateStudio / generate API.
 
 ### 2026-07-23 — [gpt] promise-consistency audit (labels + overclaim sweep)
 - Paths: `app/page.tsx`, `app/explore`, `app/community`, `app/apps`, `app/models`, `app/pricing`, `components/HeroVideoBanner.tsx`, `components/SeedanceCampaign.tsx`, `components/PresetPreviewCard.tsx`, `lib/videoFeed.ts`, `lib/site.ts`
-- Why good: separates cached PIKBO Lab examples, shared motion backdrops, concept recipes, configured workspaces, and provider-backed live generation instead of presenting all five as the same proof.
+- Why good: separates cached Lab examples, shared loops, concept recipes, configured workspaces, and live generation proof.
 - Reuse / pitfalls:
-  - `live` in the catalog means an implemented workspace, not proof that provider credentials exist; UI now says `Configured`/`Wired` where appropriate.
-  - Presets without an exact `DemoVideo.preset` match retain a dense visual preview but must show `Concept · shared loop`.
-  - Community remains `PIKBO Lab` until real accounts and submissions exist; do not add fictional authors or engagement.
-  - `StatusBadge` is the runtime source for `Seedance live` versus `Demo mode`; static marketing copy should not override it.
-- Verified: ESLint clean; Next.js 16 production build passed with 69 routes.
+  - `live` = implemented workspace, not proof FAL_KEY exists; UI may say `Configured`/`Wired`.
+  - Presets without exact DemoVideo match: `Concept · shared loop`.
+  - Community = PIKBO Lab until real accounts; no fictional authors.
+  - `StatusBadge` is runtime live vs demo source.
 - Merged to main by Grok 2026-07-23.
 
 ### 2026-07-23 — [grok] three-agent max push + CI + generate honesty

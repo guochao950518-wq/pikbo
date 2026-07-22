@@ -38,7 +38,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | T23 | CI build + conflict-marker gate | Grok | doing | main | `.github/workflows/ci.yml` |
 | T24 | Generate honesty: demo vs live + regen/refund copy | Grok | doing | main | CreateStudio result strip |
 | T25 | Homepage truth labels + overclaim sweep | GPT | done | agent/gpt/claude-copy-audit | PR #6; cached/shared previews and provider-gated paths labeled |
-| T26 | Unit economics doc + free-tier recommendation | GPT | todo | agent/gpt/convert-truth | DISPATCH C3 → `docs/UNIT_ECONOMICS.md` |
+| T26 | Unit economics doc + free-tier recommendation | GPT | done | agent/gpt/convert-truth | Free: 1 verified 4s trial; Creator: ~5 Fast or 4 Standard 5s clips at $19 |
 | T27 | Preset/SEO copy wave 2 (toy seller language) | Claude | todo | agent/claude/copy-seo-v2 | DISPATCH L1–L2 |
 | T5 | Supabase auth + durable credits | — | todo | — | **Blocks serious Stripe** |
 | T6 | Server-side free watermark (ffmpeg) | Grok | todo | — | After T23/T24 |
