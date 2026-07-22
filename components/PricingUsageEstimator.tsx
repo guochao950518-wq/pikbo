@@ -4,13 +4,14 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { CREDITS_PER_VIDEO, PLANS } from "@/lib/pricing";
 
-const QUICK_COUNTS = [3, 30, 100];
+const QUICK_COUNTS = [1, 5, 15];
 
 export function PricingUsageEstimator() {
-  const [clips, setClips] = useState(30);
+  const [clips, setClips] = useState(5);
   const recommendation = useMemo(() => {
-    if (clips <= 3) return PLANS[0];
-    if (clips <= 50) return PLANS[1];
+    // Honest launch allowances: Free ~1 · Creator ~5 · Shop ~15
+    if (clips <= 1) return PLANS[0];
+    if (clips <= 5) return PLANS[1];
     return PLANS[2];
   }, [clips]);
   const includedClips = Math.floor(recommendation.credits / CREDITS_PER_VIDEO);
@@ -26,7 +27,10 @@ export function PricingUsageEstimator() {
           <div className="mt-3 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
             <div>
               <h2 className="text-2xl font-bold">How many clips do you publish?</h2>
-              <p className="mt-1 text-sm text-[var(--fg-muted)]">Slide to your real monthly output. Every plan has a finite credit allowance.</p>
+              <p className="mt-1 text-sm text-[var(--fg-muted)]">
+                Slide to real monthly output. Allowances match model cost (see
+                unit economics) — not fake unlimited.
+              </p>
             </div>
             <p className="text-4xl font-black text-white">
               {clips}<span className="ml-2 text-sm font-medium text-[var(--fg-dim)]">clips / month</span>
@@ -37,14 +41,14 @@ export function PricingUsageEstimator() {
             aria-label="Monthly video clip estimate"
             type="range"
             min="1"
-            max="150"
+            max="30"
             step="1"
             value={clips}
             onChange={(event) => setClips(Number(event.target.value))}
             className="mt-8 h-2 w-full cursor-pointer accent-[var(--brand)]"
           />
           <div className="mt-2 flex justify-between text-[10px] font-bold uppercase tracking-wider text-[var(--fg-dim)]">
-            <span>1</span><span>50</span><span>100</span><span>150</span>
+            <span>1</span><span>5</span><span>15</span><span>30</span>
           </div>
 
           <div className="mt-6 flex flex-wrap gap-2">
@@ -55,7 +59,11 @@ export function PricingUsageEstimator() {
                 onClick={() => setClips(count)}
                 className={`rounded-full border px-4 py-2 text-xs font-semibold transition ${clips === count ? "border-[var(--mint)] bg-[var(--mint)] text-black" : "border-white/10 bg-white/[.04] text-[var(--fg-muted)] hover:border-white/25 hover:text-white"}`}
               >
-                {count === 3 ? "Try 3" : count === 30 ? "Post daily" : "Run a shop"}
+                {count === 1
+                  ? "1 trial"
+                  : count === 5
+                    ? "Creator pace"
+                    : "Shop pace"}
               </button>
             ))}
           </div>

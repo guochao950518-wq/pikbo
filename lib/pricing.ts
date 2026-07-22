@@ -1,5 +1,5 @@
-// Credits model. Golden rule: every paid credit is priced ABOVE marginal
-// model cost, and free clips only use the cheapest model + watermark.
+// Credits model. Align with docs/UNIT_ECONOMICS.md (2026-07-23).
+// Every paid credit must stay above marginal Seedance cost; free is a tiny trial.
 // Never offer true "unlimited" on expensive models.
 
 export type PlanId = "free" | "creator" | "shop";
@@ -22,22 +22,27 @@ export type Plan = {
   stripePriceEnv?: string;
 };
 
-export const CREDITS_PER_VIDEO = 10; // 1 clip = 10 credits (tune to model cost)
+/** Flat cost until server-side model×duration metering ships (Grok next). */
+export const CREDITS_PER_VIDEO = 10;
 
+/**
+ * Launch allowances (honest vs fal cost, not "fake 50 clips").
+ * Free ≈ 1 trial · Creator ≈ 5 clips · Shop ≈ 15 clips at 10 credits each.
+ */
 export const PLANS: Plan[] = [
   {
     id: "free",
     name: "Free",
     priceMonthly: 0,
-    credits: 30,
-    blurb: "Try it out. Clips carry a small Pikbo watermark.",
+    credits: 10,
+    blurb: "One watermarked trial on Seedance Fast 480p. Demo clips stay free.",
     perks: [
-      "30 credits / month",
-      "~3 clips on Seedance Fast",
-      "480p, watermarked",
+      "10 credits (~1 live trial clip / month)",
+      "Seedance Fast · 480p · watermark",
       "All toy effect presets",
+      "Unlimited cached demo playback",
     ],
-    cta: "Start free",
+    cta: "Start free trial",
     watermark: true,
     resolution: "480p",
     commercial: false,
@@ -47,14 +52,14 @@ export const PLANS: Plan[] = [
     id: "creator",
     name: "Creator",
     priceMonthly: 19,
-    credits: 500,
-    blurb: "For collectors posting regularly.",
+    credits: 50,
+    blurb: "For collectors who post a few real clips a month — priced for model cost.",
     perks: [
-      "500 credits / month",
-      "~50 clips",
-      "720p Seedance 2.0, no watermark",
+      "50 credits / month",
+      "~5 clips (5s Fast 720p class — not 50)",
+      "720p Seedance path · no watermark",
       "Priority queue",
-      "Commercial use",
+      "Commercial use (toys you own)",
     ],
     featured: true,
     cta: "Go Creator",
@@ -68,14 +73,14 @@ export const PLANS: Plan[] = [
     id: "shop",
     name: "Shop",
     priceMonthly: 49,
-    credits: 1500,
-    blurb: "For sellers producing product & ad videos.",
+    credits: 150,
+    blurb: "For sellers shipping listing packs — volume without fake unlimited.",
     perks: [
-      "1,500 credits / month",
-      "~150 clips",
-      "720p Seedance 2.0, no watermark",
+      "150 credits / month",
+      "~15 clips at current credit rate",
+      "720p Seedance path · no watermark",
       "Batch generate",
-      "Lowest cost per clip",
+      "Commercial use",
     ],
     cta: "Go Shop",
     watermark: false,
