@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [claude] copy-seo-v2: taglines + shared objection FAQ (L1/L2)
+- Paths: `lib/presets.ts` (all 22 taglines rewritten collector/seller-voiced; new `COMMON_FAQ` export), `app/effects/[slug]/page.tsx` (append `COMMON_FAQ` to render + FAQ JSON-LD).
+- Reuse: import `COMMON_FAQ` and spread after page-specific FAQ (`[...preset.faq, ...COMMON_FAQ]`) on any tool landing (for/toys pages too) so watermark/commercial/#photos/vs-phone objections + rich-result FAQ ship everywhere — no per-page copy.
+- Pitfall: keep `COMMON_FAQ` generic (no effect-specific claims); don't duplicate a question already in a preset's own `faq`.
+- Did NOT touch: CreateStudio / generate API / tool logic. Intros left as-is (already collector-voiced; rewrite = churn per "不灌水").
+
 ### 2026-07-23 — [grok] three-agent max push + CI + generate honesty
 - Paths: `docs/DISPATCH.md`, `docs/STATUS.md`, `.github/workflows/ci.yml`, `components/CreateStudio.tsx`
 - Why: boss wants Grok+Codex+Claude at full capacity; shared board is the coordination channel.

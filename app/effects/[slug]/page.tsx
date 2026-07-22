@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { PRESETS, getPreset } from "@/lib/presets";
+import { PRESETS, getPreset, COMMON_FAQ } from "@/lib/presets";
 import { USE_CASES } from "@/lib/usecases";
 import { PresetCard } from "@/components/PresetCard";
 import { LandingToolPanel } from "@/components/LandingToolPanel";
@@ -57,11 +57,14 @@ export default async function EffectPage({
     u.recommendedEffects.includes(preset.slug)
   ).slice(0, 4);
 
+  // Preset-specific FAQ + shared objection FAQ (watermark/commercial/#photos/vs phone)
+  const allFaq = [...preset.faq, ...COMMON_FAQ];
+
   // 哥飞 V2: FAQ + HowTo + SoftwareApplication JSON-LD (SSR)
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: preset.faq.map((f) => ({
+    mainEntity: allFaq.map((f) => ({
       "@type": "Question",
       name: f.q,
       acceptedAnswer: { "@type": "Answer", text: f.a },
@@ -212,7 +215,7 @@ export default async function EffectPage({
       <section className="container-x py-8">
         <h2 className="text-2xl font-bold">Questions</h2>
         <div className="mt-6 divide-y divide-[var(--border)]">
-          {preset.faq.map((f) => (
+          {allFaq.map((f) => (
             <div key={f.q} className="py-5">
               <h3 className="font-semibold">{f.q}</h3>
               <p className="mt-1.5 text-[var(--fg-muted)]">{f.a}</p>

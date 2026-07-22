@@ -68,7 +68,7 @@ export const PRESETS: Preset[] = [
     gradient: "linear-gradient(135deg,#ff4d8d,#a855f7)",
     category: "showcase",
     audience: "seller",
-    tagline: "Rotate your figure on a clean studio turntable.",
+    tagline: "One photo → a listing spin that shows every angle.",
     h1: "360° Spin Video Maker for Designer Toys",
     seoTitle: "360° Spin Video Maker for Figures & Designer Toys | Pikbo",
     seoDescription:
@@ -107,7 +107,7 @@ export const PRESETS: Preset[] = [
     gradient: "linear-gradient(135deg,#a855f7,#6ee7c7)",
     category: "showcase",
     audience: "collector",
-    tagline: "Cinematic lighting sweeps across your collection.",
+    tagline: "Make a shelf piece look like a boutique grail.",
     h1: "Display Case Glam Lighting Video",
     seoTitle: "Display Case Glam Video for Collectibles | Pikbo",
     seoDescription:
@@ -142,7 +142,7 @@ export const PRESETS: Preset[] = [
     gradient: "linear-gradient(135deg,#6a5cff,#ff4d8d)",
     category: "showcase",
     audience: "seller",
-    tagline: "Your figure levitates and slowly turns in mid-air.",
+    tagline: "A floating hero shot that looks ad-agency expensive.",
     h1: "Levitating Product Video Maker for Toys",
     seoTitle: "Floating / Levitating Product Video Maker | Pikbo",
     seoDescription:
@@ -176,7 +176,7 @@ export const PRESETS: Preset[] = [
     gradient: "linear-gradient(135deg,#6ee7c7,#6a5cff)",
     category: "showcase",
     audience: "collector",
-    tagline: "A smooth cinematic pan across your whole shelf.",
+    tagline: "Give your whole collection a cinematic flex.",
     h1: "Collection Shelf Pan Video Maker",
     seoTitle: "Collection Shelf Video Maker for Collectors | Pikbo",
     seoDescription:
@@ -212,7 +212,7 @@ export const PRESETS: Preset[] = [
     gradient: "linear-gradient(135deg,#6a5cff,#6ee7c7)",
     category: "unboxing",
     audience: "seller",
-    tagline: "The lid pops and your figure reveals itself.",
+    tagline: "The blind-box reveal — without opening a box.",
     h1: "AI Blind Box Unboxing Video Generator",
     seoTitle: "Blind Box Unboxing Video Generator | Pikbo",
     seoDescription:
@@ -251,7 +251,7 @@ export const PRESETS: Preset[] = [
     gradient: "linear-gradient(135deg,#ff4d8d,#6a5cff)",
     category: "unboxing",
     audience: "collector",
-    tagline: "A glowing box bursts open to reveal the figure.",
+    tagline: "A magical drop reveal built for giveaways.",
     h1: "Mystery Box Reveal Video Maker",
     seoTitle: "Mystery Box Reveal Video Maker | Pikbo",
     seoDescription:
@@ -285,7 +285,7 @@ export const PRESETS: Preset[] = [
     gradient: "linear-gradient(135deg,#d6ff4d,#ff4d8d)",
     category: "unboxing",
     audience: "collector",
-    tagline: "A claw grabs your figure — the perfect win.",
+    tagline: "Win your figure from an arcade claw, every time.",
     h1: "Claw Machine Video Maker for Toys",
     seoTitle: "Claw Machine Win Video Maker | Pikbo",
     seoDescription:
@@ -321,7 +321,7 @@ export const PRESETS: Preset[] = [
     gradient: "linear-gradient(135deg,#ff4d8d,#d6ff4d)",
     category: "comealive",
     audience: "collector",
-    tagline: "Your collectible does a cute little dance.",
+    tagline: "Make your figure dance — the clip collectors share.",
     h1: "Make Your Figure Dance — AI Video",
     seoTitle: "Make Your Figure Dance | Toy Animation Video Maker | Pikbo",
     seoDescription:
@@ -360,7 +360,7 @@ export const PRESETS: Preset[] = [
     gradient: "linear-gradient(135deg,#a855f7,#ff4d8d)",
     category: "comealive",
     audience: "collector",
-    tagline: "Your figure strides forward like it's alive.",
+    tagline: "Give your figure a confident walk of its own.",
     h1: "Make Your Figure Walk — AI Video",
     seoTitle: "Make Your Figure Walk | Toy Animation | Pikbo",
     seoDescription:
@@ -394,7 +394,7 @@ export const PRESETS: Preset[] = [
     gradient: "linear-gradient(135deg,#6ee7c7,#a855f7)",
     category: "comealive",
     audience: "collector",
-    tagline: "A cute wink-and-wave from your figure.",
+    tagline: "A wink-and-wave that greets your feed.",
     h1: "Cute Toy Wave & Wink Video Maker",
     seoTitle: "Cute Toy Wave / Wink Video Maker | Pikbo",
     seoDescription:
@@ -428,7 +428,7 @@ export const PRESETS: Preset[] = [
     gradient: "linear-gradient(135deg,#ff4d8d,#6ee7c7)",
     category: "comealive",
     audience: "collector",
-    tagline: "Your plush squishes, bounces, and comes to life.",
+    tagline: "Your plushie, squishing and bouncing to life.",
     h1: "Make Your Plushie Come to Life — AI Video",
     seoTitle: "Plushie Come to Life Video Maker | Pikbo",
     seoDescription:
@@ -462,7 +462,7 @@ export const PRESETS: Preset[] = [
     gradient: "linear-gradient(135deg,#d6ff4d,#6a5cff)",
     category: "comealive",
     audience: "collector",
-    tagline: "Handmade stop-motion charm, no rig needed.",
+    tagline: "Laika-style stop-motion charm, zero frames shot.",
     h1: "Stop-Motion Style Toy Video Maker",
     seoTitle: "Stop-Motion Style Toy Video Maker | Pikbo",
     seoDescription:
@@ -498,7 +498,7 @@ export const PRESETS: Preset[] = [
     gradient: "linear-gradient(135deg,#ff4d8d,#6a5cff)",
     category: "scene",
     audience: "collector",
-    tagline: "Drop your toy into a tiny living world.",
+    tagline: "Drop your figure into a tiny cinematic world.",
     h1: "Miniature Scene Come-to-Life Video",
     seoTitle: "Miniature Scene Toy Video Maker | Pikbo",
     seoDescription:
@@ -532,7 +532,7 @@ export const PRESETS: Preset[] = [
     gradient: "linear-gradient(135deg,#6ee7c7,#a855f7)",
     category: "scene",
     audience: "collector",
-    tagline: "Snow falls softly around your figure.",
+    tagline: "Wrap your figure in a cozy snow-globe moment.",
     h1: "Festive Snow Toy Video Maker",
     seoTitle: "Christmas / Festive Snow Toy Video Maker | Pikbo",
     seoDescription:
@@ -566,7 +566,7 @@ export const PRESETS: Preset[] = [
     gradient: "linear-gradient(135deg,#6a5cff,#ff4d8d)",
     category: "scene",
     audience: "collector",
-    tagline: "Your figure in a moody neon cityscape.",
+    tagline: "Your figure, lit up in a neon-noir city.",
     h1: "Neon City Toy Video Maker",
     seoTitle: "Neon City Night Toy Video Maker | Pikbo",
     seoDescription:
@@ -601,7 +601,7 @@ export const PRESETS: Preset[] = [
     gradient: "linear-gradient(135deg,#6a5cff,#d6ff4d)",
     category: "comealive",
     audience: "collector",
-    tagline: "Parts fly in and snap together into your figure.",
+    tagline: "Watch your figure build itself, part by part.",
     h1: "Figure Assembly Video Maker",
     seoTitle: "Figure Assembly / Assemble Reveal Video Maker | Pikbo",
     seoDescription:
@@ -635,7 +635,7 @@ export const PRESETS: Preset[] = [
     gradient: "linear-gradient(135deg,#ff4d8d,#6a5cff)",
     category: "comealive",
     audience: "collector",
-    tagline: "Your figure hits the red carpet, flashes popping.",
+    tagline: "Treat your grail like a red-carpet celebrity.",
     h1: "Paparazzi / Red Carpet Toy Video Maker",
     seoTitle: "Paparazzi Red Carpet Toy Video Maker | Pikbo",
     seoDescription:
@@ -671,7 +671,7 @@ export const PRESETS: Preset[] = [
     gradient: "linear-gradient(135deg,#6ee7c7,#ff4d8d)",
     category: "scene",
     audience: "collector",
-    tagline: "Your figure towers over a tiny city like a kaiju.",
+    tagline: "Your figure goes full kaiju over a tiny city.",
     h1: "Giant Kaiju Toy Video Maker",
     seoTitle: "Giant Kaiju Toy Video Maker | Pikbo",
     seoDescription:
@@ -706,7 +706,7 @@ export const PRESETS: Preset[] = [
     gradient: "linear-gradient(135deg,#6a5cff,#a855f7)",
     category: "comealive",
     audience: "collector",
-    tagline: "Your figure bursts out of a cloud of smoke and poses.",
+    tagline: "A smoke-burst hero entrance for your figure.",
     h1: "Smoke Burst Reveal Video Maker",
     seoTitle: "Smoke Burst Reveal Video Maker for Figures | Pikbo",
     seoDescription:
@@ -740,7 +740,7 @@ export const PRESETS: Preset[] = [
     gradient: "linear-gradient(135deg,#ff4d8d,#d6ff4d)",
     category: "showcase",
     audience: "seller",
-    tagline: "Vivid paint and liquid splash frozen around your figure.",
+    tagline: "Freeze a vivid paint splash around your figure.",
     h1: "Paint Splash Product Video Maker",
     seoTitle: "Paint / Color Splash Product Video Maker | Pikbo",
     seoDescription:
@@ -774,7 +774,7 @@ export const PRESETS: Preset[] = [
     gradient: "linear-gradient(135deg,#d6ff4d,#ff4d8d)",
     category: "comealive",
     audience: "collector",
-    tagline: "Your figure charges up with a glowing energy aura.",
+    tagline: "Power up your figure with an anime energy aura.",
     h1: "Power-Up / Energy Aura Video Maker",
     seoTitle: "Power-Up Energy Aura Video Maker for Figures | Pikbo",
     seoDescription:
@@ -808,7 +808,7 @@ export const PRESETS: Preset[] = [
     gradient: "linear-gradient(135deg,#6ee7c7,#6a5cff)",
     category: "scene",
     audience: "collector",
-    tagline: "Your figure as a flickering cyber hologram.",
+    tagline: "Render your figure as a flickering cyber hologram.",
     h1: "Hologram / Glitch Video Maker for Figures",
     seoTitle: "Hologram Glitch Video Maker for Figures | Pikbo",
     seoDescription:
@@ -834,6 +834,27 @@ export const PRESETS: Preset[] = [
       "The collectible figure appears as a flickering translucent cyber hologram projection, glowing scan lines, subtle glitch flickers and chromatic aberration, neon projection light in a dark space, futuristic sci-fi mood, the figure keeps its recognizable shape and colors.",
     duration: 5,
     aspectRatio: "16:9",
+  },
+];
+
+// Shared objection-handling FAQ appended to every effect page (L2).
+// Answers the questions every buyer/collector asks before their first clip.
+export const COMMON_FAQ: { q: string; a: string }[] = [
+  {
+    q: "Is there a watermark?",
+    a: "Free clips carry a small Pikbo watermark. Any paid plan (Creator or Shop) removes it and unlocks full-resolution, watermark-free downloads.",
+  },
+  {
+    q: "Can I use the videos commercially — for my shop or ads?",
+    a: "Yes. Paid plans include commercial use, so you can run the clips on your Etsy, TikTok Shop, Amazon, or paid ads. Free-tier clips are for personal, watermarked use.",
+  },
+  {
+    q: "How many photos do I need?",
+    a: "Just one. A single clear photo of the toy you own is enough — no multi-angle shoot, no turntable, no rig.",
+  },
+  {
+    q: "How is this different from just filming with my phone?",
+    a: "Filming a figure yourself means lighting, a steady rig, and editing — and it still can't levitate, spin in space, or come alive. Pikbo animates your real toy from one photo, keeping its exact sculpt and colors, in seconds.",
   },
 ];
 
