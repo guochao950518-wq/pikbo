@@ -9,84 +9,76 @@ import { ToastProvider } from "@/components/Toast";
 import { Footer } from "@/components/Footer";
 import { cn } from "@/lib/utils";
 
-/**
- * Higgsfield-class app chrome:
- * - thin icon rail (always)
- * - full-bleed main (no marketing top bar on home)
- * - mobile: Home · Community · Generate · Library · Profile
- */
-const SIDE_NAV = [
-  { href: "/", label: "Home", icon: "⌂" },
-  { href: "/create", label: "Generate", icon: "✦" },
-  { href: "/community", label: "Community", icon: "◉" },
-  { href: "/effects", label: "Presets", icon: "▶" },
-  { href: "/explore", label: "Explore", icon: "✧" },
-  { href: "/library", label: "Library", icon: "▢" },
-  { href: "/supercomputer", label: "Batch", icon: "⚡" },
-  { href: "/image", label: "Image", icon: "▣" },
-  { href: "/pricing", label: "Pricing", icon: "$" },
-  { href: "/profile", label: "Profile", icon: "○" },
+/** HF-style: thin left icons + full-bleed black content */
+const SIDE = [
+  { href: "/", icon: "⌂", label: "Home" },
+  { href: "/create", icon: "✦", label: "Generate" },
+  { href: "/community", icon: "◉", label: "Community" },
+  { href: "/effects", icon: "▶", label: "Presets" },
+  { href: "/explore", icon: "✧", label: "Explore" },
+  { href: "/library", icon: "▢", label: "Library" },
+  { href: "/supercomputer", icon: "⚡", label: "Batch" },
+  { href: "/image", icon: "▣", label: "Image" },
+  { href: "/pricing", icon: "$", label: "Pricing" },
+  { href: "/profile", icon: "○", label: "Profile" },
 ] as const;
 
-const MOBILE_NAV = [
+const MOBILE = [
   { href: "/", label: "Home", icon: "⌂" },
   { href: "/community", label: "Community", icon: "◉" },
-  { href: "/create", label: "Generate", icon: "✦", primary: true },
+  { href: "/create", label: "Generate", icon: "✦", primary: true as const },
   { href: "/library", label: "Library", icon: "▢" },
   { href: "/profile", label: "Profile", icon: "○" },
 ];
 
-function isActive(path: string, href: string) {
+function active(path: string, href: string) {
   if (href === "/") return path === "/";
   return path === href || path.startsWith(href + "/");
 }
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const path = usePathname() || "/";
-  const isHome = path === "/";
-  const isTool =
-    path.startsWith("/create") || path.startsWith("/supercomputer");
-  const hideFooter = isHome || isTool || path.startsWith("/explore");
+  const home = path === "/";
+  const hideFooter =
+    home ||
+    path.startsWith("/create") ||
+    path.startsWith("/supercomputer") ||
+    path.startsWith("/explore") ||
+    path.startsWith("/community");
 
   return (
     <ToastProvider>
       <div className="flex min-h-screen bg-black text-white">
-        {/* HF-style thin left rail — icons only */}
-        <aside className="sticky top-0 z-50 hidden h-screen w-[64px] shrink-0 flex-col items-center border-r border-white/[0.06] bg-[#0a0a0c] py-3 lg:flex">
+        <aside className="sticky top-0 z-50 hidden h-screen w-16 shrink-0 flex-col items-center border-r border-white/[0.07] bg-[#09090b] py-3 lg:flex">
           <Link
             href="/"
-            className="mb-5 grid h-9 w-9 place-items-center rounded-xl bg-[var(--mint)] text-sm font-black text-black"
+            className="mb-4 grid h-9 w-9 place-items-center rounded-xl bg-[#c8ff3d] text-sm font-black text-black"
             title={site.name}
           >
             P
           </Link>
-          <nav className="flex flex-1 flex-col items-center gap-1 overflow-y-auto">
-            {SIDE_NAV.map((item) => {
-              const active = isActive(path, item.href);
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  title={item.label}
-                  className={cn(
-                    "grid h-11 w-11 place-items-center rounded-xl text-base transition",
-                    active
-                      ? "bg-white/10 text-[var(--mint)]"
-                      : "text-white/45 hover:bg-white/[0.06] hover:text-white"
-                  )}
-                >
-                  <span aria-hidden>{item.icon}</span>
-                  <span className="sr-only">{item.label}</span>
-                </Link>
-              );
-            })}
+          <nav className="flex flex-1 flex-col items-center gap-1">
+            {SIDE.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                title={item.label}
+                className={cn(
+                  "grid h-11 w-11 place-items-center rounded-xl text-base transition",
+                  active(path, item.href)
+                    ? "bg-white/10 text-[#c8ff3d]"
+                    : "text-white/40 hover:bg-white/[0.06] hover:text-white"
+                )}
+              >
+                {item.icon}
+              </Link>
+            ))}
           </nav>
-          <div className="mt-2 flex flex-col items-center gap-2 px-1">
+          <div className="flex flex-col items-center gap-2">
             <CreditsBadge compact />
             <Link
               href="/create"
-              className="grid h-10 w-10 place-items-center rounded-xl bg-[var(--mint)] text-sm font-black text-black"
-              title="Generate"
+              className="grid h-10 w-10 place-items-center rounded-xl bg-[#c8ff3d] text-sm font-black text-black"
             >
               ✦
             </Link>
@@ -94,15 +86,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col bg-black">
-          {/* Mobile top — minimal, HF-like */}
           <header
             className={cn(
-              "sticky top-0 z-40 flex h-12 items-center justify-between border-b border-white/[0.06] bg-black/80 px-3 backdrop-blur-md lg:hidden",
-              isHome && "border-transparent bg-black/40"
+              "sticky top-0 z-40 flex h-12 items-center justify-between px-3 lg:hidden",
+              home
+                ? "border-b border-transparent bg-black/30 backdrop-blur-md"
+                : "border-b border-white/[0.07] bg-black/80 backdrop-blur-md"
             )}
           >
             <Link href="/" className="flex items-center gap-2 text-sm font-bold">
-              <span className="grid h-7 w-7 place-items-center rounded-lg bg-[var(--mint)] text-xs font-black text-black">
+              <span className="grid h-7 w-7 place-items-center rounded-lg bg-[#c8ff3d] text-xs font-black text-black">
                 P
               </span>
               {site.name}
@@ -111,26 +104,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <CreditsBadge compact />
               <Link
                 href="/create"
-                className="rounded-full bg-[var(--mint)] px-3 py-1.5 text-[11px] font-black text-black"
+                className="rounded-full bg-[#c8ff3d] px-3 py-1.5 text-[11px] font-black text-black"
               >
                 Generate
               </Link>
             </div>
           </header>
 
-          {/* Desktop: no marketing top bar — pure content like HF */}
-          {!isHome && (
-            <header className="sticky top-0 z-40 hidden h-12 items-center justify-end gap-3 border-b border-white/[0.06] bg-black/70 px-4 backdrop-blur-md lg:flex">
+          {!home && (
+            <header className="sticky top-0 z-40 hidden h-12 items-center justify-end gap-3 border-b border-white/[0.07] bg-black/70 px-4 backdrop-blur-md lg:flex">
               <CreditsBadge />
-              <Link
-                href="/pricing"
-                className="text-xs font-semibold text-white/60 hover:text-white"
-              >
+              <Link href="/pricing" className="text-xs font-semibold text-white/50 hover:text-white">
                 Pricing
               </Link>
               <Link
                 href="/create"
-                className="rounded-full bg-[var(--mint)] px-4 py-1.5 text-xs font-black text-black"
+                className="rounded-full bg-[#c8ff3d] px-4 py-1.5 text-xs font-black text-black"
               >
                 Generate
               </Link>
@@ -138,13 +127,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           )}
 
           <CommandPalette />
-          <div className="flex-1 bg-black">{children}</div>
+          <main className="flex-1 bg-black">{children}</main>
           {!hideFooter && <Footer />}
 
-          {/* HF mobile dock */}
-          <nav className="sticky bottom-0 z-40 flex items-end border-t border-white/[0.06] bg-[#0a0a0c]/95 px-1 pb-[env(safe-area-inset-bottom)] backdrop-blur-md lg:hidden">
-            {MOBILE_NAV.map((item) => {
-              const active = isActive(path, item.href);
+          <nav className="sticky bottom-0 z-40 flex items-end border-t border-white/[0.07] bg-[#09090b]/95 px-1 pb-[env(safe-area-inset-bottom)] backdrop-blur-md lg:hidden">
+            {MOBILE.map((item) => {
+              const on = active(path, item.href);
               if (item.primary) {
                 return (
                   <Link
@@ -152,17 +140,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     href={item.href}
                     className="flex flex-1 flex-col items-center gap-0.5 py-1.5"
                   >
-                    <span
-                      className={cn(
-                        "grid h-12 w-12 place-items-center rounded-2xl bg-[var(--mint)] text-lg font-black text-black shadow-[0_0_28px_rgba(200,255,61,0.4)]",
-                        active && "ring-2 ring-white/50"
-                      )}
-                    >
+                    <span className="grid h-12 w-12 place-items-center rounded-2xl bg-[#c8ff3d] text-lg font-black text-black shadow-[0_0_28px_rgba(200,255,61,0.45)]">
                       {item.icon}
                     </span>
-                    <span className="text-[9px] font-bold text-[var(--mint)]">
-                      {item.label}
-                    </span>
+                    <span className="text-[9px] font-bold text-[#c8ff3d]">{item.label}</span>
                   </Link>
                 );
               }
@@ -172,7 +153,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   href={item.href}
                   className={cn(
                     "flex flex-1 flex-col items-center gap-0.5 py-2.5 text-[9px] font-semibold",
-                    active ? "text-[var(--mint)]" : "text-white/45"
+                    on ? "text-[#c8ff3d]" : "text-white/40"
                   )}
                 >
                   <span className="text-base">{item.icon}</span>
