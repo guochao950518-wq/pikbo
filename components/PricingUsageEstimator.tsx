@@ -20,7 +20,7 @@ export function PricingUsageEstimator() {
     : 0;
 
   return (
-    <section className="overflow-hidden rounded-3xl border border-white/10 bg-[#111016] shadow-[0_30px_80px_-45px_rgba(168,85,247,.65)]">
+    <section className="overflow-hidden rounded-3xl border border-white/10 bg-[#111016] shadow-[0_30px_80px_-45px_rgba(200,255,61,.45)]">
       <div className="grid lg:grid-cols-[1.25fr_.75fr]">
         <div className="p-6 sm:p-8">
           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--mint)]">Allowance estimator</p>
