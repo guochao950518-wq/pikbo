@@ -729,7 +729,7 @@ export const PRESETS: Preset[] = [
       },
     ],
     promptTemplate:
-      "The collectible figure bursts out of a swirling cloud of atmospheric smoke into a confident hero pose, dramatic backlight and volumetric haze, cinematic slow-motion reveal, the smoke clears to show the figure crisp and centered, keeping its exact look and colors.",
+      "The collectible figure bursts out of a swirling cloud of atmospheric smoke into a confident hero pose, dramatic backlight and volumetric haze, cinematic slow-motion reveal, the smoke clears to show the figure crisp and recognizable, using the uploaded photo as reference.",
     duration: 5,
     aspectRatio: "9:16",
   },
