@@ -30,6 +30,16 @@
   --shadow-md: 0 12px 40px -16px rgba(0, 0, 0, 0.75);
   --shadow-lg: 0 30px 80px -30px rgba(0, 0, 0, 0.9);
   --radius: 1rem;
+
+  /* shadcn-compatible aliases (template kit) */
+  --background: var(--bg);
+  --foreground: var(--fg);
+  --primary: var(--mint);
+  --primary-foreground: #07070a;
+  --muted: var(--bg-soft);
+  --muted-foreground: var(--fg-muted);
+  --accent: rgba(255, 255, 255, 0.06);
+  --ring: rgba(200, 255, 61, 0.45);
 }
 
 @theme inline {

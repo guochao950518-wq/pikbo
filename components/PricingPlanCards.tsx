@@ -2,115 +2,161 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { Check } from "lucide-react";
 import { PLANS, CREDITS_PER_VIDEO, clipsFromCredits } from "@/lib/pricing";
 import { PricingCheckoutButton } from "@/components/PricingCheckoutButton";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
+/** Template-grade pricing grid (shadcn Card kit + existing checkout). */
 export function PricingPlanCards() {
   const [annual, setAnnual] = useState(false);
 
   return (
     <>
-      <div className="mb-8 flex justify-center">
-        <div className="inline-flex rounded-full border border-[var(--border)] p-1 text-sm">
+      <div className="mb-10 flex justify-center">
+        <div
+          className="inline-flex rounded-full border border-[var(--border)] bg-[var(--bg-soft)] p-1 text-sm shadow-[var(--shadow-sm)]"
+          role="group"
+          aria-label="Billing period"
+        >
           <button
             type="button"
             onClick={() => setAnnual(false)}
-            className={`rounded-full px-4 py-1.5 font-semibold ${
-              !annual ? "bg-[var(--card)] text-[var(--fg)]" : "text-[var(--fg-dim)]"
-            }`}
+            className={cn(
+              "rounded-full px-5 py-2 text-sm font-semibold transition-colors",
+              !annual
+                ? "bg-[var(--card)] text-[var(--fg)] shadow-sm"
+                : "text-[var(--fg-dim)] hover:text-[var(--fg)]"
+            )}
           >
             Monthly
           </button>
           <button
             type="button"
             onClick={() => setAnnual(true)}
-            className={`rounded-full px-4 py-1.5 font-semibold ${
-              annual ? "bg-[var(--card)] text-[var(--fg)]" : "text-[var(--fg-dim)]"
-            }`}
+            className={cn(
+              "rounded-full px-5 py-2 text-sm font-semibold transition-colors",
+              annual
+                ? "bg-[var(--card)] text-[var(--fg)] shadow-sm"
+                : "text-[var(--fg-dim)] hover:text-[var(--fg)]"
+            )}
           >
             Annual{" "}
-            <span className="text-[var(--mint)]">−20% preview</span>
+            <span className="ml-1 text-[var(--mint)]">−20%</span>
           </button>
         </div>
       </div>
 
-      <div className="grid gap-5 md:grid-cols-3">
+      <div className="mx-auto grid max-w-5xl gap-6 md:grid-cols-3">
         {PLANS.map((plan) => {
           const price = annual
             ? Math.round(plan.priceMonthly * 0.8)
             : plan.priceMonthly;
           return (
-            <div
+            <Card
               key={plan.id}
               id={`plan-${plan.id}`}
-              className={`card relative flex scroll-mt-24 flex-col overflow-hidden p-6 ${
-                plan.featured ? "ring-2 ring-[var(--brand)]" : ""
-              }`}
+              className={cn(
+                "relative flex scroll-mt-24 flex-col overflow-hidden transition-transform hover:-translate-y-0.5",
+                plan.featured &&
+                  "z-[1] border-[var(--mint)]/40 shadow-[0_0_0_1px_rgba(200,255,61,0.2),0_24px_60px_-24px_rgba(0,0,0,0.85)] md:scale-[1.02]"
+              )}
             >
               {plan.featured && (
-                <span
-                  className="absolute -top-3 left-6 rounded-full px-3 py-1 text-xs font-semibold text-white"
-                  style={{ background: "var(--grad)" }}
-                >
-                  Most popular
-                </span>
+                <div className="absolute inset-x-0 top-0 h-1 [background:var(--grad)]" />
               )}
-              <h2 className="text-lg font-semibold">{plan.name}</h2>
-              <div className="mt-2 flex items-end gap-1">
-                <span className="text-4xl font-bold">${price}</span>
-                <span className="mb-1 text-sm text-[var(--fg-dim)]">
-                  /{annual && plan.priceMonthly > 0 ? "mo billed yearly" : "mo"}
-                </span>
-              </div>
-              {annual && plan.priceMonthly > 0 && (
-                <p className="text-xs text-[var(--mint)]">
-                  ${Math.round(plan.priceMonthly * 12 * 0.8)}/yr · save 20%
-                </p>
-              )}
-              <p className="mt-2 text-sm text-[var(--fg-muted)]">{plan.blurb}</p>
-              <div className="mt-5 rounded-2xl border border-white/8 bg-black/20 p-4">
-                <p className="text-3xl font-black">
-                  ≈ {clipsFromCredits(plan.credits)} clips
-                </p>
-                <p className="mt-1 text-[10px] uppercase tracking-wider text-[var(--fg-dim)]">
-                  at {CREDITS_PER_VIDEO} credits each
-                </p>
-              </div>
-              <ul className="mt-5 flex-1 space-y-2 text-sm">
-                {plan.perks.map((perk) => (
-                  <li key={perk} className="flex items-start gap-2">
-                    <span className="text-[var(--mint)]">✓</span>
-                    <span className="text-[var(--fg-muted)]">{perk}</span>
-                  </li>
-                ))}
-              </ul>
-              {plan.id === "free" ? (
-                <Link href="/create" className="btn btn-ghost mt-6 w-full">
-                  {plan.cta}
-                </Link>
-              ) : annual ? (
-                <div className="mt-6">
-                  <button
-                    type="button"
-                    disabled
-                    className="btn btn-ghost w-full cursor-not-allowed opacity-60"
-                    title="Annual Stripe prices not wired yet"
-                  >
-                    Annual soon — switch to Monthly
-                  </button>
-                  <p className="mt-2 text-center text-[10px] text-[var(--fg-dim)]">
-                    Checkout is monthly today. Annual billing ships with Stripe
-                    yearly prices.
+              <CardHeader className="space-y-3">
+                <div className="flex items-center justify-between gap-2">
+                  <CardTitle>{plan.name}</CardTitle>
+                  {plan.featured ? (
+                    <Badge variant="brand">Popular</Badge>
+                  ) : plan.id === "free" ? (
+                    <Badge variant="live">Start</Badge>
+                  ) : null}
+                </div>
+                <div className="flex items-end gap-1">
+                  <span className="text-4xl font-black tracking-tight">
+                    ${price}
+                  </span>
+                  <span className="mb-1.5 text-sm text-[var(--fg-dim)]">
+                    /{annual && plan.priceMonthly > 0 ? "mo yearly" : "mo"}
+                  </span>
+                </div>
+                {annual && plan.priceMonthly > 0 && (
+                  <p className="text-xs font-medium text-[var(--mint)]">
+                    ${Math.round(plan.priceMonthly * 12 * 0.8)}/yr · save 20%
+                  </p>
+                )}
+                <CardDescription>{plan.blurb}</CardDescription>
+              </CardHeader>
+
+              <CardContent className="flex flex-1 flex-col gap-5">
+                <div className="rounded-xl border border-white/[0.07] bg-black/30 p-4">
+                  <p className="text-3xl font-black tracking-tight">
+                    ≈ {clipsFromCredits(plan.credits)}
+                    <span className="ml-1 text-base font-semibold text-[var(--fg-muted)]">
+                      clips
+                    </span>
+                  </p>
+                  <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--fg-dim)]">
+                    {plan.credits.toLocaleString()} credits · {CREDITS_PER_VIDEO}{" "}
+                    / video
                   </p>
                 </div>
-              ) : (
-                <PricingCheckoutButton
-                  planId={plan.id}
-                  label={plan.cta}
-                  featured={plan.featured}
-                />
-              )}
-            </div>
+                <ul className="space-y-2.5 text-sm">
+                  {plan.perks.map((perk) => (
+                    <li key={perk} className="flex items-start gap-2.5">
+                      <span className="mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-full bg-[var(--mint)]/15 text-[var(--mint)]">
+                        <Check className="h-3 w-3" strokeWidth={3} />
+                      </span>
+                      <span className="text-[var(--fg-muted)] leading-snug">
+                        {perk}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+
+              <CardFooter className="mt-auto flex-col items-stretch gap-2">
+                {plan.id === "free" ? (
+                  <Button asChild className="w-full" size="lg">
+                    <Link href="/create">{plan.cta}</Link>
+                  </Button>
+                ) : annual ? (
+                  <>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="lg"
+                      className="w-full cursor-not-allowed opacity-60"
+                      disabled
+                      title="Annual Stripe prices not wired yet"
+                    >
+                      Annual soon — use Monthly
+                    </Button>
+                    <p className="text-center text-[10px] text-[var(--fg-dim)]">
+                      Checkout is monthly today. Yearly Stripe prices ship later.
+                    </p>
+                  </>
+                ) : (
+                  <PricingCheckoutButton
+                    planId={plan.id}
+                    label={plan.cta}
+                    featured={plan.featured}
+                  />
+                )}
+              </CardFooter>
+            </Card>
           );
         })}
       </div>

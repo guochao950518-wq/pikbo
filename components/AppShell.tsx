@@ -10,6 +10,9 @@ import { CommandPalette } from "@/components/CommandPalette";
 import { ToastProvider } from "@/components/Toast";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Footer } from "@/components/Footer";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 
 /** Higgsfield-class suite rail — full sidebar */
 const NAV = [
@@ -77,11 +80,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center justify-center gap-2.5 rounded-xl px-0 py-2.5 text-[13px] font-medium transition-colors xl:justify-start xl:px-2.5 ${
+                  className={cn(
+                    "flex items-center justify-center gap-2.5 rounded-xl px-0 py-2.5 text-[13px] font-medium transition-colors xl:justify-start xl:px-2.5",
                     active
                       ? "bg-white/10 text-[var(--mint)]"
                       : "text-[var(--fg-dim)] hover:bg-white/[0.04] hover:text-[var(--fg)]"
-                  }`}
+                  )}
                 >
                   <span className="w-5 text-center text-sm opacity-90">
                     {item.icon}
@@ -91,39 +95,28 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               );
             })}
           </nav>
-          <div className="mt-2 hidden border-t border-[var(--border)] pt-3 xl:block">
+          <div className="mt-2 hidden xl:block">
+            <Separator className="mb-3" />
             <CreditsBadge />
-            <Link
-              href="/create"
-              className="btn btn-primary mt-3 w-full py-2 text-xs"
-            >
-              Generate
-            </Link>
-            <Link
-              href="/pricing"
-              className="mt-2 block text-center text-[11px] font-semibold text-[var(--mint)] hover:underline"
-            >
-              Pricing & plans
-            </Link>
+            <Button asChild className="mt-3 w-full" size="sm">
+              <Link href="/create">Generate</Link>
+            </Button>
+            <Button asChild variant="ghost" size="sm" className="mt-1 w-full">
+              <Link href="/pricing">Pricing & plans</Link>
+            </Button>
           </div>
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          {/* Desktop top bar — pricing discoverability (HF has dedicated pricing) */}
-          <header className="sticky top-0 z-40 hidden h-11 items-center justify-end gap-3 border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--bg)_88%,transparent)] px-4 backdrop-blur-md lg:flex">
+          {/* Desktop top bar — SaaS template chrome */}
+          <header className="sticky top-0 z-40 hidden h-12 items-center justify-end gap-3 border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--bg)_88%,transparent)] px-4 backdrop-blur-md lg:flex">
             <CreditsBadge />
-            <Link
-              href="/pricing"
-              className="text-xs font-semibold text-[var(--fg-muted)] hover:text-[var(--mint)]"
-            >
-              Pricing
-            </Link>
-            <Link
-              href="/create"
-              className="btn btn-primary !px-3 !py-1.5 text-xs"
-            >
-              Generate
-            </Link>
+            <Button asChild variant="ghost" size="sm">
+              <Link href="/pricing">Pricing</Link>
+            </Button>
+            <Button asChild size="sm">
+              <Link href="/create">Generate</Link>
+            </Button>
           </header>
 
           <header className="sticky top-0 z-40 flex h-12 items-center justify-between border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--bg)_88%,transparent)] px-3 backdrop-blur-md lg:hidden">
@@ -136,20 +129,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </span>
               {site.name}
             </Link>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <CreditsBadge />
-              <Link
-                href="/pricing"
-                className="text-[11px] font-semibold text-[var(--mint)]"
-              >
-                Plans
-              </Link>
-              <Link
-                href="/create"
-                className="btn btn-primary !px-3 !py-1.5 text-xs"
-              >
-                Generate
-              </Link>
+              <Button asChild variant="ghost" size="sm">
+                <Link href="/pricing">Plans</Link>
+              </Button>
+              <Button asChild size="sm">
+                <Link href="/create">Generate</Link>
+              </Button>
             </div>
           </header>
 

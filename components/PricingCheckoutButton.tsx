@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { PlanId } from "@/lib/pricing";
+import { Button } from "@/components/ui/button";
 
 export function PricingCheckoutButton({
   planId,
@@ -38,17 +39,17 @@ export function PricingCheckoutButton({
   }
 
   return (
-    <div className="mt-6">
-      <button
+    <div className="w-full">
+      <Button
         type="button"
         onClick={checkout}
         disabled={busy}
-        className={`btn w-full disabled:opacity-60 ${
-          featured ? "btn-primary" : "btn-ghost"
-        }`}
+        variant={featured ? "default" : "secondary"}
+        size="lg"
+        className="w-full"
       >
         {busy ? "Redirecting…" : label}
-      </button>
+      </Button>
       {error && (
         <p className="mt-2 text-center text-xs text-[var(--brand)]">{error}</p>
       )}
