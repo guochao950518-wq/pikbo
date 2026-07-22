@@ -8,6 +8,7 @@ import {
   HomeDemoShowcase,
 } from "@/components/HomeDemoShowcase";
 import { HomeModelShelf } from "@/components/HomeModelShelf";
+import { HowItWorks } from "@/components/HowItWorks";
 
 /**
  * Home feed patterned on full AI creative suites:
@@ -64,13 +65,17 @@ export default function Home() {
       </section>
 
       <HomeDemoShowcase />
+      <HowItWorks />
 
       {/* Quick apps strip */}
       <section className="border-b border-[var(--border)] px-4 py-8 sm:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-bold">Apps</h2>
-            <Link href="/apps" className="text-xs text-[var(--lime)]">
+            <Link
+              href="/apps"
+              className="text-xs font-medium text-[var(--brand)] hover:underline"
+            >
               View all
             </Link>
           </div>
@@ -79,7 +84,7 @@ export default function Home() {
               <Link
                 key={a.id}
                 href={a.href}
-                className="flex min-w-[140px] flex-col gap-2 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 hover:border-[var(--lime)]/40"
+                className="card flex min-w-[140px] flex-col gap-2 p-4 transition-transform hover:-translate-y-0.5"
               >
                 <span className="text-2xl">{a.emoji}</span>
                 <span className="text-xs font-semibold">{a.name}</span>

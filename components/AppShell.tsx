@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { site } from "@/lib/site";
 import { CreditsBadge } from "@/components/CreditsBadge";
+import { MobileGenerateBar } from "@/components/MobileGenerateBar";
 
 /** Suite nav (big-app structure) + Pikbo candy brand (own style). */
 const NAV = [
@@ -93,6 +94,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </header>
 
         <div className="flex-1">{children}</div>
+        <MobileGenerateBar />
 
         <nav className="sticky bottom-0 z-40 flex overflow-x-auto border-t border-[var(--border)] bg-[var(--bg-soft)] lg:hidden">
           {NAV.slice(0, 6).map((item) => {

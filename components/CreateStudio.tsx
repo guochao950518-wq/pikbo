@@ -61,11 +61,26 @@ export function CreateStudio({
   const [showPaywall, setShowPaywall] = useState(false);
   const [upgradedBanner, setUpgradedBanner] = useState(false);
   const [usedModel, setUsedModel] = useState<string | null>(null);
+  const [presetFilter, setPresetFilter] = useState("");
+  const [elapsed, setElapsed] = useState(0);
+  const [copied, setCopied] = useState(false);
+  const [recent, setRecent] = useState<string[]>([]);
 
   const preset = useMemo(
     () => PRESETS.find((p) => p.slug === effect)!,
     [effect]
   );
+
+  const filteredPresets = useMemo(() => {
+    const q = presetFilter.trim().toLowerCase();
+    if (!q) return PRESETS;
+    return PRESETS.filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        p.tagline.toLowerCase().includes(q) ||
+        p.category.includes(q)
+    );
+  }, [presetFilter]);
 
   // When preset changes, adopt its defaults (unless user already mid-edit of same)
   useEffect(() => {
@@ -73,6 +88,39 @@ export function CreateStudio({
     const ar = preset.aspectRatio;
     if (ar === "9:16" || ar === "16:9" || ar === "1:1") setAspectRatio(ar);
   }, [preset.slug, preset.duration, preset.aspectRatio]);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("pikbo_recent_effects");
+      if (raw) setRecent(JSON.parse(raw) as string[]);
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  useEffect(() => {
+    if (status !== "generating") {
+      setElapsed(0);
+      return;
+    }
+    const t0 = Date.now();
+    const id = window.setInterval(() => {
+      setElapsed(Math.floor((Date.now() - t0) / 1000));
+    }, 250);
+    return () => window.clearInterval(id);
+  }, [status]);
+
+  function rememberEffect(slug: string) {
+    setRecent((prev) => {
+      const next = [slug, ...prev.filter((s) => s !== slug)].slice(0, 6);
+      try {
+        localStorage.setItem("pikbo_recent_effects", JSON.stringify(next));
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+  }
 
   const refreshSession = useCallback(async () => {
     try {
@@ -190,6 +238,7 @@ export function CreateStudio({
       setWatermark(Boolean(data.watermark));
       setUsedModel(data.model || null);
       setStatus("done");
+      rememberEffect(effect);
       pushHistory({
         videoUrl: data.videoUrl,
         effect,
@@ -205,9 +254,34 @@ export function CreateStudio({
     }
   }
 
+  async function copyLink() {
+    if (!videoUrl) return;
+    try {
+      await navigator.clipboard.writeText(videoUrl);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1500);
+    } catch {
+      setError("Could not copy link");
+    }
+  }
+
   const busy = status === "generating" || status === "uploading";
   const creditsLeft = session?.credits ?? null;
   const canAfford = creditsLeft === null || creditsLeft >= CREDITS_PER_VIDEO;
+  const isFree = session?.plan === "free" || session?.watermark;
+
+  // Cmd/Ctrl + Enter to generate
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+        e.preventDefault();
+        if (!busy) void generate();
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [busy, image, effect, duration, aspectRatio, modelId, extra, mode, session]);
 
   return (
     <div className="flex h-full min-h-[calc(100vh-3.5rem)] flex-col lg:min-h-screen">
@@ -239,23 +313,37 @@ export function CreateStudio({
         </div>
 
         <div className="flex flex-wrap gap-2">
-          {MODELS.map((m) => (
-            <button
-              key={m.id}
-              type="button"
-              onClick={() => setModelId(m.id)}
-              className={`rounded-xl border px-3 py-1.5 text-left text-xs transition-colors ${
-                modelId === m.id
-                  ? "border-[var(--mint)] bg-[color-mix(in_srgb,var(--mint)_12%,transparent)]"
-                  : "border-[var(--border)] bg-[var(--card)] hover:border-[var(--fg-dim)]"
-              }`}
-            >
-              <div className="font-semibold">{m.label}</div>
-              <div className="text-[10px] text-[var(--fg-dim)]">
-                {m.vendor} · {m.blurb}
-              </div>
-            </button>
-          ))}
+          {MODELS.map((m) => {
+            const lockedPaid = Boolean(isFree && !m.free);
+            return (
+              <button
+                key={m.id}
+                type="button"
+                onClick={() => {
+                  if (lockedPaid) {
+                    setShowPaywall(true);
+                    setError("Seedance 2.0 is on paid plans — Free uses Fast.");
+                    setModelId("seedance-fast");
+                    return;
+                  }
+                  setModelId(m.id);
+                }}
+                className={`rounded-xl border px-3 py-1.5 text-left text-xs transition-colors ${
+                  modelId === m.id
+                    ? "border-[var(--brand)] bg-[var(--grad-soft)]"
+                    : "border-[var(--border)] bg-[var(--card)] hover:border-[var(--fg-dim)]"
+                } ${lockedPaid ? "opacity-70" : ""}`}
+              >
+                <div className="font-semibold">
+                  {m.label}
+                  {lockedPaid ? " 🔒" : ""}
+                </div>
+                <div className="text-[10px] text-[var(--fg-dim)]">
+                  {m.vendor} · {m.blurb}
+                </div>
+              </button>
+            );
+          })}
         </div>
 
         <div className="ml-auto flex items-center gap-3 text-xs text-[var(--fg-muted)]">
@@ -279,8 +367,37 @@ export function CreateStudio({
           <p className="mb-2 px-1 text-[10px] font-bold uppercase tracking-wider text-[var(--fg-dim)]">
             🧸 Toy presets
           </p>
+          <input
+            value={presetFilter}
+            onChange={(e) => setPresetFilter(e.target.value)}
+            placeholder="Search spin, unbox…"
+            className="mb-2 w-full rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] px-2.5 py-1.5 text-xs outline-none focus:border-[var(--brand)]"
+          />
+          {recent.length > 0 && !presetFilter && (
+            <div className="mb-2">
+              <p className="mb-1 px-1 text-[9px] font-bold uppercase text-[var(--fg-dim)]">
+                Recent
+              </p>
+              <div className="flex flex-wrap gap-1">
+                {recent.map((slug) => {
+                  const p = PRESETS.find((x) => x.slug === slug);
+                  if (!p) return null;
+                  return (
+                    <button
+                      key={slug}
+                      type="button"
+                      onClick={() => setEffect(slug)}
+                      className="rounded-md border border-[var(--border)] px-1.5 py-0.5 text-[10px] hover:border-[var(--brand)]"
+                    >
+                      {p.emoji} {p.name}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
           <div className="flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible">
-            {PRESETS.map((p) => (
+            {filteredPresets.map((p) => (
               <button
                 key={p.slug}
                 type="button"
@@ -305,6 +422,9 @@ export function CreateStudio({
                 </span>
               </button>
             ))}
+            {filteredPresets.length === 0 && (
+              <p className="px-1 text-xs text-[var(--fg-dim)]">No presets match</p>
+            )}
           </div>
         </aside>
 
@@ -483,7 +603,7 @@ export function CreateStudio({
                 ? "Text→Video soon — use Image→Video"
                 : !canAfford
                   ? "Out of credits"
-                  : `Generate · ${CREDITS_PER_VIDEO} credits`}
+                  : `Generate · ${CREDITS_PER_VIDEO} credits · ${duration}s · ${aspectRatio}`}
           </button>
 
           {error && (
@@ -512,10 +632,29 @@ export function CreateStudio({
             {status === "generating" && (
               <div className="p-10 text-center text-[var(--fg-muted)]">
                 <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--mint)]" />
-                Animating your figure with Seedance…
-                <p className="mt-1 text-xs text-[var(--fg-dim)]">
-                  Usually 20–60s · hold paint detail
+                <p className="font-medium text-[var(--fg)]">
+                  Animating your figure…
                 </p>
+                <p className="mt-1 text-xs text-[var(--fg-dim)]">
+                  {elapsed < 3
+                    ? "Uploading reference"
+                    : elapsed < 12
+                      ? "Seedance queue"
+                      : elapsed < 35
+                        ? "Rendering motion"
+                        : "Almost done — large clips take longer"}
+                  {" · "}
+                  {elapsed}s
+                </p>
+                <div className="mx-auto mt-4 h-1.5 w-48 overflow-hidden rounded-full bg-[var(--border)]">
+                  <div
+                    className="h-full rounded-full transition-all duration-300"
+                    style={{
+                      width: `${Math.min(95, 8 + elapsed * 2.2)}%`,
+                      background: "var(--grad)",
+                    }}
+                  />
+                </div>
               </div>
             )}
             {status === "done" && videoUrl && (
@@ -550,6 +689,13 @@ export function CreateStudio({
                   </a>
                   <button
                     type="button"
+                    onClick={copyLink}
+                    className="btn btn-ghost px-4 py-2 text-xs"
+                  >
+                    {copied ? "Copied!" : "Copy link"}
+                  </button>
+                  <button
+                    type="button"
                     onClick={generate}
                     className="btn btn-ghost px-4 py-2 text-xs"
                   >
@@ -562,6 +708,9 @@ export function CreateStudio({
                     Library
                   </Link>
                 </div>
+                <p className="mt-2 text-center text-[10px] text-[var(--fg-dim)]">
+                  Shortcut: ⌘/Ctrl + Enter to generate
+                </p>
                 {demo && (
                   <p className="mt-3 text-center text-xs text-[var(--fg-dim)]">
                     Demo clip — set FAL_KEY to run real Seedance.
