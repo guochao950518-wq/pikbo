@@ -16,8 +16,19 @@ import { ensureSession, publicSession, saveSession } from "@/lib/session";
 export const runtime = "nodejs";
 export const maxDuration = 180;
 
-const DEMO_VIDEO =
-  "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
+/** Local toy demos when FAL_KEY missing — never ship flower.mp4 as product proof */
+const DEMO_CLIPS = [
+  "/demos/scout-packshot-spin.mp4",
+  "/demos/orbit-hyper-cgi.mp4",
+  "/demos/moon-box-reveal.mp4",
+  "/demos/beatbot-viral-hook.mp4",
+] as const;
+
+function demoClipForEffect(effect: string): string {
+  let h = 0;
+  for (let i = 0; i < effect.length; i++) h = (h + effect.charCodeAt(i) * 17) % DEMO_CLIPS.length;
+  return DEMO_CLIPS[h] ?? DEMO_CLIPS[0];
+}
 
 export async function POST(req: Request) {
   let body: {
@@ -102,12 +113,12 @@ export async function POST(req: Request) {
         : preset.promptTemplate;
 
   if (!process.env.FAL_KEY) {
-    await new Promise((r) => setTimeout(r, 1200));
+    await new Promise((r) => setTimeout(r, 800));
     return NextResponse.json({
-      videoUrl: DEMO_VIDEO,
+      videoUrl: demoClipForEffect(preset.slug),
       demo: true,
       watermark: plan.watermark,
-      model: "demo",
+      model: "demo-cached",
       duration: secs,
       aspectRatio: aspect,
       session: publicSession(session),
