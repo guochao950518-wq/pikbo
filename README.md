@@ -56,6 +56,22 @@ Free tier always shows an on-player watermark; paid plans remove it.
 5. **Keyword expansion** — more `/effects/*` pages from long-tail list
 6. Vertical ads / affiliate (after free traffic is stable)
 
+## Multi-agent workflow (Grok · GPT · Claude)
+Single source of truth: **this GitHub repo**.
+
+| Doc | Purpose |
+|---|---|
+| [`COLLAB.md`](./COLLAB.md) | Branch rules, how to pull each other’s good commits |
+| [`docs/STATUS.md`](./docs/STATUS.md) | Live task board — **claim before coding** |
+| [`docs/HANDOFF.md`](./docs/HANDOFF.md) | Quality landings worth reusing |
+| [`AGENTS.md`](./AGENTS.md) | Short entrypoint for any agent session |
+
+```bash
+git fetch origin --prune && git pull --ff-only
+# claim a row in docs/STATUS.md, then:
+git checkout -b agent/<grok|gpt|claude>/<topic>
+```
+
 ## Guardrails
 - Users animate **their own photos** of toys they own — no brand-name generation.
 - Never offer true "unlimited" on expensive models. Cost control = survival.
