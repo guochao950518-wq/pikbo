@@ -345,7 +345,7 @@ export const PRESETS: Preset[] = [
       },
       {
         q: "Is there a free version?",
-        a: "Yes — free clips include a small Pikbo watermark. Upgrade for watermark-free HD.",
+        a: "Yes — Free live results show a small on-player Pikbo watermark. Creator and Shop use the 720p path without that player mark.",
       },
     ],
     promptTemplate:
@@ -842,11 +842,11 @@ export const PRESETS: Preset[] = [
 export const COMMON_FAQ: { q: string; a: string }[] = [
   {
     q: "Is there a watermark?",
-    a: "Free clips carry a small Pikbo watermark. Any paid plan (Creator or Shop) removes it and unlocks full-resolution, watermark-free downloads.",
+    a: "Free live results show a small on-player Pikbo watermark. Creator and Shop use the 720p path without that player mark; server-burned file watermarking is still a separate launch task.",
   },
   {
     q: "Can I use the videos commercially — for my shop or ads?",
-    a: "Yes. Paid plans include commercial use, so you can run the clips on your Etsy, TikTok Shop, Amazon, or paid ads. Free-tier clips are for personal, watermarked use.",
+    a: "Yes. Paid plans include commercial use, so you can run the clips on your Etsy, TikTok Shop, Amazon, or paid ads. Free live results are for personal use and show an on-player mark.",
   },
   {
     q: "How many photos do I need?",

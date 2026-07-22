@@ -44,7 +44,7 @@ export default async function PricingPage({
           <CardContent className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-bold text-[var(--fg)]">
-                Allowance contract — billing is still gated
+                Allowance contract — live billing is still gated
               </p>
               <p className="mt-1 max-w-3xl text-xs leading-5 text-[var(--fg-muted)]">
                 These cards match the current server grants: one Free trial,
@@ -112,8 +112,8 @@ export default async function PricingPage({
                     ],
                     ["Resolution", ...PLANS.map((plan) => plan.resolution)],
                     [
-                      "Watermark-free",
-                      ...PLANS.map((plan) => (plan.watermark ? "—" : "✓")),
+                      "On-player watermark",
+                      ...PLANS.map((plan) => (plan.watermark ? "✓" : "—")),
                     ],
                     [
                       "Commercial use",
@@ -155,7 +155,7 @@ export default async function PricingPage({
               ],
               [
                 "What can I test today?",
-                `You can browse cached ${site.name} Lab examples and use the labeled Studio workflow with your own toy photo. With provider access configured, Free includes one 5-second, 480p, watermarked live trial; otherwise the result stays a labeled cached demo.`,
+                `You can browse cached ${site.name} Lab examples and use the labeled Studio workflow with your own toy photo. With provider access configured, Free includes one 5-second, 480p Seedance Mini live trial; otherwise the result stays a labeled cached demo.`,
               ],
               [
                 "Can I use clips commercially?",

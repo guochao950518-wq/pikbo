@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [gpt] truth-sync C1–C5
+- Paths: pricing UI, CreateStudio/LandingToolPanel/Paywall/Profile/Credits copy, `README.md`, `docs/UNIT_ECONOMICS.md`, terms/preset FAQ, and audit docs.
+- Contract: Free 10 credits ≈ one Mini 5s 480p live trial with an on-player mark; Creator 50 ≈ five; Shop 150 ≈ fifteen at the current flat 10-credit rate. No unlimited live generation claim remains.
+- Demo truth: cached examples do not animate the upload or call the provider; cached homepage playback costs no credits, while Studio submissions follow the current API credit contract.
+- Economics: current allowances are prototype estimates; 10s Standard Shop usage can still lose money, so weighted server metering, durable credits, and file-level watermarking remain launch gates.
+- Verified: `eslint app components lib --max-warnings=0` and `git diff --check` pass. No `app/api/**`, session, credits, contracts, models, Stripe, or homepage-shell logic was changed.
+
 ### 2026-07-23 — [gpt] pricing UI aligned to the active credit contract (T30)
 - Paths: `app/pricing/page.tsx`, `components/PricingPlanCards.tsx`, `components/PricingUsageEstimator.tsx`.
 - Truth rule: Free 1 / Creator ~5 / Shop ~15 are the current server-backed flat-rate allowances, not stale prototype placeholders.
@@ -18,13 +25,13 @@ Newest first. One block per meaningful landing.
 ### 2026-07-23 — [gpt] pricing messages + 390px first-screen pass (C4–C5 / T28–T29)
 - Paths: `components/PricingHeroCopy.tsx`, pricing page/components, `HeroVideoBanner`, and `MobileGenerateBar`.
 - Reuse: default pricing message is outcome-led; `/pricing?copy=cost` selects the cost-control variant via `data-pricing-copy-variant`.
-- Truth rule: plan clip totals are prototype estimates, not launch promises; cached demos and gated billing remain explicit.
+- Truth rule (superseded by C1–C5): the current UI now follows the active flat-rate 1 / 5 / 15 allowance contract; billing remains gated.
 - Mobile: 390×844 has no horizontal overflow, keeps both hero CTAs visible, and no longer overlays a duplicate floating CTA on Home.
 - Verified: all-app ESLint, TypeScript + 69-route production build, both pricing variants, demo switch, and 390px browser geometry.
 
 ### 2026-07-23 — [gpt] conversion truth + unit economics (C3 / T26)
 - Paths: `docs/UNIT_ECONOMICS.md`
-- Decision: replace three anonymous monthly free clips with one verified 4s/480p/watermarked trial (recommendation).
+- Decision (superseded by C1–C5): the implemented Free path is now one 5s Seedance Mini 480p trial with an on-player mark.
 - Economics: Creator `$19` supports about five 5s Fast 720p or four 5s Standard 720p clips, not 50, at the reviewed fal rates.
 - Reuse: charge credits by model + resolution + duration; **Grok implements** server-side ledger (not UI-only).
 - Verified: sources linked in doc; arithmetic sensitivity included.
@@ -59,7 +66,7 @@ Newest first. One block per meaningful landing.
 - Paths: `app/pricing/page.tsx`, `components/PricingUsageEstimator.tsx`
 - Why good: turns a static three-card page into a transparent monthly-output calculator, recommendation flow, plan comparison table, and clear FAQ while preserving the real checkout buttons.
 - Reuse / pitfalls:
-  - Recommendations intentionally match current allowances: Free up to 3 clips, Creator up to 50, Shop up to 150 at `CREDITS_PER_VIDEO = 10`.
+  - Historical note: the old 3 / 50 / 150 clip allowances are retired; C1–C5 aligns the UI to current ~1 / ~5 / ~15 output at `CREDITS_PER_VIDEO = 10`.
   - The calculator is illustrative of included credits, not a quote for model overages; keep wording tied to the current credit estimate.
   - No annual toggle or unlimited claim exists because neither billing mode is implemented.
   - Checkout stays in `PricingCheckoutButton`; do not duplicate Stripe logic inside the estimator.
@@ -100,9 +107,9 @@ Newest first. One block per meaningful landing.
 
 ### 2026-07-22 — [grok] ByteDance Seedance as default video model
 - Paths: `lib/models.ts`, `app/api/generate/route.ts`, `.env.example`
-- Why: boss wants 字节模型出片. Defaults are Seedance 2.0 full (paid) + Fast (free) on fal.
+- Why: boss wants 字节模型出片. Current defaults are Seedance 2.0 full (paid) + Mini 480p (Free) on fal.
 - Reuse: change models only via `FAL_MODEL` / `FAL_MODEL_FREE`; keep input `prompt` + `image_url` + duration/aspect/resolution.
-- Cost: Seedance is not free — always meter credits; free tier uses Fast + 480p + no audio.
+- Cost: Seedance is not free — always meter credits; Free uses Mini + 480p and the current 10-credit trial contract.
 
 ### 2026-07-22 — [grok] Stripe billing + entitlements (T4)
 - Paths: `lib/entitlements.ts`, `lib/stripe.ts`, `lib/session.ts` (merge), `app/api/webhooks/stripe`, `app/api/checkout`, `app/api/checkout/confirm`, CreateStudio confirm on return, `/privacy` `/terms`, homepage pipeline demo

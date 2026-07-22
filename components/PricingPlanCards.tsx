@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Check } from "lucide-react";
-import { PLANS, clipsFromCredits } from "@/lib/pricing";
+import { CREDITS_PER_VIDEO, PLANS, clipsFromCredits } from "@/lib/pricing";
 import { PricingCheckoutButton } from "@/components/PricingCheckoutButton";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -109,7 +109,7 @@ export function PricingPlanCards() {
                     </span>
                   </p>
                   <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--fg-dim)]">
-                    Current flat rate · model-aware weights next
+                    {CREDITS_PER_VIDEO} credits per current job · weighted rates next
                   </p>
                 </div>
                 <ul className="space-y-2.5 text-sm">

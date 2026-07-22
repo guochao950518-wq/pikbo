@@ -28,8 +28,8 @@ export function PricingUsageEstimator() {
             <div>
               <h2 className="text-2xl font-bold">How many clips are you planning?</h2>
               <p className="mt-1 text-sm text-[var(--fg-muted)]">
-                Map your monthly target to the current finite allowances. This
-                is a plan estimator, not a provider invoice quote.
+                Map your target to the current finite allowances. This is a
+                plan estimate, not a provider invoice quote.
               </p>
             </div>
             <p className="text-4xl font-black text-white">
@@ -77,7 +77,7 @@ export function PricingUsageEstimator() {
               <p className="text-xl font-bold">${recommendation.priceMonthly}<span className="text-xs font-normal text-[var(--fg-dim)]"> / mo</span></p>
             </div>
             <p className="mt-3 text-sm leading-6 text-[var(--fg-muted)]">
-              Current allowance: {includedClips} clips at the flat {CREDITS_PER_VIDEO}-credit rate. Model, resolution, and duration weights come next.
+              Current allowance: about {includedClips} clips at the flat {CREDITS_PER_VIDEO}-credit rate. Model, resolution, and duration weights come next.
               {recommendation.id === "shop" ? " Batch tools are included for larger drops." : ""}
             </p>
             <div className="mt-5 grid grid-cols-2 gap-3">

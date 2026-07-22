@@ -27,7 +27,7 @@ const COPY: Record<
       </>
     ),
     description:
-      "Free: one watermarked Seedance Mini trial (5s · 480p). Creator ~5 / Shop ~15 at current credit rates. Cached demos unlimited. No fake unlimited live gens.",
+      "Free: one Seedance Mini trial with an on-player mark (5s · 480p). Creator ~5 / Shop ~15 at the current flat rate. Cached demos are free to replay; live generation is always finite.",
     primary: "Start free trial",
     secondary: "Compare plans",
   },
@@ -42,7 +42,7 @@ const COPY: Record<
       </>
     ),
     description:
-      "Credits map to real Seedance cost (see unit economics). Free ~1 · Creator ~5 · Shop ~15 at 10 credits/clip. Live metering by duration/model comes next.",
+      "The current contract is Free ~1 · Creator ~5 · Shop ~15 at 10 credits per eligible job. Provider cost still varies by model and duration, so weighted metering comes next.",
     primary: "Open Generate",
     secondary: "Review allowances",
   },
@@ -85,8 +85,8 @@ export function PricingHeroCopy({
         </div>
         <div className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-[var(--fg-dim)]">
           <span>✓ Cached examples use no credits</span>
-          <span>✓ Failed live jobs refund credits</span>
-          <span>✓ Billing remains gated for validation</span>
+          <span>✓ Failed live jobs refund their credit charge</span>
+          <span>✓ No unlimited live generation</span>
         </div>
       </div>
     </section>

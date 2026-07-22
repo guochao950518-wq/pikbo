@@ -59,7 +59,7 @@ export function ProfilePanel() {
               ? Math.floor(session.credits / CREDITS_PER_VIDEO)
               : "—"}
           </p>
-          <p className="text-[10px] text-[var(--fg-dim)]">clips left</p>
+          <p className="text-[10px] text-[var(--fg-dim)]">current jobs</p>
         </div>
         <div className="rounded-xl bg-[var(--bg-soft)] py-3">
           <p className="text-lg font-bold">{clips}</p>
@@ -68,8 +68,8 @@ export function ProfilePanel() {
       </div>
 
       <p className="text-xs text-[var(--fg-muted)]">
-        Free tier uses Seedance Mini + player watermark. Upgrade for HD Seedance 2.0
-        and commercial listings.
+        Free live jobs use Seedance Mini at 480p with an on-player mark. Paid
+        plans use the 720p path and include commercial listings.
       </p>
 
       <div className="flex flex-col gap-2">

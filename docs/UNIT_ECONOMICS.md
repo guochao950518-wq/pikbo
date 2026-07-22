@@ -1,103 +1,88 @@
-# PIKBO unit economics — Seedance credits and free allowance
+# PIKBO unit economics — current allowances and Seedance cost
 
 **Reviewed:** 2026-07-23
 
-**Scope:** C3 / T26. **Partial product apply 2026-07-23 by Grok:** Free `10` credits (~1 clip), Creator `50` (~5), Shop `150` (~15) at 10 credits/clip — see `lib/pricing.ts`. Full model×duration metering still TODO.
+**Scope:** C3 / truth-sync
 
-**Launch rule:** re-check provider and payment pricing before enabling real charges.
+**Product truth:** `lib/pricing.ts` is the source of truth for credits and public allowance copy.
+
+**Launch rule:** re-check provider and payment pricing before enabling real charges. All dollar figures below are planning estimates, not customer quotes.
+
+## Implemented contract
+
+The current product grants a flat `10 credits` per eligible generation:
+
+| Plan | Monthly price | Credits | Current approximate output | Live path |
+|---|---:|---:|---:|---|
+| Free | $0 | 10 | ~1 trial clip | Seedance Mini · 5s · 480p · on-player watermark |
+| Creator | $19 | 50 | ~5 clips | 720p paid path · no on-player watermark |
+| Shop | $49 | 150 | ~15 clips | 720p paid path · batch workflow |
+
+The `~1 / ~5 / ~15` figures are contract-derived prototype estimates: credits divided by the current flat 10-credit job charge. They are not an unlimited promise, a provider invoice quote, or a guarantee that every model/duration combination has the same cost forever.
+
+Cached homepage/Lab examples have no model cost and use no credits. A Studio request without `FAL_KEY` returns a labeled cached demo under the current API credit contract; it must never be described as a live render of the uploaded toy.
 
 ## Decision
 
-The current public allowance is not economically safe for live generation:
+The old `30 / 500 / 1,500` credit presentation was unsafe and is retired. The current `10 / 50 / 150` contract is materially safer, but the flat 10-credit job charge is still only a foundation:
 
-- Free: `30 credits / 10 credits per clip = 3 clips` every month.
-- Creator: `$19 / month`, `500 credits = about 50 clips`.
-- Every 5-second and 10-second clip currently costs the same 10 credits.
-
-At fal's current Seedance 2.0 rates, a fully used Creator plan would spend more on model inference than it collects in subscription revenue. Do not enable real Stripe charging while `1 clip = 10 credits` remains the production rule.
-
-Recommended launch shape:
-
-1. Replace three monthly free generations with **one one-time, 4-second, 480p, watermarked trial**.
-2. Require an email-backed account before the live trial; device/IP controls are secondary abuse signals, not identity.
-3. Keep Creator at `$19`, but price generation by model, resolution, and duration.
-4. Target roughly **five 5-second Fast 720p clips** or **four 5-second Standard 720p clips** per Creator allowance, not 50.
-5. Keep demo mode free and clearly labeled because cached playback has zero marginal model cost.
+1. Free uses **Seedance Mini**, not Fast: one 5-second, 480p live trial with an on-player mark when provider access is configured.
+2. Creator supports about five current flat-rate jobs, not 50.
+3. Shop supports about fifteen current flat-rate jobs, not 150.
+4. A 10-second paid render still costs the same credits as a 5-second render, even though provider cost is roughly double.
+5. Live billing remains gated until model/resolution/duration weights, durable credits, and download watermarking are enforced server-side.
 
 ## Source rates
 
-The production code currently selects:
+Production currently selects:
 
-- Free: `bytedance/seedance-2.0/fast/image-to-video`, forced to 480p.
+- Free default: `bytedance/seedance-2.0/mini/image-to-video`, forced to 480p.
 - Paid default: `bytedance/seedance-2.0/image-to-video`, default 720p.
-- Studio duration: 5 or 10 seconds.
+- Paid preference: Seedance Fast or Mini when selected.
+- Studio duration: 5 or 10 seconds; Free is locked to 5 seconds.
 
 Official fal pricing reviewed on 2026-07-23:
 
-| Endpoint / planning path | Rate per generated second | 5 seconds | 10 seconds | Status in PIKBO |
+| Endpoint / planning path | Approx. rate per second | 5 seconds | 10 seconds | PIKBO use |
 |---|---:|---:|---:|---|
-| Seedance 2.0 Fast, 480p | **~$0.108 estimated** | **~$0.54** | **~$1.08** | Current Free live path |
-| Seedance 2.0 Fast, 720p | $0.2419 | $1.21 | $2.42 | Available paid preference |
-| Seedance 2.0 Standard, 720p | $0.3024 | $1.51 | $3.02 | Current paid default |
-| Seedance 2.0 Mini, 480p | $0.0721 | $0.36 | $0.72 | Not currently wired; candidate only |
-| Seedance 2.0 Mini, 720p | $0.1547 | $0.77 | $1.55 | Not currently wired; candidate only |
+| Seedance 2.0 Mini, 480p | $0.0721 | $0.36 | $0.72 | Current Free live path |
+| Seedance 2.0 Mini, 720p | $0.1547 | $0.77 | $1.55 | Optional paid preference |
+| Seedance 2.0 Fast, 720p | $0.2419 | $1.21 | $2.42 | Paid preference |
+| Seedance 2.0 Standard, 720p | ~$0.3034 | ~$1.52 | ~$3.03 | Current paid default |
 
 Sources:
 
-- [fal — Seedance 2.0 Image to Video](https://fal.ai/models/bytedance/seedance-2.0/image-to-video)
-- [fal — Seedance 2.0 Fast Image to Video](https://fal.ai/models/bytedance/seedance-2.0/fast/image-to-video)
 - [fal — Seedance 2.0 Mini Image to Video](https://fal.ai/models/bytedance/seedance-2.0/mini/image-to-video)
+- [fal — Seedance 2.0 Fast Image to Video](https://fal.ai/models/bytedance/seedance-2.0/fast/image-to-video)
+- [fal — Seedance 2.0 Image to Video](https://fal.ai/models/bytedance/seedance-2.0/image-to-video)
 - [Stripe — standard online payment pricing](https://stripe.com/pricing)
 
-### Why the 480p Fast number is an estimate
+fal calculates final cost from output dimensions, duration, frame rate, and token price. Reconcile controlled jobs against the actual fal invoice before changing public weights.
 
-fal publishes `$0.2419 / second` for Fast 720p and a token formula based on output width, height, duration, and 24 fps. The planning estimate scales the published 720p rate by the 16:9 / 9:16 pixel ratio from 1280×720 to approximately 854×480:
+## Free trial exposure
+
+One 5-second Mini 480p live trial costs approximately:
 
 ```text
-$0.2419 × (854 × 480) / (1280 × 720) ≈ $0.1076 / second
+Raw model cost: 5 × $0.0721 = $0.36
+With 10% operations buffer: ~$0.40 per fully used trial
 ```
 
-Actual billing can vary with output dimensions and provider pricing. Treat `$0.108 / second` as a budget estimate, not a customer quote. Before launch, run controlled 4-, 5-, and 10-second jobs and compare the fal invoice to this table.
+The 10% buffer is a planning allowance for storage, delivery, retries, monitoring, and price variance; it is not an official fal fee.
 
-## Free allowance
-
-### Current maximum exposure
-
-Assuming a user consumes all three monthly clips:
-
-| Free usage | Raw model cost | With 10% operations buffer |
-|---|---:|---:|
-| 3 × 5s Fast 480p | ~$1.61 | ~$1.78 |
-| 3 × 10s Fast 480p | ~$3.23 | ~$3.55 |
-
-The 10% buffer is a planning allowance for storage, delivery, retries, monitoring, and pricing variance. It is not an official fal fee.
-
-This exposure is too high for anonymous recurring acquisition because the current guest balance is cookie-based. Clearing or rotating client state is not a reliable anti-abuse boundary.
-
-### Recommended free policy
-
-| Control | Recommendation |
+| Control | Current / required position |
 |---|---|
-| Allowance | One live generation per verified account, not three per month |
-| Duration | 4 seconds |
+| Allowance | 10 credits ≈ one current live trial job |
+| Duration | 5 seconds |
 | Resolution | 480p |
-| Model | Fast initially; evaluate Mini only after a toy-consistency quality test |
-| Output | Visible and file-level PIKBO watermark before public launch |
-| Credits | One-time trial grant; do not silently refresh anonymous credits monthly |
-| Abuse | Email-backed user ID plus device/IP velocity limits |
+| Model | Seedance Mini |
+| Output | On-player watermark today; server-burned file watermark required before public launch |
+| Identity | Cookie session today; verified durable account required before serious paid billing |
+| Abuse | Rate limit exists; email-backed identity remains the stronger boundary |
 
-Estimated acquisition subsidy for one 4-second Fast 480p result:
-
-```text
-Raw model cost: 4 × ~$0.1076 = ~$0.43
-With 10% buffer: ~$0.47 per fully used trial
-```
-
-If Seedance Mini passes a real toy-preservation test, a 5-second Mini 480p trial would cost about `$0.36` raw. Do not switch solely on price; the trial must represent the quality a customer will later buy.
+The trial is a deliberate acquisition subsidy. Cached examples should remain free to replay because they have zero incremental inference cost.
 
 ## Creator $19
-
-### Payment baseline
 
 For a simple US-card planning example, Stripe lists `2.9% + $0.30`:
 
@@ -105,80 +90,65 @@ For a simple US-card planning example, Stripe lists `2.9% + $0.30`:
 $19.00 - (2.9% × $19.00) - $0.30 = ~$18.15 net receipt
 ```
 
-Stripe fees depend on the account country, payment method, currency conversion, tax tooling, and negotiated agreement. `$18.15` is a comparison baseline, not the final PIKBO settlement forecast.
+Stripe fees vary by account country, payment method, currency conversion, tax tooling, and agreement. `$18.15` is a comparison baseline.
 
-### Current 50-clip promise
+At the current five-job allowance:
 
-| Fully used Creator allowance | Raw Seedance cost | Contribution after example Stripe fee | Contribution margin |
-|---|---:|---:|---:|
-| 50 × 5s Fast 720p | $60.48 | **-$42.33** | **-233%** |
-| 50 × 5s Standard 720p | $75.60 | **-$57.45** | **-317%** |
-| 50 × 10s Fast 720p | $120.95 | **-$102.80** | **-566%** |
-| 50 × 10s Standard 720p | $151.20 | **-$133.05** | **-733%** |
-
-Therefore the existing `~50 clips` Creator copy is a launch blocker for real billing. Low average usage does not make an upside-down maximum allowance safe; a small group of power users would create negative contribution margin.
-
-### Recommended Creator capacity
-
-Use a target model-cost envelope of roughly 35%–40% of net subscription revenue before support and company overhead.
-
-Two equivalent safe starting bundles are:
-
-| Creator bundle | Raw model cost | With 10% buffer | Contribution after example Stripe fee | Margin after model + buffer |
+| Fully used Creator allowance | Raw Seedance cost | Cost with 10% buffer | Contribution after example Stripe fee | Margin after model buffer |
 |---|---:|---:|---:|---:|
-| 5 × 5s Fast 720p | $6.05 | $6.65 | $11.50 | 63.3% |
-| 4 × 5s Standard 720p | $6.05 | $6.65 | $11.50 | 63.3% |
+| 5 × 5s Fast 720p | $6.05 | $6.65 | $11.50 | 63% |
+| 5 × 5s Standard 720p | $7.59 | $8.34 | $9.81 | 54% |
+| 5 × 10s Fast 720p | $12.10 | $13.30 | $4.85 | 27% |
+| 5 × 10s Standard 720p | $15.17 | $16.69 | $1.46 | 8% |
 
-This leaves room for storage, customer support, chargebacks, failed-but-billed edge cases, taxes, and future discounts. It does not guarantee company-level profitability because payroll, marketing, and fixed infrastructure are excluded.
+Conclusion: Creator is no longer upside-down at five current jobs, but the worst-case 10-second Standard path leaves too little room for storage, support, chargebacks, tax, and discounts. Duration-aware weights are still required.
 
-## Recommended credit weights
+## Shop $49
 
-If Creator continues to include 500 credits, credits must represent cost-weighted usage rather than a clip count:
+Using the same example fee formula, a `$49` subscription nets about `$47.28` before tax and other costs.
 
-| Generation | Recommended charge | Approx. Creator capacity |
+| Fully used Shop allowance | Raw Seedance cost | Cost with 10% buffer | Contribution after example Stripe fee | Margin after model buffer |
+|---|---:|---:|---:|---:|
+| 15 × 5s Standard 720p | $22.76 | $25.03 | $22.25 | 47% |
+| 15 × 10s Fast 720p | $36.29 | $39.91 | $7.37 | 16% |
+| 15 × 10s Standard 720p | $45.51 | $50.06 | **-$2.78** | **-6%** |
+
+Conclusion: Shop can still lose money when every current flat-rate job uses the 10-second Standard path. Do not describe the plan as unlimited or as a guaranteed lowest cost per clip.
+
+## Planning weights — not implemented yet
+
+The following is a starting model for Grok to enforce server-side; it is not active UI pricing:
+
+| Generation | Planning charge | Approx. Creator capacity (50 credits) |
 |---|---:|---:|
-| Fast 480p, 5s | 45 credits | 11 clips |
-| Fast 480p, 10s | 90 credits | 5 clips |
-| Fast 720p, 5s | 100 credits | 5 clips |
-| Fast 720p, 10s | 200 credits | 2 clips |
-| Standard 720p, 5s | 125 credits | 4 clips |
-| Standard 720p, 10s | 250 credits | 2 clips |
+| Mini 480p, 5s | 10 credits | 5 jobs |
+| Fast 720p, 5s | 10 credits | 5 jobs |
+| Standard 720p, 5s | 13 credits | 3 jobs plus remainder |
+| Fast 720p, 10s | 20 credits | 2 jobs plus remainder |
+| Standard 720p, 10s | 25 credits | 2 jobs |
 
-Rounding is intentional. It creates a buffer against provider price changes and makes duration visibly cost more. The quote shown before Generate must be calculated from the selected model, resolution, duration, and variant count.
+Rounding intentionally leaves cost headroom. The quote shown before Generate must be calculated from the selected model, resolution, duration, and variant count, then enforced by the same server transaction that deducts credits.
 
-The free trial can remain a separate promotional entitlement rather than forcing its acquisition subsidy into the paid credit exchange rate.
+## Copy and product rules
 
-## Product and copy implications
+- Public allowance copy must derive from `PLANS`, `CREDITS_PER_VIDEO`, and `clipsFromCredits`.
+- Say `Free ~1 / Creator ~5 / Shop ~15` only while the flat 10-credit contract is active.
+- Say `Seedance Mini 480p` for the Free live path; never say Free uses Fast.
+- Use `cached demo` when no provider call is made; never imply the uploaded image was rendered.
+- “Unlimited” is allowed only for cached playback, never for live generation.
+- Free currently has an on-player mark; do not claim the downloaded file has a server-burned watermark yet.
+- Failed live jobs refund their credit charge.
+- Model-aware weights are a future contract change, not an active feature.
 
-Before real billing:
+No generation, session, credits, or Stripe logic changes are included in this truth-sync. Grok must implement weighted quotes atomically with durable credit accounting.
 
-- Replace `1 clip = 10 credits` with a model-aware quote.
-- Replace Creator `~50 clips` with an honest output range tied to model and duration.
-- Make 10-second generations cost approximately twice the equivalent 5-second generation.
-- Do not advertise “lowest cost per clip” on Shop until its allowance is recalculated with the same method.
-- Do not enable live checkout while anonymous monthly credits can be reset through client state.
-- Keep cached demo playback outside credit accounting and label it as cached.
+## Go / no-go gate
 
-No pricing-code changes are included in T26 because the current assignment forbids changes to generation, session, credits, and Stripe. Grok should implement the cost quote atomically with durable credit accounting, not as a front-end-only number.
+Real charging remains **no-go** until all are true:
 
-## Launch gate and measurement
-
-Run a limited cost test before changing public pricing:
-
-1. Generate at least five jobs for each offered model/resolution/duration combination.
-2. Record requested seconds, delivered seconds, fal invoice cost, failures, retries, storage size, and delivery bytes.
-3. Compare p50 and p95 cost per successful downloadable result.
-4. Add observed retry/storage overhead instead of keeping the temporary 10% assumption.
-5. Recalculate plan limits with the actual Stripe account's fee schedule.
-6. Review provider pricing weekly until the product has stable margins.
-
-### Go / no-go
-
-Real charging is **no-go** until all are true:
-
-- Variable credit quotes are enforced server-side.
-- Free is limited to one verified trial or an approved equivalent subsidy.
-- Creator and Shop copy matches the implemented cost weights.
-- Durable identity and credit ledger prevent repeated anonymous grants.
-- Server-side watermarked downloads exist for Free.
-- A small live-generation test confirms the billed rates above.
+1. Model/resolution/duration credit quotes are enforced server-side.
+2. Durable identity and credit ledger prevent repeated anonymous grants.
+3. Free downloaded files receive a server-side watermark.
+4. Controlled live tests confirm fal cost for each offered combination.
+5. The actual Stripe account fee schedule is included in plan-margin calculations.
+6. Public copy and server behavior pass the same 1 / 5 / 15 contract test.

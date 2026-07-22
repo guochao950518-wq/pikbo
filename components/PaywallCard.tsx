@@ -4,7 +4,7 @@ import { PLANS, CREDITS_PER_VIDEO, clipsFromCredits } from "@/lib/pricing";
 /** Compact upgrade CTA used when credits run out. */
 export function PaywallCard({
   title = "Out of credits",
-  subtitle = "Free tier resets monthly. Upgrade for more Seedance clips without the on-player mark.",
+  subtitle = "Your current allowance is used up. Creator adds about five live jobs at today's flat rate, without the on-player mark.",
 }: {
   title?: string;
   subtitle?: string;
@@ -24,10 +24,10 @@ export function PaywallCard({
             Free
           </p>
           <p className="mt-0.5 text-xs text-[var(--fg-muted)]">
-            {free.credits} credits · ~{clipsFromCredits(free.credits)} clips
+            {free.credits} credits · ~{clipsFromCredits(free.credits)} trial clip
           </p>
           <p className="text-[10px] text-[var(--fg-dim)]">
-            {free.resolution} · watermark
+            {free.resolution} · on-player mark
           </p>
         </div>
         <div className="rounded-lg border border-[var(--brand)]/50 bg-[var(--card)] p-2.5">
@@ -39,13 +39,13 @@ export function PaywallCard({
             clips
           </p>
           <p className="text-[10px] text-[var(--fg-dim)]">
-            {creator.resolution} · no mark · commercial
+            {creator.resolution} · no player mark · commercial
           </p>
         </div>
       </div>
       <p className="mt-2 text-[10px] text-[var(--fg-dim)]">
-        Each clip costs {CREDITS_PER_VIDEO} credits. Failed runs refund
-        automatically.
+        Each eligible live job currently costs {CREDITS_PER_VIDEO} credits.
+        Failed live jobs refund automatically; cached examples use no credits.
       </p>
       <div className="mt-3 flex flex-wrap gap-2">
         <Link href="/pricing" className="btn btn-primary px-4 py-2 text-xs">

@@ -22,7 +22,7 @@ const MODELS = [
     id: "seedance-mini",
     label: "Seedance Mini",
     vendor: "ByteDance",
-    blurb: "Cheapest live · free trial",
+    blurb: "Free tier · 480p",
     free: true,
   },
   {
@@ -306,7 +306,7 @@ export function CreateStudio({
       if (res.status === 402 || data.code === "INSUFFICIENT_CREDITS") {
         setShowPaywall(true);
         setError(
-          data.error || "Not enough credits. Upgrade to keep creating."
+          data.error || "This allowance is used up. Compare finite plans to continue."
         );
         setStatus("error");
         return;
@@ -333,7 +333,7 @@ export function CreateStudio({
         demo: Boolean(data.demo),
       });
       emitSessionRefresh();
-      toast(data.demo ? "Demo clip ready" : "Clip ready · saved to Library");
+      toast(data.demo ? "Cached demo ready" : "Live clip ready · saved to Library");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
       setStatus("error");
@@ -413,14 +413,14 @@ export function CreateStudio({
             type="button"
             onClick={() => {
               setMode("t2v");
-              toast("Text→Video is next — toy photo → Seedance is live today");
+              toast("Text→Video is next — toy photo → Seedance is the supported workflow");
             }}
             className={`rounded-full px-3 py-1.5 font-semibold ${
               mode === "t2v"
                 ? "bg-[var(--card)] text-[var(--fg)]"
                 : "text-[var(--fg-dim)]"
             }`}
-            title="Roadmap — photo-first is the live path"
+            title="Roadmap — photo-first is the supported path"
           >
             Text → Video
             <span className="ml-1 text-[9px] font-normal opacity-70">soon</span>
@@ -441,8 +441,8 @@ export function CreateStudio({
                 onClick={() => {
                   if (lockedPaid) {
                     setShowPaywall(true);
-                    setError("Seedance 2.0 is on paid plans — Free uses Fast.");
-                    setModelId("seedance-fast");
+                    setError("Paid models are locked — Free live jobs use Seedance Mini at 480p.");
+                    setModelId("seedance-mini");
                     return;
                   }
                   setModelId(m.id);
@@ -588,7 +588,7 @@ export function CreateStudio({
         <section className="space-y-4 overflow-y-auto border-b border-[var(--border)] p-4 lg:border-b-0 lg:border-r">
           {upgradedBanner && (
             <div className="rounded-xl border border-[var(--mint)]/40 bg-[color-mix(in_srgb,var(--mint)_10%,transparent)] px-3 py-2 text-xs">
-              Paid plan active — HD path, no watermark.
+              Paid allowance active — 720p path, no on-player watermark.
             </div>
           )}
 
@@ -707,7 +707,7 @@ export function CreateStudio({
             </div>
             {isFree && (
               <p className="mt-1 text-[10px] text-[var(--fg-dim)]">
-                Free trial locked to 5s · 480p · watermark
+                Free trial locked to Mini · 5s · 480p · on-player mark
               </p>
             )}
           </div>
@@ -866,7 +866,7 @@ export function CreateStudio({
           )}
 
           {showPaywall && (
-            <PaywallCard title="Out of credits — upgrade to keep creating" />
+            <PaywallCard title="Allowance used up — compare finite plans" />
           )}
         </section>
 
@@ -977,7 +977,7 @@ export function CreateStudio({
                 )}
                 <p className="mx-auto mt-2 max-w-md text-center text-[11px] leading-relaxed text-[var(--fg-dim)]">
                   {demo
-                    ? "Cached demo path (no live model call). Add FAL_KEY for real Seedance renders."
+                    ? "Cached demo — it does not animate your upload or call a live model. Configure FAL_KEY for a live Seedance render."
                     : "AI motion varies — same photo can look different each run. Not happy? Regenerate; failed jobs refund credits."}
                 </p>
                 <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
@@ -1029,7 +1029,7 @@ export function CreateStudio({
                 </p>
                 {demo && (
                   <p className="mt-2 text-center text-xs text-[var(--fg-dim)]">
-                    Demo clip — set FAL_KEY to run real Seedance.
+                    Cached demo only — configure FAL_KEY for a live Seedance render.
                   </p>
                 )}
               </div>

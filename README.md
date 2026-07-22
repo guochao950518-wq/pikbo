@@ -6,7 +6,7 @@ Niche: **designer toys / collectibles**, English/global market, Google-SEO first
 ## Stack
 - **Next.js 16** (App Router) + **Tailwind v4**
 - **ByteDance Seedance** image-to-video via **fal.ai** (`@fal-ai/client`)
-  - Free tier → `bytedance/seedance-2.0/fast/image-to-video`
+  - Free tier → `bytedance/seedance-2.0/mini/image-to-video` at 480p
   - Paid → `bytedance/seedance-2.0/image-to-video`
 - **Signed cookie session** — guest credits + plan (no DB required yet)
 - **Stripe Checkout** (optional) — Creator / Shop subscriptions
@@ -21,20 +21,20 @@ npm run dev      # http://localhost:3000
 
 | Mode | When | Behavior |
 |---|---|---|
-| **Demo** | no `FAL_KEY` | Returns a sample clip; still deducts credits |
+| **Demo** | no `FAL_KEY` | Returns a labeled cached clip; Studio submissions still follow the 10-credit contract |
 | **Live gen** | `FAL_KEY` set | Real image-to-video via fal.ai |
 | **Dev billing** | no Stripe keys, non-prod | `/api/checkout` upgrades plan instantly |
 | **Live billing** | Stripe keys + price IDs | Redirects to Stripe Checkout |
 
 ## Credits & plans (see `docs/UNIT_ECONOMICS.md` + `lib/pricing.ts`)
-| Plan | Price | Credits/mo | Approx clips | Watermark |
+| Plan | Price | Credits/mo | Approx clips | On-player mark |
 |---|---|---|---|---|
 | Free | $0 | 10 | ~1 trial | yes |
 | Creator | $19 | 50 | ~5 | no |
 | Shop | $49 | 150 | ~15 | no |
 
 Rule: **1 clip = 10 credits** (flat until model×duration metering). Failed gens refund.
-Free: 5s · 480p · watermark. Demo mode (no `FAL_KEY`) still deducts credits, returns local `/demos/*`.
+Free live path: Seedance Mini · 5s · 480p · on-player watermark. Homepage cached examples use no credits. Demo-mode Studio submissions currently follow the 10-credit contract and return local `/demos/*`.
 
 ## Where things live
 | Path | What |
@@ -63,7 +63,7 @@ Free: 5s · 480p · watermark. Demo mode (no `FAL_KEY`) still deducts credits, r
 2. ~~Stripe webhooks + checkout confirm~~ (done — file entitlements)
 3. **Auth + credits DB** (Supabase) — multi-device balance, history
 4. **Server-side video watermark** (ffmpeg) for free downloads
-5. **Real demo clips** on homepage (need fal renders)
+5. **Verified live case studies** to replace cached Lab examples when fal renders are approved
 6. Vertical ads / affiliate (after free traffic is stable)
 
 ## Multi-agent workflow (Grok · GPT · Claude)

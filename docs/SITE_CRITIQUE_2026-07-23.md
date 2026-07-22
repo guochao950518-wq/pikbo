@@ -56,7 +56,7 @@ Skill: `.grok/skills/site-critique` · Surface: home + explore/community + tool 
 **改（可渐进）：**
 
 - 「Used on shelf photos like…」+ 3 张用户式 before/after 静态（可先官方 demos 标 Official）
-- 一行 trust：*Free · no card · ~3 clips · watermark on free*
+- 一行 trust：*Free · no card · ~1 Mini trial · on-player watermark*
 - 定价入口进顶栏/首屏次 CTA（已有 Pricing 链，可更近 fold）
 
 **文件：** `app/page.tsx` · 可新建 `components/TrustStrip` 增强
