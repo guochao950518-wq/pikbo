@@ -4,6 +4,11 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-22 — [grok] Library history + denser HF-class home
+- Paths: `lib/history.ts`, `components/LibraryGrid.tsx`, `CreateStudio` pushHistory, `app/page.tsx` + PresetsWall, pricing app padding
+- Why: generate → appears in Library (device-local); home matches model shelf + viral wall pattern
+- Reuse: don't replace localStorage until Supabase; keep `pushHistory` on successful generate only
+
 ### 2026-07-22 — [grok] ByteDance Seedance as default video model
 - Paths: `lib/models.ts`, `app/api/generate/route.ts`, `.env.example`
 - Why: boss wants 字节模型出片. Defaults are Seedance 2.0 full (paid) + Fast (free) on fal.

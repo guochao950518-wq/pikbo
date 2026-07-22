@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { LibraryGrid } from "@/components/LibraryGrid";
 
 export const metadata: Metadata = {
   title: "Library",
@@ -14,24 +15,14 @@ export default function LibraryPage() {
           <div>
             <h1 className="text-2xl font-bold">Library</h1>
             <p className="mt-1 text-sm text-[var(--fg-muted)]">
-              Past generations (local session for now — Supabase later).
+              Outputs from this device — same idea as big AI video apps.
             </p>
           </div>
           <Link href="/create" className="btn btn-primary text-sm">
             New generate
           </Link>
         </div>
-
-        <div className="mt-10 grid place-items-center rounded-2xl border border-dashed border-[var(--border)] bg-[var(--bg-soft)] py-24 text-center">
-          <p className="text-[var(--fg-muted)]">No clips saved yet</p>
-          <p className="mt-2 max-w-sm text-xs text-[var(--fg-dim)]">
-            Higgsfield-class apps show a grid of outputs here. Wire persistence
-            after auth; for now generate from the studio.
-          </p>
-          <Link href="/create" className="btn btn-ghost mt-6 text-sm">
-            Go to Generate
-          </Link>
-        </div>
+        <LibraryGrid />
       </div>
     </div>
   );

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { pushHistory } from "@/lib/history";
 import { PRESETS } from "@/lib/presets";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
 import type { PublicSession } from "@/lib/session";
@@ -154,6 +155,14 @@ export function CreateStudio({ initialEffect }: { initialEffect?: string }) {
       setWatermark(Boolean(data.watermark));
       setUsedModel(data.model || null);
       setStatus("done");
+      pushHistory({
+        videoUrl: data.videoUrl,
+        effect,
+        effectName: preset.name,
+        model: data.model,
+        watermark: Boolean(data.watermark),
+        demo: Boolean(data.demo),
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
       setStatus("error");

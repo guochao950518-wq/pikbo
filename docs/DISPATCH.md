@@ -23,24 +23,27 @@
 
 ### Grok — App 壳 + Generate 工作台（主）
 - [x] 规格 COMPETITOR_SPEC
-- [ ] AppShell：Home / Generate / Library / Community / Pricing / Profile
-- [ ] `/create` 改成 Higgsfield 级 Generate 工作台（模型条 Seedance、上传、prompt、参数、结果）
-- [ ] `/library` `/profile` `/community` 骨架页
-- [ ] 保持 Seedance 出片 API
+- [x] AppShell：Home / Generate / Library / Community / Pricing / Profile
+- [x] `/create` Higgsfield 级 Generate（Seedance 条、上传、prompt、结果）
+- [x] `/library` 本机历史 + `/profile` `/community` 骨架
+- [x] 首页 Hero + Models + PresetsWall 接入
+- [x] 保持 Seedance 出片 API
+- [ ] 继续抠 Generate 全屏感 / 参数条（时长比例可视化）
 
-**分支：** `agent/grok/clone-shell`　**提交：** `[grok]`
+**分支：** `main`　**提交：** `[grok]`
 
 ### GPT / Codex — 首页像模型产品站
-- [ ] 首页：大 Hero、模型卡片（Seedance 主推）、预设瀑布/网格、社区条
-- [ ] 定价页文案像 AI 视频 SaaS（仍用 Pikbo 名）
+- [ ] 在 Grok 首页基础上再加视觉冲击（真实样片位、动效）
+- [ ] 定价转化文案 A/B 优化
 - [ ] 不要改 generate API
 
 **分支：** `agent/gpt/clone-home`　**提交：** `[gpt]`
 
 ### Claude — 预设密度 + 社区/内容
-- [ ] effects 列表页做成 Viral Presets 墙
-- [ ] community 假数据/示例项目墙
-- [ ] 文案先通用 AI video 口吻，预留潮玩替换点
+- [x] PresetsWall 密铺 + effects 页
+- [x] community 墙
+- [ ] 再补 3～5 个 viral 向 preset（质量优先）
+- [ ] 文案潮玩化第二轮
 
 **分支：** `agent/claude/clone-presets`　**提交：** `[claude]`
 
