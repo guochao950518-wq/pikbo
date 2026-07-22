@@ -1,11 +1,7 @@
 /**
  * Video backends for Pikbo.
- * Default stack: ByteDance Seedance via fal.ai (user requirement).
- *
- * Free  → Seedance 2.0 Fast (cheaper / lower latency)
- * Paid  → Seedance 2.0 full image-to-video
- *
- * Override anytime with FAL_MODEL / FAL_MODEL_FREE env vars.
+ * Default: ByteDance Seedance via fal.ai
+ * Free  → Fast · Paid → Full (user can prefer Fast on paid too)
  */
 
 export const SEEDANCE_FAST =
@@ -13,19 +9,18 @@ export const SEEDANCE_FAST =
 export const SEEDANCE_FULL =
   "bytedance/seedance-2.0/image-to-video";
 
-/** @deprecated previous default — only if env points here */
-export const KLING_I2V =
-  "fal-ai/kling-video/v1.6/standard/image-to-video";
+export type ModelPreference = "seedance-2" | "seedance-fast";
 
 export function modelForTier(opts: {
   freeTier: boolean;
+  prefer?: ModelPreference | string | null;
 }): string {
+  // Free plan always on Fast (cost control)
   if (opts.freeTier) {
-    return (
-      process.env.FAL_MODEL_FREE ||
-      process.env.FAL_MODEL ||
-      SEEDANCE_FAST
-    );
+    return process.env.FAL_MODEL_FREE || SEEDANCE_FAST;
+  }
+  if (opts.prefer === "seedance-fast") {
+    return process.env.FAL_MODEL_FREE || SEEDANCE_FAST;
   }
   return process.env.FAL_MODEL || SEEDANCE_FULL;
 }
@@ -33,11 +28,11 @@ export function modelForTier(opts: {
 export type SeedanceResolution = "480p" | "720p";
 
 export function resolutionForTier(freeTier: boolean): SeedanceResolution {
-  // Free keeps cost down; paid gets 720p balance (Seedance 2.0 max 720p on these endpoints)
   return freeTier ? "480p" : "720p";
 }
 
-/** Map preset duration (5 | 10) to Seedance enum string. */
+export type AspectRatio = "9:16" | "16:9" | "1:1" | "auto";
+
 export function seedanceDuration(
   seconds: number
 ): "4" | "5" | "6" | "7" | "8" | "9" | "10" | "auto" {
@@ -47,4 +42,18 @@ export function seedanceDuration(
   if (seconds <= 8) return "8";
   if (seconds <= 10) return "10";
   return "auto";
+}
+
+export function clampDuration(n: unknown, fallback = 5): number {
+  const v = Number(n);
+  if (!Number.isFinite(v)) return fallback;
+  return Math.min(10, Math.max(4, Math.round(v)));
+}
+
+export function normalizeAspect(
+  a: unknown,
+  fallback: AspectRatio = "9:16"
+): AspectRatio {
+  if (a === "9:16" || a === "16:9" || a === "1:1" || a === "auto") return a;
+  return fallback;
 }

@@ -48,6 +48,10 @@ export function CreateStudio({
   );
   const [image, setImage] = useState<string | null>(null);
   const [extra, setExtra] = useState(initialPrompt ?? "");
+  const [duration, setDuration] = useState<5 | 10>(5);
+  const [aspectRatio, setAspectRatio] = useState<"9:16" | "16:9" | "1:1">(
+    "9:16"
+  );
   const [status, setStatus] = useState<Status>("idle");
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -62,6 +66,13 @@ export function CreateStudio({
     () => PRESETS.find((p) => p.slug === effect)!,
     [effect]
   );
+
+  // When preset changes, adopt its defaults (unless user already mid-edit of same)
+  useEffect(() => {
+    setDuration(preset.duration === 10 ? 10 : 5);
+    const ar = preset.aspectRatio;
+    if (ar === "9:16" || ar === "16:9" || ar === "1:1") setAspectRatio(ar);
+  }, [preset.slug, preset.duration, preset.aspectRatio]);
 
   const refreshSession = useCallback(async () => {
     try {
@@ -142,11 +153,11 @@ export function CreateStudio({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           effect,
-          image:
-            image ||
-            // t2v stub still needs image for current API — use 1px placeholder later
-            image,
+          image,
           extra,
+          duration,
+          aspectRatio,
+          model: modelId,
         }),
       });
       const data = await res.json();
@@ -333,39 +344,98 @@ export function CreateStudio({
             </div>
           )}
 
-          <div className="grid grid-cols-3 gap-2 text-center text-[10px]">
-            <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] py-2">
-              <div className="text-[var(--fg-dim)]">Duration</div>
-              <div className="font-semibold text-[var(--fg)]">
-                {preset.duration}s
-              </div>
-            </div>
-            <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] py-2">
-              <div className="text-[var(--fg-dim)]">Aspect</div>
-              <div className="font-semibold text-[var(--fg)]">
-                {preset.aspectRatio}
-              </div>
-            </div>
-            <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] py-2">
-              <div className="text-[var(--fg-dim)]">Audience</div>
-              <div className="font-semibold capitalize text-[var(--fg)]">
-                {preset.audience}
-              </div>
+          <div>
+            <p className="text-xs font-semibold text-[var(--fg-muted)]">
+              Duration
+            </p>
+            <div className="mt-1.5 flex gap-2">
+              {([5, 10] as const).map((d) => (
+                <button
+                  key={d}
+                  type="button"
+                  onClick={() => setDuration(d)}
+                  className={`flex-1 rounded-lg border py-2 text-sm font-semibold ${
+                    duration === d
+                      ? "border-[var(--brand)] bg-[var(--grad-soft)]"
+                      : "border-[var(--border)] text-[var(--fg-muted)]"
+                  }`}
+                >
+                  {d}s
+                </button>
+              ))}
             </div>
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-[var(--fg-muted)]">
-              Motion prompt
-            </label>
+            <p className="text-xs font-semibold text-[var(--fg-muted)]">
+              Aspect ratio
+            </p>
+            <div className="mt-1.5 flex gap-2">
+              {(
+                [
+                  { id: "9:16" as const, label: "9:16 · TikTok" },
+                  { id: "1:1" as const, label: "1:1 · Shop" },
+                  { id: "16:9" as const, label: "16:9 · Wide" },
+                ] as const
+              ).map((a) => (
+                <button
+                  key={a.id}
+                  type="button"
+                  onClick={() => setAspectRatio(a.id)}
+                  className={`flex-1 rounded-lg border px-1 py-2 text-[11px] font-semibold ${
+                    aspectRatio === a.id
+                      ? "border-[var(--brand)] bg-[var(--grad-soft)]"
+                      : "border-[var(--border)] text-[var(--fg-muted)]"
+                  }`}
+                >
+                  {a.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-semibold text-[var(--fg-muted)]">
+                Motion prompt
+              </label>
+              <button
+                type="button"
+                className="text-[10px] text-[var(--brand)] hover:underline"
+                onClick={() => setExtra(preset.promptTemplate)}
+              >
+                Reset to preset
+              </button>
+            </div>
             <textarea
               value={extra || preset.promptTemplate}
               onChange={(e) => setExtra(e.target.value)}
               rows={5}
               className="mt-2 w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--bg-soft)] px-3 py-2.5 text-sm outline-none focus:border-[var(--brand)]"
             />
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {[
+                "slow turntable",
+                "soft studio light",
+                "keep paint sharp",
+                "subtle float",
+                "no morph face",
+              ].map((chip) => (
+                <button
+                  key={chip}
+                  type="button"
+                  className="rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--fg-dim)] hover:border-[var(--brand)] hover:text-[var(--fg)]"
+                  onClick={() => {
+                    const base = extra || preset.promptTemplate;
+                    setExtra(`${base} ${chip}.`);
+                  }}
+                >
+                  + {chip}
+                </button>
+              ))}
+            </div>
             <p className="mt-1 text-[10px] text-[var(--fg-dim)]">
-              Preset: {preset.name} · keep the toy as the hero of the shot
+              {preset.name} · for {preset.audience}s · keep the toy as hero
             </p>
           </div>
 
@@ -441,6 +511,30 @@ export function CreateStudio({
                     {site.name}
                   </div>
                 )}
+                <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+                  <a
+                    href={videoUrl}
+                    download={`pikbo-${effect}.mp4`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn btn-primary px-4 py-2 text-xs"
+                  >
+                    Download
+                  </a>
+                  <button
+                    type="button"
+                    onClick={generate}
+                    className="btn btn-ghost px-4 py-2 text-xs"
+                  >
+                    Regenerate
+                  </button>
+                  <Link
+                    href="/library"
+                    className="btn btn-ghost px-4 py-2 text-xs"
+                  >
+                    Library
+                  </Link>
+                </div>
                 {demo && (
                   <p className="mt-3 text-center text-xs text-[var(--fg-dim)]">
                     Demo clip — set FAL_KEY to run real Seedance.

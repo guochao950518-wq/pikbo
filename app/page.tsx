@@ -2,6 +2,7 @@ import Link from "next/link";
 import { APPS, MODELS } from "@/lib/catalog";
 import { PRESETS } from "@/lib/presets";
 import { PLANS } from "@/lib/pricing";
+import { HowItWorks } from "@/components/HowItWorks";
 import { PresetsWall } from "@/components/PresetsWall";
 import {
   HeroDemoStage,
@@ -64,8 +65,9 @@ export default function Home() {
       </section>
 
       <HomeDemoShowcase />
+      <HowItWorks />
 
-      {/* Quick apps strip */}
+      {/* Apps strip */}
       <section className="border-b border-[var(--border)] px-4 py-8 sm:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="mb-4 flex items-center justify-between">

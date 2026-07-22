@@ -4,30 +4,38 @@ import { getPreset } from "@/lib/presets";
 import { getPlan } from "@/lib/pricing";
 import { checkCredits, deductCredits, refundCredits } from "@/lib/credits";
 import {
+  clampDuration,
   modelForTier,
+  normalizeAspect,
   resolutionForTier,
   seedanceDuration,
+  type ModelPreference,
 } from "@/lib/models";
 import { ensureSession, publicSession, saveSession } from "@/lib/session";
 
 export const runtime = "nodejs";
-// Seedance can take longer than Kling on cold queue
 export const maxDuration = 180;
 
-// A tiny CC0 sample clip used when no FAL_KEY is set, so the flow is
-// fully demoable before you plug in a real model + billing.
 const DEMO_VIDEO =
   "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
 
 export async function POST(req: Request) {
-  let body: { effect?: string; image?: string; extra?: string };
+  let body: {
+    effect?: string;
+    image?: string;
+    extra?: string;
+    duration?: number;
+    aspectRatio?: string;
+    model?: string;
+  };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 
-  const { effect, image, extra } = body;
+  const { effect, image, extra, duration, aspectRatio, model: modelPref } =
+    body;
 
   const preset = effect ? getPreset(effect) : undefined;
   if (!preset) {
@@ -40,7 +48,6 @@ export async function POST(req: Request) {
     );
   }
 
-  // --- Credits gate ---
   let session = await ensureSession();
   const check = checkCredits(session);
   if (!check.ok) {
@@ -56,17 +63,24 @@ export async function POST(req: Request) {
     );
   }
 
-  // Reserve credits before calling the model (refund on failure)
   session = deductCredits(session, check.cost);
   await saveSession(session);
 
   const plan = getPlan(session.plan);
-  const freeTier = plan.watermark; // free plan → cheaper ByteDance fast tier
-  const prompt = extra?.trim()
-    ? `${preset.promptTemplate} Additional direction: ${extra.trim()}.`
-    : preset.promptTemplate;
+  const freeTier = plan.watermark;
+  const secs = clampDuration(duration, preset.duration);
+  const aspect = normalizeAspect(aspectRatio, preset.aspectRatio);
 
-  // --- Demo mode: no key configured yet ---
+  // If user typed a full custom prompt in extra that looks complete, use it;
+  // otherwise merge with preset template.
+  const custom = extra?.trim() || "";
+  const prompt =
+    custom.length > 80
+      ? custom
+      : custom
+        ? `${preset.promptTemplate} Additional direction: ${custom}.`
+        : preset.promptTemplate;
+
   if (!process.env.FAL_KEY) {
     await new Promise((r) => setTimeout(r, 1200));
     return NextResponse.json({
@@ -74,12 +88,17 @@ export async function POST(req: Request) {
       demo: true,
       watermark: plan.watermark,
       model: "demo",
+      duration: secs,
+      aspectRatio: aspect,
       session: publicSession(session),
     });
   }
 
-  // --- Real generation: ByteDance Seedance via fal.ai ---
-  const model = modelForTier({ freeTier });
+  const model = modelForTier({
+    freeTier,
+    prefer: modelPref as ModelPreference,
+  });
+
   try {
     fal.config({ credentials: process.env.FAL_KEY });
 
@@ -92,11 +111,9 @@ export async function POST(req: Request) {
     const input: Record<string, unknown> = {
       prompt,
       image_url: imageUrl,
-      // Seedance 2.x schema
-      duration: seedanceDuration(preset.duration),
-      aspect_ratio: preset.aspectRatio || "auto",
+      duration: seedanceDuration(secs),
+      aspect_ratio: aspect,
       resolution: resolutionForTier(freeTier),
-      // Free: skip audio noise; paid can keep ambient SFX if model supports
       generate_audio: !freeTier,
     };
 
@@ -126,6 +143,8 @@ export async function POST(req: Request) {
       watermark: plan.watermark,
       model,
       provider: "bytedance-seedance",
+      duration: secs,
+      aspectRatio: aspect,
       session: publicSession(session),
     });
   } catch (err) {
