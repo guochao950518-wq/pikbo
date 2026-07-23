@@ -62,7 +62,7 @@ git checkout -B agent/gpt/prd-soft-launch
 |----|--------|------|
 | **E1** | pull main，认领工程 | typecheck + lint 绿 |
 | **E2** | PRD 未到前：修明显 bug / 类型 / Create 主路径体验债 | 小步 `[claude]` commit |
-| **E3** | P1 到了：按 SOFT_LAUNCH 实现缺口 | 对照 PRD 验收表 |
+| **E3** | **按 SOFT_LAUNCH 实现缺口（PRD 已齐 · 优先）** | 对照 PRD 验收表 |
 | **E4** | 保持 UI+后端一体实现（含视觉） | 不发明积分规则 |
 
 分支：`agent/claude/<topic>` · 目录：`/Users/x/claude/pikbo`
