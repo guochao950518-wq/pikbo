@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { upsertEntitlement } from "@/lib/entitlements";
 import { type PlanId } from "@/lib/pricing";
+import { takeToken } from "@/lib/rateLimit";
+import { clientIp } from "@/lib/requestMeta";
 import {
   creditsForPlan,
   planFromPriceId,
@@ -37,6 +39,26 @@ export async function POST(req: Request) {
     return NextResponse.json(
       { error: "Stripe not configured" },
       { status: 503 }
+    );
+  }
+
+  const sessionGate = await ensureSession();
+  const rl = takeToken(
+    `confirm:${sessionGate.id}:${clientIp(req)}`,
+    12,
+    60_000
+  );
+  if (!rl.ok) {
+    return NextResponse.json(
+      {
+        error: `Too many confirm attempts — try again in ${rl.retryAfterSec}s`,
+        code: "RATE_LIMITED",
+        retryAfterSec: rl.retryAfterSec,
+      },
+      {
+        status: 429,
+        headers: { "Retry-After": String(rl.retryAfterSec) },
+      }
     );
   }
 

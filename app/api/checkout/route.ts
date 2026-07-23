@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { upsertEntitlement } from "@/lib/entitlements";
 import { getPlan, type PlanId } from "@/lib/pricing";
+import { takeToken } from "@/lib/rateLimit";
+import { clientIp } from "@/lib/requestMeta";
 import {
   currentPeriodKey,
   ensureSession,
@@ -39,6 +41,21 @@ export async function POST(req: Request) {
   }
 
   const session = await ensureSession();
+  const rl = takeToken(`checkout:${session.id}:${clientIp(req)}`, 10, 60_000);
+  if (!rl.ok) {
+    return NextResponse.json(
+      {
+        error: `Too many checkout attempts — try again in ${rl.retryAfterSec}s`,
+        code: "RATE_LIMITED",
+        retryAfterSec: rl.retryAfterSec,
+      },
+      {
+        status: 429,
+        headers: { "Retry-After": String(rl.retryAfterSec) },
+      }
+    );
+  }
+
   const stripeKey = process.env.STRIPE_SECRET_KEY;
   const priceEnv = plan.stripePriceEnv;
   const priceId = priceEnv ? process.env[priceEnv] : undefined;

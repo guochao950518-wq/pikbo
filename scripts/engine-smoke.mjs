@@ -131,5 +131,28 @@ const me = fs.readFileSync(join(root, "app/api/me/route.ts"), "utf8");
 assert.match(me, /generateMode/);
 assert.match(me, /cachedDemoFree/);
 
+// prompt build: always keep template (no freeform-only replace)
+function sanitizeExtra(extra) {
+  if (typeof extra !== "string") return "";
+  return extra.trim().slice(0, 400);
+}
+function buildGeneratePrompt(template, extra) {
+  const custom = sanitizeExtra(extra);
+  if (!custom) return template;
+  return `${template} Additional direction: ${custom}.`;
+}
+const tpl = "Toy hero spin, keep figure identity.";
+assert.equal(buildGeneratePrompt(tpl, ""), tpl);
+assert.match(buildGeneratePrompt(tpl, "neon lights"), /Toy hero spin/);
+assert.match(buildGeneratePrompt(tpl, "x".repeat(500)), /Toy hero spin/);
+assert.ok(buildGeneratePrompt(tpl, "x".repeat(500)).length < tpl.length + 50 + 400);
+
+const pb = fs.readFileSync(join(root, "lib/promptBuild.ts"), "utf8");
+assert.match(pb, /buildGeneratePrompt/);
+assert.match(pb, /MAX_EXTRA_CHARS/);
+
+const hist = fs.readFileSync(join(root, "lib/history.ts"), "utf8");
+assert.match(hist, /remoteClipMayExpire/);
+
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

@@ -8,6 +8,7 @@ import {
   exportHistoryJson,
   importHistoryJson,
   loadHistory,
+  remoteClipMayExpire,
   removeHistoryItem,
   type HistoryItem,
 } from "@/lib/history";
@@ -242,8 +243,8 @@ export function LibraryGrid() {
                 playsInline
                 preload="metadata"
               />
-              {(item.demo || item.watermark) && (
-                <div className="pointer-events-none absolute left-2 top-2 flex gap-1">
+              {(item.demo || item.watermark || remoteClipMayExpire(item)) && (
+                <div className="pointer-events-none absolute left-2 top-2 flex flex-wrap gap-1">
                   {item.demo && (
                     <span className="rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-bold uppercase text-white/80">
                       demo
@@ -252,6 +253,11 @@ export function LibraryGrid() {
                   {item.watermark && (
                     <span className="rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-bold uppercase text-white/80">
                       mark
+                    </span>
+                  )}
+                  {remoteClipMayExpire(item) && (
+                    <span className="rounded bg-amber-500/90 px-1.5 py-0.5 text-[9px] font-bold uppercase text-black">
+                      link aging
                     </span>
                   )}
                 </div>
@@ -266,6 +272,11 @@ export function LibraryGrid() {
                 {item.aspectRatio ? ` · ${item.aspectRatio}` : ""}
                 {item.resolution ? ` · ${item.resolution}` : ""}
               </p>
+              {remoteClipMayExpire(item) && (
+                <p className="mt-1 text-[10px] text-amber-600/90">
+                  Provider CDN links expire — download soon or re-generate.
+                </p>
+              )}
               <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
                 <button
                   type="button"

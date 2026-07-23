@@ -130,15 +130,37 @@ export function importHistoryJson(text: string): number {
   }
 }
 
+/**
+ * fal / provider CDN URLs are temporary. After ~5 days, re-download often fails.
+ * Local /demos paths and data: never "expire" for this check.
+ */
+export function remoteClipMayExpire(item: {
+  videoUrl: string;
+  createdAt: string;
+  demo?: boolean;
+}): boolean {
+  if (item.demo) return false;
+  const url = item.videoUrl || "";
+  if (!/^https?:\/\//i.test(url)) return false;
+  const created = Date.parse(item.createdAt);
+  if (!Number.isFinite(created)) return false;
+  const ageMs = Date.now() - created;
+  return ageMs > 5 * 24 * 60 * 60 * 1000;
+}
+
 /** Download a remote or local video (fal CORS allows *). Falls back to new tab. */
 export async function downloadVideoFile(
   url: string,
   filename: string
 ): Promise<"ok" | "fallback" | "fail"> {
+  const ctrl = new AbortController();
+  const timer = window.setTimeout(() => ctrl.abort(), 45_000);
   try {
-    const res = await fetch(url, { mode: "cors" });
+    // Relative /demos/... works same-origin; absolute fal needs CORS.
+    const res = await fetch(url, { mode: "cors", signal: ctrl.signal });
     if (!res.ok) throw new Error(String(res.status));
     const blob = await res.blob();
+    if (!blob || blob.size < 32) throw new Error("empty");
     const objectUrl = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = objectUrl;
@@ -156,6 +178,8 @@ export async function downloadVideoFile(
     } catch {
       return "fail";
     }
+  } finally {
+    window.clearTimeout(timer);
   }
 }
 

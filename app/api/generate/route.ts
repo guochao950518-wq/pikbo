@@ -24,6 +24,7 @@ import {
   isValidImageDataUrl,
   providerErrorMessage,
 } from "@/lib/providerError";
+import { buildGeneratePrompt } from "@/lib/promptBuild";
 import type {
   GenerateErrorBody,
   GenerateRequestBody,
@@ -115,13 +116,8 @@ export async function POST(req: Request) {
     const aspect = normalizeAspect(aspectRatio, preset.aspectRatio);
     const resolution = resolutionForTier(freeTier, resPref);
 
-    const custom = extra?.trim() || "";
-    const prompt =
-      custom.length > 80
-        ? custom
-        : custom
-          ? `${preset.promptTemplate} Additional direction: ${custom}.`
-          : preset.promptTemplate;
+    // Always keep preset template as base — freeform-only used to wipe toy prompts.
+    const prompt = buildGeneratePrompt(preset.promptTemplate, extra);
 
     // --- Demo path (no provider): free cached Lab clips — matches pricing honesty ---
     if (!process.env.FAL_KEY) {
