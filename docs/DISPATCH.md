@@ -36,12 +36,53 @@ W1 出片身份稳 → W3 真片证明墙 → W5 信任 → W2 Seller OS → W4 
 **Product inventory:** `docs/prd/HIGGSFIELD_PUBLIC_PARITY.md`
 
 - GPT: full public surface matrix and truth gates — **DONE**.
-- Claude: Wave A code — Home, Explore, Create, Effects, Inside Project, Assets,
-  Seller Pack.
+- Grok: Wave A code takeover while Claude is unavailable — Home, Explore,
+  Create, Effects, Inside Project, Assets, Seller Pack.
 - Grok: merge Wave A in the order frozen in the parity contract.
 - Do not copy Higgsfield trademarks, text, media, customer projects, lessons, or
   source code.
 - Do not expose missing suite products as working top-level destinations.
+
+### Grok takeover command
+
+```text
+git fetch origin --prune
+git checkout main
+git pull --ff-only origin main
+git checkout -b agent/grok/higgsfield-wave-a
+
+Read:
+- docs/prd/HIGGSFIELD_PUBLIC_PARITY.md
+- docs/prd/WORLD_CLASS_PIKBO.md
+- docs/prd/SELLER_PACK.md
+- docs/prd/SOFT_NAV_AND_PRESETS.md
+
+Implement Wave A only:
+1. Traceable ShowcaseProject registry + /projects/[slug].
+2. Home "Inside Project" rail using that registry.
+3. Explore filters and project-open behavior.
+4. Create result metadata, source/output comparison, version actions.
+5. Library grouping by SKU/project without claiming cloud persistence.
+6. /create?mode=seller-pack plus legacy /supercomputer?pack=seller forward.
+
+Constraints:
+- Reuse current fal adapter and existing generation API contract.
+- Supabase/Auth/Storage follows docs/prd/AUTH_CREDITS.md; do not invent a second
+  persistence system.
+- Cached examples cost 0 and do not process the upload.
+- Live children cost the current 10 credits each.
+- No Stripe, public DNS, copied Higgsfield media/copy, fake UGC, or empty suite
+  navigation.
+- Preserve successful Seller Pack children when a sibling fails.
+
+Validate:
+- lint, typecheck, build, link-check, critical-path.
+- 390 / 768 / 1440 px; no overflow.
+- Unknown project slug 404.
+- Eight homepage proof cards use distinct matching media.
+
+Commit [grok], push agent/grok/higgsfield-wave-a, update STATUS + HANDOFF.
+```
 
 ---
 
