@@ -89,6 +89,8 @@ export function CreateStudio({
   const [presetFilter, setPresetFilter] = useState("");
   const [elapsed, setElapsed] = useState(0);
   const [copied, setCopied] = useState(false);
+  // PRD soft-launch §3/§5: user must confirm rights before submitting.
+  const [ownsRights, setOwnsRights] = useState(false);
   const [recent, setRecent] = useState<string[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [compare, setCompare] = useState(true);
@@ -845,10 +847,61 @@ export function CreateStudio({
             </p>
           </div>
 
+          {/* PRD soft-launch §5: consolidated preflight before the final action */}
+          <div className="mb-2 rounded-xl border border-[var(--border)] bg-[var(--bg-soft)] p-3 text-xs">
+            <p className="mb-1.5 text-[10px] font-black uppercase tracking-wider text-[var(--fg-dim)]">
+              Before you generate
+            </p>
+            {demoMode ? (
+              <p className="flex items-start gap-1.5 text-[var(--fg-muted)]">
+                <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--fg-dim)]" />
+                <span>
+                  <b className="text-[var(--fg)]">Cached demo</b> — does not use
+                  your upload · costs 0 credits
+                </span>
+              </p>
+            ) : (
+              <div className="space-y-1 text-[var(--fg-muted)]">
+                <p className="flex items-start gap-1.5">
+                  <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--mint)]" />
+                  <span>
+                    <b className="text-[var(--fg)]">
+                      Live {isFree ? "Mini trial" : "generation"}
+                    </b>{" "}
+                    — uses your photo · {isFree ? "Seedance Mini · " : ""}
+                    {effectiveDuration}s · {isFree ? "480p" : resolution} ·{" "}
+                    {aspectRatio}
+                  </span>
+                </p>
+                <p className="pl-3 text-[var(--fg-dim)]">
+                  Costs {CREDITS_PER_VIDEO} credits
+                  {creditsLeft !== null ? ` · ${creditsLeft} left` : ""} ·
+                  processed by fal.ai / Seedance · failed jobs refund credits
+                </p>
+              </div>
+            )}
+          </div>
+
+          <label className="mb-2 flex cursor-pointer items-start gap-2 rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] px-3 py-2 text-[11px] leading-snug text-[var(--fg-muted)]">
+            <input
+              type="checkbox"
+              checked={ownsRights}
+              onChange={(e) => setOwnsRights(e.target.checked)}
+              className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-[var(--mint)]"
+            />
+            <span>
+              I own this photo and have the right to animate and publish this
+              toy or character. Pikbo grants no rights to third-party brands,
+              characters, or likenesses.
+            </span>
+          </label>
+
           <button
             type="button"
             onClick={generate}
-            disabled={busy || mode === "t2v" || (mode === "i2v" && !image)}
+            disabled={
+              busy || mode === "t2v" || (mode === "i2v" && !image) || !ownsRights
+            }
             className="btn btn-primary w-full disabled:opacity-50"
           >
             {busy
