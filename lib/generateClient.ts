@@ -85,7 +85,7 @@ export function interpretGenerateResponse(
     (code === "RATE_LIMITED"
       ? `Too many generates — try again in ${retryAfterSec ?? "a few"}s`
       : code === "JOB_IN_FLIGHT"
-        ? "A generate is already running — wait a moment"
+        ? `A generate is already running — try again in ${retryAfterSec ?? "a few"}s`
         : code === "PROVIDER_BALANCE"
           ? "Provider balance empty — credits refunded."
           : code === "RIGHTS_REQUIRED"
