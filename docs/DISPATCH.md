@@ -32,9 +32,9 @@
 
 | ID | 交付物 | 验收 |
 |----|--------|------|
-| **P1** | `docs/prd/SOFT_LAUNCH.md` | 范围 / 非目标 / 主路径 / 验收勾选 |
-| **P2** | `docs/business/CREDITS_AND_PLANS.md` | 对齐 `lib/pricing.ts`；写清何时可开 Stripe |
-| **P3** | `docs/api/GENERATE.md` | 请求响应错误码；对齐 `lib/contracts.ts` |
+| **P1** | `docs/prd/SOFT_LAUNCH.md` | **done** · 已在 main |
+| **P2** | `docs/business/CREDITS_AND_PLANS.md` | **done** · 已在 main |
+| **P3** | `docs/api/GENERATE.md` | **done** · 已在 main |
 
 分支：`agent/gpt/prd-soft-launch` · commit `[gpt]`
 
