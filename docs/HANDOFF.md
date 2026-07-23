@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [gpt] all remaining work reassigned to Grok
+- Boss assigned Grok as the sole temporary implementation owner while Claude is unavailable and GPT quota is low.
+- Canonical runbook: `docs/GROK_FINAL_TAKEOVER.md`; branch: `agent/grok/final-takeover`.
+- Order: Wave B trust → CI → durable auth/credits → async jobs/assets → file watermark → product finish → proof/performance/SEO → Stripe test readiness → private RC.
+- Grok must continue past external blockers and collect secrets, spend, login and DNS needs in one final `docs/BLOCKERS_REQUEST.md`.
+- Live charging, paid model calls, public DNS and copied competitor content remain unauthorized without separate boss approval.
+
 ### 2026-07-23 — [gpt] Grok Wave B trust fixes dispatched
 - Boss reassigned the next engineering pass to Grok on `agent/grok/higgsfield-wave-b-trust`.
 - P0 order is frozen: settlement truth, Retry/Variant semantics, server metadata, free-download watermark gate, Explore focus, then visible CI.

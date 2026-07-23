@@ -10,6 +10,19 @@
 三 agent 研究成果进仓库 · 索引 `docs/research/README.md` · 粘贴 `docs/PASTE_SHARED_RESEARCH.md` · 共识 `docs/research/SHARED_SYNTHESIS.md`。  
 开工前先读 research；禁止只在对话里研究不落盘。
 
+## 当前唯一派工：Grok 全面接管
+
+老板 2026-07-23 决定：Claude 暂停、GPT 额度不足期间，剩余工作全部交给
+Grok。**唯一完整执行单：`docs/GROK_FINAL_TAKEOVER.md`。**
+
+分支：`agent/grok/final-takeover`。先完成 Wave B 可信度与 CI，再依次完成
+持久化账户积分、异步任务、文件水印、产品收口、证明资产、性能 SEO、
+Stripe 测试准备和私人候选版。遇到外部密钥或费用阻塞不得停工；完成所有
+无成本工作后，用一份 `docs/BLOCKERS_REQUEST.md` 统一向老板申请。
+
+本段覆盖下方仍保留的历史角色派工。Stripe live、公开收费和正式 DNS 不因
+“全面接管”而自动获得授权。
+
 ---
 
 ## 钱的反推（全员对齐）

@@ -8,6 +8,18 @@
 Grok / GPT / Claude **都必须做竞品与产品研究**，成果 **写入仓库** `docs/research/`，三方 **共同阅读**。  
 协议与索引：`docs/research/README.md` · 粘贴任务：`docs/PASTE_SHARED_RESEARCH.md`。
 
+## 临时最高优先级覆盖（老板 2026-07-23）
+
+Claude 订阅暂停、GPT 额度接近上限期间，**所有未完成产品、工程、测试与
+私人发布准备工作统一由 Grok 接管**。完整执行单：
+`docs/GROK_FINAL_TAKEOVER.md`。
+
+- Grok 当前可以跨越下方默认车道编写前后端、测试、迁移和发布准备代码。
+- 旧 Claude/GPT 分支只能先审 diff，再选择性 cherry-pick，禁止整分支覆盖新 main。
+- 缺密钥、付费调用、外部登录或公开 DNS 时，记录阻塞并继续其他无成本任务。
+- Stripe live、公开收费和 `pikbo.ai` DNS 仍必须由老板另行明确批准。
+- 本覆盖持续到老板明确撤销；与下方默认分工冲突时，以本节为准。
+
 ---
 
 ## 总表
