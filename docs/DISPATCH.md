@@ -1,65 +1,63 @@
-# DISPATCH — 2～3 天打磨（老板定：暂缓公网）
+# DISPATCH — 周日 soft 上线（无 Stripe）
 
-**决定：** 域名有了，**再打磨 2～3 天** 再 soft 上线。  
-**详表：** `docs/SPRINT_3DAY.md`  
-**验收：** `docs/prd/SOFT_LAUNCH.md` §6–9  
-**分工：** Claude 代码 · GPT 规格 · Grok 增长/协调  
-
----
-
-## 今日起优先序
-
-1. **Create 主路径诚实**（preflight / 所有权 / 结果标签）  
-2. **Pricing 不假装能买**  
-3. **首页一句说清 + 移动**  
-4. **扫禁用词 + 手测 3 图**  
-5. 然后才 LAUNCH 公网  
+**老板：** 最晚 **周日** 上线；**Stripe 还没开好** → 按 soft launch，不收费。  
+**硬截止：** 2026-07-26 前 `https://pikbo.ai` 可打开并走 Create。  
+**详表：** `docs/SPRINT_3DAY.md` · **部署：** `docs/LAUNCH.md`  
 
 ---
 
-## Claude（工程 · 主战场）
+## 决策（第一性原理）
 
-见 `SPRINT_3DAY.md` Day1–3。  
-分支：`agent/claude/soft-launch-polish`
+| 要 | 不要 |
+|----|------|
+| 公网能出片 / 诚实 demo | 等 Stripe 才上线 |
+| Free Mini 试玩 | 假装能买 Creator/Shop |
+| SESSION_SECRET + FAL_KEY | STRIPE_* / PAYMENTS_ENABLED |
 
-## GPT（规格）
-
-`docs/prd/SOFT_LAUNCH_OPS.md` + 可选 preflight 固定文案。  
-分支：`agent/gpt/soft-launch-ops`
-
-## Grok（协调）
-
-- 合流 PR  
-- `docs/growth/SEO_PRIORITY.md`（哥飞式内页优先词）  
-- 不抢写 Create 大改  
+付费按钮：**Coming soon**（代码已按此收紧）。
 
 ---
 
-## 复制口令 → Claude
+## 日历（周四 7/23 起）
+
+| 天 | 焦点 |
+|----|------|
+| **今天～周五** | Create preflight + 所有权 + 结果标签；Pricing Coming soon |
+| **周六** | 禁用词扫尾、3 图手测、Vercel 预部署 `*.vercel.app` |
+| **周日** | 域名绑 pikbo.ai · 公网手测 · 小范围分享 |
+
+---
+
+## Claude
 
 ```text
-【2～3天打磨 · Claude 写代码】
-git fetch && git checkout main && git pull
+【周日 soft 上线 · 无 Stripe · 你写代码】
+git pull origin main
 git checkout -B agent/claude/soft-launch-polish
-读 docs/SPRINT_3DAY.md + docs/prd/SOFT_LAUNCH.md
-先做 Day1：Create preflight + 所有权确认 + 结果 Cached/Live 标签
-再 Day2：Pricing 无 Stripe 禁用购买 + 首页 ICP + Library local
-Day3：禁用词 + 手测
-commit [claude] push。禁止真 Stripe/登录大工程。
+读 docs/SPRINT_3DAY.md + docs/prd/SOFT_LAUNCH.md + docs/LAUNCH.md
+优先 Create 诚实主路径；Pricing 已 Coming soon 可再核对
+周六前 push。禁止接真 Stripe。
 ```
 
-## 复制口令 → GPT
+## GPT
 
 ```text
-【2～3天打磨 · GPT 写规格】
-git pull && git checkout -B agent/gpt/soft-launch-ops
-写 docs/prd/SOFT_LAUNCH_OPS.md（env、验收、回滚）
-可选 CREATE_PREFLIGHT_COPY 固定句
-[gpt] commit push。不改 app 业务代码。
+【周日 soft · 无 Stripe】
+补 docs/prd/SOFT_LAUNCH_OPS.md：仅 SESSION_SECRET+FAL_KEY；明确无 STRIPE
+验收 10 条给老板周日勾。
 ```
+
+## Grok
+
+- 合流 · 上线剧本 · 老板周日陪 LAUNCH  
+- 增长不挡上线  
 
 ---
 
-## Cross
+## 老板周日清单（30～60 分）
 
-- Grok → GPT：卖家包仍在 `docs/growth/SELLER_PACK.md`，本 sprint **不强制**，soft 后做  
+1. Vercel Import 仓库 Deploy  
+2. Env：`SESSION_SECRET` + `FAL_KEY` only  
+3. 域名 pikbo.ai → Vercel  
+4. 手机 Create 试一条  
+5. 确认 Pricing 付费是 Coming soon  

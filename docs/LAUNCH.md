@@ -4,6 +4,44 @@
 
 ---
 
+## 周日 Soft 上线（无 Stripe）— 老板当前目标
+
+**截止：最晚周日** · **不要求 Stripe 开好**
+
+这是 **soft launch（试玩验证）**，不是正式收订阅。
+
+### 必做（周日）
+
+| # | 项 |
+|---|-----|
+| 1 | Vercel Import `guochao950518-wq/pikbo` → Deploy |
+| 2 | Env **Production**：`SESSION_SECRET` + `FAL_KEY` |
+| 3 | **不要**加 `STRIPE_*`、**不要**加 `NEXT_PUBLIC_PAYMENTS_ENABLED`、**不要**加 `ALLOW_DEV_UPGRADE` |
+| 4 | 域名 pikbo.ai / www 绑到 Vercel（阶段 2） |
+| 5 | 手机打开 Create，上传一张自己的手办图试一条 |
+
+### 周日不要做
+
+- 开通 Stripe 收款  
+- 承诺「已付费无限生成」  
+- 未测退积分就加大公开传播  
+
+### Stripe 以后再开
+
+等：账号 + 持久积分（T5）+ Stripe Price + Webhook 齐了，再设：
+
+- `STRIPE_SECRET_KEY` / Price IDs / `STRIPE_WEBHOOK_SECRET`  
+- `NEXT_PUBLIC_PAYMENTS_ENABLED=1`  
+
+在此之前，付费按钮显示 **Coming soon**。
+
+### 打磨窗口
+
+- 周四～周六：按 `docs/SPRINT_3DAY.md` 抠 Create/Pricing 诚实  
+- **周日：按本文阶段 1+2 上线**  
+
+---
+
 ## 阶段 1 — 先让网站在公网跑起来（必须）
 
 ### 1.1 部署到 Vercel

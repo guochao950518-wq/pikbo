@@ -4,6 +4,11 @@ import { useState } from "react";
 import type { PlanId } from "@/lib/pricing";
 import { Button } from "@/components/ui/button";
 
+/** Soft launch: paid checkout only when explicitly enabled + Stripe configured. */
+function paymentsLive(): boolean {
+  return process.env.NEXT_PUBLIC_PAYMENTS_ENABLED === "1";
+}
+
 export function PricingCheckoutButton({
   planId,
   label,
@@ -15,6 +20,28 @@ export function PricingCheckoutButton({
 }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const live = paymentsLive();
+
+  // Sunday soft launch without Stripe: never pretend paid plans are buyable.
+  if (!live && planId !== "free") {
+    return (
+      <div className="w-full">
+        <Button
+          type="button"
+          disabled
+          variant={featured ? "default" : "secondary"}
+          size="lg"
+          className="w-full opacity-70"
+        >
+          Coming soon
+        </Button>
+        <p className="mt-2 text-center text-[10px] leading-relaxed text-[var(--fg-dim)]">
+          Free trial is live. Paid plans open after billing is ready — no charge
+          today.
+        </p>
+      </div>
+    );
+  }
 
   async function checkout() {
     setBusy(true);

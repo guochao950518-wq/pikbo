@@ -115,10 +115,12 @@ export async function POST(req: Request) {
   }
 
   // --- Dev / demo upgrade (no Stripe keys) ---
+  // Soft launch / production: never silent-upgrade without explicit flag.
   const allowDev =
-    body.dev === true ||
     process.env.ALLOW_DEV_UPGRADE === "1" ||
-    process.env.NODE_ENV !== "production";
+    (process.env.NODE_ENV !== "production" && body.dev === true) ||
+    (process.env.NODE_ENV !== "production" &&
+      process.env.ALLOW_DEV_UPGRADE !== "0");
 
   if (allowDev) {
     const upgraded = setPlan(session, plan.id, { resetCredits: true });
