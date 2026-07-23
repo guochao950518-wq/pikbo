@@ -343,6 +343,198 @@ export const TOOLS: Tool[] = [
       },
     ],
   },
+  {
+    slug: "toy-unboxing-hook-generator",
+    emoji: "🪝",
+    label: "Unboxing hook",
+    h1: "Generate a Toy Unboxing Hook for Reels and Shorts",
+    seoTitle: "Toy Unboxing Hook Generator for Reels & Shorts | Pikbo",
+    seoDescription:
+      "Make the first-second unboxing hook that stops the scroll. Turn one toy photo into a punchy reveal opener for Reels, Shorts, and TikTok.",
+    intro:
+      "The first second decides whether anyone watches. Pikbo turns one photo of your figure into a punchy unboxing hook — the reveal opener built to stop the scroll.",
+    body: [
+      "Use the clip as the opening beat of a longer unboxing, or as a standalone teaser.",
+      "The reveal is generated from your photo; treat it as a stylized hook and review before posting.",
+    ],
+    keywords: [
+      "toy unboxing hook generator",
+      "unboxing hook video reels",
+      "toy reveal opener video from photo",
+    ],
+    primaryEffect: "blind-box-unboxing",
+    effects: ["blind-box-unboxing", "mystery-box-reveal", "confetti-drop-reveal"],
+    faq: [
+      {
+        q: "Is it a full unboxing?",
+        a: "It's the hook — the scroll-stopping first beat. Use it to open a longer unboxing or as a standalone teaser.",
+      },
+      {
+        q: "Best format?",
+        a: "Vertical 9:16 suits Reels, Shorts, and TikTok hooks.",
+      },
+    ],
+  },
+  {
+    slug: "toy-ugc-ad-generator",
+    emoji: "📱",
+    label: "UGC-style ad",
+    h1: "Create a UGC-Style Toy Ad From Product Photos",
+    seoTitle: "UGC-Style Toy Ad Generator From Product Photos | Pikbo",
+    seoDescription:
+      "Draft a UGC-style toy ad from a product photo. Casual, social-native motion for TikTok Shop and Reels ad creative — commercial use on paid clips.",
+    intro:
+      "UGC-style ads feel native to the feed. Pikbo drafts that casual, social look for your toy from a product photo — ad creative that doesn't look like a polished commercial.",
+    body: [
+      "This calls a UGC style — it is not real user-generated content and should not be presented as a genuine customer post.",
+      "Paid clips are cleared for commercial use. Keep the ad honest to the product.",
+    ],
+    keywords: [
+      "ugc toy ad generator",
+      "ugc style product video toy",
+      "social ad video toy from photo",
+    ],
+    primaryEffect: "paparazzi-flash",
+    effects: ["paparazzi-flash", "floating-hero", "make-figure-dance"],
+    faq: [
+      {
+        q: "Is this real UGC?",
+        a: "No — it's a UGC style, not a genuine customer post. Don't present it as a real user review.",
+      },
+      {
+        q: "Can I run it as an ad?",
+        a: "Paid clips are cleared for commercial use. Placing the ad is up to you.",
+      },
+    ],
+  },
+  {
+    slug: "toy-product-demo-video",
+    emoji: "🔎",
+    label: "Product demo",
+    h1: "Make a Short Product Demo Video for a Toy",
+    seoTitle: "Toy Product Demo Video From One Photo | Pikbo",
+    seoDescription:
+      "Turn one toy photo into a short product demo — a clean spin that shows the figure from more angles for listings and social.",
+    intro:
+      "A short demo helps buyers understand a piece. Pikbo turns one photo of your toy into a clean spin that shows it from more angles than a single still.",
+    body: [
+      "The demo generates the unseen angles, so it is a helpful preview rather than a guaranteed-accurate product scan.",
+      "Review sculpt, paint, and logos before using the demo in a listing.",
+    ],
+    keywords: [
+      "toy product demo video",
+      "product demo video from photo toy",
+      "toy angles demo video",
+    ],
+    primaryEffect: "360-spin-showcase",
+    effects: ["360-spin-showcase", "floating-hero", "display-case-glam"],
+    faq: [
+      {
+        q: "Are the angles accurate?",
+        a: "Unseen angles are generated and inferred. Use the demo as a preview and verify against the real product.",
+      },
+      {
+        q: "Good for marketplace listings?",
+        a: "Yes, as a preview clip. Paid clips are cleared for commercial use.",
+      },
+    ],
+  },
+  {
+    slug: "collector-pov-toy-video",
+    emoji: "🫶",
+    label: "Collector POV",
+    h1: "Create a Collector POV Video From a Toy Photo",
+    seoTitle: "Collector POV Toy Video From a Photo | Pikbo",
+    seoDescription:
+      "Make a cozy collector-POV video from one toy photo — the 'meet my grail' shot with glam lighting and subtle motion for Reels and Shorts.",
+    intro:
+      "Collectors love a 'meet my grail' moment. Pikbo turns one photo into a cozy collector-POV clip with glam lighting and subtle motion that shows a piece off.",
+    body: [
+      "The collector angle suits shelf features, hauls, and 'newest pickup' posts.",
+      "Your figure stays the reference; lighting and motion are stylized effects — review before commercial use.",
+    ],
+    keywords: [
+      "collector pov toy video",
+      "meet my grail toy video",
+      "collection showcase video from photo",
+    ],
+    primaryEffect: "display-case-glam",
+    effects: ["display-case-glam", "floating-hero", "collection-shelf-pan"],
+    faq: [
+      {
+        q: "Good for a haul or shelf post?",
+        a: "Yes — the collector-POV mood suits hauls, shelf features, and 'newest pickup' posts.",
+      },
+      {
+        q: "Does it keep my figure?",
+        a: "It animates from your photo; generated lighting and motion can vary, so review the clip.",
+      },
+    ],
+  },
+  {
+    slug: "custom-toy-product-video",
+    emoji: "🛠️",
+    label: "Custom toy",
+    h1: "Make a Product Video for a Custom Art Toy",
+    seoTitle: "Custom Art Toy Product Video From One Photo | Pikbo",
+    seoDescription:
+      "Give your custom art toy or one-off a premium product video from one photo. Glam lighting and clean motion for makers and resellers.",
+    intro:
+      "A custom piece deserves a custom-feeling video. Pikbo turns one photo of your one-off art toy into a glam-lit product clip — no studio, no rig.",
+    body: [
+      "Built for indie makers and resellers presenting a bespoke or small-run piece.",
+      "The clip animates from your photo; generated details can vary, so review before using it to sell.",
+    ],
+    keywords: [
+      "custom toy product video",
+      "custom art toy video maker",
+      "bespoke figure video from photo",
+    ],
+    primaryEffect: "display-case-glam",
+    effects: ["display-case-glam", "360-spin-showcase", "floating-hero"],
+    faq: [
+      {
+        q: "Good for a one-off piece?",
+        a: "Yes — it's built for custom and small-run art toys. A clean photo of your piece gives the best result.",
+      },
+      {
+        q: "Can I sell with it?",
+        a: "Paid clips are cleared for commercial use. Keep the video honest to the piece you're selling.",
+      },
+    ],
+  },
+  {
+    slug: "toy-social-content-pack",
+    emoji: "🎒",
+    label: "Content pack",
+    h1: "Create a Social Content Pack for One Toy SKU",
+    seoTitle: "Social Content Pack for One Toy SKU From a Photo | Pikbo",
+    seoDescription:
+      "Plan a social content pack for one toy from a photo — multiple recipe angles (spin, reveal, hero) to fill a week of posts for one SKU.",
+    intro:
+      "One SKU can carry a week of posts. Pikbo helps you spin one toy photo into multiple angles — a spin, a reveal, a hero — so a single figure fills a content calendar.",
+    body: [
+      "Each clip is generated on its own run; there is no single one-click bundle yet, so you compose the pack recipe by recipe.",
+      "Paid clips are cleared for commercial use. Keep each post honest to the product.",
+    ],
+    keywords: [
+      "toy social content pack",
+      "content pack for one toy sku",
+      "multiple toy videos from one photo",
+    ],
+    primaryEffect: "paparazzi-flash",
+    effects: ["paparazzi-flash", "360-spin-showcase", "mystery-box-reveal"],
+    faq: [
+      {
+        q: "Is it a one-click bundle?",
+        a: "Not yet — you compose the pack one recipe at a time. Each clip is its own generation.",
+      },
+      {
+        q: "How many posts from one SKU?",
+        a: "Enough distinct recipe angles to fill a week — spin, reveal, hero, and more from a single photo.",
+      },
+    ],
+  },
 ];
 
 export function getTool(slug: string): Tool | undefined {
