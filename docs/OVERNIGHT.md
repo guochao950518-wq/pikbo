@@ -55,7 +55,8 @@
 14. [x] merge Claude unknown deep-link notice · result provenance (Cached demo / Live generation) · Local Library · softlive Stripe-optional  
 15. [x] soft-launch primary nav + More · creditsRefunded on fail · Library export provenance · README demo free  
 16. [x] merge GPT world-class-copy · Lab unique-demo wall (no shared-loop flood) · link-check G4 · refund smoke  
-17. 下一拍：G6 hand-test log · more green agent merges · avoid product-foundation
+17. [x] merge GPT world-class-prd + retention-remix · cherry-pick +5 viral effects · HOME_PROOF_SLUGS enforce · g6-api-smoke · More Local/Preview tags  
+18. 下一拍：G6 full (2 more lives + forced refund log) · avoid product-foundation
 
 ### 老板醒来验收
 
@@ -69,9 +70,9 @@
 
 ## Grok 本拍状态（3 行）
 
-- Merged GPT world-class-copy (seller ICP / Lab official demos).  
-- Lab wall = unique official clips only; G4 `npm run link-check`; refund smoke.  
-- shipping main · public still NO-GO until G5–G7 fully green.
+- Merged GPT PRDs (world-class + retention-remix) · +5 viral effect presets.  
+- G2 `HOME_PROOF_SLUGS` enforced · More Local/Preview tags · `npm run g6-api-smoke`.  
+- shipping main · G6 still PARTIAL · public NO-GO.
 
 ---
 

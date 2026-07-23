@@ -14,10 +14,9 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { cn } from "@/lib/utils";
 
 /**
- * Soft-launch nav (empty-door fix): primary chrome only —
- * Explore · Create · Effects · Lab (+ Pricing + Generate). The rest of the
- * suite lives under More so routes stay reachable, not advertised as filled.
- * Labels are i18n keys.
+ * Soft-launch nav (docs/prd/SOFT_NAV_AND_PRESETS.md):
+ * primary Explore · Create · Effects · Official Examples (+ Pricing + Generate).
+ * More destinations are reachable with Local/Preview tags — not empty-door peers.
  */
 const PRIMARY = [
   { href: "/", key: "nav.explore" },
@@ -26,15 +25,16 @@ const PRIMARY = [
   { href: "/community", key: "nav.lab" },
 ] as const;
 
+/** Soft-nav: More entries carry honest capability tags (Local / Preview). */
 const MORE = [
-  { href: "/library", key: "nav.library" },
-  { href: "/image", key: "nav.image" },
-  { href: "/supercomputer", key: "nav.batch" },
-  { href: "/cinema", key: "nav.cinema" },
-  { href: "/models", key: "nav.models" },
-  { href: "/explore", key: "nav.feed" },
-  { href: "/guides", key: "nav.guides" },
-  { href: "/profile", key: "nav.profile" },
+  { href: "/library", key: "nav.library", tag: "Local" },
+  { href: "/image", key: "nav.image", tag: "Preview" },
+  { href: "/supercomputer", key: "nav.batch", tag: "Preview" },
+  { href: "/cinema", key: "nav.cinema", tag: "Preview" },
+  { href: "/models", key: "nav.models", tag: "Preview" },
+  { href: "/explore", key: "nav.feed", tag: "Preview" },
+  { href: "/guides", key: "nav.guides", tag: null },
+  { href: "/profile", key: "nav.profile", tag: "Local" },
 ] as const;
 
 /** Mobile critical path — same destinations, Generate is the primary action */
@@ -102,13 +102,18 @@ function MoreMenu({ path }: { path: string }) {
               href={item.href}
               onClick={() => setOpen(false)}
               className={cn(
-                "block px-3.5 py-2 text-[13px] font-medium transition-colors",
+                "flex items-center justify-between gap-3 px-3.5 py-2 text-[13px] font-medium transition-colors",
                 active(path, item.href)
                   ? "bg-white/[0.06] text-[#c8ff3d]"
                   : "text-white/70 hover:bg-white/[0.04] hover:text-white"
               )}
             >
-              {t(item.key)}
+              <span>{t(item.key)}</span>
+              {item.tag ? (
+                <span className="text-[9px] font-bold uppercase tracking-wide text-white/35">
+                  {item.tag}
+                </span>
+              ) : null}
             </Link>
           ))}
         </div>
