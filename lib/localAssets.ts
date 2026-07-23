@@ -15,6 +15,7 @@ export type LocalAsset = {
 };
 
 const MAX_BYTES = 8_000_000;
+/** Soft-launch still TTL. Active gets slide this window forward. */
 const TTL_MS = 15 * 60 * 1000;
 const assets = new Map<string, LocalAsset>();
 
@@ -35,6 +36,15 @@ function trimExpired() {
       assets.delete(drop.id);
     }
   }
+}
+
+function slideExpiry(asset: LocalAsset): LocalAsset {
+  const next: LocalAsset = {
+    ...asset,
+    expiresAt: new Date(Date.now() + TTL_MS).toISOString(),
+  };
+  assets.set(next.id, next);
+  return next;
 }
 
 export function putLocalAsset(input: {
@@ -83,11 +93,36 @@ export function getLocalAsset(
     assets.delete(id);
     return null;
   }
-  return a;
+  // Sliding TTL while actively used (Seller Pack children / Retry).
+  return slideExpiry(a);
 }
 
 export function localAssetMaxBytes() {
   return MAX_BYTES;
+}
+
+export function localAssetTtlMs() {
+  return TTL_MS;
+}
+
+/** Ops probe — presence only, never echoes image bytes. */
+export function localAssetsProbe(): {
+  mode: "local-memory";
+  durable: false;
+  count: number;
+  maxBytes: number;
+  ttlMs: number;
+  note: string;
+} {
+  trimExpired();
+  return {
+    mode: "local-memory",
+    durable: false,
+    count: assets.size,
+    maxBytes: MAX_BYTES,
+    ttlMs: TTL_MS,
+    note: "Process-memory stills; active getLocalAsset slides TTL. Not multi-node.",
+  };
 }
 
 export function __resetLocalAssetsForTests() {

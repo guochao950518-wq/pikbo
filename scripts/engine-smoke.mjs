@@ -113,6 +113,7 @@ assert.match(gen, /historyFieldsFromSuccess/);
 assert.match(gen, /ASSET_NOT_FOUND/);
 assert.match(gen, /fallbackImage/);
 assert.match(gen, /assetId:\s*undefined/);
+assert.match(gen, /recoveredFromAssetMiss/);
 const pe = fs.readFileSync(join(root, "lib/providerError.ts"), "utf8");
 assert.match(pe, /export function isValidImageDataUrl/);
 assert.match(pe, /export function classifyProviderError/);
@@ -942,6 +943,11 @@ assert.match(genRoute, /recordFailedGenerate|noteFailed/);
 assert.match(health, /acceptance/);
 assert.match(health, /demoCached/);
 assert.match(health, /inflightJobCount|inflightTtlMs/);
+assert.match(health, /localAssetsProbe|assets:/);
+assert.match(
+  fs.readFileSync(join(root, "lib/localAssets.ts"), "utf8"),
+  /slideExpiry|localAssetsProbe|Sliding TTL/
+);
 assert.match(genJobsStore, /findJobByRequestOrId/);
 // getJob must resolve provider requestId (not only job_*)
 assert.match(
@@ -1384,8 +1390,11 @@ assert.match(createTrust, /assetId\?:/);
 assert.match(createStudio, /resolveGenerateStill/);
 assert.match(createStudio, /retry-still|mode === "retry/);
 assert.match(createStudio, /postGenerateWithRetry|fallbackImage/);
+assert.match(createStudio, /recoveredFromAssetMiss|registerLocalAsset/);
 assert.match(batchStudio, /fallbackImage/);
+assert.match(batchStudio, /recoveredFromAssetMiss/);
 assert.match(landingTool, /postGenerateWithRetry|fallbackImage/);
+assert.match(landingTool, /recoveredFromAssetMiss|registerLocalAsset/);
 function resolveSpecImagePure(spec, store) {
   if (spec.sourceKey && store[spec.sourceKey]) return store[spec.sourceKey];
   if (typeof spec.image === "string" && spec.image) return spec.image;

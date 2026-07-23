@@ -180,6 +180,22 @@ export function LandingToolPanel({
         fallbackImage: useAsset && image ? image : undefined,
       }
     );
+    // Dead asset after TTL/process restart — clear and re-register for next try.
+    if (
+      (!result.ok && result.code === "ASSET_NOT_FOUND") ||
+      (result.ok && result.recoveredFromAssetMiss)
+    ) {
+      setAssetId(null);
+      if (image && isValidImageDataUrl(image)) {
+        try {
+          const { registerLocalAsset } = await import("@/lib/clientAssets");
+          const reg = await registerLocalAsset(image);
+          if (reg?.assetId) setAssetId(reg.assetId);
+        } catch {
+          /* inline Base64 still works */
+        }
+      }
+    }
     if (result.ok === false) {
       if (result.session) {
         setSession((prev) =>

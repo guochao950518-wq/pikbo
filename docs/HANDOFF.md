@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Sliding asset TTL + re-register after ASSET recovery
+- `getLocalAsset` slides 15m TTL on every hit (Seller Pack mid-queue stays warm).
+- `postGenerateWithRetry` sets `recoveredFromAssetMiss`; Create/Landing/Batch re-register still.
+- health.assets via `localAssetsProbe` (count/ttl/maxBytes, never image bytes).
+- Verified: engine-smoke · typecheck · lint.
+
 ### 2026-07-24 — [grok] Session job cancel + Seller Pack retry-failed
 - Library SessionJobsPanel: Cancel ledger (DELETE /api/generations/[id]), Refresh, poll open jobs.
 - Batch/Seller Pack: **Retry failed only** — siblings kept; sequential re-quote.

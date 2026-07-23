@@ -214,7 +214,12 @@ export function BatchStudio({
     packReservationId?: string | null,
     /** Phase D: shared still asset — avoids re-posting multi-MB Base64 per child */
     sharedAssetId?: string | null
-  ): Promise<{ job: Job; stopQueue: boolean }> {
+  ): Promise<{
+    job: Job;
+    stopQueue: boolean;
+    /** Caller should re-register still for remaining pack children. */
+    recoveredFromAssetMiss?: boolean;
+  }> {
     const jobAspect = job.aspectRatio ?? aspectRatio;
     const result = await postGenerateWithRetry(
       {
@@ -272,6 +277,7 @@ export function BatchStudio({
               : "not charged",
         },
         stopQueue: result.fatal || result.paywall || ambiguous,
+        recoveredFromAssetMiss: result.code === "ASSET_NOT_FOUND",
       };
     }
 
@@ -337,6 +343,7 @@ export function BatchStudio({
           typeof data.requestId === "string" ? data.requestId : undefined,
       },
       stopQueue: false,
+      recoveredFromAssetMiss: Boolean(result.recoveredFromAssetMiss),
     };
   }
 
@@ -413,6 +420,16 @@ export function BatchStudio({
       setJobs((previous) =>
         previous.map((job, index) => (index === i ? outcome.job : job))
       );
+      // Mid-pack asset miss: re-register still so remaining children use a fresh assetId.
+      if (outcome.recoveredFromAssetMiss && image?.startsWith("data:image")) {
+        sharedAssetId = null;
+        try {
+          const reg = await registerLocalAsset(image);
+          if (reg?.assetId) sharedAssetId = reg.assetId;
+        } catch {
+          /* remaining children fall back to Base64 via executeJob */
+        }
+      }
       if (outcome.stopQueue) {
         setError(outcome.job.error ?? "Seller Pack paused");
         setJobs((previous) =>

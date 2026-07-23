@@ -11,6 +11,7 @@ import { t6Report } from "@/lib/t6Watermark";
 import { jobTimeoutMs } from "@/lib/generationJobs";
 import { paymentsReadiness } from "@/lib/stripe";
 import { inflightJobCount, inflightTtlMs } from "@/lib/rateLimit";
+import { localAssetsProbe } from "@/lib/localAssets";
 // NextResponse used for GET + HEAD
 
 export const runtime = "nodejs";
@@ -116,6 +117,8 @@ export async function GET() {
       inflight: inflightJobCount(),
       inflightTtlMs: inflightTtlMs(),
     },
+    /** Phase D process-memory still registry (never echoes image bytes) */
+    assets: localAssetsProbe(),
     ready,
     entitlements,
     durableCredits,

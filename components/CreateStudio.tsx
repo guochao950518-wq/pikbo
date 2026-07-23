@@ -582,6 +582,24 @@ export function CreateStudio({
       }
     );
 
+    // Dead assetId after process restart/TTL — clear and re-register for next POST.
+    if (
+      (!result.ok && result.code === "ASSET_NOT_FOUND") ||
+      (result.ok && result.recoveredFromAssetMiss)
+    ) {
+      setAssetId(null);
+      const still = fallbackStill;
+      if (still && isValidImageDataUrl(still)) {
+        try {
+          const { registerLocalAsset } = await import("@/lib/clientAssets");
+          const reg = await registerLocalAsset(still);
+          if (reg?.assetId) setAssetId(reg.assetId);
+        } catch {
+          /* next generate can still post Base64 */
+        }
+      }
+    }
+
     if (!result.ok) {
       if (result.session) {
         setSession((prev) =>

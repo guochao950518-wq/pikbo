@@ -30,6 +30,12 @@ export type GenerateOk = {
   ok: true;
   status: number;
   data: GenerateSuccess;
+  /**
+   * True when the first attempt used assetId, server returned ASSET_NOT_FOUND,
+   * and a second POST with inline fallbackImage succeeded. Clients should clear
+   * the dead assetId and re-register the still for later smaller POSTs.
+   */
+  recoveredFromAssetMiss?: boolean;
 };
 
 export type GenerateResult = GenerateOk | GenerateFail;
@@ -372,10 +378,14 @@ export async function postGenerateWithRetry(
     fallback.startsWith("data:image") &&
     fallback.length >= 32
   ) {
-    result = await postGenerate(
+    const recovered = await postGenerate(
       { ...body, assetId: undefined, image: fallback },
       { signal: opts?.signal }
     );
+    if (recovered.ok) {
+      return { ...recovered, recoveredFromAssetMiss: true };
+    }
+    return recovered;
   }
   return result;
 }
