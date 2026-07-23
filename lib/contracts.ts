@@ -61,6 +61,11 @@ export type GenerateErrorBody = {
   session?: PublicSession;
   /** seconds to wait on rate limits */
   retryAfterSec?: number;
+  /**
+   * Soft-launch PRD §5 — true when a live debit was restored after failure.
+   * Absent/false when no debit occurred (validation, rate limit, demo path).
+   */
+  creditsRefunded?: boolean;
 };
 
 /** Future metering hook — flat cost today, structured for model×duration later. */

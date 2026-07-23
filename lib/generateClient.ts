@@ -18,6 +18,8 @@ export type GenerateFail = {
   code?: GenerateErrorBody["code"];
   session?: PublicSession;
   retryAfterSec?: number;
+  /** Soft-launch: live debit restored after provider/validation failure. */
+  creditsRefunded?: boolean;
   /** Stop further batch jobs (credits / provider balance empty). */
   fatal: boolean;
   /** Open paywall UI (user allowance, not provider). */
@@ -76,8 +78,9 @@ export function interpretGenerateResponse(
   const paywall = code === "INSUFFICIENT_CREDITS";
   const fatal =
     code === "INSUFFICIENT_CREDITS" || code === "PROVIDER_BALANCE";
+  const creditsRefunded = body.creditsRefunded === true;
 
-  const error =
+  let error =
     body.error ||
     (code === "RATE_LIMITED"
       ? `Too many generates — try again in ${retryAfterSec ?? "a few"}s`
@@ -93,6 +96,14 @@ export function interpretGenerateResponse(
                 ? "Image too large (max ~8MB)"
                 : "Generation failed");
 
+  // PRD §5: recoverable failures must say whether the 10 credits were restored.
+  if (
+    creditsRefunded &&
+    !/refund|restored|credit/i.test(error)
+  ) {
+    error = `${error} · 10 credits restored`;
+  }
+
   return {
     ok: false,
     status,
@@ -100,6 +111,7 @@ export function interpretGenerateResponse(
     code,
     session: body.session,
     retryAfterSec,
+    creditsRefunded,
     fatal,
     paywall,
   };

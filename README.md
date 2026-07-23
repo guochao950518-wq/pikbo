@@ -21,10 +21,10 @@ npm run dev      # http://localhost:3000
 
 | Mode | When | Behavior |
 |---|---|---|
-| **Demo** | no `FAL_KEY` | Returns a labeled cached clip; Studio submissions still follow the 10-credit contract |
-| **Live gen** | `FAL_KEY` set | Real image-to-video via fal.ai |
-| **Dev billing** | no Stripe keys, non-prod | `/api/checkout` upgrades plan instantly |
-| **Live billing** | Stripe keys + price IDs | Redirects to Stripe Checkout |
+| **Demo** | no `FAL_KEY` | Labeled **Cached demo** clip · **0 credits** (does not animate your upload) |
+| **Live gen** | `FAL_KEY` set | Real image-to-video via fal.ai · 10 credits · refund on failure |
+| **Dev billing** | no Stripe keys, non-prod | `/api/checkout` upgrades plan instantly (never in production soft launch) |
+| **Live billing** | Stripe keys + price IDs + gate | Soft launch: paid CTAs stay **Coming soon** |
 
 ## Credits & plans (see `docs/UNIT_ECONOMICS.md` + `lib/pricing.ts`)
 | Plan | Price | Credits/mo | Approx clips | On-player mark |
@@ -33,8 +33,8 @@ npm run dev      # http://localhost:3000
 | Creator | $19 | 50 | ~5 | no |
 | Shop | $49 | 150 | ~15 | no |
 
-Rule: **1 clip = 10 credits** (flat until model×duration metering). Failed gens refund.
-Free live path: Seedance Mini · 5s · 480p · on-player watermark. Homepage cached examples use no credits. Demo-mode Studio submissions currently follow the 10-credit contract and return local `/demos/*`.
+Rule: **1 live clip = 10 credits** (flat until model×duration metering). Failed **live** jobs refund and return `creditsRefunded: true`.
+Free live path: Seedance Mini · 5s · 480p · on-player mark. Cached demos and homepage Lab examples use **0 credits**.
 
 ## Where things live
 | Path | What |

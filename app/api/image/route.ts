@@ -140,6 +140,7 @@ export async function POST(req: Request) {
             error: "No image returned",
             code: "MODEL_EMPTY",
             session: publicSession(session),
+            creditsRefunded: true,
           },
           { status: 502 }
         );
@@ -173,7 +174,12 @@ export async function POST(req: Request) {
             : "GENERATION_FAILED";
       const status = kind === "balance" ? 402 : kind === "rate" ? 429 : 500;
       return NextResponse.json(
-        { error: msg, code, session: publicSession(session) },
+        {
+          error: msg,
+          code,
+          session: publicSession(session),
+          creditsRefunded: true,
+        },
         { status }
       );
     }

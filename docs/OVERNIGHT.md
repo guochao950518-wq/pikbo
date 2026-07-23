@@ -53,7 +53,8 @@
 12. [x] merge Claude logo + feature cards · Logo useId · confirm idempotent · toy identity lock  
 13. [x] merge Claude E3 preflight/rights · GPT SELLER_PACK+AUTH_CREDITS · server ownsRights  
 14. [x] merge Claude unknown deep-link notice · result provenance (Cached demo / Live generation) · Local Library · softlive Stripe-optional  
-15. 下一拍：more green agent merges · support cache/live in ops notes · boss LAUNCH path
+15. [x] soft-launch primary nav + More · creditsRefunded on fail · Library export provenance · README demo free  
+16. 下一拍：safe agent merges (avoid product-foundation) · ICP/home if Claude pushes green · boss LAUNCH
 
 ### 老板醒来验收
 
@@ -67,9 +68,9 @@
 
 ## Grok 本拍状态（3 行）
 
-- Merged Claude unknown deep-link notice (§5.2) + result provenance PRD §6.  
-- Local Library honesty · softlive Stripe-optional · generateClient error codes.  
-- smoke+typecheck+lint+preflight green · **pushed main `58cd3a3`**.
+- G1 progress: soft nav Explore/Create/Lab/Library + More (empty doors demoted).  
+- `creditsRefunded` on post-debit fails · Library export provenance · README demo free.  
+- smoke+typecheck+lint green · **shipping main**.
 
 ---
 

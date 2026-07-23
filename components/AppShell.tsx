@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { site } from "@/lib/site";
 import { CreditsBadge } from "@/components/CreditsBadge";
 import { Logo } from "@/components/Logo";
@@ -12,31 +13,108 @@ import { LanguageProvider, useI18n } from "@/components/LanguageProvider";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { cn } from "@/lib/utils";
 
-/** Higgsfield-style: top horizontal text nav + full-bleed black content */
-const TOP = [
+/**
+ * Soft-launch nav (empty-door fix): primary chrome only —
+ * Explore · Create · Effects · Lab (+ Pricing + Generate). The rest of the
+ * suite lives under More so routes stay reachable, not advertised as filled.
+ * Labels are i18n keys.
+ */
+const PRIMARY = [
   { href: "/", key: "nav.explore" },
-  { href: "/image", key: "nav.image" },
-  { href: "/create", key: "nav.video" },
-  { href: "/cinema", key: "nav.cinema" },
+  { href: "/create", key: "nav.create" },
   { href: "/effects", key: "nav.presets" },
-  { href: "/models", key: "nav.models" },
-  { href: "/supercomputer", key: "nav.batch" },
   { href: "/community", key: "nav.lab" },
-  { href: "/explore", key: "nav.feed" },
-  { href: "/library", key: "nav.library" },
 ] as const;
 
+const MORE = [
+  { href: "/library", key: "nav.library" },
+  { href: "/image", key: "nav.image" },
+  { href: "/supercomputer", key: "nav.batch" },
+  { href: "/cinema", key: "nav.cinema" },
+  { href: "/models", key: "nav.models" },
+  { href: "/explore", key: "nav.feed" },
+  { href: "/guides", key: "nav.guides" },
+  { href: "/profile", key: "nav.profile" },
+] as const;
+
+/** Mobile critical path — same destinations, Generate is the primary action */
 const MOBILE = [
-  { href: "/", label: "Home", icon: "⌂" },
-  { href: "/community", label: "PIKBO Lab", icon: "◉" },
-  { href: "/create", label: "Generate", icon: "✦", primary: true as const },
-  { href: "/library", label: "Library", icon: "▢" },
-  { href: "/profile", label: "Profile", icon: "○" },
+  { href: "/", key: "nav.home", icon: "⌂" },
+  { href: "/effects", key: "nav.presets", icon: "◈" },
+  { href: "/create", key: "cta.generate", icon: "✦", primary: true as const },
+  { href: "/community", key: "nav.lab", icon: "◉" },
+  { href: "/pricing", key: "cta.pricing", icon: "◎" },
 ];
 
 function active(path: string, href: string) {
   if (href === "/") return path === "/";
   return path === href || path.startsWith(href + "/");
+}
+
+function MoreMenu({ path }: { path: string }) {
+  const { t } = useI18n();
+  const [open, setOpen] = useState(false);
+  const root = useRef<HTMLDivElement>(null);
+  const moreActive = MORE.some((item) => active(path, item.href));
+
+  useEffect(() => {
+    if (!open) return;
+    function onDoc(e: MouseEvent) {
+      if (!root.current?.contains(e.target as Node)) setOpen(false);
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("mousedown", onDoc);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDoc);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  return (
+    <div ref={root} className="relative shrink-0">
+      <button
+        type="button"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+        className={cn(
+          "shrink-0 whitespace-nowrap text-[13px] font-medium transition-colors",
+          moreActive || open ? "text-[#c8ff3d]" : "text-white/55 hover:text-white"
+        )}
+      >
+        {t("nav.more")}
+        <span className="ml-0.5 text-[10px] opacity-70" aria-hidden>
+          ▾
+        </span>
+      </button>
+      {open && (
+        <div
+          role="menu"
+          className="absolute left-0 top-full z-50 mt-2 min-w-[10.5rem] rounded-xl border border-white/10 bg-[#0c0c10]/95 py-1.5 shadow-[0_16px_40px_-12px_rgba(0,0,0,0.8)] backdrop-blur-md"
+        >
+          {MORE.map((item) => (
+            <Link
+              key={item.href}
+              role="menuitem"
+              href={item.href}
+              onClick={() => setOpen(false)}
+              className={cn(
+                "block px-3.5 py-2 text-[13px] font-medium transition-colors",
+                active(path, item.href)
+                  ? "bg-white/[0.06] text-[#c8ff3d]"
+                  : "text-white/70 hover:bg-white/[0.04] hover:text-white"
+              )}
+            >
+              {t(item.key)}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -62,13 +140,13 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen flex-col bg-black text-white">
-      {/* Desktop top nav — Higgsfield style */}
+      {/* Desktop top nav — soft-launch critical path + More */}
       <header className="sticky top-0 z-50 hidden h-14 items-center gap-6 border-b border-white/[0.07] bg-black/80 px-5 backdrop-blur-md lg:flex">
         <Link href="/" className="flex shrink-0 items-center" title={site.name}>
           <Logo size={30} />
         </Link>
         <nav className="flex min-w-0 flex-1 items-center gap-5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {TOP.map((item) => (
+          {PRIMARY.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -82,13 +160,19 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
               {t(item.key)}
             </Link>
           ))}
+          <MoreMenu path={path} />
         </nav>
         <div className="flex shrink-0 items-center gap-3">
           <LanguageSwitcher />
           <CreditsBadge />
           <Link
             href="/pricing"
-            className="text-[13px] font-semibold text-white/70 hover:text-white"
+            className={cn(
+              "text-[13px] font-semibold transition-colors",
+              active(path, "/pricing")
+                ? "text-[#c8ff3d]"
+                : "text-white/70 hover:text-white"
+            )}
           >
             {t("cta.pricing")}
           </Link>
@@ -143,7 +227,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
                     {item.icon}
                   </span>
                   <span className="text-[9px] font-bold text-[#c8ff3d]">
-                    {t("cta.generate")}
+                    {t(item.key)}
                   </span>
                 </Link>
               );
@@ -158,7 +242,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
                 )}
               >
                 <span className="text-base">{item.icon}</span>
-                {item.label}
+                {t(item.key)}
               </Link>
             );
           })}

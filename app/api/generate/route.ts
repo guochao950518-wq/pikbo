@@ -189,6 +189,7 @@ export async function POST(req: Request) {
             code: "INVALID_REQUEST",
             model,
             session: publicSession(session),
+            creditsRefunded: true,
           },
           400
         );
@@ -202,6 +203,7 @@ export async function POST(req: Request) {
             code: "INVALID_REQUEST",
             model,
             session: publicSession(session),
+            creditsRefunded: true,
           },
           400
         );
@@ -239,6 +241,7 @@ export async function POST(req: Request) {
             code: "MODEL_EMPTY",
             model,
             session: publicSession(session),
+            creditsRefunded: true,
           },
           502
         );
@@ -284,6 +287,7 @@ export async function POST(req: Request) {
           code,
           model,
           session: publicSession(session),
+          creditsRefunded: true,
         },
         status
       );
