@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [grok] Create version compare polish on Wave A
+- Fast-forwarded `agent/grok/higgsfield-wave-a` onto main.
+- Each success keeps source still + requestId/provider; switching versions restores Before still.
+- Cap 8 session versions; creditState 0 cached / 10 used / 10 restored on fail.
+
+
 ### 2026-07-23 — [grok] Higgsfield Wave A core loop ready for review
 - Implementation SHA: `2e4a0a8` on `agent/grok/higgsfield-wave-a`.
 - Scope: one canonical ShowcaseProject registry now drives Home, Explore, Inside Project, and recipe deep links; unknown project slugs return 404.

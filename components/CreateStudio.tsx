@@ -44,6 +44,12 @@ type ResultVersion = {
   resolution: string;
   creditState: "0 cached" | "10 used";
   createdAt: string;
+  /** Still used for this version — Before/After stays honest when switching Vn */
+  sourceImage: string | null;
+  requestId?: string;
+  provider?: string;
+  effect: string;
+  effectName: string;
 };
 
 function localProjectId(image: string, source?: string): string {
@@ -492,6 +498,7 @@ export function CreateStudio({
     setResultResolution(
       typeof data.resolution === "string" ? data.resolution : resolvedRes
     );
+    const usedPreset = PRESETS.find((p) => p.slug === fx) ?? preset;
     const version: ResultVersion = {
       id:
         typeof data.requestId === "string" && data.requestId
@@ -509,11 +516,17 @@ export function CreateStudio({
         typeof data.resolution === "string" ? data.resolution : resolvedRes,
       creditState: data.demo ? "0 cached" : "10 used",
       createdAt: new Date().toISOString(),
+      sourceImage: img,
+      requestId:
+        typeof data.requestId === "string" ? data.requestId : undefined,
+      provider: typeof data.provider === "string" ? data.provider : undefined,
+      effect: fx,
+      effectName: usedPreset.name,
     };
     setVersions((current) => [
       version,
       ...current.filter((item) => item.id !== version.id),
-    ]);
+    ].slice(0, 8));
     setActiveVersionId(version.id);
     setLastCreditState(version.creditState);
     setStatus("done");
@@ -521,7 +534,7 @@ export function CreateStudio({
     pushHistory(
       historyFieldsFromSuccess(data, {
         effect: fx,
-        effectName: (PRESETS.find((p) => p.slug === fx) ?? preset).name,
+        effectName: usedPreset.name,
         fallbackDuration: effectiveDuration,
         fallbackAspect: aspectRatio,
         fallbackResolution: resolvedRes,
@@ -573,8 +586,19 @@ export function CreateStudio({
     setResultAspect(version.aspectRatio);
     setResultResolution(version.resolution);
     setLastCreditState(version.creditState);
+    // Restore the still that produced this version for honest Before/After.
+    if (version.sourceImage) {
+      setImage(version.sourceImage);
+    }
+    if (version.effect) {
+      setEffect(version.effect);
+    }
     setStatus("done");
   }
+
+  const activeVersion =
+    versions.find((v) => v.id === activeVersionId) ?? versions[0] ?? null;
+  const compareStill = activeVersion?.sourceImage || image;
 
   function shareX() {
     if (!videoUrl) return;
@@ -1502,15 +1526,18 @@ export function CreateStudio({
                     ))}
                   </div>
                 ) : null}
-                {compare && image ? (
+                {compare && compareStill ? (
                   <div className="grid gap-2 sm:grid-cols-2">
                     <div>
                       <p className="mb-1 text-center text-[10px] font-bold uppercase text-[var(--fg-dim)]">
                         Before
+                        {activeVersion
+                          ? ` · ${activeVersion.effectName || activeVersion.effect}`
+                          : ""}
                       </p>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
-                        src={image}
+                        src={compareStill}
                         alt="before"
                         className="mx-auto max-h-[45vh] rounded-lg object-contain"
                       />
@@ -1647,11 +1674,20 @@ export function CreateStudio({
                   · {resultDuration ?? effectiveDuration}s ·{" "}
                   {resultAspect ?? aspectRatio} ·{" "}
                   {resultResolution ?? (isFree ? "480p" : resolution)}
+                  {activeVersion?.provider
+                    ? ` · ${activeVersion.provider}`
+                    : ""}
+                  {activeVersion?.requestId
+                    ? ` · id ${activeVersion.requestId.slice(0, 8)}`
+                    : ""}
                 </p>
                 <p className="mt-1 text-center text-[10px] text-[var(--fg-dim)]">
                   {demo
                     ? `${PROVENANCE.cachedDemo} only — not from your upload · not cloud-backed`
                     : localLibraryNote()}
+                  {versions.length > 1
+                    ? ` · ${versions.length} versions in this session`
+                    : ""}
                 </p>
               </div>
             )}

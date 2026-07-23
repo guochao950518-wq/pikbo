@@ -284,6 +284,12 @@ assert.match(createStudio, /labSampleId|lab-sample-/);
 assert.match(createStudio, /Official Lab|official Lab/);
 assert.match(createStudio, /10 credits|cached demo free/i);
 
+// Wave A Create versions: stack + Before/After per-version still
+assert.match(createStudio, /ResultVersion|type ResultVersion/);
+assert.match(createStudio, /selectVersion|setVersions/);
+assert.match(createStudio, /sourceImage/);
+assert.match(createStudio, /creditState/);
+
 // Wave A: Seller Pack canonical Create mode + legacy supercomputer redirect
 const createPage = fs.readFileSync(join(root, "app/create/page.tsx"), "utf8");
 assert.match(createPage, /seller-pack/);

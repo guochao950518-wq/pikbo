@@ -61,7 +61,8 @@
 20. [x] projects SSG+sitemap · Library Remix again · health forceGenerateFail flag · image force-fail parity  
 21. [x] one-tap Lab sample honesty (cached free vs Mini 10cr) · lab-sample Library provenance  
 22. [x] Wave A: seller-pack Create mode · Library project groups · Explore cat filter · showcase registry  
-23. 下一拍：Create version compare polish · G6 lives · avoid product-foundation
+23. [x] merge Wave A core loop branch · Create version stack + per-version Before/After metadata  
+24. 下一拍：G6 lives · avoid product-foundation
 
 ### 老板醒来验收
 
@@ -75,8 +76,8 @@
 
 ## Grok 本拍状态（3 行）
 
-- Wave A: `/create?mode=seller-pack` canonical + supercomputer legacy redirect.  
-- Library by project · Explore `?cat=` · ShowcaseProject registry.  
+- Merged `agent/grok/higgsfield-wave-a` (showcase/explore/create versions/seller).  
+- Create: version stack stores sourceImage + requestId; Before/After follows Vn.  
 - shipping main · public still NO-GO.
 
 ---
