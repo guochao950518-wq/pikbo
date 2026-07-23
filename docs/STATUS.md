@@ -19,7 +19,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | G3 | Official demos copy (no fake UGC) | Codex | **done** | main @ `32c634c` | Official example / cached / concept language merged |
 | G4 | Zero 404 on linked URLs | Claude | **done** | main @ `5d25fb3` | Redirect aliases and link-check passed |
 | G5 | Plain-language ICP + meta | Codex | **done** | main @ `32c634c` | Seller-first H1, buyer metadata and honest ROI copy merged |
-| G6 | 3 live toy gens + 1 refund | Grok | doing | agent/grok/final-takeover | 1 live Mini passed; prepare harness now, then request FAL key/budget once for 2 more live jobs + refund proof |
+| G6 | 3 live toy gens + 1 refund | Grok | **done** | main | PASS 2026-07-24: 3 lives + refund · `docs/evidence/G6_LAUNCH_LOG.md` · public Mode B still needs deploy+DNS boss |
 | G7 | build + prod no devTopup | Grok | **review** | agent/grok/final-takeover | Reassigned for CI and private-preview verification; topup hard-off prod |
 | P-GO | GO_NO_GO + nav/preset whitelist PRD | GPT | done | agent/gpt/world-class-prd | Formal pass criteria, exact nav, eight proof slugs, route inventory and day-of checklist |
 | W-PRD | World-class product contract, Seller OS, recipe quality, SEO Intent 50 | GPT | done | agent/gpt/world-class-prd | Create canonical Seller Pack, exact 12/8 recipes, five-score proof gate, structured 50-intent map |

@@ -1,6 +1,7 @@
 # GO / NO-GO — Soft public launch gate
 
-**Status:** **NO-GO** for public `pikbo.ai` as of 2026-07-23.
+**Status:** **SOFT GO for Mode A private preview** as of 2026-07-24.  
+**Public Mode B (`pikbo.ai` DNS)** remains **NO-GO** until boss deploys + final crawl + explicit domain approval.
 **Evidence:** `docs/BRUTAL_EXPERT_ROAST_2026-07-23.md`
 **Navigation/proof contract:** `docs/prd/SOFT_NAV_AND_PRESETS.md`
 **This file is the living gate.** Agents must not tell the boss “ready to launch” until the table is green.
@@ -27,23 +28,24 @@ Sunday deadline **does not override** Mode B gates.
 | G3 | No fake community | Page name and cards state Official examples/cached; no claimed users, engagement, or customer output | Grep community/explore strings and inspect cards | Codex | **SOFT PASS** (world-class copy and unique Lab wall on main) |
 | G4 | Zero 404 on linked URLs | Every footer/`/for/*`/nav href returns 200 or is removed | `npm run link-check` against preview | Claude | **SOFT PASS** (redirects + `scripts/link-check.sh`; re-crawl after deploy) |
 | G5 | ICP in plain language | First screen states owned toy photo → listing/post clip, names target users, and exposes one trial action | Read `/` title, description, H1, supporting copy, and CTA | Codex | **SOFT PASS** (seller-first hero/meta on main; deployed re-check pending) |
-| G6 | Real toy path | 3 owned-toy lives succeed; 1 forced failure refunds 10 credits; notes saved | Manual log in HANDOFF | Boss/any | **PARTIAL** (1 live Mini ok 2026-07-23; need 2 more + refund log) |
+| G6 | Real toy path | 3 owned-toy lives succeed; 1 forced failure refunds 10 credits; notes saved | Manual log in HANDOFF | Boss/any | **PASS** (2026-07-24) evidence `docs/evidence/G6_LAUNCH_LOG.md` · lives: prior + scout `019f8fb8…` + moon `019f8fba…` · refund credits 10→10 `GENERATION_FAILED` |
 | G7 | Production safe | `npm run build` green; `devTopup` false in production; no payments env | CI + health on preview | Claude | **SOFT PASS** (topup hard-off prod; lint green on merge) |
 | G8 | No fake pay | Creator/Shop Coming soon; checkout cannot charge | Pricing UI + `PAYMENTS_ENABLED` off | — | **PASS** |
 | G9 | Soft runtime | `SESSION_SECRET` + `FAL_KEY`; health `softLive` | `/api/health` | Boss env | **PASS** local only |
 
 ---
 
-## Current NO-GO reasons
+## Current gates / remaining for public Mode B
 
 1. ~~Shell theater~~ — largely cut (primary + More).  
 2. ~~Shared-loop wall~~ — home/Lab unique demos.  
 3. ~~Footer 404s~~ — aliases + link-check PASS.  
-4. **G6 incomplete** — need two more owned-toy live jobs and one proven refund.
-5. Homepage proof assets still need a recorded provenance/quality review.
-6. G4/G7 require a final deployed crawl, health check, and production build on the release commit.
-7. Performance LCP remains a quality risk and must be measured on the deployed preview.
-8. **No public deploy yet** — Mode B needs boss-controlled hosting/domain work after every gate passes.
+4. ~~G6 incomplete~~ — **PASS** 2026-07-24 (3 lives + refund evidence logged).  
+5. Homepage proof quality scores are provisional Lab notes — optional human re-score.  
+6. **G4/G7 final deployed crawl** — run `link-check` + health on Vercel preview URL.  
+7. Performance LCP — measure on deployed preview (4G).  
+8. **No public DNS yet** — Mode B needs boss Vercel login + `pikbo.ai` bind after Mode A is healthy.  
+9. Supabase SQL migration should be applied before relying on cross-device paid wallets.
 
 ---
 

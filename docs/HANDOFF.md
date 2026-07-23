@@ -4,6 +4,14 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] G6 PASS + Mode A private launch path
+- **2 additional live Mini** (Seedance Mini): scout `360-spin` `019f8fb8-7b20-77e2-af8c-fcb392e2276f`; moon `blind-box` `019f8fba-1b61-7ac1-9ab7-b41b05f1cb8c`.
+- **Refund:** `PIKBO_FORCE_GENERATE_FAIL=1` → 500 `GENERATION_FAILED` · credits 10→10 · `creditsRefunded:true`.
+- Prior 2026-07-23 live + 2 tonight = **3 lives**. Evidence: `docs/evidence/G6_LAUNCH_LOG.md`.
+- Scripts: `npm run g6-launch-pass` · `npm run g6-refund-leg`.
+- `GO_NO_GO.md`: G6 → **PASS**. Public `pikbo.ai` still needs Vercel login (boss) + domain OK. Soft Mode A: `docs/LAUNCH_MODE_A.md`.
+- No Stripe live, no public DNS changed.
+
 ### 2026-07-23 — [grok] Seller Pack durable shadow reserve 30 / child 10
 - `lib/durableCredits/sellerPack.ts`: reserve 30 (purpose seller_pack), settle/release 10 per child.
 - APIs: `POST /api/seller-pack/reserve|settle|release` (Bearer preferred; DURABLE_OFF non-fatal).
