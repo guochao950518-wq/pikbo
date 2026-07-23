@@ -86,7 +86,8 @@ export function LibraryGrid() {
           i.effect.toLowerCase().includes(q) ||
           (i.projectName || "").toLowerCase().includes(q) ||
           (i.projectId || "").toLowerCase().includes(q) ||
-          (i.sourceProject || "").toLowerCase().includes(q)
+          (i.sourceProject || "").toLowerCase().includes(q) ||
+          (i.sku || "").toLowerCase().includes(q)
       );
     }
     if (sort === "name") {

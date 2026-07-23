@@ -4,6 +4,17 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Landing assetId + delivery honesty + Library SKU
+- LandingToolPanel: registerLocalAsset + generate with assetId (parity with Create).
+- Delivery checklist respects Free download block (T6); Library filters by Toy Identity SKU.
+- History stores optional `sku`; engine-smoke covers toyIdentity/delivery/workflows/landing.
+- HANDOFF catch-up: five-step Toy Identity + competitor landscape already on main.
+- Verified: typecheck · engine-smoke · lint.
+
+### 2026-07-24 — [grok] five-step: Toy Identity + delivery + same-photo next job
+- Create: 2-field SKU lock into extra; post-clip delivery steps; same-image job switches.
+- `lib/toyIdentity.ts` · `lib/deliveryPack.ts`. No Character cloud / 3D / fake models.
+
 ### 2026-07-24 — [grok] product polish: job intents + activation checklist
 - Boss paused public launch; Grok research → product depth.
 - Create: JobIntentBar (Etsy / TikTok / reveal / shelf / Seller Pack); ActivationChecklist first-clip steps.

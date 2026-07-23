@@ -941,7 +941,13 @@ assert.match(robotsSrc, /\/image/);
 const libMeta = fs.readFileSync(join(root, "app/library/page.tsx"), "utf8");
 assert.match(libMeta, /index:\s*false/);
 const appsMeta = fs.readFileSync(join(root, "app/apps/page.tsx"), "utf8");
-assert.match(appsMeta, /index:\s*false/);
+// Apps is the live workflow shelf (not a thin preview door).
+assert.match(appsMeta, /WORKFLOWS|workflows/);
+assert.doesNotMatch(appsMeta, /index:\s*false/);
+assert.doesNotMatch(
+  fs.readFileSync(join(root, "app/robots.ts"), "utf8"),
+  /["']\/apps["']/
+);
 
 // Library honesty: Free live must not expose raw download/open
 const historySrcLib = fs.readFileSync(join(root, "lib/history.ts"), "utf8");
@@ -1246,5 +1252,30 @@ assert.match(pkgJson, /mode-a-acceptance/);
 assert.match(fs.readFileSync(join(root, "lib/jobIntents.ts"), "utf8"), /JOB_INTENTS/);
 assert.match(fs.readFileSync(join(root, "components/JobIntentBar.tsx"), "utf8"), /What are you making/);
 assert.match(createStudio, /JobIntentBar|ActivationChecklist/);
+
+// Five-step toy identity + delivery honesty + landing assetId + workflows
+const toyIdSrc = fs.readFileSync(join(root, "lib/toyIdentity.ts"), "utf8");
+assert.match(toyIdSrc, /composeExtraWithIdentity/);
+assert.match(toyIdSrc, /sanitizeToyIdentity|ToyIdentity/);
+const deliverySrc = fs.readFileSync(join(root, "lib/deliveryPack.ts"), "utf8");
+assert.match(deliverySrc, /deliveryItemsForJob/);
+assert.match(deliverySrc, /downloadAllowed|T6/);
+assert.match(createStudio, /composeExtraWithIdentity|toyIdentity/);
+assert.match(createStudio, /deliveryItemsForJob/);
+assert.match(createStudio, /Same photo · next job|generateForJob/);
+const landingToolPanel = fs.readFileSync(
+  join(root, "components/LandingToolPanel.tsx"),
+  "utf8"
+);
+assert.match(landingToolPanel, /registerLocalAsset|assetId/);
+assert.match(landingToolPanel, /deliveryItemsForJob/);
+assert.match(
+  fs.readFileSync(join(root, "lib/workflows.ts"), "utf8"),
+  /listCreateShelfWorkflows|Workflow/
+);
+assert.match(createStudio, /WorkflowShelf/);
+assert.match(historySrcLib, /sku\?:/);
+assert.match(library, /i\.sku|sku/);
+
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

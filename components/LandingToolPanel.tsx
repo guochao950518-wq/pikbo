@@ -24,6 +24,7 @@ import {
   canDownloadResult,
   freeLiveDownloadBlockReason,
 } from "@/lib/createTrust";
+import { deliveryItemsForJob } from "@/lib/deliveryPack";
 
 type Status = "idle" | "generating" | "done" | "error";
 
@@ -43,6 +44,8 @@ export function LandingToolPanel({
   aspectRatio?: string;
 }) {
   const [image, setImage] = useState<string | null>(null);
+  /** Phase D local asset — avoid re-posting large Base64 on generate. */
+  const [assetId, setAssetId] = useState<string | null>(null);
   const [status, setStatus] = useState<Status>("idle");
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -77,10 +80,10 @@ export function LandingToolPanel({
         if (pending?.startsWith("http") || pending?.startsWith("data:")) {
           sessionStorage.removeItem("pikbo_pending_still");
           if (pending.startsWith("data:")) {
-            setImage(pending);
+            void adoptImage(pending);
           } else {
             sampleToDataUrl(pending)
-              .then((data) => setImage(data))
+              .then((data) => void adoptImage(data))
               .catch(() => undefined);
           }
         }
@@ -100,6 +103,21 @@ export function LandingToolPanel({
     return () => window.clearInterval(id);
   }, [status]);
 
+  async function adoptImage(dataUrl: string) {
+    setImage(dataUrl);
+    setAssetId(null);
+    setError(null);
+    setVideoUrl(null);
+    setStatus("idle");
+    try {
+      const { registerLocalAsset } = await import("@/lib/clientAssets");
+      const reg = await registerLocalAsset(dataUrl);
+      if (reg?.assetId) setAssetId(reg.assetId);
+    } catch {
+      /* generate still works with inline data URL */
+    }
+  }
+
   function loadFile(file: File | undefined | null) {
     if (!file || !file.type.startsWith("image/")) {
       setError("Please drop a PNG or JPG of your toy.");
@@ -111,10 +129,7 @@ export function LandingToolPanel({
     }
     const reader = new FileReader();
     reader.onload = () => {
-      setImage(reader.result as string);
-      setError(null);
-      setVideoUrl(null);
-      setStatus("idle");
+      void adoptImage(reader.result as string);
     };
     reader.readAsDataURL(file);
   }
@@ -124,9 +139,7 @@ export function LandingToolPanel({
     setError(null);
     try {
       const data = await sampleToDataUrl(path);
-      setImage(data);
-      setVideoUrl(null);
-      setStatus("idle");
+      await adoptImage(data);
     } catch {
       setError("Could not load sample photo");
     } finally {
@@ -151,9 +164,11 @@ export function LandingToolPanel({
     setRequestId(null);
     setElapsed(0);
     setStatus("generating");
+    const useAsset = Boolean(assetId);
     const result = await postGenerate({
       effect: effectSlug,
-      image,
+      image: useAsset ? undefined : image,
+      assetId: useAsset && assetId ? assetId : undefined,
       duration,
       aspectRatio,
       resolution,
@@ -496,12 +511,40 @@ export function LandingToolPanel({
                   Regenerate
                 </button>
                 <Link
+                  href={`/create?effect=${encodeURIComponent(effectSlug)}`}
+                  className="btn btn-ghost px-3 py-1.5 text-xs"
+                >
+                  Same photo · full Studio
+                </Link>
+                <Link
                   href="/library"
                   className="btn btn-ghost px-3 py-1.5 text-xs"
                 >
                   Library
                 </Link>
               </div>
+              {/* First-principles delivery steps (honest Free download). */}
+              <ul className="mx-auto mt-3 max-w-sm space-y-1 text-left text-[10px] text-[var(--fg-dim)]">
+                {deliveryItemsForJob(null, { demo, downloadAllowed }).map(
+                  (item) => (
+                    <li key={item.id} className="flex gap-1.5">
+                      <span className="text-[var(--mint)]" aria-hidden>
+                        ○
+                      </span>
+                      {item.href ? (
+                        <Link
+                          href={item.href}
+                          className="text-[var(--mint)] hover:underline"
+                        >
+                          {item.label}
+                        </Link>
+                      ) : (
+                        <span>{item.label}</span>
+                      )}
+                    </li>
+                  )
+                )}
+              </ul>
               {!downloadAllowed ? (
                 <p className="mt-2 text-center text-[10px] leading-snug text-amber-100/80">
                   {freeLiveDownloadBlockReason()}

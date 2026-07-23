@@ -24,6 +24,8 @@ export type HistoryItem = {
   sourceProject?: string;
   /** Remix channel hint (etsy / reels / …) */
   channel?: string;
+  /** Optional Toy Identity SKU label from Create (device-local only). */
+  sku?: string;
   status?: "succeeded";
   creditStatus?: "0 cached" | "10 used";
   createdAt: string;
@@ -70,6 +72,7 @@ function normalizeItem(raw: unknown): HistoryItem | null {
     projectId: typeof o.projectId === "string" ? o.projectId : undefined,
     projectName:
       typeof o.projectName === "string" ? o.projectName : undefined,
+    sku: typeof o.sku === "string" && o.sku.trim() ? o.sku.trim().slice(0, 48) : undefined,
     inputImage:
       typeof o.inputImage === "string" &&
       (o.inputImage.startsWith("data:image/") || o.inputImage.startsWith("/"))

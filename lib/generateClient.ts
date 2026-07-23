@@ -181,6 +181,8 @@ export function historyFieldsFromSuccess(
     projectId?: string;
     projectName?: string;
     inputImage?: string;
+    /** Optional Toy Identity SKU for Library grouping/filter. */
+    sku?: string;
   }
 ): Omit<HistoryItem, "id" | "createdAt"> {
   return {
@@ -188,6 +190,7 @@ export function historyFieldsFromSuccess(
     projectId: meta.projectId,
     projectName: meta.projectName,
     inputImage: meta.inputImage,
+    sku: meta.sku,
     effect: meta.effect,
     effectName: meta.effectName,
     model: data.model,

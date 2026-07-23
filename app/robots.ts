@@ -17,7 +17,7 @@ export default function robots(): MetadataRoute.Robots {
         // Preview / device-local studios (Phase H — not soft-launch primary)
         "/cinema",
         "/image",
-        "/apps",
+        // /apps is a live workflow shelf (job deep-links) — indexable
         "/models",
         "/flow",
         "/supercomputer",

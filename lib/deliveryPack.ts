@@ -18,18 +18,22 @@ export type DeliveryItem = {
 /**
  * Static next steps after a successful clip.
  * Job-aware copy only — no fake "posted" tracking.
+ * Download label stays honest for Free live raw (T6).
  */
 export function deliveryItemsForJob(
   jobId: JobIntentId | null | undefined,
-  opts?: { demo?: boolean }
+  opts?: { demo?: boolean; downloadAllowed?: boolean }
 ): DeliveryItem[] {
   const demo = Boolean(opts?.demo);
+  const downloadAllowed = opts?.downloadAllowed !== false;
   const items: DeliveryItem[] = [
     {
       id: "download",
       label: demo
         ? "Label is clear: this is a Lab demo — run Live for your photo"
-        : "Download the MP4 (or copy link)",
+        : downloadAllowed
+          ? "Download the MP4 (or copy link)"
+          : "Download blocked · Free live raw (T6 file watermark pending)",
     },
   ];
 
