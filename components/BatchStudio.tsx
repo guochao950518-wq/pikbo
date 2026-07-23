@@ -1,16 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   historyFieldsFromSuccess,
   postGenerateWithRetry,
+  sleep,
 } from "@/lib/generateClient";
 import { pushHistory } from "@/lib/history";
 import { CATEGORIES, PRESETS, type CategoryId } from "@/lib/presets";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
 import { isValidImageDataUrl } from "@/lib/providerError";
 import { SAMPLE_TOYS, sampleToDataUrl } from "@/lib/samples";
+import type { PublicSession } from "@/lib/session";
 import { emitSessionRefresh } from "@/lib/sessionEvents";
 
 type Job = {
@@ -19,6 +21,12 @@ type Job = {
   status: "queued" | "running" | "done" | "error";
   error?: string;
   videoUrl?: string;
+  demo?: boolean;
+  model?: string;
+};
+
+type MePayload = PublicSession & {
+  mode?: "live-generate" | "demo-cached" | string;
 };
 
 /**
@@ -60,8 +68,25 @@ export function BatchStudio({
   );
   const [duration, setDuration] = useState<5 | 10>(5);
   const [catFilter, setCatFilter] = useState<CategoryId | "all">("all");
+  const [me, setMe] = useState<MePayload | null>(null);
 
-  const cost = selected.length * CREDITS_PER_VIDEO;
+  useEffect(() => {
+    const t = window.setTimeout(() => {
+      fetch("/api/me")
+        .then((r) => r.json())
+        .then((d: MePayload) => setMe(d))
+        .catch(() => setMe(null));
+    }, 0);
+    return () => window.clearTimeout(t);
+  }, []);
+
+  const isFree = me?.plan === "free" || me?.watermark === true;
+  const demoMode = me?.mode === "demo-cached";
+  /** Server free tier hard-locks 5s / 480p Mini; keep UI honest. */
+  const effectiveDuration = isFree ? 5 : duration;
+  const effectiveResolution = isFree ? "480p" : "720p";
+  const effectiveModel = isFree ? "seedance-mini" : "seedance-fast";
+  const cost = demoMode ? 0 : selected.length * CREDITS_PER_VIDEO;
 
   const visiblePresets = useMemo(() => {
     if (catFilter === "all") return PRESETS;
@@ -138,9 +163,10 @@ export function BatchStudio({
         {
           effect: queue[i].slug,
           image,
-          duration,
+          duration: effectiveDuration,
           aspectRatio,
-          model: "seedance-fast",
+          model: effectiveModel,
+          resolution: effectiveResolution,
         },
         { maxRetries: 2 }
       );
@@ -153,7 +179,12 @@ export function BatchStudio({
               : j
           )
         );
-        if (result.session) emitSessionRefresh();
+        if (result.session) {
+          setMe((prev) =>
+            prev ? { ...prev, ...result.session } : (result.session as MePayload)
+          );
+          emitSessionRefresh();
+        }
         if (result.fatal || result.paywall) {
           setError(result.error);
           // Leave remaining jobs queued so the user sees what did not run.
@@ -163,12 +194,18 @@ export function BatchStudio({
       }
 
       const data = result.data;
+      if (data.session) {
+        setMe((prev) =>
+          prev ? { ...prev, ...data.session } : (data.session as MePayload)
+        );
+      }
       pushHistory(
         historyFieldsFromSuccess(data, {
           effect: queue[i].slug,
           effectName: queue[i].name,
-          fallbackDuration: duration,
+          fallbackDuration: effectiveDuration,
           fallbackAspect: aspectRatio,
+          fallbackResolution: effectiveResolution,
         })
       );
       setJobs((prev) =>
@@ -178,11 +215,15 @@ export function BatchStudio({
                 ...j,
                 status: "done",
                 videoUrl: data.videoUrl,
+                demo: data.demo,
+                model: data.model,
               }
             : j
         )
       );
       emitSessionRefresh();
+      // Soft gap so sequential batch stays under session/IP soft limits.
+      if (i < queue.length - 1) await sleep(400);
     }
     setRunning(false);
   }
@@ -251,17 +292,23 @@ export function BatchStudio({
                 <button
                   key={d}
                   type="button"
+                  disabled={isFree && d === 10}
                   onClick={() => setDuration(d)}
-                  className={`flex-1 rounded-lg border py-1.5 text-xs font-semibold ${
-                    duration === d
+                  className={`flex-1 rounded-lg border py-1.5 text-xs font-semibold disabled:opacity-40 ${
+                    effectiveDuration === d
                       ? "border-[var(--brand)]"
                       : "border-[var(--border)] text-[var(--fg-muted)]"
                   }`}
                 >
-                  {d}s
+                  {d}s{isFree && d === 10 ? " · paid" : ""}
                 </button>
               ))}
             </div>
+            {isFree && (
+              <p className="mt-1 text-[10px] text-[var(--fg-dim)]">
+                Free · Mini · 480p · 5s (server-enforced)
+              </p>
+            )}
           </div>
           <div>
             <p className="text-[10px] font-semibold text-[var(--fg-dim)]">
@@ -370,11 +417,19 @@ export function BatchStudio({
         >
           {running
             ? `Batch running… ${doneCount}/${jobs.length}`
-            : `Run batch · ${selected.length} clips · ~${cost} credits`}
+            : demoMode
+              ? `Run batch · ${selected.length} clips · cached demos free`
+              : `Run batch · ${selected.length} clips · ~${cost} credits · ${effectiveModel} · ${effectiveResolution}`}
         </button>
         {error && <p className="text-sm text-[var(--brand)]">{error}</p>}
         <p className="text-[11px] text-[var(--fg-dim)]">
-          Sequential jobs use the same generate API. Finished clips land in{" "}
+          Sequential jobs use the same generate API
+          {demoMode
+            ? " (demo-cached · 0 credits)"
+            : isFree
+              ? " (Free Mini 480p 5s)"
+              : " (paid Fast 720p path)"}
+          . Finished clips land in{" "}
           <Link href="/library" className="text-[var(--brand)] hover:underline">
             Library
           </Link>
@@ -431,12 +486,24 @@ export function BatchStudio({
               />
             )}
             {j.status === "done" && (
-              <Link
-                href={`/effects/${j.slug}`}
-                className="mt-1 inline-block text-[10px] text-[var(--mint)] hover:underline"
-              >
-                Effect page →
-              </Link>
+              <div className="mt-1 flex flex-wrap items-center gap-2">
+                {j.demo && (
+                  <span className="text-[10px] font-bold uppercase text-[var(--fg-dim)]">
+                    cached demo
+                  </span>
+                )}
+                {j.model && (
+                  <span className="text-[10px] text-[var(--fg-dim)]">
+                    {j.model.split("/").pop()}
+                  </span>
+                )}
+                <Link
+                  href={`/effects/${j.slug}`}
+                  className="text-[10px] text-[var(--mint)] hover:underline"
+                >
+                  Effect page →
+                </Link>
+              </div>
             )}
           </div>
         ))}

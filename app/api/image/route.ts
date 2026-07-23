@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { fal } from "@fal-ai/client";
-import { deductCredits, refundCredits } from "@/lib/credits";
+import { checkCredits, deductCredits, refundCredits } from "@/lib/credits";
 import { IMAGE_MODEL } from "@/lib/models";
-import { CREDITS_PER_VIDEO } from "@/lib/pricing";
 import {
   classifyProviderError,
   providerErrorMessage,
@@ -17,9 +16,6 @@ import { ensureSession, publicSession, saveSession } from "@/lib/session";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
-
-/** Image generations cost same credit unit as a short clip for simplicity. */
-const COST = CREDITS_PER_VIDEO;
 
 export async function POST(req: Request) {
   let body: { prompt?: string; aspect?: string };
@@ -91,7 +87,8 @@ export async function POST(req: Request) {
       });
     }
 
-    if (session.credits < COST) {
+    const check = checkCredits(session);
+    if (!check.ok) {
       return NextResponse.json(
         {
           error:
@@ -99,13 +96,15 @@ export async function POST(req: Request) {
               ? "Free trial used up — upgrade on Pricing, or wait for monthly refresh"
               : "Not enough credits",
           code: "INSUFFICIENT_CREDITS",
+          need: check.need,
+          have: check.have,
           session: publicSession(session),
         },
         { status: 402 }
       );
     }
 
-    session = deductCredits(session, COST);
+    session = deductCredits(session, check.cost);
     await saveSession(session);
 
     try {
@@ -134,7 +133,7 @@ export async function POST(req: Request) {
       };
       const imageUrl = data.images?.[0]?.url || data.image?.url;
       if (!imageUrl) {
-        session = refundCredits(session, COST);
+        session = refundCredits(session, check.cost);
         await saveSession(session);
         return NextResponse.json(
           {
@@ -154,7 +153,7 @@ export async function POST(req: Request) {
       });
     } catch (err) {
       console.error("image gen error:", err);
-      session = refundCredits(session, COST);
+      session = refundCredits(session, check.cost);
       await saveSession(session);
       const raw =
         err && typeof err === "object" && "body" in err

@@ -124,8 +124,14 @@ async function handleInvoicePaid(obj: StripeObject) {
   // First invoice is usually covered by checkout.session.completed
   if (billingReason === "subscription_create") return;
 
+  const invoiceId = typeof obj.id === "string" ? obj.id : undefined;
   const existing = await findByStripeCustomer(customer);
   if (!existing || existing.status === "canceled") return;
+
+  // Stripe can redeliver the same invoice.paid event — don't double-fill credits.
+  if (invoiceId && existing.lastInvoiceId === invoiceId) {
+    return;
+  }
 
   const plan = existing.plan === "free" ? "creator" : existing.plan;
   await upsertEntitlement({
@@ -133,6 +139,7 @@ async function handleInvoicePaid(obj: StripeObject) {
     plan,
     credits: creditsForPlan(plan),
     periodKey: currentPeriodKey(),
+    lastInvoiceId: invoiceId || existing.lastInvoiceId,
     status: "active",
     updatedAt: new Date().toISOString(),
   });

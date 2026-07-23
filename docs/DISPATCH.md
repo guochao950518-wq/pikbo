@@ -16,6 +16,7 @@
 | Grok engine | cached demo = 0 credits · entitlements probe · health.ready.paid gated |
 | Grok engine | softLive: IP rate limit + inflight lock + me.mode + checklist |
 | Grok engine | promptBuild + library aging + checkout RL |
+| Grok engine | batch free-tier honesty + invoice idempotency |
 
 ---
 

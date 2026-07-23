@@ -154,5 +154,15 @@ assert.match(pb, /MAX_EXTRA_CHARS/);
 const hist = fs.readFileSync(join(root, "lib/history.ts"), "utf8");
 assert.match(hist, /remoteClipMayExpire/);
 
+assert.match(ent, /lastInvoiceId/);
+const wh = fs.readFileSync(join(root, "app/api/webhooks/stripe/route.ts"), "utf8");
+assert.match(wh, /lastInvoiceId/);
+assert.match(wh, /double-fill|redeliver/i);
+
+const batch = fs.readFileSync(join(root, "components/BatchStudio.tsx"), "utf8");
+assert.match(batch, /effectiveModel/);
+assert.match(batch, /seedance-mini/);
+assert.match(batch, /effectiveResolution/);
+
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

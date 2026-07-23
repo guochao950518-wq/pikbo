@@ -31,6 +31,8 @@ need "/api/me"
 
 curl --noproxy '*' -sS -m 10 "${BASE}/api/health" | tee /tmp/pikbo-health.json
 echo
+curl --noproxy '*' -sS -m 10 "${BASE}/api/me" | tee /tmp/pikbo-me.json
+echo
 
 if command -v python3 >/dev/null 2>&1; then
   python3 - <<'PY'
@@ -45,6 +47,11 @@ if not h.get("ok") and h.get("degraded"):
     raise SystemExit("health degraded")
 if ready.get("demo") is not True:
     raise SystemExit("health.ready.demo missing")
+me=json.load(open("/tmp/pikbo-me.json"))
+assert "credits" in me and "plan" in me
+assert me.get("mode") in ("live-generate", "demo-cached")
+assert me.get("cachedDemoFree") is True
+print(f"me plan={me.get('plan')} mode={me.get('mode')} credits={me.get('credits')}")
 PY
 fi
 
