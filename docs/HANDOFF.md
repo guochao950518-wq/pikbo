@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [gpt] soft-launch product, credits, and Generate contracts (P1–P3)
+- Paths: `docs/prd/SOFT_LAUNCH.md`, `docs/business/CREDITS_AND_PLANS.md`, and `docs/api/GENERATE.md`.
+- Decision: invite-only cached/free Mini validation may proceed; real Stripe remains blocked until durable identity, transactional credits, idempotent billing, media protection, and operational gates pass.
+- Pricing truth: Free 10 credits ≈ 1 Mini 5s 480p trial; Creator 50 ≈ 5; Shop 150 ≈ 15; cached demo playback costs 0 credits.
+- API truth: current `/api/generate` is synchronous, Cookie-session based, flat 10 credits for live calls, refund-on-provider-failure, and returns a clearly distinguishable cached demo without `FAL_KEY`.
+- Engineering handoff: Claude should implement only the documented soft-launch UI gaps after merge; no plan or endpoint semantics were changed in this docs-only delivery.
+
 ### 2026-07-23 — [gpt] wave2 Lab / Effects / empty-state honesty (T32)
 - Paths: Community, Explore, Effects SEO/structured copy, Lab feed provenance, onboarding, trust, Library empty states, and homepage recipe CTAs.
 - Provenance: cached media says Cached Lab; reused loops say Concept · shared loop; concept cards no longer read as Official UGC or offer a misleading Remake action.
