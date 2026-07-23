@@ -2,9 +2,9 @@ export const site = {
   name: "Pikbo",
   domain: "pikbo.ai",
   url: "https://pikbo.ai",
-  tagline: "Bring your designer toys to life",
+  tagline: "One photo of a toy you own → a clip you can post",
   description:
-    "Pikbo is a Seedance-ready AI video workflow for designer toys, figures, and blind boxes. Upload an owned toy photo, choose a recipe, and create listing or social-video variants when live generation is enabled.",
+    "Turn one photo of a designer toy, figure, or blind box you own into a 5-second clip for TikTok, Etsy, or Whatnot. Free Mini trial. No card. Failed live jobs refund credits.",
   keyword: "designer toy video maker",
   twitter: "@pikbo_ai",
 } as const;

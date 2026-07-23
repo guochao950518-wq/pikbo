@@ -23,21 +23,61 @@ type Job = {
   videoUrl?: string;
   demo?: boolean;
   model?: string;
+  aspectRatio?: "9:16" | "1:1" | "16:9";
 };
+
+/** SELLER_PACK PRD v1 — three fixed outputs, not arbitrary batch. */
+export const SELLER_PACK_ITEMS = [
+  {
+    key: "listing_spin",
+    slug: "360-spin-showcase",
+    label: "Listing Spin",
+    channel: "Marketplace gallery",
+    aspectRatio: "1:1" as const,
+  },
+  {
+    key: "blind_box_reveal",
+    slug: "blind-box-unboxing",
+    label: "Blind-box Reveal",
+    channel: "Launch / restock",
+    aspectRatio: "9:16" as const,
+  },
+  {
+    key: "social_flash",
+    slug: "paparazzi-flash",
+    label: "Social Flash",
+    channel: "TikTok / Reels / Shorts",
+    aspectRatio: "9:16" as const,
+  },
+] as const;
+
+export const SELLER_PACK_SLUGS = SELLER_PACK_ITEMS.map((i) => i.slug);
+
+function selectedMatchesSellerPack(slugs: string[]): boolean {
+  if (slugs.length !== SELLER_PACK_SLUGS.length) return false;
+  const set = new Set(slugs);
+  return SELLER_PACK_SLUGS.every((s) => set.has(s));
+}
 
 /**
  * Shop-style batch: one toy photo → several presets in sequence.
- * Supports ?effects=slug1,slug2 from effect landings.
+ * Supports ?effects=slug1,slug2 and ?pack=seller (Seller Pack MVP).
  */
 export function BatchStudio({
   initialEffects,
+  pack,
 }: {
   initialEffects?: string[];
+  /** Named pack from SELLER_PACK PRD — freezes the three seller outputs. */
+  pack?: "seller" | string;
 }) {
+  const isSellerPack = pack === "seller";
+
   const validInitial = useMemo(() => {
+    if (isSellerPack) return [...SELLER_PACK_SLUGS];
     if (!initialEffects?.length) return null;
     return initialEffects.filter((s) => PRESETS.some((p) => p.slug === s));
-  }, [initialEffects]);
+  }, [initialEffects, isSellerPack]);
 
   const defaults = useMemo(
     () =>
@@ -46,9 +86,8 @@ export function BatchStudio({
         : PRESETS.filter((p) =>
             [
               "360-spin-showcase",
-              "floating-hero",
               "blind-box-unboxing",
-              "display-case-glam",
+              "paparazzi-flash",
             ].includes(p.slug)
           ).map((p) => p.slug),
     [validInitial]
@@ -81,11 +120,18 @@ export function BatchStudio({
   const effectiveResolution = isFree ? "480p" : "720p";
   const effectiveModel = isFree ? "seedance-mini" : "seedance-fast";
   const cost = demoMode ? 0 : selected.length * CREDITS_PER_VIDEO;
+  /** Label only when the frozen trio is selected (PRD: custom batch loses Seller Pack name). */
+  const sellerPackActive = selectedMatchesSellerPack(selected);
 
   const visiblePresets = useMemo(() => {
+    if (sellerPackActive) {
+      return SELLER_PACK_SLUGS.map(
+        (slug) => PRESETS.find((p) => p.slug === slug)!
+      ).filter(Boolean);
+    }
     if (catFilter === "all") return PRESETS;
     return PRESETS.filter((p) => p.category === catFilter);
-  }, [catFilter]);
+  }, [catFilter, sellerPackActive]);
 
   function loadFile(file: File | undefined | null) {
     if (!file?.type.startsWith("image/")) {
@@ -118,17 +164,16 @@ export function BatchStudio({
   }
 
   function selectSellerPack() {
-    setSelected(
-      PRESETS.filter((p) =>
-        [
-          "360-spin-showcase",
-          "floating-hero",
-          "blind-box-unboxing",
-          "display-case-glam",
-        ].includes(p.slug)
-      ).map((p) => p.slug)
-    );
+    setSelected([...SELLER_PACK_SLUGS]);
     setCatFilter("all");
+  }
+
+  function aspectForSlug(slug: string): "9:16" | "1:1" | "16:9" {
+    if (sellerPackActive) {
+      const item = SELLER_PACK_ITEMS.find((i) => i.slug === slug);
+      if (item) return item.aspectRatio;
+    }
+    return aspectRatio;
   }
 
   async function runBatch() {
@@ -149,7 +194,13 @@ export function BatchStudio({
     setRunning(true);
     const queue: Job[] = selected.map((slug) => {
       const p = PRESETS.find((x) => x.slug === slug)!;
-      return { slug, name: p.name, status: "queued" };
+      const packItem = SELLER_PACK_ITEMS.find((i) => i.slug === slug);
+      return {
+        slug,
+        name: sellerPackActive && packItem ? packItem.label : p.name,
+        status: "queued" as const,
+        aspectRatio: aspectForSlug(slug),
+      };
     });
     setJobs(queue);
 
@@ -157,12 +208,13 @@ export function BatchStudio({
       setJobs((prev) =>
         prev.map((j, idx) => (idx === i ? { ...j, status: "running" } : j))
       );
+      const jobAspect = queue[i].aspectRatio ?? aspectRatio;
       const result = await postGenerateWithRetry(
         {
           effect: queue[i].slug,
           image,
           duration: effectiveDuration,
-          aspectRatio,
+          aspectRatio: jobAspect,
           model: effectiveModel,
           resolution: effectiveResolution,
           ownsRights: true,
@@ -207,7 +259,7 @@ export function BatchStudio({
           effect: queue[i].slug,
           effectName: queue[i].name,
           fallbackDuration: effectiveDuration,
-          fallbackAspect: aspectRatio,
+          fallbackAspect: jobAspect,
           fallbackResolution: effectiveResolution,
         })
       );
@@ -236,6 +288,26 @@ export function BatchStudio({
   return (
     <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_1.1fr]">
       <div className="space-y-4">
+        {sellerPackActive && (
+          <div className="rounded-xl border border-[var(--mint)]/30 bg-[var(--mint)]/[0.06] px-3 py-2.5 text-xs text-[var(--fg-muted)]">
+            <p className="font-bold text-[var(--mint)]">
+              Seller Pack · 3 outputs
+            </p>
+            <p className="mt-1 leading-relaxed">
+              Listing Spin (1:1) · Blind-box Reveal (9:16) · Social Flash (9:16).
+              {demoMode
+                ? " Cached demos · 0 credits · upload not rendered."
+                : ` Live quote ${selected.length * CREDITS_PER_VIDEO} credits · failed children refund.`}
+            </p>
+            <ul className="mt-2 space-y-0.5 text-[10px] text-[var(--fg-dim)]">
+              {SELLER_PACK_ITEMS.map((item) => (
+                <li key={item.key}>
+                  {item.label} → {item.channel}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         <label
           className="flex aspect-video cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--border)] bg-[var(--bg-soft)]"
           onDragOver={(e) => e.preventDefault()}
@@ -345,9 +417,13 @@ export function BatchStudio({
               <button
                 type="button"
                 onClick={selectSellerPack}
-                className="rounded-md border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--mint)] hover:border-[var(--mint)]"
+                className={`rounded-md border px-2 py-0.5 text-[10px] ${
+                  sellerPackActive
+                    ? "border-[var(--mint)] bg-[var(--mint)]/10 text-[var(--mint)]"
+                    : "border-[var(--border)] text-[var(--mint)] hover:border-[var(--mint)]"
+                }`}
               >
-                Seller pack (4)
+                Seller Pack · 3
               </button>
               <button
                 type="button"
@@ -432,10 +508,10 @@ export function BatchStudio({
           className="btn btn-primary w-full disabled:opacity-50"
         >
           {running
-            ? `Batch running… ${doneCount}/${jobs.length}`
+            ? `${sellerPackActive ? "Seller Pack" : "Batch"} running… ${doneCount}/${jobs.length}`
             : demoMode
-              ? `Run batch · ${selected.length} clips · cached demos free`
-              : `Run batch · ${selected.length} clips · ~${cost} credits · ${effectiveModel} · ${effectiveResolution}`}
+              ? `${sellerPackActive ? "Preview Seller Pack" : "Run batch"} · ${selected.length} · cached demos free`
+              : `${sellerPackActive ? "Run Seller Pack" : "Run batch"} · ${selected.length} · ${cost} credits`}
         </button>
         {error && <p className="text-sm text-[var(--brand)]">{error}</p>}
         <p className="text-[11px] text-[var(--fg-dim)]">

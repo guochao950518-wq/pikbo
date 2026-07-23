@@ -16,7 +16,6 @@ import { viralName } from "@/lib/viralNames";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
 import { site } from "@/lib/site";
 import { useToast } from "@/components/Toast";
-import { useI18n } from "@/components/LanguageProvider";
 import { PaywallCard } from "@/components/PaywallCard";
 import { emitSessionRefresh } from "@/lib/sessionEvents";
 import {
@@ -65,7 +64,9 @@ export function CreateStudio({
 }) {
   const bootPreset =
     PRESETS.find((p) => p.slug === initialEffect) ?? PRESETS[0];
-  const [mode, setMode] = useState<Mode>(initialMode ?? "i2v");
+  // Soft launch is photo → video only (no Text→Video / multi-model theater).
+  const mode: Mode = "i2v";
+  void initialMode;
   const [modelId, setModelId] = useState<(typeof MODELS)[number]["id"]>(() => {
     if (initialModel === "seedance-mini") return "seedance-mini";
     if (initialModel === "seedance-fast") return "seedance-fast";
@@ -108,13 +109,15 @@ export function CreateStudio({
   const [showUnknownNotice, setShowUnknownNotice] = useState(
     requestedUnknownEffect
   );
-  const [recent, setRecent] = useState<string[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [compare, setCompare] = useState(true);
   const [resolution, setResolution] = useState<"480p" | "720p">("720p");
   const [seed, setSeed] = useState<string>("");
+  /** Collapsed by default — soft launch is photo → recipe → one generate. */
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  /** Last failed live job restored credits (PRD §5 / W5 trust). */
+  const [lastRefunded, setLastRefunded] = useState(false);
   const toast = useToast();
-  const { t } = useI18n();
 
   const preset = useMemo(
     () => PRESETS.find((p) => p.slug === effect)!,
@@ -153,12 +156,6 @@ export function CreateStudio({
 
   useEffect(() => {
     const t = window.setTimeout(() => {
-      try {
-        const raw = localStorage.getItem("pikbo_recent_effects");
-        if (raw) setRecent(JSON.parse(raw) as string[]);
-      } catch {
-        // ignore
-      }
       setFavorites(loadFavorites());
       // optional still from Image studio
       try {
@@ -189,15 +186,14 @@ export function CreateStudio({
   }, [status]);
 
   function rememberEffect(slug: string) {
-    setRecent((prev) => {
+    try {
+      const raw = localStorage.getItem("pikbo_recent_effects");
+      const prev = raw ? (JSON.parse(raw) as string[]) : [];
       const next = [slug, ...prev.filter((s) => s !== slug)].slice(0, 6);
-      try {
-        localStorage.setItem("pikbo_recent_effects", JSON.stringify(next));
-      } catch {
-        // ignore
-      }
-      return next;
-    });
+      localStorage.setItem("pikbo_recent_effects", JSON.stringify(next));
+    } catch {
+      // ignore
+    }
   }
 
   const refreshSession = useCallback(async () => {
@@ -281,13 +277,6 @@ export function CreateStudio({
   const effectiveDuration = isFree ? 5 : duration;
 
   async function generate() {
-    if (mode === "t2v") {
-      setError(
-        "Text→Video is on the roadmap. Photo → video is the product core — upload a toy still."
-      );
-      setMode("i2v");
-      return;
-    }
     if (!image || !isValidImageDataUrl(image)) {
       setError(
         "Upload a reference image first (JPEG, PNG, WebP, or GIF · image-to-video)."
@@ -306,6 +295,7 @@ export function CreateStudio({
     // Live path enforces credits server-side and returns 402 / paywall.
 
     setError(null);
+    setLastRefunded(false);
     setVideoUrl(null);
     setShowPaywall(false);
     setElapsed(0);
@@ -334,6 +324,7 @@ export function CreateStudio({
         );
       }
       if (result.paywall) setShowPaywall(true);
+      setLastRefunded(Boolean(result.creditsRefunded));
       setError(
         result.error ||
           (result.paywall
@@ -409,20 +400,45 @@ export function CreateStudio({
   }
 
   const busy = status === "generating" || status === "uploading";
+  const canGenerate =
+    !busy && mode === "i2v" && Boolean(image) && ownsRights;
+  const primaryLabel = busy
+    ? "Generating…"
+    : !image
+      ? "Add a toy photo first"
+      : !ownsRights
+        ? "Confirm ownership to continue"
+        : demoMode
+          ? "Generate · free cached demo"
+          : !canAfford
+            ? `Needs ${CREDITS_PER_VIDEO} credits`
+            : isFree
+              ? `Generate Mini trial · ${CREDITS_PER_VIDEO} credits`
+              : `Generate · ${CREDITS_PER_VIDEO} credits`;
+
+  // Path clarity for mobile: 1 photo → 2 recipe → 3 run → 4 result
+  const pathStep: 1 | 2 | 3 | 4 =
+    status === "done" && videoUrl
+      ? 4
+      : status === "generating"
+        ? 3
+        : image
+          ? 2
+          : 1;
 
   // Cmd/Ctrl + Enter to generate
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
         e.preventDefault();
-        if (!busy) void generate();
+        if (canGenerate) void generate();
       }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    busy,
+    canGenerate,
     image,
     effect,
     effectiveDuration,
@@ -433,105 +449,132 @@ export function CreateStudio({
     session,
     seed,
     resolution,
+    ownsRights,
   ]);
 
+  const featuredPresets = useMemo(() => {
+    const heroes = [
+      "360-spin-showcase",
+      "blind-box-unboxing",
+      "paparazzi-flash",
+      "make-figure-dance",
+      "floating-hero",
+      "display-case-glam",
+      "miniature-scene",
+      "power-aura",
+    ];
+    const ordered = heroes
+      .map((slug) => PRESETS.find((p) => p.slug === slug))
+      .filter(Boolean) as typeof PRESETS;
+    const rest = filteredPresets.filter(
+      (p) => !heroes.includes(p.slug)
+    );
+    return presetFilter.trim() ? filteredPresets : [...ordered, ...rest];
+  }, [filteredPresets, presetFilter]);
+
   return (
-    <div className="flex h-full min-h-[calc(100vh-3.5rem)] flex-col lg:min-h-screen">
-      {/* Top toolbar — model / mode like big AI apps */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-[var(--border)] bg-[var(--bg-soft)] px-4 py-3">
-        <div className="flex rounded-full border border-[var(--border)] p-0.5 text-xs">
-          <button
-            type="button"
-            onClick={() => setMode("i2v")}
-            className={`rounded-full px-3 py-1.5 font-semibold ${
-              mode === "i2v"
-                ? "bg-[var(--card)] text-[var(--fg)]"
-                : "text-[var(--fg-dim)]"
-            }`}
-          >
-            Image → Video
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setMode("t2v");
-              toast("Text→Video is next — toy photo → Seedance is the supported workflow");
-            }}
-            className={`rounded-full px-3 py-1.5 font-semibold ${
-              mode === "t2v"
-                ? "bg-[var(--card)] text-[var(--fg)]"
-                : "text-[var(--fg-dim)]"
-            }`}
-            title="Roadmap — photo-first is the supported path"
-          >
-            Text → Video
-            <span className="ml-1 text-[9px] font-normal opacity-70">soon</span>
-          </button>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="hidden text-[10px] font-bold uppercase tracking-wider text-[var(--fg-dim)] sm:inline">
-            Model
-          </span>
-          {MODELS.map((m) => {
-            const lockedPaid = Boolean(isFree && !m.free);
-            const active = modelId === m.id;
-            return (
-              <button
-                key={m.id}
-                type="button"
-                onClick={() => {
-                  if (lockedPaid) {
-                    setShowPaywall(true);
-                    setError("Paid models are locked — Free live jobs use Seedance Mini at 480p.");
-                    setModelId("seedance-mini");
-                    return;
-                  }
-                  setModelId(m.id);
-                }}
-                className={`rounded-full border px-3.5 py-1.5 text-left text-xs transition-colors ${
-                  active
-                    ? "border-[var(--mint)] bg-[var(--mint)]/15 text-[var(--mint)] ring-1 ring-[var(--mint)]/40"
-                    : "border-[var(--border)] bg-[var(--card)] text-[var(--fg)] hover:border-[var(--fg-dim)]"
-                } ${lockedPaid ? "opacity-70" : ""}`}
-              >
-                <span className="font-semibold">
-                  {m.label}
-                  {lockedPaid ? " · paid" : m.free ? " · free" : ""}
-                </span>
-                <span className="ml-1.5 hidden text-[10px] text-[var(--fg-dim)] sm:inline">
-                  {m.vendor}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="ml-auto flex items-center gap-3 text-xs text-[var(--fg-muted)]">
-          {session && (
-            <span>
-              <span className="font-semibold text-[var(--mint)]">
-                {session.credits}
-              </span>{" "}
-              credits · {session.planName}
+    <div className="flex h-full min-h-[calc(100vh-3.5rem)] flex-col pb-24 lg:min-h-screen lg:pb-0">
+      {/* ── Mode banner: demo vs live impossible to miss (W5) ── */}
+      <div
+        role="status"
+        className={`border-b px-4 py-2.5 ${
+          demoMode
+            ? "border-white/10 bg-white/[0.04]"
+            : "border-[var(--mint)]/25 bg-[var(--mint)]/[0.08]"
+        }`}
+      >
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <span
+              className={`rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wide ${
+                demoMode
+                  ? "bg-white/10 text-white/80"
+                  : "bg-[var(--mint)] text-black"
+              }`}
+            >
+              {demoMode
+                ? PROVENANCE.cachedDemo
+                : isFree
+                  ? "Live Mini trial"
+                  : PROVENANCE.liveGeneration}
             </span>
-          )}
-          <Link href="/pricing" className="text-[var(--mint)] hover:underline">
-            Upgrade
-          </Link>
+            <p className="text-[11px] leading-snug text-[var(--fg-muted)] sm:text-xs">
+              {demoMode ? (
+                <>
+                  Returns a Lab example · <b className="text-[var(--fg)]">does not use your photo</b> · 0 credits
+                </>
+              ) : (
+                <>
+                  Uses your photo · {isFree ? "Seedance Mini · 5s · 480p" : `${effectiveDuration}s · ${resolution}`} ·{" "}
+                  {CREDITS_PER_VIDEO} credits
+                  {creditsLeft !== null ? ` · ${creditsLeft} left` : ""} ·{" "}
+                  <b className="text-[var(--fg)]">failed jobs refund</b>
+                </>
+              )}
+            </p>
+          </div>
+          <div className="flex items-center gap-3 text-[11px] text-[var(--fg-muted)]">
+            {session && (
+              <span>
+                <span className="font-semibold text-[var(--mint)]">
+                  {session.credits}
+                </span>{" "}
+                · {session.planName}
+              </span>
+            )}
+            <Link href="/pricing" className="text-[var(--mint)] hover:underline">
+              Plans
+            </Link>
+          </div>
         </div>
       </div>
 
-      <div className="grid flex-1 lg:grid-cols-[280px_1fr_1.1fr]">
-        {/* Preset rail */}
-        <aside className="max-h-[40vh] overflow-y-auto border-b border-[var(--border)] p-3 lg:max-h-none lg:border-b-0 lg:border-r">
+      {/* ── Mobile path steps (390px craft) ── */}
+      <div className="border-b border-[var(--border)] px-4 py-2 lg:hidden">
+        <ol className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide">
+          {(
+            [
+              { n: 1 as const, label: "Photo" },
+              { n: 2 as const, label: "Recipe" },
+              { n: 3 as const, label: "Generate" },
+              { n: 4 as const, label: "Result" },
+            ] as const
+          ).map((s, i) => (
+            <li key={s.n} className="flex flex-1 items-center gap-1">
+              <span
+                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[9px] ${
+                  pathStep >= s.n
+                    ? "bg-[var(--mint)] text-black"
+                    : "bg-white/10 text-white/40"
+                }`}
+              >
+                {s.n}
+              </span>
+              <span
+                className={
+                  pathStep >= s.n ? "text-[var(--fg)]" : "text-[var(--fg-dim)]"
+                }
+              >
+                {s.label}
+              </span>
+              {i < 3 && (
+                <span className="mx-0.5 flex-1 border-t border-white/10" aria-hidden />
+              )}
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <div className="grid flex-1 lg:grid-cols-[260px_minmax(0,1fr)_minmax(0,1.05fr)]">
+        {/* ── Recipe rail (desktop) / horizontal chips (mobile, in controls) ── */}
+        <aside className="hidden max-h-none overflow-y-auto border-r border-[var(--border)] p-3 lg:block">
           <p className="mb-2 px-1 text-[10px] font-bold uppercase tracking-wider text-[var(--fg-dim)]">
-            🧸 {t("create.presets")}
+            Toy recipes
           </p>
           <input
             value={presetFilter}
             onChange={(e) => setPresetFilter(e.target.value)}
-            placeholder={t("create.searchPresets")}
+            placeholder="Search spin, unbox…"
             className="mb-2 w-full rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] px-2.5 py-1.5 text-xs outline-none focus:border-[var(--brand)]"
           />
           {favorites.length > 0 && !presetFilter && (
@@ -557,36 +600,13 @@ export function CreateStudio({
               </div>
             </div>
           )}
-          {recent.length > 0 && !presetFilter && (
-            <div className="mb-2">
-              <p className="mb-1 px-1 text-[9px] font-bold uppercase text-[var(--fg-dim)]">
-                Recent
-              </p>
-              <div className="flex flex-wrap gap-1">
-                {recent.map((slug) => {
-                  const p = PRESETS.find((x) => x.slug === slug);
-                  if (!p) return null;
-                  return (
-                    <button
-                      key={slug}
-                      type="button"
-                      onClick={() => selectEffect(slug)}
-                      className="rounded-md border border-[var(--border)] px-1.5 py-0.5 text-[10px] hover:border-[var(--brand)]"
-                    >
-                      {p.emoji} {p.name}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-          <div className="flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible">
-            {filteredPresets.map((p) => (
+          <div className="flex flex-col gap-1">
+            {featuredPresets.map((p) => (
               <div
                 key={p.slug}
-                className={`flex min-w-[140px] items-stretch gap-1 rounded-xl border lg:min-w-0 ${
+                className={`flex items-stretch gap-1 rounded-xl border ${
                   effect === p.slug
-                    ? "border-[var(--brand)] bg-[var(--card)]"
+                    ? "border-[var(--mint)] bg-[var(--card)]"
                     : "border-transparent bg-[var(--bg-soft)]"
                 }`}
               >
@@ -620,13 +640,22 @@ export function CreateStudio({
                 </button>
               </div>
             ))}
-            {filteredPresets.length === 0 && (
+            {featuredPresets.length === 0 && (
               <p className="px-1 text-xs text-[var(--fg-dim)]">No presets match</p>
             )}
           </div>
+          <Link
+            href="/supercomputer?pack=seller"
+            className="mt-3 block rounded-xl border border-[var(--mint)]/30 bg-[var(--mint)]/[0.06] px-3 py-2.5 text-[11px] leading-snug text-[var(--fg-muted)] transition hover:border-[var(--mint)]/50"
+          >
+            <span className="font-bold text-[var(--mint)]">Seller Pack · 3 outputs</span>
+            <span className="mt-0.5 block text-[10px] text-[var(--fg-dim)]">
+              Listing spin + reveal + social hook from one photo
+            </span>
+          </Link>
         </aside>
 
-        {/* Controls */}
+        {/* ── Controls: upload → recipe → preflight ── */}
         <section className="space-y-4 overflow-y-auto border-b border-[var(--border)] p-4 lg:border-b-0 lg:border-r">
           {upgradedBanner && (
             <div className="rounded-xl border border-[var(--mint)]/40 bg-[color-mix(in_srgb,var(--mint)_10%,transparent)] px-3 py-2 text-xs">
@@ -638,7 +667,7 @@ export function CreateStudio({
             <div className="flex items-start justify-between gap-2 rounded-xl border border-amber-400/40 bg-amber-400/[0.08] px-3 py-2 text-xs text-amber-200">
               <span>
                 The recipe <b>“{initialEffect}”</b> isn’t available — showing{" "}
-                <b>{preset.name}</b> instead. Pick any preset below.
+                <b>{preset.name}</b> instead. Pick any recipe below.
               </span>
               <button
                 type="button"
@@ -651,322 +680,447 @@ export function CreateStudio({
             </div>
           )}
 
-          {mode === "i2v" ? (
-            <div>
-              <label className="text-xs font-semibold text-[var(--fg-muted)]">
-                {t("create.yourPhoto")}
-              </label>
-              <label
-                className="mt-2 flex aspect-video cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-[var(--border)] bg-[var(--bg-soft)] transition-colors hover:border-[var(--brand)]/50"
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={onDrop}
-              >
-                {image ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={image}
-                    alt="your toy"
-                    className="h-full w-full object-contain"
-                  />
-                ) : (
-                  <span className="px-6 text-center text-sm text-[var(--fg-dim)]">
-                    🧸 {t("create.dropPhoto")}
-                    <br />
-                    <span className="text-xs">
-                      {t("create.dropHint")}
-                    </span>
-                  </span>
-                )}
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={onFile}
-                />
+          {/* Step 1 — Photo */}
+          <div>
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <label className="text-xs font-bold uppercase tracking-wide text-[var(--fg-muted)]">
+                <span className="mr-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--mint)] text-[9px] text-black lg:hidden">
+                  1
+                </span>
+                Your toy photo
               </label>
               {image && (
                 <button
                   type="button"
-                  className="mt-1 text-[10px] text-[var(--fg-dim)] hover:text-[var(--brand)]"
+                  className="text-[10px] font-semibold text-[var(--fg-dim)] hover:text-[var(--brand)]"
                   onClick={() => setImage(null)}
                 >
-                  {t("create.removePhoto")}
+                  Replace
                 </button>
               )}
-              {!image && (
-                <div className="mt-2">
-                  <p className="mb-1 text-[10px] font-semibold text-[var(--fg-dim)]">
-                    {t("create.trySample")}
+            </div>
+            <label
+              className={`flex cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed bg-[var(--bg-soft)] transition-colors hover:border-[var(--mint)]/50 ${
+                image
+                  ? "aspect-[16/10] border-[var(--border)]"
+                  : "min-h-[160px] border-[var(--mint)]/35 sm:aspect-video"
+              }`}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={onDrop}
+            >
+              {image ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={image}
+                  alt="your toy"
+                  className="h-full w-full object-contain"
+                />
+              ) : (
+                <span className="px-6 text-center text-sm text-[var(--fg-dim)]">
+                  <span className="mb-2 block text-2xl" aria-hidden>
+                    🧸
+                  </span>
+                  Drop a photo of a figure you own
+                  <br />
+                  <span className="text-xs">
+                    or tap · JPEG / PNG / WebP / GIF · under ~8 MB
+                  </span>
+                </span>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={onFile}
+              />
+            </label>
+            {!image && (
+              <div className="mt-2">
+                <p className="mb-1 text-[10px] font-semibold text-[var(--fg-dim)]">
+                  Or try a sample still
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {SAMPLE_TOYS.map((s) => (
+                    <button
+                      key={s.id}
+                      type="button"
+                      className="rounded-lg border border-[var(--border)] px-2 py-1 text-[10px] hover:border-[var(--brand)]"
+                      onClick={async () => {
+                        try {
+                          setError(null);
+                          const data = await sampleToDataUrl(s.path);
+                          setImage(data);
+                          selectEffect(s.effect);
+                        } catch {
+                          setError("Could not load sample photo");
+                        }
+                      }}
+                    >
+                      {s.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Step 2 — Recipe (mobile chips; desktop uses rail) */}
+          <div className="lg:hidden">
+            <p className="mb-2 text-xs font-bold uppercase tracking-wide text-[var(--fg-muted)]">
+              <span className="mr-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--mint)] text-[9px] text-black">
+                2
+              </span>
+              Recipe
+            </p>
+            <input
+              value={presetFilter}
+              onChange={(e) => setPresetFilter(e.target.value)}
+              placeholder="Search spin, unbox…"
+              className="mb-2 w-full rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] px-2.5 py-2 text-xs outline-none focus:border-[var(--brand)]"
+            />
+            <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {featuredPresets.slice(0, 16).map((p) => (
+                <button
+                  key={p.slug}
+                  type="button"
+                  onClick={() => selectEffect(p.slug)}
+                  className={`min-w-[118px] shrink-0 rounded-xl border px-2.5 py-2.5 text-left transition ${
+                    effect === p.slug
+                      ? "border-[var(--mint)] bg-[var(--mint)]/10 ring-1 ring-[var(--mint)]/40"
+                      : "border-[var(--border)] bg-[var(--bg-soft)]"
+                  }`}
+                >
+                  <span className="text-base">{p.emoji}</span>
+                  <span className="mt-1 block text-[11px] font-bold leading-tight">
+                    {viralName(p.slug, p.name)}
+                  </span>
+                  <span className="mt-0.5 block text-[9px] text-[var(--fg-dim)]">
+                    {p.aspectRatio}
+                  </span>
+                </button>
+              ))}
+            </div>
+            <Link
+              href="/supercomputer?pack=seller"
+              className="mt-2 inline-flex text-[11px] font-semibold text-[var(--mint)] hover:underline"
+            >
+              Need 3 seller formats? Seller Pack →
+            </Link>
+          </div>
+
+          {/* Active recipe summary + aspect (essential only) */}
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-soft)] p-3">
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--fg-dim)]">
+                  Selected recipe
+                </p>
+                <p className="mt-0.5 text-sm font-bold">
+                  {preset.emoji} {viralName(preset.slug, preset.name)}
+                </p>
+                <p className="mt-0.5 text-[11px] text-[var(--fg-dim)]">
+                  {preset.tagline}
+                </p>
+              </div>
+              <span className="shrink-0 rounded-full border border-white/10 px-2 py-0.5 text-[10px] text-[var(--fg-dim)]">
+                {effectiveDuration}s · {isFree ? "480p" : resolution}
+              </span>
+            </div>
+            <div className="mt-3">
+              <p className="mb-1.5 text-[10px] font-semibold text-[var(--fg-dim)]">
+                Aspect
+              </p>
+              <div className="flex gap-2">
+                {(
+                  [
+                    { id: "9:16" as const, label: "9:16" },
+                    { id: "1:1" as const, label: "1:1" },
+                    { id: "16:9" as const, label: "16:9" },
+                  ] as const
+                ).map((a) => (
+                  <button
+                    key={a.id}
+                    type="button"
+                    onClick={() => setAspectRatio(a.id)}
+                    className={`flex-1 rounded-lg border py-2 text-[11px] font-semibold ${
+                      aspectRatio === a.id
+                        ? "border-[var(--mint)] bg-[var(--mint)]/10 text-[var(--mint)]"
+                        : "border-[var(--border)] text-[var(--fg-muted)]"
+                    }`}
+                  >
+                    {a.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Advanced — models, duration, seed, prompt (collapsed) */}
+          <div className="rounded-xl border border-[var(--border)]">
+            <button
+              type="button"
+              onClick={() => setShowAdvanced((v) => !v)}
+              className="flex w-full items-center justify-between px-3 py-2.5 text-left text-xs font-semibold text-[var(--fg-muted)]"
+            >
+              Advanced
+              <span className="text-[10px] text-[var(--fg-dim)]">
+                {showAdvanced ? "Hide" : "Duration · model · prompt"}
+              </span>
+            </button>
+            {showAdvanced && (
+              <div className="space-y-3 border-t border-[var(--border)] p-3">
+                <div>
+                  <p className="text-[10px] font-semibold text-[var(--fg-dim)]">
+                    Duration
                   </p>
-                  <div className="flex flex-wrap gap-2">
-                    {SAMPLE_TOYS.map((s) => (
+                  <div className="mt-1.5 flex gap-2">
+                    {([5, 10] as const).map((d) => {
+                      const freeLock = Boolean(isFree && d === 10);
+                      return (
+                        <button
+                          key={d}
+                          type="button"
+                          disabled={freeLock}
+                          onClick={() => {
+                            if (freeLock) {
+                              setShowPaywall(true);
+                              return;
+                            }
+                            setDuration(d);
+                          }}
+                          className={`flex-1 rounded-lg border py-2 text-sm font-semibold ${
+                            effectiveDuration === d
+                              ? "border-[var(--brand)] bg-[var(--grad-soft)]"
+                              : "border-[var(--border)] text-[var(--fg-muted)]"
+                          } ${freeLock ? "cursor-not-allowed opacity-50" : ""}`}
+                        >
+                          {d}s{freeLock ? " · paid" : ""}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {isFree && (
+                    <p className="mt-1 text-[10px] text-[var(--fg-dim)]">
+                      Free trial locked to Mini · 5s · 480p · on-player mark
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <p className="text-[10px] font-semibold text-[var(--fg-dim)]">
+                    Resolution
+                  </p>
+                  <div className="mt-1.5 flex gap-2">
+                    {(["480p", "720p"] as const).map((r) => {
+                      const locked = Boolean(isFree && r === "720p");
+                      return (
+                        <button
+                          key={r}
+                          type="button"
+                          onClick={() => {
+                            if (locked) {
+                              setShowPaywall(true);
+                              setError("720p is on paid plans.");
+                              return;
+                            }
+                            setResolution(r);
+                          }}
+                          className={`flex-1 rounded-lg border py-2 text-sm font-semibold ${
+                            (isFree ? "480p" : resolution) === r
+                              ? "border-[var(--brand)] bg-[var(--grad-soft)]"
+                              : "border-[var(--border)] text-[var(--fg-muted)]"
+                          } ${locked ? "opacity-60" : ""}`}
+                        >
+                          {r}
+                          {locked ? " · paid" : ""}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-[10px] font-semibold text-[var(--fg-dim)]">
+                    Model
+                  </p>
+                  <div className="mt-1.5 flex flex-wrap gap-2">
+                    {MODELS.map((m) => {
+                      const lockedPaid = Boolean(isFree && !m.free);
+                      const active = modelId === m.id;
+                      return (
+                        <button
+                          key={m.id}
+                          type="button"
+                          onClick={() => {
+                            if (lockedPaid) {
+                              setShowPaywall(true);
+                              setError(
+                                "Paid models are locked — Free live jobs use Seedance Mini at 480p."
+                              );
+                              setModelId("seedance-mini");
+                              return;
+                            }
+                            setModelId(m.id);
+                          }}
+                          className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${
+                            active
+                              ? "border-[var(--mint)] bg-[var(--mint)]/15 text-[var(--mint)]"
+                              : "border-[var(--border)] text-[var(--fg-muted)]"
+                          } ${lockedPaid ? "opacity-60" : ""}`}
+                        >
+                          {m.label}
+                          {lockedPaid ? " · paid" : m.free ? " · free" : ""}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <p className="mt-1 text-[10px] text-[var(--fg-dim)]">
+                    Soft launch enforces Mini for free live jobs. No fake multi-model shelf.
+                  </p>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between gap-2">
+                    <label className="text-[10px] font-semibold text-[var(--fg-dim)]">
+                      Seed (optional)
+                    </label>
+                    <button
+                      type="button"
+                      className="text-[10px] text-[var(--fg-dim)] hover:text-[var(--fg)]"
+                      onClick={() =>
+                        setSeed(
+                          String(Math.floor(Math.random() * 1_000_000_000))
+                        )
+                      }
+                    >
+                      Random
+                    </button>
+                  </div>
+                  <input
+                    value={seed}
+                    onChange={(e) =>
+                      setSeed(e.target.value.replace(/[^\d]/g, ""))
+                    }
+                    placeholder="Empty = random"
+                    className="mt-1.5 w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm outline-none focus:border-[var(--brand)]"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] font-semibold text-[var(--fg-dim)]">
+                      Motion prompt
+                    </label>
+                    <button
+                      type="button"
+                      className="text-[10px] text-[var(--brand)] hover:underline"
+                      onClick={() => setExtra(preset.promptTemplate)}
+                    >
+                      Reset to preset
+                    </button>
+                  </div>
+                  <textarea
+                    value={extra || preset.promptTemplate}
+                    onChange={(e) => setExtra(e.target.value)}
+                    rows={4}
+                    className="mt-1.5 w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--bg)] px-3 py-2.5 text-sm outline-none focus:border-[var(--brand)]"
+                  />
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {[
+                      "slow turntable",
+                      "soft studio light",
+                      "keep paint sharp",
+                      "subtle float",
+                      "no morph face",
+                    ].map((chip) => (
                       <button
-                        key={s.id}
+                        key={chip}
                         type="button"
-                        className="rounded-lg border border-[var(--border)] px-2 py-1 text-[10px] hover:border-[var(--brand)]"
-                        onClick={async () => {
-                          try {
-                            setError(null);
-                            const data = await sampleToDataUrl(s.path);
-                            setImage(data);
-                            selectEffect(s.effect);
-                          } catch {
-                            setError("Could not load sample photo");
-                          }
+                        className="rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--fg-dim)] hover:border-[var(--brand)] hover:text-[var(--fg)]"
+                        onClick={() => {
+                          const base = extra || preset.promptTemplate;
+                          setExtra(`${base} ${chip}.`);
                         }}
                       >
-                        {s.label}
+                        + {chip}
                       </button>
                     ))}
                   </div>
                 </div>
-              )}
-              <p className="mt-2 text-[10px] text-[var(--fg-dim)]">
-                {t("create.ownTip")}
-              </p>
-            </div>
-          ) : (
-            <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-soft)] p-4 text-sm text-[var(--fg-muted)]">
-              Text → Video is on the roadmap. For the best figure consistency,
-              use <strong className="text-[var(--fg)]">Image → Video</strong>{" "}
-              with a real shelf photo + Seedance.
-            </div>
-          )}
-
-          <div>
-            <p className="text-xs font-semibold text-[var(--fg-muted)]">
-              {t("create.duration")}
-            </p>
-            <div className="mt-1.5 flex gap-2">
-              {([5, 10] as const).map((d) => {
-                const freeLock = Boolean(isFree && d === 10);
-                return (
-                  <button
-                    key={d}
-                    type="button"
-                    disabled={freeLock}
-                    onClick={() => {
-                      if (freeLock) {
-                        setShowPaywall(true);
-                        return;
-                      }
-                      setDuration(d);
-                    }}
-                    className={`flex-1 rounded-lg border py-2 text-sm font-semibold ${
-                      effectiveDuration === d
-                        ? "border-[var(--brand)] bg-[var(--grad-soft)]"
-                        : "border-[var(--border)] text-[var(--fg-muted)]"
-                    } ${freeLock ? "cursor-not-allowed opacity-50" : ""}`}
-                  >
-                    {d}s{freeLock ? " · paid" : ""}
-                  </button>
-                );
-              })}
-            </div>
-            {isFree && (
-              <p className="mt-1 text-[10px] text-[var(--fg-dim)]">
-                {t("create.freeLock")}
-              </p>
+              </div>
             )}
           </div>
 
-          <div>
-            <p className="text-xs font-semibold text-[var(--fg-muted)]">
-              {t("create.aspect")}
-            </p>
-            <div className="mt-1.5 flex gap-2">
-              {(
-                [
-                  { id: "9:16" as const, label: "9:16 · TikTok" },
-                  { id: "1:1" as const, label: "1:1 · Shop" },
-                  { id: "16:9" as const, label: "16:9 · Wide" },
-                ] as const
-              ).map((a) => (
-                <button
-                  key={a.id}
-                  type="button"
-                  onClick={() => setAspectRatio(a.id)}
-                  className={`flex-1 rounded-lg border px-1 py-2 text-[11px] font-semibold ${
-                    aspectRatio === a.id
-                      ? "border-[var(--brand)] bg-[var(--grad-soft)]"
-                      : "border-[var(--border)] text-[var(--fg-muted)]"
-                  }`}
-                >
-                  {a.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <p className="text-xs font-semibold text-[var(--fg-muted)]">
-              {t("create.resolution")}
-            </p>
-            <div className="mt-1.5 flex gap-2">
-              {(["480p", "720p"] as const).map((r) => {
-                const locked = Boolean(isFree && r === "720p");
-                return (
-                  <button
-                    key={r}
-                    type="button"
-                    onClick={() => {
-                      if (locked) {
-                        setShowPaywall(true);
-                        setError("720p is on paid plans.");
-                        return;
-                      }
-                      setResolution(r);
-                    }}
-                    className={`flex-1 rounded-lg border py-2 text-sm font-semibold ${
-                      (isFree ? "480p" : resolution) === r
-                        ? "border-[var(--brand)] bg-[var(--grad-soft)]"
-                        : "border-[var(--border)] text-[var(--fg-muted)]"
-                    } ${locked ? "opacity-60" : ""}`}
-                  >
-                    {r}
-                    {locked ? " 🔒" : ""}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between gap-2">
-              <label className="text-xs font-semibold text-[var(--fg-muted)]">
-                {t("create.seed")}
-              </label>
-              <button
-                type="button"
-                className="text-[10px] text-[var(--fg-dim)] hover:text-[var(--fg)]"
-                onClick={() =>
-                  setSeed(String(Math.floor(Math.random() * 1_000_000_000)))
-                }
-              >
-                Random
-              </button>
-            </div>
-            <input
-              value={seed}
-              onChange={(e) => setSeed(e.target.value.replace(/[^\d]/g, ""))}
-              placeholder={t("create.seedPlaceholder")}
-              className="mt-1.5 w-full rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] px-3 py-2 text-sm outline-none focus:border-[var(--brand)]"
-            />
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-[var(--fg-muted)]">
-                {t("create.motionPrompt")}
-              </label>
-              <button
-                type="button"
-                className="text-[10px] text-[var(--brand)] hover:underline"
-                onClick={() => setExtra(preset.promptTemplate)}
-              >
-                {t("create.resetPreset")}
-              </button>
-            </div>
-            <textarea
-              value={extra || preset.promptTemplate}
-              onChange={(e) => setExtra(e.target.value)}
-              rows={5}
-              className="mt-2 w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--bg-soft)] px-3 py-2.5 text-sm outline-none focus:border-[var(--brand)]"
-            />
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {[
-                "slow turntable",
-                "soft studio light",
-                "keep paint sharp",
-                "subtle float",
-                "no morph face",
-              ].map((chip) => (
-                <button
-                  key={chip}
-                  type="button"
-                  className="rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--fg-dim)] hover:border-[var(--brand)] hover:text-[var(--fg)]"
-                  onClick={() => {
-                    const base = extra || preset.promptTemplate;
-                    setExtra(`${base} ${chip}.`);
-                  }}
-                >
-                  + {chip}
-                </button>
-              ))}
-            </div>
-            <p className="mt-1 text-[10px] text-[var(--fg-dim)]">
-              {preset.name} · for {preset.audience}s · keep the toy as hero
-            </p>
-          </div>
-
-          {/* PRD soft-launch §5: consolidated preflight before the final action */}
-          <div className="mb-2 rounded-xl border border-[var(--border)] bg-[var(--bg-soft)] p-3 text-xs">
+          {/* Preflight + rights + primary (desktop; mobile sticky below) */}
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-soft)] p-3 text-xs">
             <p className="mb-1.5 text-[10px] font-black uppercase tracking-wider text-[var(--fg-dim)]">
-              {t("create.beforeGen")}
+              <span className="mr-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--mint)] text-[9px] text-black lg:hidden">
+                3
+              </span>
+              Before you generate
             </p>
             {demoMode ? (
-              <p className="flex items-start gap-1.5 text-[var(--fg-muted)]">
-                <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--fg-dim)]" />
-                <span>
-                  <b className="text-[var(--fg)]">Cached demo</b> — does not use
-                  your upload · costs 0 credits
-                </span>
+              <p className="text-[var(--fg-muted)]">
+                <b className="text-[var(--fg)]">{PROVENANCE.cachedDemo}</b> — does not use
+                your upload · costs 0 credits
               </p>
             ) : (
               <div className="space-y-1 text-[var(--fg-muted)]">
-                <p className="flex items-start gap-1.5">
-                  <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--mint)]" />
-                  <span>
-                    <b className="text-[var(--fg)]">
-                      Live {isFree ? "Mini trial" : "generation"}
-                    </b>{" "}
-                    — uses your photo · {isFree ? "Seedance Mini · " : ""}
-                    {effectiveDuration}s · {isFree ? "480p" : resolution} ·{" "}
-                    {aspectRatio}
-                  </span>
+                <p>
+                  <b className="text-[var(--fg)]">
+                    {isFree ? "Live Mini trial" : PROVENANCE.liveGeneration}
+                  </b>{" "}
+                  — uses your photo · {isFree ? "Seedance Mini · " : ""}
+                  {effectiveDuration}s · {isFree ? "480p" : resolution} ·{" "}
+                  {aspectRatio}
                 </p>
-                <p className="pl-3 text-[var(--fg-dim)]">
+                <p className="text-[var(--fg-dim)]">
                   Costs {CREDITS_PER_VIDEO} credits
-                  {creditsLeft !== null ? ` · ${creditsLeft} left` : ""} ·
-                  processed by fal.ai / Seedance · failed jobs refund credits
+                  {creditsLeft !== null ? ` · ${creditsLeft} left` : ""} · fal.ai /
+                  Seedance · <b className="text-[var(--fg)]">failed jobs refund</b>
                 </p>
               </div>
             )}
           </div>
 
-          <label className="mb-2 flex cursor-pointer items-start gap-2 rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] px-3 py-2 text-[11px] leading-snug text-[var(--fg-muted)]">
+          <label className="flex cursor-pointer items-start gap-2 rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] px-3 py-2.5 text-[11px] leading-snug text-[var(--fg-muted)]">
             <input
               type="checkbox"
               checked={ownsRights}
               onChange={(e) => setOwnsRights(e.target.checked)}
-              className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-[var(--mint)]"
+              className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--mint)]"
             />
             <span>
-              {t("create.rights")}
+              I own this photo and have the right to animate and publish this toy
+              or character. Pikbo grants no third-party IP rights.
             </span>
           </label>
 
           <button
             type="button"
-            onClick={generate}
-            disabled={
-              busy || mode === "t2v" || (mode === "i2v" && !image) || !ownsRights
-            }
-            className="btn btn-primary w-full disabled:opacity-50"
+            onClick={() => void generate()}
+            disabled={!canGenerate}
+            className="btn btn-primary hidden w-full disabled:opacity-50 lg:flex"
           >
-            {busy
-              ? t("create.generating")
-              : mode === "t2v"
-                ? "Text → Video soon"
-                : demoMode
-                  ? `${t("create.generate")} · ${t("badge.cachedDemo")} · ${effectiveDuration}s · ${aspectRatio}`
-                  : !canAfford
-                    ? `${t("create.generate")} · ${CREDITS_PER_VIDEO} credits`
-                    : `${t("create.generate")} · ${CREDITS_PER_VIDEO} credits · ${effectiveDuration}s · ${aspectRatio}`}
+            {primaryLabel}
           </button>
 
-          {error && (
-            <p className="text-sm text-[var(--brand)]">{error}</p>
+          {(error || lastRefunded) && (
+            <div
+              role="alert"
+              className={`rounded-xl border px-3 py-2.5 text-sm ${
+                lastRefunded
+                  ? "border-amber-400/40 bg-amber-400/[0.08] text-amber-100"
+                  : "border-[var(--brand)]/40 bg-[var(--brand)]/10 text-[var(--brand)]"
+              }`}
+            >
+              <p className="font-semibold">{error}</p>
+              {lastRefunded && (
+                <p className="mt-1 text-[11px] font-bold uppercase tracking-wide text-amber-200/90">
+                  10 credits restored · not charged for this failed job
+                </p>
+              )}
+            </div>
           )}
 
           {showPaywall && (
@@ -974,29 +1128,41 @@ export function CreateStudio({
           )}
         </section>
 
-        {/* Result — large preview like HF generate */}
-        <section className="flex flex-col bg-[var(--bg-soft)] p-4">
+        {/* ── Result panel ── */}
+        <section
+          id="create-result"
+          className={`flex flex-col bg-[var(--bg-soft)] p-4 ${
+            status === "done" || status === "generating" ? "order-first lg:order-none" : ""
+          }`}
+        >
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold">{t("create.output")}</h2>
+            <h2 className="text-sm font-semibold">
+              <span className="mr-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--mint)] text-[9px] text-black lg:hidden">
+                4
+              </span>
+              Result
+            </h2>
             <span className="rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--fg-dim)]">
               {usedModel || MODELS.find((m) => m.id === modelId)?.label}
             </span>
           </div>
-          <div className="relative flex min-h-[440px] flex-1 items-center justify-center overflow-hidden rounded-2xl border border-[var(--mint)]/15 bg-black bg-[radial-gradient(120%_80%_at_50%_0%,rgba(200,255,61,0.07),transparent_60%)] ring-1 ring-inset ring-white/5">
+          <div className="relative flex min-h-[280px] flex-1 items-center justify-center overflow-hidden rounded-2xl border border-[var(--mint)]/15 bg-black bg-[radial-gradient(120%_80%_at_50%_0%,rgba(200,255,61,0.07),transparent_60%)] ring-1 ring-inset ring-white/5 sm:min-h-[400px]">
             {status === "generating" && (
-              <div className="p-10 text-center text-[var(--fg-muted)]">
+              <div className="p-8 text-center text-[var(--fg-muted)] sm:p-10">
                 <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--mint)]" />
                 <p className="font-medium text-[var(--fg)]">
-                  Animating your figure…
+                  {demoMode ? "Loading cached demo…" : "Animating your figure…"}
                 </p>
                 <p className="mt-1 text-xs text-[var(--fg-dim)]">
-                  {elapsed < 3
-                    ? "Uploading reference"
-                    : elapsed < 12
-                      ? "Seedance queue"
-                      : elapsed < 35
-                        ? "Rendering motion"
-                        : "Almost done — large clips take longer"}
+                  {demoMode
+                    ? "Lab example — not from your upload"
+                    : elapsed < 3
+                      ? "Uploading reference"
+                      : elapsed < 12
+                        ? "Seedance queue"
+                        : elapsed < 35
+                          ? "Rendering motion"
+                          : "Almost done — large clips take longer"}
                   {" · "}
                   {elapsed}s
                 </p>
@@ -1016,10 +1182,10 @@ export function CreateStudio({
                 <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
                   <div className="flex flex-wrap items-center gap-1.5">
                     <span
-                      className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
+                      className={`rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-wide ${
                         demo
-                          ? "border border-white/15 bg-white/10 text-[var(--fg-muted)]"
-                          : "border border-[var(--mint)]/30 bg-[var(--mint)]/15 text-[var(--mint)]"
+                          ? "border border-white/20 bg-white/15 text-white"
+                          : "border border-[var(--mint)]/40 bg-[var(--mint)] text-black"
                       }`}
                     >
                       {resultProvenanceLabel(demo)}
@@ -1048,7 +1214,7 @@ export function CreateStudio({
                       <img
                         src={image}
                         alt="before"
-                        className="mx-auto max-h-[50vh] rounded-lg object-contain"
+                        className="mx-auto max-h-[45vh] rounded-lg object-contain"
                       />
                     </div>
                     <div className="relative">
@@ -1062,7 +1228,7 @@ export function CreateStudio({
                         loop
                         muted
                         playsInline
-                        className="mx-auto max-h-[50vh] rounded-lg"
+                        className="mx-auto max-h-[45vh] rounded-lg"
                       />
                       {watermark && (
                         <div
@@ -1083,7 +1249,7 @@ export function CreateStudio({
                       loop
                       muted
                       playsInline
-                      className="mx-auto max-h-[70vh] rounded-lg"
+                      className="mx-auto max-h-[65vh] rounded-lg"
                     />
                     {watermark && (
                       <div
@@ -1097,8 +1263,8 @@ export function CreateStudio({
                 )}
                 <p className="mx-auto mt-2 max-w-md text-center text-[11px] leading-relaxed text-[var(--fg-dim)]">
                   {demo
-                    ? `${PROVENANCE.cachedDemo} — it does not animate your upload or call a live model. Configure FAL_KEY for a live Seedance render.`
-                    : `${PROVENANCE.liveGeneration} — AI motion varies; same photo can look different each run. Failed jobs refund credits.`}
+                    ? `${PROVENANCE.cachedDemo} — does not animate your upload. Live Mini needs FAL_KEY configured.`
+                    : `${PROVENANCE.liveGeneration} — AI motion varies each run. Failed jobs refund credits.`}
                 </p>
                 <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
                   <a
@@ -1126,7 +1292,7 @@ export function CreateStudio({
                   </button>
                   <button
                     type="button"
-                    onClick={generate}
+                    onClick={() => void generate()}
                     className="btn btn-ghost px-4 py-2 text-xs"
                   >
                     Regenerate
@@ -1138,10 +1304,10 @@ export function CreateStudio({
                     Library
                   </Link>
                   <Link
-                    href="/supercomputer"
+                    href="/supercomputer?pack=seller"
                     className="btn btn-ghost px-4 py-2 text-xs"
                   >
-                    Batch more
+                    Seller Pack
                   </Link>
                 </div>
                 <p className="mt-2 text-center text-[10px] text-[var(--fg-dim)]">
@@ -1161,17 +1327,28 @@ export function CreateStudio({
               </div>
             )}
             {(status === "idle" || status === "error") && !videoUrl && (
-              <div className="flex flex-col items-center p-10 text-center">
-                <span className="grid h-16 w-16 place-items-center rounded-2xl border border-[var(--mint)]/30 bg-[var(--mint)]/[0.06] text-[var(--mint)] shadow-[0_0_40px_-8px_rgba(200,255,61,0.35)]">
-                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+              <div className="flex flex-col items-center p-8 text-center sm:p-10">
+                <span className="grid h-14 w-14 place-items-center rounded-2xl border border-[var(--mint)]/30 bg-[var(--mint)]/[0.06] text-[var(--mint)] sm:h-16 sm:w-16">
+                  <svg
+                    width="26"
+                    height="26"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <path d="M8 5.5v13l11-6.5-11-6.5Z" />
                   </svg>
                 </span>
-                <p className="mt-5 font-display text-lg font-bold uppercase tracking-tight text-white">
-                  {t("create.clipLands")}
+                <p className="mt-4 font-display text-base font-bold uppercase tracking-tight text-white sm:text-lg">
+                  Your clip lands here
                 </p>
-                <p className="mt-1.5 text-xs text-[var(--fg-muted)]">
-                  {t("create.builtFor")}
+                <p className="mt-1.5 max-w-xs text-xs text-[var(--fg-muted)]">
+                  {image
+                    ? "Confirm ownership, then Generate — one primary action."
+                    : "Upload a toy photo you own to start."}
                 </p>
                 <span className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-[var(--mint)]/25 bg-black/40 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--mint)]">
                   <span className="h-1.5 w-1.5 rounded-full bg-[var(--mint)]" />
@@ -1181,6 +1358,25 @@ export function CreateStudio({
             )}
           </div>
         </section>
+      </div>
+
+      {/* ── Sticky mobile primary CTA ── */}
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-black/90 px-4 py-3 backdrop-blur-md lg:hidden">
+        <button
+          type="button"
+          onClick={() => {
+            void generate();
+            if (status === "generating" || canGenerate) {
+              document
+                .getElementById("create-result")
+                ?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+          }}
+          disabled={!canGenerate}
+          className="btn btn-primary w-full py-3 text-sm disabled:opacity-50"
+        >
+          {primaryLabel}
+        </button>
       </div>
     </div>
   );
