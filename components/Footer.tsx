@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { site } from "@/lib/site";
+import { Logo } from "@/components/Logo";
 import { CATEGORIES } from "@/lib/presets";
 import { USE_CASES } from "@/lib/usecases";
 import { TOY_TYPES } from "@/lib/toytypes";
@@ -10,15 +11,8 @@ export function Footer() {
       <div className="container-x py-12">
         <div className="grid gap-10 md:grid-cols-6">
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2 font-bold">
-              <span
-                className="grid h-8 w-8 place-items-center rounded-lg text-xs font-black text-black"
-                style={{ background: "var(--mint)" }}
-              >
-                P
-              </span>
-              {site.name}
-            </div>
+            <Logo size={30} />
+
             <p className="mt-3 max-w-xs text-sm text-[var(--fg-dim)]">
               {site.tagline}. Video-first studio for toys you own.
             </p>
