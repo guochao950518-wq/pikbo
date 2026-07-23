@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [grok] Auth shell + durable shadow + Phase D stubs
+- `/login` honest gate: no fake form when Supabase keys missing; form shell when configured.
+- `GET /api/auth/status` public readiness (no secrets).
+- Generate live path optional **shadow** reserve/settle/release when `DURABLE_CREDITS=local|1` (Cookie still authoritative).
+- Phase D stubs: `GET/POST /api/generations` + `GET /api/generations/[id]` return 501 with compatibility notes.
+- Profile links to sign-in status.
+
 ### 2026-07-23 — [grok] Phase C start — T5 durable credits foundation
 - SQL: `supabase/migrations/20260723120000_t5_auth_credits.sql` (wallets, ledger, reservations, jobs, guest migration, RLS read policies).
 - Pure engine: `lib/durableCredits/engine.ts` reserve / settle / release / guest migrate + idempotency.

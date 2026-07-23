@@ -728,5 +728,24 @@ assert.match(
 );
 assert.match(createStudio, /sourceStore|internSourceImage/);
 
+// Auth shell + Phase D stubs
+assert.match(
+  fs.readFileSync(join(root, "lib/authConfig.ts"), "utf8"),
+  /export function publicAuthStatus/
+);
+assert.match(
+  fs.readFileSync(join(root, "app/login/page.tsx"), "utf8"),
+  /Sign in/
+);
+assert.match(
+  fs.readFileSync(join(root, "app/api/generations/route.ts"), "utf8"),
+  /NOT_IMPLEMENTED/
+);
+assert.match(
+  fs.readFileSync(join(root, "lib/durableCredits/shadow.ts"), "utf8"),
+  /shadowReserveForGuest/
+);
+assert.match(genRoute, /shadowReserveForGuest|shadowSettle|shadowRelease/);
+
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

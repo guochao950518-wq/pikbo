@@ -30,6 +30,12 @@ import type {
   GenerateRequestBody,
   GenerateSuccess,
 } from "@/lib/contracts";
+import {
+  shadowRelease,
+  shadowReserveForGuest,
+  shadowSettle,
+  type ShadowReservation,
+} from "@/lib/durableCredits/shadow";
 
 export const runtime = "nodejs";
 export const maxDuration = 180;
@@ -172,6 +178,10 @@ export async function POST(req: Request) {
 
     session = deductCredits(session, check.cost);
     await saveSession(session);
+    // Optional durable shadow ledger (Cookie remains authoritative until Supabase auth).
+    let shadow: ShadowReservation | null = await shadowReserveForGuest(
+      session.id
+    );
 
     const model = modelForTier({
       freeTier,
@@ -187,6 +197,8 @@ export async function POST(req: Request) {
     if (forceFail) {
       session = refundCredits(session, check.cost);
       await saveSession(session);
+      await shadowRelease(shadow, "force_fail");
+      shadow = null;
       return err(
         {
           error:
@@ -209,6 +221,7 @@ export async function POST(req: Request) {
       } catch {
         session = refundCredits(session, check.cost);
         await saveSession(session);
+        await shadowRelease(shadow, "invalid_image");
         return err(
           {
             error: "Could not read image data",
@@ -223,6 +236,7 @@ export async function POST(req: Request) {
       if (!blob || blob.size < 32) {
         session = refundCredits(session, check.cost);
         await saveSession(session);
+        await shadowRelease(shadow, "empty_image");
         return err(
           {
             error: "Image data empty or too small",
@@ -261,6 +275,7 @@ export async function POST(req: Request) {
       if (!videoUrl) {
         session = refundCredits(session, check.cost);
         await saveSession(session);
+        await shadowRelease(shadow, "model_empty");
         return err(
           {
             error: "Model returned no video",
@@ -273,6 +288,7 @@ export async function POST(req: Request) {
         );
       }
 
+      await shadowSettle(shadow, result.requestId);
       const payload: GenerateSuccess = {
         videoUrl,
         demo: false,
@@ -294,6 +310,7 @@ export async function POST(req: Request) {
       console.error("generate error:", model, e);
       session = refundCredits(session, check.cost);
       await saveSession(session);
+      await shadowRelease(shadow, "provider_error");
       const raw =
         e && typeof e === "object" && "body" in e
           ? JSON.stringify((e as { body?: unknown }).body)
