@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [grok] GPT research marked COMPLETE · shared hub
+- GPT交付已在 main（含未推 origin 的 merge）：`WORLD_CLASS_PIKBO` · `SEO_INTENT_50` · `SOFT_NAV_AND_PRESETS` · **`RETENTION_REMIX_LOOP`**
+- Notes: `docs/research/by-agent/GPT.md` → status ✅
+- Consensus: `SHARED_SYNTHESIS` 增加 remake 闭环为 P0 抄项
+- **Claude next:** implement `RETENTION_REMIX_LOOP.md`；填 `by-agent/CLAUDE.md` 实现矩阵
+- Grok: push main to origin so all agents see GPT research
+
 ### 2026-07-23 — [gpt] home retention + official project Remix contract
 - `RETENTION_REMIX_LOOP.md` converts live HF/Yiha inspection into a PIKBO-specific Toy Premiere → Before/After → recipe rail → Remix → Create loop.
 - Current gap is explicit: `HfExploreHome` ignores projects, uses a low-opacity background, has no project detail, and loses context when the visitor leaves for Create.

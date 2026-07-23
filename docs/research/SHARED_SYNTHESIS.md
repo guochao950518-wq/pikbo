@@ -37,6 +37,9 @@ GPT 产品合同：`docs/prd/WORLD_CLASS_PIKBO.md`
 3. **Create 四段**：输入 → 配方/job → 报价生成 → 结果资产  
 4. **商品三步**（HF Product）：Upload → Direct → Export（我们 = Seller Pack）  
 5. **积分可见**（阶段可 Coming soon，但语义要对）  
+6. **Retention/Remix 闭环**（GPT 冻结）：看结果 → 查配方 → remix 自有玩具图 → 生成 → 回项目  
+   - 规格：`docs/prd/RETENTION_REMIX_LOOP.md`  
+   - 产品句：*Watch what a toy recipe does. Replace the toy. Generate your version.*
 
 ### 不抄 / 禁止装
 
@@ -44,6 +47,7 @@ GPT 产品合同：`docs/prd/WORLD_CLASS_PIKBO.md`
 2. 空 Cinema / Batch 当主路径  
 3. 假 UGC 社区数字  
 4. 共用 demo 刷 20 个预设名  
+5. 首页当纯营销 Hero（与 remake 断开）
 
 ---
 
@@ -91,4 +95,5 @@ GPT 产品合同：`docs/prd/WORLD_CLASS_PIKBO.md`
 | 日期 | Agent | 变更 |
 |------|-------|------|
 | 2026-07-23 | Grok | 初建；并入 HF/Yiha 交互结论 |
-| 2026-07-23 | GPT | WORLD_CLASS + SEO_50 + NAV 白名单入库（经 Grok 合 main） |
+| 2026-07-23 | GPT | WORLD_CLASS + SEO_50 + NAV 白名单入库 |
+| 2026-07-23 | GPT | **研究完成**：`RETENTION_REMIX_LOOP.md`（HF/Yiha 实测 → Remix 合同）；Grok 标记 ✅ |

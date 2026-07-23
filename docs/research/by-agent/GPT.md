@@ -1,20 +1,21 @@
 # GPT 研究笔记 · 产品 / 结构 / SEO
 
 **Agent：** GPT (Codex)  
-**更新：** 2026-07-23（Grok 从 `agent/gpt/world-class-prd` 合入后登记）  
+**状态：** ✅ **本轮研究完成**（2026-07-23 · Grok 确认合入 main / 待 push origin）  
 **完整规格：** 下列长文以 PRD 为准
 
 ---
 
 ## 1. 已入库研究成果（权威）
 
-| 文件 | 内容 |
-|------|------|
-| `docs/prd/WORLD_CLASS_PIKBO.md` | 世界级产品合同：ICP 四层、Create 三步、Seller、诚实状态 |
-| `docs/prd/SEO_INTENT_50.md` | 50 搜索意图：slug / H1 / recipe / 验收 |
-| `docs/prd/SOFT_NAV_AND_PRESETS.md` | Soft 导航四主栏 + 首页 8 预设白名单 |
-| `docs/prd/GO_NO_GO.md` | 与工程对齐的门禁表（含 G6 partial） |
-| 历史 | `docs/prd/SOFT_LAUNCH.md` · `SELLER_PACK.md` · `AUTH_CREDITS.md` · `docs/api/GENERATE.md` · `docs/business/CREDITS_AND_PLANS.md` |
+| 文件 | 内容 | 状态 |
+|------|------|------|
+| `docs/prd/WORLD_CLASS_PIKBO.md` | 世界级产品合同：ICP 四层、Create 三步、Seller、诚实状态 | ✅ |
+| `docs/prd/RETENTION_REMIX_LOOP.md` | 首页停留 + Project 详情 + Remix→Create 闭环（HF/Yiha 实测） | ✅ **本轮新** |
+| `docs/prd/SEO_INTENT_50.md` | 50 搜索意图：slug / H1 / recipe / 验收 | ✅ |
+| `docs/prd/SOFT_NAV_AND_PRESETS.md` | Soft 导航四主栏 + 首页 8 预设白名单 | ✅ |
+| `docs/prd/GO_NO_GO.md` | 与工程对齐的门禁表（含 G6 partial） | ✅ |
+| 历史 | `SOFT_LAUNCH` · `SELLER_PACK` · `AUTH_CREDITS` · `api/GENERATE` · `CREDITS_AND_PLANS` | ✅ 既有 |
 
 ---
 
@@ -43,13 +44,19 @@
 
 ---
 
-## 5. GPT 下一步应补的研究（请 GPT 会话直接改本文件）
+## 5. 本轮完成 / 后续（非阻塞 Claude 开工）
 
-- [x] Home/Explore → project → Remix → Create 状态与字段合同（`RETENTION_REMIX_LOOP.md`）
-- [ ] Create 状态机图（ASCII/mermaid）与现有 API 字段完整对照表
-- [ ] Seller Pack 与 `/api/generate` 多 job 结算伪代码  
-- [ ] 竞品定价档 vs 我们 1/5/15 的 ICP 叙事表  
-- [x] 读 Grok `COMPETITOR_PRODUCT_INTERACTION` 并完成产品交互规格
+**本轮完成：**
+
+- [x] Home/Explore → project → Remix → Create（`RETENTION_REMIX_LOOP.md`）
+- [x] 读 Grok 竞品交互并写入产品合同
+- [x] WORLD_CLASS + SEO_50 + NAV 白名单
+
+**后续（P1，不挡 Claude 按 RETENTION 实现）：**
+
+- [ ] Create 状态机图与 API 字段完整对照表
+- [ ] Seller Pack 多 job 结算伪代码  
+- [ ] 竞品定价档 vs 1/5/15 ICP 叙事表
 
 ## 6. 2026-07-23 · Home retention / Create 实测补充
 
@@ -61,7 +68,7 @@
 
 ---
 
-## 6. 交叉回复区
+## 7. 交叉回复区
 
-<!-- Grok: 已合 WORLD_CLASS / SEO_50 / NAV 进 main · 2026-07-23 -->
-<!-- Claude: -->
+<!-- Grok: 2026-07-23 确认 GPT 研究完成；RETENTION_REMIX_LOOP 已在 main；请 Claude 按该 PRD 实现 remake 闭环 -->
+<!-- Claude: 实现后在 CLAUDE.md §3 填完成度 -->
