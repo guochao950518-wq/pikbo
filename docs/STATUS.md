@@ -12,16 +12,16 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 
 | ID | Task | Owner | Status | Branch | Notes |
 |---|---|---|---|---|---|
-| GO | Public pikbo.ai Mode B | boss+all | **blocked** | — | G1–G7 must Pass; roast 4/10 shell |
-| G1 | Nav whitelist / kill empty doors | Claude | todo | agent/claude/shell-triage | GPT specs nav list |
-| G2 | ≤8 hero presets, unique demos | Claude | todo | agent/claude/shell-triage | kill shared-loop wall |
-| G3 | Official demos copy (no fake UGC) | Codex | todo | agent/gpt/shell-honesty-copy | after/with GPT |
-| G4 | Zero 404 on linked URLs | Claude | todo | agent/claude/shell-triage | /for/etsy* 404 now |
-| G5 | Plain-language ICP + meta | Codex | todo | agent/gpt/shell-honesty-copy | no eng-speak hero |
-| G6 | 3 live toy gens + 1 refund | any | todo | — | log in HANDOFF |
-| G7 | build + prod no devTopup | Claude | todo | agent/claude/shell-triage | |
-| P-GO | GO_NO_GO + nav/preset whitelist PRD | GPT | **doing** | agent/gpt/go-no-go-soft | **DISPATCH emergency** |
-| P-COPY | Shell honesty copy pass | Codex | todo | agent/gpt/shell-honesty-copy | after P-GO |
+| GO | Public pikbo.ai Mode B | boss+all | **blocked** | — | G3/G5/G6 still red; public NO-GO |
+| G1 | Nav whitelist / kill empty doors | Claude | **review** | main (shell-triage) | SOFT PASS; GPT formal whitelist open |
+| G2 | ≤8 hero presets, unique demos | Claude | **review** | main | SOFT PASS unique≤8; GPT pick exact 8 |
+| G3 | Official demos copy (no fake UGC) | Codex | todo | agent/gpt/shell-honesty-copy | **still red — paste Codex** |
+| G4 | Zero 404 on linked URLs | Claude | **review** | main | redirects in next.config |
+| G5 | Plain-language ICP + meta | Codex | todo | agent/gpt/shell-honesty-copy | **still red — paste Codex** |
+| G6 | 3 live toy gens + 1 refund | any | todo | — | **still red — hand test** |
+| G7 | build + prod no devTopup | Claude | **review** | main | topup hard-off prod |
+| P-GO | GO_NO_GO + nav/preset whitelist PRD | GPT | **doing** | agent/gpt/go-no-go-soft | **STILL NEED PASTE TO GPT** |
+| P-COPY | Shell honesty copy pass | Codex | todo | agent/gpt/shell-honesty-copy | **STILL NEED PASTE TO CODEX** |
 | T1 | Multi-agent collab protocol + board | Grok | done | main | COLLAB.md + STATUS + HANDOFF |
 | T2 | Real fal sample clips / homepage demos | GPT | done | agent/gpt/homepage-demos | 6 original encoded demos; cached/no FAL cost; verified fal renders can replace assets later |
 | T3 | Keyword + preset expansion (long-tail SEO) | Claude | done | agent/claude/seo-keywords | +use-cases + toy-types |

@@ -13,6 +13,13 @@ Newest first. One block per meaningful landing.
 - **Verified:** eslint changed files, `tsc --noEmit`, `next build` green (71 routes).
 - **Remaining for GPT whitelist:** exact 8 preset slug list (`docs/prd/SOFT_NAV_AND_PRESETS.md`), formal G1/G2 Pass in GO_NO_GO; Codex honesty copy G3/G5; hand test G6.
 
+### 2026-07-23 — [grok] merge shell-triage · G1/G2/G4/G7 soft yellow
+- Merged `agent/claude/shell-triage` @ `fbe3bd6` → main (fast-forward).
+- Homepage ≤8 unique demo feed; Lab showcase honesty partial; `/for/*` short slug redirects; video `preload=metadata` + concurrent play cap; prod topup hard-off.
+- Earlier same day: soft primary nav + More; `creditsRefunded` client honesty (`237068e`/`7250d17`).
+- **Still NO-GO public:** G3/G5 need Codex paste; G6 hand test; GPT formal whitelist PRD not pushed yet.
+- Boss: paste `docs/PASTE_TO_GPT_CODEX_CLAUDE.md` ①② into GPT/Codex now.
+
 ### 2026-07-23 — [grok] NO-GO public launch · emergency dispatch GPT/Codex/Claude
 - **Ruling:** Public `pikbo.ai` is **NO-GO** until G1–G7 green. Not a Stripe issue — empty nav, shared demo wall, footer 404s, unrun hand tests.
 - Evidence: `docs/BRUTAL_EXPERT_ROAST_2026-07-23.md` · Gate: `docs/prd/GO_NO_GO.md` · Board: `docs/DISPATCH.md`
