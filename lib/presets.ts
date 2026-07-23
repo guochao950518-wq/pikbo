@@ -855,6 +855,196 @@ export const PRESETS: Preset[] = [
     duration: 5,
     aspectRatio: "16:9",
   },
+  {
+    slug: "melt-and-reform",
+    emoji: "🫠",
+    name: "Melt & Reform",
+    gradient: "linear-gradient(135deg,#c8ff3d,#7fe6b4)",
+    category: "comealive",
+    audience: "collector",
+    tagline: "Your figure melts into liquid, then snaps back — the satisfying loop.",
+    h1: "Make a Melt-and-Reform Toy Video From One Photo",
+    seoTitle: "Melt & Reform Toy Video Effect From One Photo | Pikbo",
+    seoDescription:
+      "Turn one toy photo into a satisfying melt-and-reform loop. The figure melts into liquid then reassembles — a scroll-stopping effect for Reels and TikTok.",
+    intro:
+      "The melt-and-reform loop is one of the most re-watched effects on short video. Pikbo takes a single photo of the figure you own and turns it into a smooth melt into glossy liquid that snaps back into the figure.",
+    body: [
+      "Because the transformation is generated, the reformed figure can drift from your real sculpt and paint — treat it as a stylized effect, not a product-accurate render.",
+      "Works great for glossy vinyl, resin, and blind box figures where the liquid look reads clearly. Export vertical for the loop feeds.",
+    ],
+    keywords: [
+      "melt toy video effect",
+      "toy transformation video from photo",
+      "satisfying melt reform video",
+    ],
+    faq: [
+      {
+        q: "Is the reformed figure exactly my toy?",
+        a: "The upload guides shape and color, but a generated transformation can change sculpt and details. Use it as a stylized effect rather than a listing shot.",
+      },
+      {
+        q: "What toy works best?",
+        a: "Glossy vinyl and resin read the liquid melt most clearly. A clean, front-facing photo gives the smoothest loop.",
+      },
+    ],
+    promptTemplate:
+      "The collectible figure slowly melts into a pool of glossy liquid of its own colors, then the liquid swirls back upward and reforms into the same figure, smooth satisfying transformation loop, clean studio backdrop, soft reflective lighting, the reformed figure keeps its recognizable shape and colors.",
+    duration: 5,
+    aspectRatio: "9:16",
+  },
+  {
+    slug: "bullet-time-orbit",
+    emoji: "🕶️",
+    name: "Bullet-Time Orbit",
+    gradient: "linear-gradient(135deg,#74e4ff,#a855f7)",
+    category: "showcase",
+    audience: "collector",
+    tagline: "Freeze the moment and orbit the figure — cinematic bullet-time.",
+    h1: "Make a Bullet-Time Orbit Toy Video From One Photo",
+    seoTitle: "Bullet-Time Orbit Toy Video Effect From One Photo | Pikbo",
+    seoDescription:
+      "Turn one toy photo into a cinematic bullet-time orbit. The camera freezes the figure and sweeps around it — a dramatic hero shot for your feed.",
+    intro:
+      "Bullet-time is the freeze-and-orbit move made famous by action films. Pikbo generates it from one photo of your figure: the moment holds while the camera sweeps a dramatic arc around the piece.",
+    body: [
+      "It is the most cinematic way to present a grail piece without a multi-camera rig or a turntable.",
+      "Best on figures with a strong silhouette and pose. The orbit is a stylized camera move; check the result before using it commercially.",
+    ],
+    keywords: [
+      "bullet time toy video",
+      "orbit camera toy video from photo",
+      "cinematic figure hero shot",
+    ],
+    faq: [
+      {
+        q: "Do I need multiple cameras?",
+        a: "No. Pikbo generates the orbiting camera move from a single photo — no rig required.",
+      },
+      {
+        q: "Which figures look best?",
+        a: "Dynamic poses and strong silhouettes read best as the camera sweeps around them.",
+      },
+    ],
+    promptTemplate:
+      "A dramatic bullet-time camera move that freezes the collectible figure mid-moment while the camera sweeps in a smooth arc around it, shallow depth of field, cinematic key lighting, subtle motion trails in the background, the figure stays sharp, centered, and keeps its shape and colors.",
+    duration: 5,
+    aspectRatio: "16:9",
+  },
+  {
+    slug: "desk-adventure",
+    emoji: "🖇️",
+    name: "Desk Adventure",
+    gradient: "linear-gradient(135deg,#ffd36a,#ff9f6e)",
+    category: "comealive",
+    audience: "collector",
+    tagline: "Your figure comes alive and explores your desk — tiny POV adventure.",
+    h1: "Make a Desk Adventure Toy Video From One Photo",
+    seoTitle: "Desk Adventure Toy Video Effect From One Photo | Pikbo",
+    seoDescription:
+      "Turn one toy photo into a playful desk adventure — the figure comes alive and explores a giant everyday world. A charming come-alive clip for socials.",
+    intro:
+      "What if your figure came alive when you left the room? Pikbo turns one photo into a playful desk adventure — the toy wanders a giant everyday landscape of pens, cups, and keyboards.",
+    body: [
+      "The tiny-explorer angle is endlessly shareable and gives even a simple figure a story.",
+      "The scenery is generated around your figure; the motion is a stylized effect, so review before commercial use.",
+    ],
+    keywords: [
+      "toy comes alive video",
+      "tiny toy adventure video from photo",
+      "figure desk adventure video",
+    ],
+    faq: [
+      {
+        q: "Does it keep my figure?",
+        a: "It animates the figure from your photo and builds a scene around it. Generated motion and scenery can vary, so review the clip.",
+      },
+      {
+        q: "Best photo for this?",
+        a: "A clear, full-body photo of the figure gives the model enough to animate the little explorer.",
+      },
+    ],
+    promptTemplate:
+      "The collectible figure comes to life and takes tiny curious steps across a giant everyday desk landscape of pens, mugs, and a keyboard, warm natural window light, shallow macro depth of field, playful storybook mood, the figure keeps its recognizable shape and colors.",
+    duration: 5,
+    aspectRatio: "9:16",
+  },
+  {
+    slug: "confetti-drop-reveal",
+    emoji: "🎊",
+    name: "Confetti Drop Reveal",
+    gradient: "linear-gradient(135deg,#ff6ea8,#ffd36a)",
+    category: "unboxing",
+    audience: "seller",
+    tagline: "Restock energy — confetti bursts and reveals the figure for drop day.",
+    h1: "Make a Confetti Drop-Day Toy Reveal Video From One Photo",
+    seoTitle: "Confetti Toy Reveal Video for Drop Day From One Photo | Pikbo",
+    seoDescription:
+      "Turn one toy photo into a celebratory confetti reveal for restocks and drop days. A high-energy announcement clip for TikTok Shop and Instagram.",
+    intro:
+      "Drop days and restocks live and die on energy. Pikbo turns one photo of your figure into a confetti-burst reveal built to announce a launch and stop the scroll.",
+    body: [
+      "The celebratory beat frames the figure as the moment, perfect for 'back in stock' and 'available now' posts.",
+      "Paid clips are cleared for commercial use — keep the reveal honest to the product you're actually selling.",
+    ],
+    keywords: [
+      "toy drop day reveal video",
+      "confetti product reveal video from photo",
+      "restock announcement video toy",
+    ],
+    faq: [
+      {
+        q: "Can I use it to announce a restock?",
+        a: "Yes — it's built for drop-day and restock posts. Paid clips are cleared for commercial use.",
+      },
+      {
+        q: "What photo works best?",
+        a: "A clean hero shot of the figure on a simple background lets the confetti reveal land cleanly.",
+      },
+    ],
+    promptTemplate:
+      "A burst of colorful confetti and soft bokeh lights explodes around the collectible figure as it is revealed on a clean pedestal, celebratory drop-day energy, punchy commercial lighting, the figure stays centered, sharp, and keeps its shape and colors.",
+    duration: 5,
+    aspectRatio: "9:16",
+  },
+  {
+    slug: "snow-globe-world",
+    emoji: "🔮",
+    name: "Snow Globe World",
+    gradient: "linear-gradient(135deg,#74e4ff,#eafcb0)",
+    category: "scene",
+    audience: "collector",
+    tagline: "Seal your figure inside a magical snow-globe world.",
+    h1: "Make a Snow Globe Toy Video From One Photo",
+    seoTitle: "Snow Globe Toy Video Effect From One Photo | Pikbo",
+    seoDescription:
+      "Turn one toy photo into a magical snow-globe world — the figure sealed inside drifting snow and soft glass light. A cozy collectible clip for socials.",
+    intro:
+      "A snow globe makes any figure feel precious. Pikbo places the toy you own inside a magical glass globe with drifting snow, soft light, and a tiny world around it — all from one photo.",
+    body: [
+      "The cozy, keepsake mood suits holiday posts, gifts, and shelf features.",
+      "The globe and snow are generated around your figure; treat the scene as a stylized effect and review before commercial use.",
+    ],
+    keywords: [
+      "snow globe toy video",
+      "figure in snow globe video from photo",
+      "cozy collectible video effect",
+    ],
+    faq: [
+      {
+        q: "Does my figure stay recognizable?",
+        a: "It animates from your photo inside the globe; generated snow and glass can vary, so review the clip.",
+      },
+      {
+        q: "Good for holiday posts?",
+        a: "Yes — the snow-globe mood is made for holiday, gift, and keepsake content.",
+      },
+    ],
+    promptTemplate:
+      "The collectible figure stands inside a magical glass snow globe with gently drifting snow, a tiny detailed base world around its feet, soft warm light refracting through the glass, cozy keepsake mood, the figure keeps its recognizable shape and colors.",
+    duration: 5,
+    aspectRatio: "1:1",
+  },
 ];
 
 // Shared objection-handling FAQ appended to every effect page (L2).
