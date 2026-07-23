@@ -202,7 +202,13 @@ export default async function PricingPage({
                 <Link href="/create?source=pricing-bottom">Animate one SKU</Link>
               </Button>
               <Button asChild variant="secondary">
-                <Link href="/community">See official examples</Link>
+                <Link href="/modules">Toy Modules</Link>
+              </Button>
+              <Button asChild variant="secondary">
+                <Link href="/create?mode=seller-pack">Seller Pack</Link>
+              </Button>
+              <Button asChild variant="secondary">
+                <Link href="/community">Lab examples</Link>
               </Button>
             </div>
           </CardHeader>

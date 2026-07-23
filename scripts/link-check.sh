@@ -24,13 +24,15 @@ check() {
 
 echo "Pikbo G4 link-check @ ${BASE}"
 
-# Critical path
-for p in / /create /effects /tools /library /pricing /community /explore /api/health /api/me; do
+# Critical path (+ suite Modules wall)
+for p in / /create /modules /apps /effects /tools /library /pricing /community /explore /login /status /api/health /api/me; do
   check "$p"
 done
 
 # Wave A Seller Pack + Explore categories
 check "/create?mode=seller-pack"
+check "/create?job=etsy-listing"
+check "/create?job=tiktok-hook"
 check "/explore?cat=listing"
 check "/explore?cat=unboxing"
 check "/explore?cat=come-alive"
@@ -84,8 +86,8 @@ do
   check "$p"
 done
 
-# Legal / soft surfaces
-for p in /privacy /terms /guides /models /cinema /image /supercomputer; do
+# Legal / soft surfaces (+ preview hubs must still 200)
+for p in /privacy /terms /guides /models /cinema /image /supercomputer /flow; do
   check "$p"
 done
 

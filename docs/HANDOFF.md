@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Suite IA: Modules in link-check, footer, pricing, Lab
+- link-check: `/modules` `/apps` `/login` `/status` job deep-links `/flow`.
+- Footer Product: Modules · Seller Pack · Lab · Apps; sitemap includes `/modules`.
+- Pricing bottom CTAs + Lab sticky: Modules / Seller Pack doors.
+- Effects/Flow suite chrome already on main (GenerateSuiteChrome + chips).
+- Verified: typecheck · engine-smoke · lint.
+
 ### 2026-07-24 — [grok] Suite honesty: Modules JOB/PREVIEW + PRIMARY_NAV freeze
 - Workflows: Image/Batch → `live:false` Preview (not Seedance job blocks).
 - Modules: Job blocks vs Preview shelves; Lab proof still labeled; T6 note on deliver step.

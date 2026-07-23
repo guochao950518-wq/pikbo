@@ -1301,5 +1301,27 @@ assert.match(
   /\/modules/
 );
 
+// Suite IA consistency: Modules doors + G4 inventory
+const linkCheckSrc = fs.readFileSync(
+  join(root, "scripts/link-check.sh"),
+  "utf8"
+);
+assert.match(linkCheckSrc, /\/modules/);
+assert.match(linkCheckSrc, /\/apps/);
+assert.match(linkCheckSrc, /\/status/);
+assert.match(linkCheckSrc, /job=etsy-listing/);
+const footerSrc = fs.readFileSync(join(root, "components/Footer.tsx"), "utf8");
+assert.match(footerSrc, /\/modules/);
+assert.match(footerSrc, /seller-pack|Seller Pack/);
+assert.match(sitemapSrc, /\/modules/);
+assert.match(
+  fs.readFileSync(join(root, "app/pricing/page.tsx"), "utf8"),
+  /\/modules/
+);
+assert.match(
+  fs.readFileSync(join(root, "app/community/page.tsx"), "utf8"),
+  /\/modules/
+);
+
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

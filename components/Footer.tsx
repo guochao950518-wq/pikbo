@@ -46,9 +46,13 @@ export function Footer() {
             <ul className="space-y-2 text-sm text-[var(--fg-muted)]">
               {[
                 ["/create", "Generate"],
+                ["/modules", "Modules"],
+                ["/create?mode=seller-pack", "Seller Pack"],
                 ["/library", "Library"],
                 ["/pricing", "Pricing"],
                 ["/effects", "Presets"],
+                ["/community", "Lab"],
+                ["/apps", "Apps"],
                 ["/tools", "Tools"],
                 ["/guides", "Guides"],
                 ["/privacy", "Privacy"],

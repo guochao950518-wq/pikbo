@@ -34,9 +34,21 @@ export default function CommunityPage() {
               See what each toy-video recipe is designed to make
             </h1>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Link href="/create" className="btn btn-primary !px-4 !py-2 text-xs">
               Generate
+            </Link>
+            <Link
+              href="/modules"
+              className="btn btn-ghost !px-3 !py-2 text-xs"
+            >
+              Modules
+            </Link>
+            <Link
+              href="/create?mode=seller-pack"
+              className="btn btn-ghost !px-3 !py-2 text-xs"
+            >
+              Seller Pack
             </Link>
             <Link
               href="/effects"
