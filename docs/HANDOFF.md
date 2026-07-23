@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] ASSET_NOT_FOUND recovery + Library quota save
+- `postGenerateWithRetry`: on ASSET_NOT_FOUND + assetId, one re-POST with `fallbackImage`.
+- Create / Landing / Batch pass local still as fallback (Seller Pack mid-queue safe).
+- `saveHistory`: QuotaExceeded → strip heavy inputImage → half-size last resort.
+- Verified: engine-smoke · typecheck · lint.
+
 ### 2026-07-24 — [grok] Mobile Modules tab + Guides/Tools suite doors
 - `MOBILE_NAV` freeze in softLaunch; bottom bar Home · Modules · Generate · Library · Profile.
 - Lab remains desktop PRIMARY + More/footer (not bottom-tab peer).
