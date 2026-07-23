@@ -1,6 +1,6 @@
 # Pikbo board — claim before you code
 
-**Last human intent:** NEW roles — Claude=all code; GPT=PRD/structure/API design; Grok=creative/growth/coordination. See docs/ROLES.md.
+**Last human intent:** NO-GO public launch until shell triage. Dispatch GPT+Codex+Claude NOW. See docs/DISPATCH.md + docs/prd/GO_NO_GO.md.
 
 Update this file in the same PR/commit as your work start/finish.
 
@@ -8,10 +8,20 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 
 ---
 
-## Now
+## Now — LAUNCH GATE (public = NO-GO)
 
 | ID | Task | Owner | Status | Branch | Notes |
 |---|---|---|---|---|---|
+| GO | Public pikbo.ai Mode B | boss+all | **blocked** | — | G1–G7 must Pass; roast 4/10 shell |
+| G1 | Nav whitelist / kill empty doors | Claude | todo | agent/claude/shell-triage | GPT specs nav list |
+| G2 | ≤8 hero presets, unique demos | Claude | todo | agent/claude/shell-triage | kill shared-loop wall |
+| G3 | Official demos copy (no fake UGC) | Codex | todo | agent/gpt/shell-honesty-copy | after/with GPT |
+| G4 | Zero 404 on linked URLs | Claude | todo | agent/claude/shell-triage | /for/etsy* 404 now |
+| G5 | Plain-language ICP + meta | Codex | todo | agent/gpt/shell-honesty-copy | no eng-speak hero |
+| G6 | 3 live toy gens + 1 refund | any | todo | — | log in HANDOFF |
+| G7 | build + prod no devTopup | Claude | todo | agent/claude/shell-triage | |
+| P-GO | GO_NO_GO + nav/preset whitelist PRD | GPT | **doing** | agent/gpt/go-no-go-soft | **DISPATCH emergency** |
+| P-COPY | Shell honesty copy pass | Codex | todo | agent/gpt/shell-honesty-copy | after P-GO |
 | T1 | Multi-agent collab protocol + board | Grok | done | main | COLLAB.md + STATUS + HANDOFF |
 | T2 | Real fal sample clips / homepage demos | GPT | done | agent/gpt/homepage-demos | 6 original encoded demos; cached/no FAL cost; verified fal renders can replace assets later |
 | T3 | Keyword + preset expansion (long-tail SEO) | Claude | done | agent/claude/seo-keywords | +use-cases + toy-types |

@@ -4,6 +4,15 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [grok] NO-GO public launch · emergency dispatch GPT/Codex/Claude
+- **Ruling:** Public `pikbo.ai` is **NO-GO** until G1–G7 green. Not a Stripe issue — empty nav, shared demo wall, footer 404s, unrun hand tests.
+- Evidence: `docs/BRUTAL_EXPERT_ROAST_2026-07-23.md` · Gate: `docs/prd/GO_NO_GO.md` · Board: `docs/DISPATCH.md`
+- **GPT NOW:** branch `agent/gpt/go-no-go-soft` → expand GO_NO_GO + `SOFT_NAV_AND_PRESETS.md` whitelist (paste block in DISPATCH).
+- **Codex NOW:** branch `agent/gpt/shell-honesty-copy` → ICP/meta/Lab honesty (after or parallel safe strings).
+- **Claude NOW:** branch `agent/claude/shell-triage` → cut nav, cap 8 presets, fix 404s, video preload.
+- **Boss:** do **not** public-share domain until gate green; private `*.vercel.app` preview only if needed.
+- Grok will merge triage + flip GO when evidence exists.
+
 ### 2026-07-23 — [gpt] Seller Pack + T5 durable-credit specifications (P4/P5)
 - Paths: `docs/prd/SELLER_PACK.md` and `docs/prd/AUTH_CREDITS.md`; product/data specifications only.
 - Seller Pack contract: one owned toy photo → Listing Spin, Blind-box Reveal, and Social Flash; cached preview costs 0, while three live children cost 30 credits at the current flat rate with no bundle discount.
