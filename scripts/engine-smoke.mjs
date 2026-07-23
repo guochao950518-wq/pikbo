@@ -934,5 +934,13 @@ const retryRoute = fs.readFileSync(
 assert.match(retryRoute, /forkRetryJob/);
 assert.doesNotMatch(retryRoute, /NOT_IMPLEMENTED/);
 
+// Phase F — Create/Seller mobile craft (390px ownership + sticky CTA)
+assert.match(createStudio, /create-ownership/);
+assert.match(createStudio, /create-photo-step/);
+assert.match(createStudio, /Download policy/);
+assert.match(batchStudio, /batch-ownership/);
+assert.match(batchStudio, /bottom-\[4\.75rem\]/);
+assert.match(batchStudio, /api\/downloads/);
+
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

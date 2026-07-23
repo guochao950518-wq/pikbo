@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [grok] Phase F mobile Create/Seller sticky craft
+- Create 390px sticky: ownership checkbox + photo scroll target; launch-8 chips + More recipes on mobile.
+- Result metadata shows Settlement + Download policy.
+- Seller Pack/Batch sticky mobile CTA (ownership + run); desktop primary hidden on small screens.
+- Batch children store requestId and open via `/api/downloads` when allowed.
+- Verified: typecheck · engine-smoke. Next: performance/proof labels or remaining polish.
+
 ### 2026-07-23 — [grok] Library Free-download honesty + local job retry
 - Library blocks Free live raw Open/Download/Copy (T6 parity with Create); uses `/api/downloads/[requestId]` when present.
 - `historyItemDownloadAllowed` shared policy in `lib/history.ts`.

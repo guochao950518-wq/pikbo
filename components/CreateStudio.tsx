@@ -1103,7 +1103,7 @@ export function CreateStudio({
           )}
 
           {/* Step 1 — Photo */}
-          <div>
+          <div id="create-photo-step">
             <div className="mb-2 flex items-center justify-between gap-2">
               <label className="text-xs font-bold uppercase tracking-wide text-[var(--fg-muted)]">
                 <span className="mr-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--mint)] text-[9px] text-black lg:hidden">
@@ -1223,7 +1223,10 @@ export function CreateStudio({
               className="mb-2 w-full rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] px-2.5 py-2 text-xs outline-none focus:border-[var(--brand)]"
             />
             <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {featuredPresets.slice(0, 16).map((p) => (
+              {(showAllRecipes
+                ? featuredPresets
+                : featuredPresets.slice(0, 8)
+              ).map((p) => (
                 <button
                   key={p.slug}
                   type="button"
@@ -1244,6 +1247,17 @@ export function CreateStudio({
                 </button>
               ))}
             </div>
+            {!presetFilter.trim() && (
+              <button
+                type="button"
+                onClick={() => setShowAllRecipes((v) => !v)}
+                className="mt-2 w-full rounded-lg border border-[var(--border)] px-2 py-1.5 text-[11px] font-semibold text-[var(--fg-muted)] hover:border-[var(--mint)]/40 hover:text-[var(--mint)]"
+              >
+                {showAllRecipes
+                  ? "Show launch recipes only"
+                  : "More recipes · full catalog"}
+              </button>
+            )}
             <Link
               href="/create?mode=seller-pack"
               className="mt-2 inline-flex text-[11px] font-semibold text-[var(--mint)] hover:underline"
@@ -1527,7 +1541,10 @@ export function CreateStudio({
             )}
           </div>
 
-          <label className="flex cursor-pointer items-start gap-2 rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] px-3 py-2.5 text-[11px] leading-snug text-[var(--fg-muted)]">
+          <label
+            id="create-ownership"
+            className="flex cursor-pointer items-start gap-2 rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] px-3 py-2.5 text-[11px] leading-snug text-[var(--fg-muted)]"
+          >
             <input
               type="checkbox"
               checked={ownsRights}
@@ -1909,10 +1926,20 @@ export function CreateStudio({
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-[var(--fg-dim)]">This version</dt>
+                    <dt className="text-[var(--fg-dim)]">Settlement</dt>
                     <dd className="font-semibold text-[var(--fg)]">
                       {activeVersion?.creditState ||
                         (demo ? "0 cached" : "10 used")}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-[var(--fg-dim)]">Download policy</dt>
+                    <dd className="font-semibold text-[var(--fg)]">
+                      {downloadAllowed
+                        ? demo
+                          ? "Demo open"
+                          : "Allowed"
+                        : "Blocked · Free raw"}
                     </dd>
                   </div>
                   {typeof activeVersion?.costCredits === "number" ? (
@@ -2024,22 +2051,78 @@ export function CreateStudio({
       </div>
 
       {/* ── Sticky mobile primary CTA — sits above AppShell bottom tab nav ── */}
-      <div className="fixed inset-x-0 bottom-[4.75rem] z-40 border-t border-white/10 bg-black/90 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-md lg:hidden">
-        <button
-          type="button"
-          onClick={() => {
-            void generate();
-            if (status === "generating" || canGenerate) {
+      <div className="fixed inset-x-0 bottom-[4.75rem] z-40 border-t border-white/10 bg-black/90 px-4 py-2.5 pb-[max(0.6rem,env(safe-area-inset-bottom))] backdrop-blur-md lg:hidden">
+        {/* Phase F 390px: ownership + Generate without traversing the full catalog */}
+        {image && !ownsRights ? (
+          <label className="mb-2 flex cursor-pointer items-start gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-2 text-[10px] leading-snug text-[var(--fg-muted)]">
+            <input
+              type="checkbox"
+              checked={ownsRights}
+              onChange={(e) => setOwnsRights(e.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--mint)]"
+            />
+            <span>
+              I own this photo and may animate this toy.{" "}
+              <span
+                role="link"
+                tabIndex={0}
+                className="cursor-pointer text-[var(--mint)] underline"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  document
+                    .getElementById("create-ownership")
+                    ?.scrollIntoView({ behavior: "smooth", block: "center" });
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    document
+                      .getElementById("create-ownership")
+                      ?.scrollIntoView({ behavior: "smooth", block: "center" });
+                  }
+                }}
+              >
+                Full terms
+              </span>
+            </span>
+          </label>
+        ) : null}
+        {!image ? (
+          <button
+            type="button"
+            onClick={() =>
               document
-                .getElementById("create-result")
-                ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                .getElementById("create-photo-step")
+                ?.scrollIntoView({ behavior: "smooth", block: "center" })
             }
-          }}
-          disabled={!canGenerate}
-          className="btn btn-primary w-full py-3 text-sm disabled:opacity-50"
-        >
-          {primaryLabel}
-        </button>
+            className="btn btn-primary w-full py-3 text-sm"
+          >
+            Add a toy photo first
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => {
+              if (!ownsRights) {
+                document
+                  .getElementById("create-ownership")
+                  ?.scrollIntoView({ behavior: "smooth", block: "center" });
+                return;
+              }
+              void generate();
+              if (status === "generating" || canGenerate) {
+                document
+                  .getElementById("create-result")
+                  ?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }
+            }}
+            disabled={busy || !ownsRights || (mode === "i2v" && !image)}
+            className="btn btn-primary w-full py-3 text-sm disabled:opacity-50"
+          >
+            {primaryLabel}
+          </button>
+        )}
       </div>
     </div>
   );

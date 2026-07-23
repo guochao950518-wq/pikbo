@@ -47,6 +47,7 @@ type Job = {
     | "10 restored"
     | "refund unconfirmed"
     | "not charged";
+  requestId?: string;
   retryCount: number;
 };
 
@@ -297,6 +298,8 @@ export function BatchStudio({
             : jobAspect,
         watermark: Boolean(data.watermark),
         creditState: data.demo ? "0 cached" : "10 used",
+        requestId:
+          typeof data.requestId === "string" ? data.requestId : undefined,
       },
       stopQueue: false,
     };
@@ -468,8 +471,18 @@ export function BatchStudio({
     ownsRights &&
     liveQuoteCovered;
 
+  const primaryBatchLabel = running
+    ? `${sellerPackActive ? "Seller Pack" : "Batch"} running… ${doneCount}/${jobs.length}`
+    : !image
+      ? "Add a toy photo first"
+      : !ownsRights
+        ? "Confirm ownership to continue"
+        : demoMode
+          ? `${sellerPackActive ? "Preview Seller Pack" : "Run batch"} · ${selected.length} · cached free`
+          : `${sellerPackActive ? "Run Seller Pack" : "Run batch"} · ${selected.length} · ${cost} credits`;
+
   return (
-    <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_1.1fr]">
+    <div className="mt-8 grid gap-6 pb-36 lg:grid-cols-[1fr_1.1fr] lg:pb-0">
       <div className="space-y-4">
         {sellerPackActive && (
           <div className="rounded-xl border border-[var(--mint)]/30 bg-[var(--mint)]/[0.06] px-3 py-2.5 text-xs text-[var(--fg-muted)]">
@@ -710,7 +723,10 @@ export function BatchStudio({
           )}
         </div>
 
-        <label className="flex cursor-pointer items-start gap-2 rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] px-3 py-2 text-[11px] leading-snug text-[var(--fg-muted)]">
+        <label
+          id="batch-ownership"
+          className="flex cursor-pointer items-start gap-2 rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] px-3 py-2 text-[11px] leading-snug text-[var(--fg-muted)]"
+        >
           <input
             type="checkbox"
             checked={ownsRights}
@@ -727,13 +743,9 @@ export function BatchStudio({
           type="button"
           disabled={!canRun}
           onClick={() => void runBatch()}
-          className="btn btn-primary w-full disabled:opacity-50"
+          className="btn btn-primary hidden w-full disabled:opacity-50 lg:flex"
         >
-          {running
-            ? `${sellerPackActive ? "Seller Pack" : "Batch"} running… ${doneCount}/${jobs.length}`
-            : demoMode
-              ? `${sellerPackActive ? "Preview Seller Pack" : "Run batch"} · ${selected.length} · cached demos free`
-              : `${sellerPackActive ? "Run Seller Pack" : "Run batch"} · ${selected.length} · ${cost} credits`}
+          {primaryBatchLabel}
         </button>
         {!liveQuoteCovered && sellerPackActive ? (
           <div className="rounded-xl border border-amber-300/25 bg-amber-300/[0.06] p-3 text-xs text-amber-100">
@@ -905,7 +917,11 @@ export function BatchStudio({
                 </Link>
                 {j.demo || !j.watermark ? (
                   <a
-                    href={j.videoUrl}
+                    href={
+                      j.requestId
+                        ? `/api/downloads/${encodeURIComponent(j.requestId)}`
+                        : j.videoUrl
+                    }
                     target="_blank"
                     rel="noreferrer"
                     className="text-[10px] text-[var(--mint)] hover:underline"
@@ -934,6 +950,41 @@ export function BatchStudio({
             )}
           </div>
         ))}
+      </div>
+
+      {/* Phase F: sticky mobile Seller Pack / Batch CTA above tab nav */}
+      <div className="fixed inset-x-0 bottom-[4.75rem] z-40 border-t border-white/10 bg-black/90 px-4 py-2.5 pb-[max(0.6rem,env(safe-area-inset-bottom))] backdrop-blur-md lg:hidden">
+        {image && !ownsRights ? (
+          <label className="mb-2 flex cursor-pointer items-start gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-2 text-[10px] leading-snug text-[var(--fg-muted)]">
+            <input
+              type="checkbox"
+              checked={ownsRights}
+              onChange={(e) => setOwnsRights(e.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--mint)]"
+            />
+            <span>I own this photo for every pack child.</span>
+          </label>
+        ) : null}
+        <button
+          type="button"
+          disabled={running || (Boolean(image) && !canRun)}
+          onClick={() => {
+            if (!image) {
+              window.scrollTo({ top: 0, behavior: "smooth" });
+              return;
+            }
+            if (!ownsRights) {
+              document
+                .getElementById("batch-ownership")
+                ?.scrollIntoView({ behavior: "smooth", block: "center" });
+              return;
+            }
+            if (canRun) void runBatch();
+          }}
+          className="btn btn-primary w-full py-3 text-sm disabled:opacity-50"
+        >
+          {primaryBatchLabel}
+        </button>
       </div>
     </div>
   );
