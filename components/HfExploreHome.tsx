@@ -8,11 +8,20 @@ import { getPreset } from "@/lib/presets";
 
 /** Soft concurrent autoplay budget — pause extras when many tiles enter view. */
 const playingVideos = new Set<HTMLVideoElement>();
-const MAX_PLAYING = 2;
+const MAX_PLAYING_DESKTOP = 2;
+const MAX_PLAYING_MOBILE = 1;
+
+function maxPlayingBudget() {
+  if (typeof window === "undefined") return MAX_PLAYING_DESKTOP;
+  return window.matchMedia("(max-width: 768px)").matches
+    ? MAX_PLAYING_MOBILE
+    : MAX_PLAYING_DESKTOP;
+}
 
 function claimPlay(v: HTMLVideoElement) {
   if (playingVideos.has(v)) return;
-  if (playingVideos.size >= MAX_PLAYING) {
+  const cap = maxPlayingBudget();
+  if (playingVideos.size >= cap) {
     const oldest = playingVideos.values().next().value;
     if (oldest && oldest !== v) {
       oldest.pause();

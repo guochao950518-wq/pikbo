@@ -90,12 +90,20 @@ export function ProjectCard({ project }: { project: CommunityProject }) {
             ) : null}
           </p>
         </div>
-        <Link
-          href={project.remakeHref}
-          className="shrink-0 rounded-full bg-[var(--mint)] px-3 py-1.5 text-[10px] font-bold uppercase tracking-wide text-black hover:brightness-110"
-        >
-          Try recipe
-        </Link>
+        <div className="flex shrink-0 gap-1.5">
+          <Link
+            href={project.detailHref}
+            className="rounded-full border border-white/15 px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wide text-white/80 hover:border-[var(--mint)]/50 hover:text-[var(--mint)]"
+          >
+            Inside
+          </Link>
+          <Link
+            href={project.remakeHref}
+            className="rounded-full bg-[var(--mint)] px-3 py-1.5 text-[10px] font-bold uppercase tracking-wide text-black hover:brightness-110"
+          >
+            Remix
+          </Link>
+        </div>
       </div>
     </article>
   );

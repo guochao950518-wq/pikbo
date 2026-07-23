@@ -47,8 +47,11 @@ export default function CommunityPage() {
           </div>
         </div>
         <p className="mt-1 text-[11px] text-[var(--fg-dim)]">
-          These are Pikbo product demonstrations—not customer posts. Each clip
-          below is an Official example with its own Lab footage.
+          Official product demos only — not customer posts.{" "}
+          <b className="font-semibold text-[var(--fg-muted)]">
+            Remix = use recipe with your toy photo
+          </b>
+          ; Inside = input, settings, provenance.
         </p>
       </div>
 

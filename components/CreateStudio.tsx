@@ -1377,8 +1377,35 @@ export function CreateStudio({
                     onClick={() => void generate()}
                     className="btn btn-ghost px-4 py-2 text-xs"
                   >
-                    Regenerate
+                    Retry / regenerate
                   </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setVideoUrl(null);
+                      setStatus("idle");
+                      setError(null);
+                      setLastRefunded(false);
+                      toast("Same recipe · ready for another shot");
+                    }}
+                    className="btn btn-ghost px-4 py-2 text-xs"
+                  >
+                    Create variant
+                  </button>
+                  <Link
+                    href="/effects"
+                    className="btn btn-ghost px-4 py-2 text-xs"
+                  >
+                    Another recipe
+                  </Link>
+                  {remix.intent?.sourceProjectSlug ? (
+                    <Link
+                      href={`/projects/${encodeURIComponent(remix.intent.sourceProjectSlug)}`}
+                      className="btn btn-ghost px-4 py-2 text-xs"
+                    >
+                      Open source recipe
+                    </Link>
+                  ) : null}
                   <Link
                     href="/library"
                     className="btn btn-ghost px-4 py-2 text-xs"
