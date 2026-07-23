@@ -86,12 +86,34 @@ export default async function ShowcaseProjectPage({ params }: Props) {
               {project.result}
             </p>
           </div>
-          <Link
-            href={showcaseRecipeHref(project)}
-            className="inline-flex w-full items-center justify-center rounded-full bg-[#c8ff3d] px-7 py-3.5 text-sm font-black text-black transition hover:-translate-y-0.5 sm:w-auto"
-          >
-            Use this recipe
-          </Link>
+          <div className="flex w-full flex-col gap-2 sm:w-auto">
+            <Link
+              href={showcaseRecipeHref(project)}
+              className="inline-flex w-full items-center justify-center rounded-full bg-[#c8ff3d] px-7 py-3.5 text-sm font-black text-black transition hover:-translate-y-0.5"
+            >
+              Use this recipe
+            </Link>
+            <div className="flex flex-wrap gap-2">
+              <Link
+                href="/modules"
+                className="inline-flex flex-1 items-center justify-center rounded-full border border-white/20 px-4 py-2 text-[11px] font-bold text-white/80 hover:border-[#c8ff3d]/40 hover:text-[#c8ff3d]"
+              >
+                Modules
+              </Link>
+              <Link
+                href="/create?mode=seller-pack"
+                className="inline-flex flex-1 items-center justify-center rounded-full border border-white/20 px-4 py-2 text-[11px] font-bold text-white/80 hover:border-[#c8ff3d]/40 hover:text-[#c8ff3d]"
+              >
+                Seller Pack
+              </Link>
+              <Link
+                href="/create?try=1&sample=scout"
+                className="inline-flex flex-1 items-center justify-center rounded-full border border-white/20 px-4 py-2 text-[11px] font-bold text-white/80 hover:border-[#c8ff3d]/40 hover:text-[#c8ff3d]"
+              >
+                Try free
+              </Link>
+            </div>
+          </div>
         </header>
 
         <section
