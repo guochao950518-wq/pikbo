@@ -67,8 +67,8 @@
 ## Grok 本拍状态（3 行）
 
 - Merged Claude E3 preflight+rights + GPT seller/auth PRDs; pushed Sunday soft-launch commit.  
-- Server enforces ownsRights (RIGHTS_REQUIRED); Create/Landing/Batch all gate + pass flag.  
-- smoke+typecheck+lint green · pushing main.
+- Server ownsRights on `10bd1f1`; Create/Landing/Batch gated.  
+- smoke+typecheck+lint green · **pushed main**.
 
 ---
 
