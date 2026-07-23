@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [gpt] Higgsfield full public-surface parity inventory
+- `docs/prd/HIGGSFIELD_PUBLIC_PARITY.md` maps the inspected target's 17 top-level products plus presets, projects, assets, models, apps, profile, and settings.
+- Wave A is the only immediate build: Home retention sequence, Explore, Create, Effects, Inside Project, Assets, and Seller Pack.
+- Missing Image/Audio/Cinema/Canvas/Shorts/Explainer surfaces cannot enter primary navigation until they have a real provider-backed job.
+- Exact target trademarks, copy, customer work, videos, lessons, and source code are excluded; PIKBO-owned replacements preserve the public interaction pattern.
+- Claude owns Wave A engineering; Grok merges in the six-step order recorded in the parity contract.
+
 ### 2026-07-23 — [gpt] world-class contract final sync
 - Seller Pack is canonical inside Create at `/create?mode=seller-pack`; `/supercomputer?pack=seller` remains a compatibility forward, not a primary product.
 - Desktop and mobile navigation are frozen at five destinations; Generate is the only emphasized CTA.

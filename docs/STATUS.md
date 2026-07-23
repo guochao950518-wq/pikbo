@@ -22,6 +22,8 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | G7 | build + prod no devTopup | Claude | **review** | main | topup hard-off prod |
 | P-GO | GO_NO_GO + nav/preset whitelist PRD | GPT | done | agent/gpt/world-class-prd | Formal pass criteria, exact nav, eight proof slugs, route inventory and day-of checklist |
 | W-PRD | World-class product contract, Seller OS, recipe quality, SEO Intent 50 | GPT | done | agent/gpt/world-class-prd | Create canonical Seller Pack, exact 12/8 recipes, five-score proof gate, structured 50-intent map |
+| H-PARITY | Higgsfield complete public-surface inventory and parity contract | GPT | done | agent/gpt/higgsfield-parity-spec | 17 top-level + project/preset/assets surfaces mapped; no copied content or fake doors |
+| H-WAVE-A | Core video parity: Home, Explore, Create, Effects, Project, Assets, Seller Pack | Claude | todo | agent/claude/higgsfield-wave-a | Implement `HIGGSFIELD_PUBLIC_PARITY.md` Wave A before suite expansion |
 | P-COPY | Shell honesty copy pass | Codex | done | main @ `32c634c` | Superseded and completed by the world-class seller copy pass |
 | W-COPY | World-class seller copy, official-demo truth, ROI and 10 intent pages | Codex | done | agent/gpt/world-class-copy | Lint, typecheck, build and rendered metadata/H1 checks passed |
 | T1 | Multi-agent collab protocol + board | Grok | done | main | COLLAB.md + STATUS + HANDOFF |
