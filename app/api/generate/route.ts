@@ -41,6 +41,7 @@ import {
   recordFailedGenerate,
   recordSucceededGenerate,
 } from "@/lib/generationJobs";
+import { getLocalAsset } from "@/lib/localAssets";
 
 export const runtime = "nodejs";
 export const maxDuration = 180;
@@ -82,7 +83,8 @@ export async function POST(req: Request) {
 
   const {
     effect,
-    image,
+    image: imageField,
+    assetId,
     extra,
     duration,
     aspectRatio,
@@ -107,10 +109,35 @@ export async function POST(req: Request) {
       400
     );
   }
+
+  let session = await ensureSession();
+
+  // Phase D: prefer session-local asset over re-posted Base64.
+  let image =
+    typeof imageField === "string" && imageField.startsWith("data:image")
+      ? imageField
+      : undefined;
+  if (typeof assetId === "string" && assetId.startsWith("asset_")) {
+    const asset = getLocalAsset(assetId, session.id);
+    if (!asset) {
+      return err(
+        {
+          error:
+            "Asset missing, expired, or not owned by this session — re-upload the photo",
+          code: "ASSET_NOT_FOUND",
+          session: publicSession(session),
+        },
+        404
+      );
+    }
+    image = asset.dataUrl;
+  }
+
   if (!image || !isValidImageDataUrl(image)) {
     return err(
       {
-        error: "A toy photo is required (JPEG, PNG, WebP, or GIF data URL)",
+        error:
+          "A toy photo is required (JPEG, PNG, WebP, or GIF data URL, or assetId from /api/assets)",
         code: "INVALID_REQUEST",
       },
       400
@@ -122,8 +149,6 @@ export async function POST(req: Request) {
       413
     );
   }
-
-  let session = await ensureSession();
 
   const rl = takeGenerateBudget(session.id, clientIp(req), "gen");
   if (!rl.ok) {

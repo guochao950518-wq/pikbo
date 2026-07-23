@@ -152,6 +152,8 @@ export function CreateStudio({
   });
   const [effect, setEffect] = useState(bootPreset.slug);
   const [image, setImage] = useState<string | null>(null);
+  /** Phase D local asset id — generate prefers assetId over re-posting Base64. */
+  const [assetId, setAssetId] = useState<string | null>(null);
   const [extra, setExtra] = useState(initialPrompt ?? "");
   const [duration, setDuration] = useState<5 | 10>(() => {
     if (remix.intent?.durationSeconds === 10 || remix.intent?.durationSeconds === 5) {
@@ -261,7 +263,7 @@ export function CreateStudio({
     setError(null);
     try {
       const data = await sampleToDataUrl(s.path);
-      setImage(data);
+      await adoptImage(data);
       selectEffect(s.effect);
       // Official Pikbo Lab stills — product-owned samples, not a visitor upload.
       setOwnsRights(true);
@@ -295,11 +297,11 @@ export function CreateStudio({
         const pending = sessionStorage.getItem("pikbo_pending_still");
         if (pending?.startsWith("data:image")) {
           sessionStorage.removeItem("pikbo_pending_still");
-          setImage(pending);
+          void adoptImage(pending);
         } else if (pending?.startsWith("http")) {
           sessionStorage.removeItem("pikbo_pending_still");
           sampleToDataUrl(pending)
-            .then((data) => setImage(data))
+            .then((data) => void adoptImage(data))
             .catch(() => undefined);
         }
       } catch {
@@ -394,6 +396,20 @@ export function CreateStudio({
     };
   }, [refreshSession]);
 
+  async function adoptImage(dataUrl: string) {
+    setImage(dataUrl);
+    setAssetId(null);
+    setError(null);
+    // Register into process-memory asset store so generate can skip large JSON.
+    try {
+      const { registerLocalAsset } = await import("@/lib/clientAssets");
+      const reg = await registerLocalAsset(dataUrl);
+      if (reg?.assetId) setAssetId(reg.assetId);
+    } catch {
+      /* generate still works with inline data URL */
+    }
+  }
+
   function loadFile(file: File | undefined | null) {
     if (!file || !file.type.startsWith("image/")) {
       setError("Please drop a PNG or JPG of your toy.");
@@ -401,8 +417,7 @@ export function CreateStudio({
     }
     const reader = new FileReader();
     reader.onload = () => {
-      setImage(reader.result as string);
-      setError(null);
+      void adoptImage(reader.result as string);
     };
     reader.readAsDataURL(file);
   }
@@ -489,9 +504,13 @@ export function CreateStudio({
     document
       .getElementById("create-result")
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    // Prefer assetId when registered (smaller POST); keep image for sample overrides
+    // and when registration failed.
+    const useAsset = Boolean(assetId) && !opts?.imageOverride;
     const result = await postGenerate({
       effect: fx,
-      image: img,
+      image: useAsset ? undefined : img,
+      assetId: useAsset && assetId ? assetId : undefined,
       extra: requestExtra,
       duration: requestDuration,
       aspectRatio: requestAspect,
@@ -1115,7 +1134,10 @@ export function CreateStudio({
                 <button
                   type="button"
                   className="text-[10px] font-semibold text-[var(--fg-dim)] hover:text-[var(--brand)]"
-                  onClick={() => setImage(null)}
+                  onClick={() => {
+                    setImage(null);
+                    setAssetId(null);
+                  }}
                 >
                   Replace
                 </button>

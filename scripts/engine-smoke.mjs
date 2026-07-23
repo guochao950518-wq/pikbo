@@ -1211,5 +1211,19 @@ assert.match(softliveChk, /PAYMENTS_ENABLED|sk_live/);
 const vercelJson = fs.readFileSync(join(root, "vercel.json"), "utf8");
 assert.match(vercelJson, /X-Content-Type-Options|X-Frame-Options/);
 
+// Phase D assetId generate path + Library session jobs
+assert.match(genRoute, /getLocalAsset|assetId/);
+assert.match(genRoute, /ASSET_NOT_FOUND/);
+assert.match(
+  fs.readFileSync(join(root, "lib/contracts.ts"), "utf8"),
+  /assetId\?:/
+);
+assert.match(
+  fs.readFileSync(join(root, "lib/clientAssets.ts"), "utf8"),
+  /registerLocalAsset/
+);
+assert.match(createStudio, /registerLocalAsset|assetId/);
+assert.match(library, /Session jobs|\/api\/generations/);
+
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

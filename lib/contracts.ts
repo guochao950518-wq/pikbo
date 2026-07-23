@@ -9,7 +9,13 @@ import { CREDITS_PER_VIDEO } from "@/lib/pricing";
 
 export type GenerateRequestBody = {
   effect?: string;
+  /** data:image… URL (soft-launch default). Optional when assetId is set. */
   image?: string;
+  /**
+   * Phase D local asset id from POST /api/assets/upload-url + PUT content.
+   * Server resolves the image for this session — avoids re-posting large Base64.
+   */
+  assetId?: string;
   extra?: string;
   duration?: number;
   aspectRatio?: string;
@@ -56,6 +62,7 @@ export type GenerateErrorBody = {
     | "INSUFFICIENT_CREDITS"
     | "INVALID_REQUEST"
     | "IMAGE_TOO_LARGE"
+    | "ASSET_NOT_FOUND"
     | "UNKNOWN_EFFECT"
     | "MODEL_EMPTY"
     | "GENERATION_FAILED"

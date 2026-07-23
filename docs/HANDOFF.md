@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Phase D assetId generate + Library session jobs
+- Generate accepts `assetId` (session local asset) to avoid re-posting large Base64.
+- Create registers uploads via upload-url + PUT; prefers assetId on generate.
+- Library shows process-memory session jobs from GET `/api/generations` (retry/download gates).
+- Verified: typecheck · engine-smoke · lint.
+
 ### 2026-07-24 — [grok] no-boss-wait: preflight, env.example, website skills, /status
 - Boss deferred Vercel/SQL; continued no-login work.
 - `npm run preflight-launch` · expanded `.env.example` (Supabase/payments/G6).

@@ -21,6 +21,19 @@ import { PROVENANCE, resultProvenanceLabel } from "@/lib/provenance";
 type KindFilter = "all" | "live" | "demo";
 type GroupMode = "flat" | "project";
 
+type SessionJob = {
+  id: string;
+  status: string;
+  effect: string;
+  demo?: boolean;
+  downloadAllowed?: boolean;
+  videoUrl?: string;
+  creditsOutcome?: string;
+  requestId?: string;
+  error?: string;
+  createdAt?: string;
+};
+
 export function LibraryGrid() {
   const [items, setItems] = useState<HistoryItem[]>([]);
   const [ready, setReady] = useState(false);
@@ -29,6 +42,7 @@ export function LibraryGrid() {
   const [sort, setSort] = useState<"new" | "name">("new");
   /** Wave A: group device-local clips by remix/sample project key */
   const [groupMode, setGroupMode] = useState<GroupMode>("project");
+  const [sessionJobs, setSessionJobs] = useState<SessionJob[]>([]);
   const toast = useToast();
 
   useEffect(() => {
@@ -37,6 +51,21 @@ export function LibraryGrid() {
       setReady(true);
     }, 0);
     return () => window.clearTimeout(t);
+  }, []);
+
+  // Phase D: process-memory job ledger for this browser session (refresh recovery).
+  useEffect(() => {
+    let cancelled = false;
+    void fetch("/api/generations")
+      .then((r) => r.json())
+      .then((body: { ok?: boolean; jobs?: SessionJob[] }) => {
+        if (cancelled || !body?.ok || !Array.isArray(body.jobs)) return;
+        setSessionJobs(body.jobs.slice(0, 12));
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const effectNames = useMemo(() => {
@@ -203,6 +232,75 @@ export function LibraryGrid() {
 
   return (
     <div className="mt-8">
+      {sessionJobs.length > 0 ? (
+        <section className="mb-6 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+          <div className="flex flex-wrap items-end justify-between gap-2">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-wider text-[var(--fg-dim)]">
+                Session jobs · this server process
+              </p>
+              <p className="mt-1 text-xs text-[var(--fg-muted)]">
+                Local ledger from Generate (not multi-node cloud). Saved Library
+                below is this browser only.
+              </p>
+            </div>
+            <Link
+              href="/create"
+              className="text-[11px] font-semibold text-[var(--mint)] hover:underline"
+            >
+              Open Create →
+            </Link>
+          </div>
+          <ul className="mt-3 space-y-2">
+            {sessionJobs.map((j) => (
+              <li
+                key={j.id}
+                className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-xs"
+              >
+                <div className="min-w-0">
+                  <p className="truncate font-semibold text-[var(--fg)]">
+                    {j.effect}{" "}
+                    <span className="font-normal text-[var(--fg-dim)]">
+                      · {j.status}
+                      {j.creditsOutcome ? ` · ${j.creditsOutcome}` : ""}
+                    </span>
+                  </p>
+                  {j.error ? (
+                    <p className="mt-0.5 truncate text-[10px] text-amber-100/80">
+                      {j.error}
+                    </p>
+                  ) : null}
+                </div>
+                <div className="flex shrink-0 flex-wrap gap-2">
+                  <Link
+                    href={`/create?effect=${encodeURIComponent(j.effect)}`}
+                    className="text-[var(--mint)] hover:underline"
+                  >
+                    Retry recipe
+                  </Link>
+                  {j.status === "succeeded" && j.downloadAllowed && j.videoUrl ? (
+                    <a
+                      href={
+                        j.requestId || j.id
+                          ? `/api/downloads/${encodeURIComponent(j.requestId || j.id)}`
+                          : j.videoUrl
+                      }
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-[var(--fg-muted)] hover:text-white"
+                    >
+                      Download
+                    </a>
+                  ) : j.status === "succeeded" && !j.downloadAllowed ? (
+                    <span className="text-amber-100/70">Download blocked</span>
+                  ) : null}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <input
