@@ -8,7 +8,7 @@ import { generateMode } from "@/lib/requestMeta";
 import { probeSupabase } from "@/lib/supabase/server";
 import { publicAuthStatus } from "@/lib/authConfig";
 import { t6Report } from "@/lib/t6Watermark";
-import { jobTimeoutMs } from "@/lib/generationJobs";
+import { generationJobsProbe, jobTimeoutMs } from "@/lib/generationJobs";
 import { paymentsReadiness } from "@/lib/stripe";
 import { inflightJobCount, inflightTtlMs } from "@/lib/rateLimit";
 import { localAssetsProbe } from "@/lib/localAssets";
@@ -119,6 +119,18 @@ export async function GET() {
     },
     /** Phase D process-memory still registry (never echoes image bytes) */
     assets: localAssetsProbe(),
+    /** Phase D process-memory job ledger (counts only) */
+    jobs: generationJobsProbe(),
+    /**
+     * Provider webhook auth readiness (presence only — never echo secret).
+     * Production refuses unsigned POSTs when secret missing.
+     */
+    videoWebhook: {
+      secretConfigured: Boolean(
+        (process.env.VIDEO_PROVIDER_WEBHOOK_SECRET || "").trim()
+      ),
+      requiresSecretInProduction: true,
+    },
     ready,
     entitlements,
     durableCredits,

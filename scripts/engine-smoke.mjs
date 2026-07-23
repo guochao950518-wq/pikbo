@@ -817,20 +817,14 @@ assert.doesNotMatch(
   ),
   /NOT_IMPLEMENTED/
 );
-assert.match(
-  fs.readFileSync(
-    join(root, "app/api/webhooks/video-provider/route.ts"),
-    "utf8"
-  ),
-  /applyProviderWebhookEvent/
+const videoWh = fs.readFileSync(
+  join(root, "app/api/webhooks/video-provider/route.ts"),
+  "utf8"
 );
-assert.doesNotMatch(
-  fs.readFileSync(
-    join(root, "app/api/webhooks/video-provider/route.ts"),
-    "utf8"
-  ),
-  /NOT_IMPLEMENTED/
-);
+assert.match(videoWh, /applyProviderWebhookEvent/);
+assert.match(videoWh, /WEBHOOK_NOT_CONFIGURED|VIDEO_PROVIDER_WEBHOOK_SECRET/);
+assert.match(videoWh, /requiresSecretInProduction|productionHost|VERCEL_ENV/);
+assert.doesNotMatch(videoWh, /NOT_IMPLEMENTED/);
 assert.match(createStudio, /track\(\{[\s\S]*generate_start/);
 
 // Seller Pack export honesty
@@ -944,10 +938,13 @@ assert.match(health, /acceptance/);
 assert.match(health, /demoCached/);
 assert.match(health, /inflightJobCount|inflightTtlMs/);
 assert.match(health, /localAssetsProbe|assets:/);
+assert.match(health, /generationJobsProbe|jobs:/);
+assert.match(health, /videoWebhook|secretConfigured/);
 assert.match(
   fs.readFileSync(join(root, "lib/localAssets.ts"), "utf8"),
   /slideExpiry|localAssetsProbe|Sliding TTL/
 );
+assert.match(genJobsStore, /export function generationJobsProbe/);
 assert.match(genJobsStore, /findJobByRequestOrId/);
 // getJob must resolve provider requestId (not only job_*)
 assert.match(
@@ -1330,6 +1327,7 @@ const modeA = fs.readFileSync(
 );
 assert.match(modeA, /mode-a-acceptance|Mode A acceptance/);
 assert.match(modeA, /critical-path|link-check/);
+assert.match(modeA, /videoWebhook|assets count|jobs count/);
 const pkgJson = fs.readFileSync(join(root, "package.json"), "utf8");
 assert.match(pkgJson, /mode-a-acceptance/);
 

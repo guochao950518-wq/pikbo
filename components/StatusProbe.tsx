@@ -26,6 +26,16 @@ type Health = {
     ttlMs?: number;
     note?: string;
   };
+  jobs?: {
+    mode?: string;
+    count?: number;
+    jobTimeoutMs?: number;
+    note?: string;
+  };
+  videoWebhook?: {
+    secretConfigured?: boolean;
+    requiresSecretInProduction?: boolean;
+  };
 };
 
 export function StatusProbe() {
@@ -90,6 +100,19 @@ export function StatusProbe() {
       typeof data.assets?.count === "number"
         ? `${data.assets.count} · TTL ${Math.round((data.assets.ttlMs ?? 0) / 60000)}m slide`
         : "—",
+    ],
+    [
+      "Session job ledger",
+      typeof data.jobs?.count === "number"
+        ? `${data.jobs.count} · timeout ${Math.round((data.jobs.jobTimeoutMs ?? 0) / 60000)}m`
+        : "—",
+    ],
+    [
+      "Video webhook secret",
+      data.videoWebhook?.secretConfigured
+        ? "set"
+        : "missing (prod refuses unsigned)",
+      data.videoWebhook?.secretConfigured,
     ],
   ];
 

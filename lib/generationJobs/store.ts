@@ -581,6 +581,29 @@ export function applyProviderWebhookEvent(input: {
   };
 }
 
+/** Ops probe — presence counts only, never video URLs or session ids. */
+export function generationJobsProbe(): {
+  mode: "local-memory";
+  durable: false;
+  count: number;
+  webhookEvents: number;
+  jobTimeoutMs: number;
+  note: string;
+} {
+  const timedOut = sweepTimedOutJobs();
+  return {
+    mode: "local-memory",
+    durable: false,
+    count: jobs.size,
+    webhookEvents: webhookEvents.size,
+    jobTimeoutMs: jobTimeoutMs(),
+    note:
+      timedOut.length > 0
+        ? `Process-memory ledger; swept ${timedOut.length} timed-out job(s) this probe`
+        : "Process-memory ledger; not multi-node durable",
+  };
+}
+
 /** Test helper — clear process memory. */
 export function __resetGenerationJobsForTests() {
   jobs.clear();

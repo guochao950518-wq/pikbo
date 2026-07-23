@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Prod video-webhook secret + jobs health probe
+- `/api/webhooks/video-provider`: production refuses unsigned POSTs (`WEBHOOK_NOT_CONFIGURED`).
+- health.jobs via `generationJobsProbe`; health.videoWebhook.secretConfigured (presence only).
+- StatusProbe + mode-a-acceptance expanded for assets/jobs/rateLimit/webhook.
+- Verified: engine-smoke · typecheck · lint.
+
 ### 2026-07-24 — [grok] Phase H analytics funnel + profile/robots honesty
 - Wire no-op-safe funnel: `upload_ready`, `project_open` (Explore + ProjectOpenBeacon), `export_click` (Create/Library/Landing).
 - Profile header no longer hardcodes guest-only; robots disallow `/status`.

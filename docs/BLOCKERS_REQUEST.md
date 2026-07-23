@@ -55,7 +55,7 @@
 | `SUPABASE_AUTH_GOOGLE=1` + Google provider | Optional OAuth |
 | Public DNS `pikbo.ai` | **Separate explicit approval** after Mode B gates |
 | ffmpeg / media worker for T6 bake | Free raw download stays blocked until then |
-| `VIDEO_PROVIDER_WEBHOOK_SECRET` | When async provider webhooks hit production |
+| `VIDEO_PROVIDER_WEBHOOK_SECRET` | **Required in production** before async provider webhooks (unsigned POSTs return 503) |
 
 ## Explicitly NOT requested
 

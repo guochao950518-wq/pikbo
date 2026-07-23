@@ -81,7 +81,8 @@
 40. [x] Library cancel ledger + Seller Pack retry-failed-only · auth callback noindex
 41. [x] Sliding asset TTL · health assets probe · re-register after ASSET recovery
 42. [x] Phase H analytics funnel (upload/project/export) · profile honesty · robots /status
-43. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
+43. [x] Prod video-webhook secret required · jobs/assets health · Mode A honesty probes
+44. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
 
 ### 老板醒来验收
 
@@ -95,9 +96,9 @@
 
 ## Grok 本拍状态（3 行）
 
-- Funnel analytics: upload_ready · project_open · export_click (no-op without key).  
-- Profile guest copy fixed; robots disallow /status.  
-- engine-smoke + tsc + lint green · Mode A still needs boss Vercel login.
+- Production refuses unsigned video-provider webhooks (Stripe parity · WEBHOOK_NOT_CONFIGURED).  
+- health.jobs + videoWebhook probes; StatusProbe + mode-a-acceptance expanded.  
+- engine-smoke green · Mode A still needs boss Vercel login + env.
 
 ---
 

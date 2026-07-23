@@ -27,11 +27,29 @@ type WebhookBody = {
  * Soft-launch still settles most jobs inline on /api/generate.
  * This route records async outcomes + dedupes retries by eventId.
  *
- * Auth: optional `VIDEO_PROVIDER_WEBHOOK_SECRET` via header
+ * Auth: `VIDEO_PROVIDER_WEBHOOK_SECRET` via header
  * `x-pikbo-webhook-secret` or `Authorization: Bearer …`.
+ * Production/Vercel production refuses unsigned webhooks (Stripe parity).
+ * Local/dev may omit the secret for harness tests only.
  */
 export async function POST(req: Request) {
   const expected = process.env.VIDEO_PROVIDER_WEBHOOK_SECRET?.trim();
+  const productionHost =
+    process.env.NODE_ENV === "production" ||
+    process.env.VERCEL_ENV === "production";
+
+  if (productionHost && !expected) {
+    return NextResponse.json(
+      {
+        ok: false,
+        code: "WEBHOOK_NOT_CONFIGURED",
+        error:
+          "VIDEO_PROVIDER_WEBHOOK_SECRET is required in production — unsigned provider webhooks are refused",
+      },
+      { status: 503 }
+    );
+  }
+
   if (expected) {
     const header =
       req.headers.get("x-pikbo-webhook-secret")?.trim() ||

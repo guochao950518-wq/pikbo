@@ -54,6 +54,24 @@ if t6.get("freeLiveRawDownload") == "allowed" and t6.get("status") != "ready":
 # Production topup must be off
 if h.get("devTopup") is True and os.environ.get("NODE_ENV") == "production":
     sys.exit("FAIL devTopup true in production")
+# Ops probes must exist (presence only — never secrets)
+assets=h.get("assets") or {}
+if "count" not in assets and assets.get("mode") is None:
+    print("WARN health.assets probe missing — preferred for Mode A ops")
+else:
+    print(f"assets count={assets.get('count')} mode={assets.get('mode')}")
+jobs=h.get("jobs") or {}
+if jobs:
+    print(f"jobs count={jobs.get('count')} mode={jobs.get('mode')}")
+rl=h.get("rateLimit") or {}
+if isinstance(rl, dict):
+    print(f"rateLimit inflight={rl.get('inflight')} ttlMs={rl.get('inflightTtlMs')}")
+vw=h.get("videoWebhook") or {}
+if vw:
+    print(f"videoWebhook secretConfigured={vw.get('secretConfigured')}")
+    # On production Mode A hosts, secret should be set before enabling async provider
+    if os.environ.get("VERCEL_ENV") == "production" and not vw.get("secretConfigured"):
+        print("WARN VIDEO_PROVIDER_WEBHOOK_SECRET missing on production host — unsigned webhooks refused")
 print("mode-a health honesty: PASS")
 PY
 
