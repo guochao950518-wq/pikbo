@@ -1,0 +1,145 @@
+import { NextResponse } from "next/server";
+import {
+  durableMigrateGuest,
+  ensurePersonalAccount,
+} from "@/lib/durableCredits";
+import { ensureSession, publicSession } from "@/lib/session";
+import {
+  getAuthUserFromRequest,
+  guestSessionIdHash,
+} from "@/lib/supabase/user";
+import { isSupabaseConfigured } from "@/lib/supabase/env";
+
+export const runtime = "nodejs";
+
+/**
+ * After magic-link sign-in: ensure durable Free account and one-time migrate
+ * remaining guest Cookie credits (capped at 10, never paid plan).
+ *
+ * Cookie session remains the soft-launch generate authority until generate
+ * switches to durable wallets; this claim is idempotent and audited.
+ *
+ * Authorization: Bearer <supabase access_token>
+ */
+export async function POST(req: Request) {
+  if (!isSupabaseConfigured()) {
+    return NextResponse.json(
+      {
+        ok: false,
+        code: "NOT_CONFIGURED",
+        error: "Supabase is not configured",
+      },
+      { status: 503 }
+    );
+  }
+
+  const user = await getAuthUserFromRequest(req);
+  if (!user) {
+    return NextResponse.json(
+      {
+        ok: false,
+        code: "UNAUTHORIZED",
+        error: "Valid Supabase session required",
+      },
+      { status: 401 }
+    );
+  }
+
+  // Guest cookie on this browser (if any)
+  const guest = await ensureSession();
+  const guestHash = guestSessionIdHash(guest.id);
+
+  const ensured = await ensurePersonalAccount(user.id, 10);
+  if (!ensured.ok) {
+    return NextResponse.json(
+      {
+        ok: false,
+        code: ensured.code,
+        error: ensured.error || "Could not create durable account",
+      },
+      { status: 500 }
+    );
+  }
+
+  const accountId = ensured.data.account.id;
+  const migrate = await durableMigrateGuest({
+    guestSessionIdHash: guestHash,
+    userId: user.id,
+    accountId,
+    cookieCredits: guest.plan === "free" ? guest.credits : 0,
+    idempotencyKey: `guest-migrate:${guestHash}:${user.id}`,
+  });
+
+  const migrated =
+    migrate.ok && migrate.data ? migrate.data.migrated : 0;
+  const wallet =
+    migrate.ok && migrate.data
+      ? migrate.data.wallet
+      : ensured.data.wallet;
+
+  return NextResponse.json({
+    ok: true,
+    user: {
+      id: user.id,
+      email: user.email,
+    },
+    account: {
+      id: accountId,
+      planId: ensured.data.account.planId,
+      kind: ensured.data.account.kind,
+    },
+    wallet: wallet
+      ? {
+          availableCredits: wallet.availableCredits,
+          reservedCredits: wallet.reservedCredits,
+        }
+      : null,
+    guestMigration: {
+      migratedCredits: migrated,
+      guestSession: publicSession(guest),
+      note:
+        migrated > 0
+          ? `Moved ${migrated} guest credits into your Free account (one-time).`
+          : "No guest credits migrated (already claimed, empty, or durable balance present).",
+    },
+    authority: {
+      generate: "cookie-guest-until-durable-switch",
+      durableLedger: "local-file-or-supabase-when-migrated",
+    },
+  });
+}
+
+export async function GET(req: Request) {
+  if (!isSupabaseConfigured()) {
+    return NextResponse.json(
+      { ok: false, code: "NOT_CONFIGURED", signedIn: false },
+      { status: 503 }
+    );
+  }
+  const user = await getAuthUserFromRequest(req);
+  if (!user) {
+    return NextResponse.json({
+      ok: true,
+      signedIn: false,
+      user: null,
+    });
+  }
+  const ensured = await ensurePersonalAccount(user.id, 10);
+  return NextResponse.json({
+    ok: true,
+    signedIn: true,
+    user: { id: user.id, email: user.email },
+    account: ensured.ok
+      ? {
+          id: ensured.data.account.id,
+          planId: ensured.data.account.planId,
+        }
+      : null,
+    wallet: ensured.ok
+      ? {
+          availableCredits: ensured.data.wallet?.availableCredits ?? 0,
+          reservedCredits: ensured.data.wallet?.reservedCredits ?? 0,
+        }
+      : null,
+  });
+}

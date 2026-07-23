@@ -3,10 +3,12 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
+import { emitSessionRefresh } from "@/lib/sessionEvents";
 
 /**
  * Email magic-link lands here with ?code=...
- * Exchanges the code for a session, then sends the user to Profile.
+ * Exchanges the code for a session, claims durable Free account + one-time
+ * guest credit migration, then sends the user to Profile.
  */
 export default function AuthCallbackPage() {
   const [status, setStatus] = useState<"working" | "ok" | "error">("working");
@@ -37,12 +39,47 @@ export default function AuthCallbackPage() {
           const { error } = await supabase.auth.getSession();
           if (error) throw error;
         }
+
+        const { data: sessionData } = await supabase.auth.getSession();
+        const token = sessionData.session?.access_token;
+        if (token) {
+          try {
+            const claimRes = await fetch("/api/auth/claim", {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            });
+            const claim = (await claimRes.json()) as {
+              ok?: boolean;
+              guestMigration?: { migratedCredits?: number; note?: string };
+              error?: string;
+            };
+            if (claimRes.ok && claim.ok) {
+              const n = claim.guestMigration?.migratedCredits ?? 0;
+              if (!cancelled) {
+                setDetail(
+                  n > 0
+                    ? `Signed in · migrated ${n} guest credits. Redirecting…`
+                    : "Signed in · durable Free account ready. Redirecting…"
+                );
+              }
+            }
+          } catch {
+            // Claim is best-effort; session still works for profile display.
+          }
+        }
+
+        emitSessionRefresh();
         if (!cancelled) {
           setStatus("ok");
-          setDetail("Signed in. Redirecting…");
+          setDetail((d) =>
+            d.startsWith("Signed in") ? d : "Signed in. Redirecting…"
+          );
           window.setTimeout(() => {
             window.location.replace("/profile");
-          }, 600);
+          }, 700);
         }
       } catch (e) {
         if (!cancelled) {

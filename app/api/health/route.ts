@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { probeEntitlementsStore } from "@/lib/entitlements";
 import { probeDurableCreditsStore } from "@/lib/durableCredits";
 import { generateMode } from "@/lib/requestMeta";
+import { probeSupabase } from "@/lib/supabase/server";
+import { publicAuthStatus } from "@/lib/authConfig";
 // NextResponse used for GET + HEAD
 
 export const runtime = "nodejs";
@@ -27,6 +29,8 @@ export async function GET() {
 
   const entitlements = await probeEntitlementsStore();
   const durableCredits = await probeDurableCreditsStore();
+  const supabase = await probeSupabase();
+  const authPublic = publicAuthStatus();
   const mode = generateMode();
   const durableGate =
     process.env.REQUIRE_DURABLE_CREDITS === "1" && !durableCredits.writable;
@@ -81,6 +85,17 @@ export async function GET() {
     ready,
     entitlements,
     durableCredits,
+    auth: {
+      mode: authPublic.mode,
+      configured: authPublic.configured,
+      providers: authPublic.providers,
+      supabase: {
+        configured: supabase.configured,
+        reachable: supabase.reachable,
+        hasServiceRole: supabase.hasServiceRole,
+        error: supabase.error,
+      },
+    },
     checks: {
       sessionSecret,
       fal,
@@ -90,6 +105,8 @@ export async function GET() {
       entitlementsWritable: entitlements.writable,
       durableCreditsWritable: durableCredits.writable,
       requireDurableCredits: process.env.REQUIRE_DURABLE_CREDITS === "1",
+      supabaseConfigured: supabase.configured,
+      supabaseServiceRole: supabase.hasServiceRole,
     },
     /** Soft-live env checklist (presence only — never echo secrets) */
     softLiveChecklist: {

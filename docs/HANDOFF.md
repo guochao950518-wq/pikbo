@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [grok] Phase C guest→durable claim after Supabase sign-in
+- `POST/GET /api/auth/claim`: Bearer JWT → ensure Free account + one-time guest credit migrate (cap 10).
+- Auth callback + Profile claim on load; Profile shows email, durable balance, Sign out.
+- Health exposes `auth.supabase` probe (configured/reachable/serviceRole). Generate still cookie-authoritative.
+- Verified: typecheck · engine-smoke · lint. Apply SQL migration in Supabase for production wallet tables.
+
 ### 2026-07-23 — [grok] Supabase keys detected · magic-link wiring
 - Boss filled local `.env.local` (URL + publishable + service_role; values not logged).
 - Added `@supabase/supabase-js`, `lib/supabase/*` clients, `POST /api/auth/magic-link`, `/auth/callback`.

@@ -986,5 +986,29 @@ assert.match(showcase, /PROVISIONAL_LAB_SCORES/);
 assert.match(showcase, /HOME_PROOF quality gate|qualityScores/);
 assert.match(showcase, /reviewerNotes/);
 
+// Phase C — auth claim + guest migrate after Supabase magic link
+const authClaim = fs.readFileSync(
+  join(root, "app/api/auth/claim/route.ts"),
+  "utf8"
+);
+assert.match(authClaim, /durableMigrateGuest/);
+assert.match(authClaim, /ensurePersonalAccount/);
+assert.match(authClaim, /getAuthUserFromRequest/);
+const authUser = fs.readFileSync(join(root, "lib/supabase/user.ts"), "utf8");
+assert.match(authUser, /guestSessionIdHash/);
+assert.match(authUser, /getUser/);
+const authCb = fs.readFileSync(
+  join(root, "app/auth/callback/page.tsx"),
+  "utf8"
+);
+assert.match(authCb, /\/api\/auth\/claim/);
+const profilePanel = fs.readFileSync(
+  join(root, "components/ProfilePanel.tsx"),
+  "utf8"
+);
+assert.match(profilePanel, /Sign out|signOut/);
+assert.match(profilePanel, /\/api\/auth\/claim/);
+assert.match(health, /probeSupabase|auth:\s*\{/);
+
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node
