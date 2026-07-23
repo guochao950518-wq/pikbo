@@ -10,6 +10,10 @@ import { LandingResults } from "@/components/LandingResults";
 import { site } from "@/lib/site";
 import { viralName } from "@/lib/viralNames";
 import { recipeHasUniqueProof, robotsForRecipe } from "@/lib/seoIndex";
+import {
+  listSellerJobWorkflows,
+  workflowsForEffect,
+} from "@/lib/workflows";
 
 // Pre-render every effect page at build time. Concept recipes without unique
 // Lab proof are noindex (Phase H) but still reachable for Create deep-links.
@@ -144,7 +148,19 @@ export default async function EffectPage({
                 href={`/create?effect=${encodeURIComponent(preset.slug)}`}
                 className="btn btn-primary !px-4 !py-2 text-xs"
               >
-                Open full Studio
+                Open Generate
+              </Link>
+              <Link
+                href="/modules"
+                className="btn btn-ghost !px-3 !py-2 text-xs"
+              >
+                Modules
+              </Link>
+              <Link
+                href="/create?mode=seller-pack"
+                className="btn btn-ghost !px-3 !py-2 text-xs"
+              >
+                Seller Pack
               </Link>
               <Link
                 href="/pricing"
@@ -197,6 +213,54 @@ export default async function EffectPage({
       </section>
 
       <LandingHowItWorks productLabel={preset.name.toLowerCase()} />
+
+      {/* Suite modules tied to this recipe (or seller jobs fallback) */}
+      {(() => {
+        const bound = workflowsForEffect(preset.slug);
+        const modules =
+          bound.length > 0 ? bound : listSellerJobWorkflows().slice(0, 4);
+        return (
+          <section className="container-x border-y border-white/10 py-8">
+            <div className="flex flex-wrap items-end justify-between gap-2">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--mint)]">
+                  {bound.length > 0 ? "Modules · this recipe" : "Modules · next job"}
+                </p>
+                <h2 className="mt-1 text-lg font-bold">
+                  {bound.length > 0
+                    ? "Launch as a job block"
+                    : "Same photo · different seller job"}
+                </h2>
+              </div>
+              <Link
+                href="/modules"
+                className="text-[11px] font-semibold text-[var(--mint)] hover:underline"
+              >
+                All modules →
+              </Link>
+            </div>
+            <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+              {modules.map((w) => (
+                <Link
+                  key={w.id}
+                  href={w.href}
+                  className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-3 transition hover:border-[var(--mint)]/40"
+                >
+                  <span className="text-base" aria-hidden>
+                    {w.emoji}
+                  </span>
+                  <span className="mt-1 block text-sm font-bold text-white">
+                    {w.label}
+                  </span>
+                  <span className="mt-0.5 block text-[11px] text-[var(--fg-muted)]">
+                    {w.blurb}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        );
+      })()}
 
       {/* Body copy — SSR long text for crawlers (哥飞 V2 落地文案) */}
       <section className="container-x py-10">

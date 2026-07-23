@@ -187,3 +187,25 @@ export function listCreateShelfWorkflows(): Workflow[] {
     ).includes(w.id)
   );
 }
+
+/** Modules that bind this recipe (for effect landing cross-links). */
+export function workflowsForEffect(effectSlug: string): Workflow[] {
+  return WORKFLOWS.filter(
+    (w) => w.live && w.effect === effectSlug && w.id !== "photo-to-clip"
+  );
+}
+
+/** Fallback job modules when recipe has no dedicated block. */
+export function listSellerJobWorkflows(): Workflow[] {
+  return WORKFLOWS.filter((w) =>
+    (
+      [
+        "listing-spin",
+        "tiktok-hook",
+        "blind-box-drop",
+        "shelf-glam",
+        "seller-pack",
+      ] as WorkflowId[]
+    ).includes(w.id)
+  );
+}

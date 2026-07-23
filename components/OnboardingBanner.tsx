@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-const KEY = "pikbo_onboard_v1";
+const KEY = "pikbo_onboard_v2";
 
 export function OnboardingBanner() {
   const [show, setShow] = useState(false);
@@ -36,21 +36,28 @@ export function OnboardingBanner() {
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3">
         <div className="text-sm">
           <span className="font-semibold text-[var(--mint)]">
-            One Mini live trial when configured
+            Toy suite · Generate + Modules
           </span>
           <span className="text-[var(--fg-muted)]">
             {" "}
-            — 5s · 480p · on-player mark. Without provider access, Studio returns
-            a labeled cached demo instead of animating your upload.
+            — one photo of a figure you own → listing, unbox, or social clip.
+            Free Mini trial: 5s · 480p · on-player mark when live is configured.
           </span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Link
-            href="/create"
+            href="/create?try=1&sample=scout"
             onClick={dismiss}
             className="btn btn-primary px-3 py-1.5 text-xs"
           >
-            Upload photo
+            Try free
+          </Link>
+          <Link
+            href="/modules"
+            onClick={dismiss}
+            className="btn btn-ghost px-3 py-1.5 text-xs"
+          >
+            Modules
           </Link>
           <button
             type="button"
