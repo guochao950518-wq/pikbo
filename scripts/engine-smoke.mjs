@@ -137,6 +137,8 @@ assert.match(rateLimitSrc, /endJob/);
 const me = fs.readFileSync(join(root, "app/api/me/route.ts"), "utf8");
 assert.match(me, /generateMode/);
 assert.match(me, /cachedDemoFree/);
+assert.match(me, /getAuthUserFromRequest|signedIn/);
+assert.match(me, /getPersonalWallet|durable/);
 
 // prompt build: always keep template (no freeform-only replace)
 function sanitizeExtra(extra) {
@@ -745,7 +747,15 @@ assert.match(
   fs.readFileSync(join(root, "lib/durableCredits/shadow.ts"), "utf8"),
   /shadowReserveForGuest/
 );
-assert.match(genRoute, /shadowReserveForGuest|shadowSettle|shadowRelease/);
+assert.match(
+  fs.readFileSync(join(root, "lib/durableCredits/shadow.ts"), "utf8"),
+  /shadowReserveForGenerate|shadowReserveForAuthUser/
+);
+assert.match(
+  genRoute,
+  /shadowReserveForGenerate|shadowReserveForGuest|shadowSettle|shadowRelease/
+);
+assert.match(genRoute, /getAuthUserFromRequest/);
 
 // Offline fonts + analytics no-op + Create launch list
 assert.doesNotMatch(
@@ -1009,6 +1019,21 @@ const profilePanel = fs.readFileSync(
 assert.match(profilePanel, /Sign out|signOut/);
 assert.match(profilePanel, /\/api\/auth\/claim/);
 assert.match(health, /probeSupabase|auth:\s*\{/);
+
+// Signed-in durable shadow on generate + me enrichment
+const durableIdx = fs.readFileSync(
+  join(root, "lib/durableCredits/index.ts"),
+  "utf8"
+);
+assert.match(durableIdx, /getPersonalWallet/);
+assert.match(durableIdx, /SUPABASE_URL|NEXT_PUBLIC_SUPABASE_URL/);
+assert.match(meClient, /displayCredits|Authorization/);
+assert.match(gen, /generateAuthHeaders|Authorization/);
+const creditsBadge = fs.readFileSync(
+  join(root, "components/CreditsBadge.tsx"),
+  "utf8"
+);
+assert.match(creditsBadge, /displayCredits/);
 
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

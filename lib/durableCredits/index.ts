@@ -187,10 +187,46 @@ export async function durableMigrateGuest(input: {
   });
 }
 
+/**
+ * Shadow/audit ledger is on when explicitly enabled, or when Supabase Auth
+ * is configured (signed-in claim path needs a wallet even before Postgres).
+ * Cookie generate remains authoritative until REQUIRE_DURABLE_CREDITS=1.
+ */
 export function durableCreditsActive(): boolean {
-  return (
+  if (
     process.env.DURABLE_CREDITS === "local" ||
     process.env.DURABLE_CREDITS === "1" ||
     process.env.REQUIRE_DURABLE_CREDITS === "1"
+  ) {
+    return true;
+  }
+  // Auto-on when Supabase is present so claim + signed-in shadow work.
+  const url = (
+    process.env.SUPABASE_URL ||
+    process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    ""
+  ).trim();
+  return url.startsWith("http");
+}
+
+/** Look up personal wallet for a durable user id (null if none). */
+export async function getPersonalWallet(userId: string): Promise<{
+  accountId: string;
+  availableCredits: number;
+  reservedCredits: number;
+  planId: string;
+} | null> {
+  const state = await loadDurableState();
+  const account = Object.values(state.accounts).find(
+    (a) => a.ownerUserId === userId && a.kind === "personal"
   );
+  if (!account) return null;
+  const wallet = state.wallets[account.id];
+  if (!wallet) return null;
+  return {
+    accountId: account.id,
+    availableCredits: wallet.availableCredits,
+    reservedCredits: wallet.reservedCredits,
+    planId: account.planId,
+  };
 }

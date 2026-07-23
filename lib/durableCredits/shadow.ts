@@ -1,9 +1,9 @@
 /**
  * Optional shadow ledger for soft-launch generate.
- * Cookie remains authoritative until Supabase auth is live.
- * Enable with DURABLE_CREDITS=local|1.
+ * Cookie remains authoritative until REQUIRE_DURABLE_CREDITS=1.
+ * Enable with DURABLE_CREDITS=local|1, or auto when Supabase is configured.
  *
- * Maps guest session id → personal account for reserve/settle/release audit.
+ * Prefer signed-in Supabase user id; fall back to guest cookie session id.
  */
 
 import {
@@ -19,39 +19,78 @@ export type ShadowReservation = {
   accountId: string;
   reservationId: string;
   credits: number;
+  /** durable owner used for this reserve */
+  ownerUserId: string;
+  kind: "auth" | "guest";
 };
 
-export async function shadowReserveForGuest(
-  guestSessionId: string
+async function reserveForOwner(
+  ownerUserId: string,
+  kind: "auth" | "guest"
 ): Promise<ShadowReservation | null> {
   if (!durableCreditsActive()) return null;
   try {
-    const ensured = await ensurePersonalAccount(guestSessionId, 10);
+    const ensured = await ensurePersonalAccount(ownerUserId, 10);
     if (!ensured.ok) return null;
     const accountId = ensured.data.account.id;
     const credits = jobCostCredits();
-    const key = `shadow-reserve:${guestSessionId}:${Date.now()}`;
+    const key = `shadow-reserve:${kind}:${ownerUserId}:${Date.now()}`;
     const reserved = await durableReserve({
       accountId,
-      createdBy: guestSessionId,
+      createdBy: ownerUserId,
       purpose: "generation",
       quotedCredits: credits,
       idempotencyKey: key,
     });
     if (!reserved.ok) {
       // Shadow must never block live cookie path — log and continue.
-      console.warn("[durable-shadow] reserve failed", reserved.code, reserved.error);
+      console.warn(
+        "[durable-shadow] reserve failed",
+        reserved.code,
+        reserved.error
+      );
       return null;
     }
     return {
       accountId,
       reservationId: reserved.data.reservation.id,
       credits,
+      ownerUserId,
+      kind,
     };
   } catch (e) {
     console.warn("[durable-shadow] reserve error", e);
     return null;
   }
+}
+
+/** Signed-in Supabase user — preferred durable owner. */
+export async function shadowReserveForAuthUser(
+  userId: string
+): Promise<ShadowReservation | null> {
+  if (!userId) return null;
+  return reserveForOwner(userId, "auth");
+}
+
+export async function shadowReserveForGuest(
+  guestSessionId: string
+): Promise<ShadowReservation | null> {
+  return reserveForOwner(guestSessionId, "guest");
+}
+
+/**
+ * Prefer auth user wallet; otherwise guest cookie mapping.
+ * Cookie debit still happens on generate regardless of shadow outcome.
+ */
+export async function shadowReserveForGenerate(input: {
+  authUserId?: string | null;
+  guestSessionId: string;
+}): Promise<ShadowReservation | null> {
+  if (input.authUserId) {
+    const auth = await shadowReserveForAuthUser(input.authUserId);
+    if (auth) return auth;
+  }
+  return shadowReserveForGuest(input.guestSessionId);
 }
 
 export async function shadowSettle(

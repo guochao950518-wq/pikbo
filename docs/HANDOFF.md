@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [grok] Signed-in durable shadow on generate + /api/me
+- Generate prefers Bearer Supabase user for shadow reserve/settle; guest fallback.
+- Durable auto-on when Supabase URL present; cookie still authoritative for live debit.
+- `/api/me` returns signedIn/auth/durable wallet; `fetchMe` + `postGenerate` send Bearer.
+- CreditsBadge shows durable available + "account" chip when signed-in.
+- Verified: engine-smoke · lint · typecheck. REQUIRE_DURABLE_CREDITS still off (no force).
+
 ### 2026-07-23 — [grok] Phase C guest→durable claim after Supabase sign-in
 - `POST/GET /api/auth/claim`: Bearer JWT → ensure Free account + one-time guest credit migrate (cap 10).
 - Auth callback + Profile claim on load; Profile shows email, durable balance, Sign out.

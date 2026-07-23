@@ -66,7 +66,8 @@
 25. [x] Phase D local job ledger · /api/downloads gate · demo critical-path acceptance
 26. [x] Library Free-download honesty · local forkRetry · Create download via /api/downloads
 27. [x] Landing Free-download honesty · HOME_PROOF quality ≥4 gate (provisional Lab scores)
-28. 下一拍：T6 bake · G6 lives (budget) · external QA on proof scores · Supabase when keys
+28. [x] Signed-in durable shadow reserve on generate · /api/me auth+wallet · badge displayCredits
+29. 下一拍：T6 bake · G6 lives (budget) · REQUIRE_DURABLE_CREDITS when Postgres ready
 
 ### 老板醒来验收
 
@@ -80,8 +81,8 @@
 
 ## Grok 本拍状态（3 行）
 
-- LandingToolPanel Free live download blocked + /api/downloads when requestId.  
-- HOME_PROOF quality gate (all scores ≥4) with provisional Lab labels.  
+- Generate shadow ledger prefers signed-in Supabase user; cookie still debits.  
+- /api/me + fetchMe/postGenerate Bearer; CreditsBadge durable displayCredits.  
 - engine-smoke/lint/typecheck green · public NO-GO · G6 needs 2 lives · no fal spend.
 
 ---

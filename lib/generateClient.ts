@@ -117,14 +117,33 @@ export function interpretGenerateResponse(
   };
 }
 
+async function generateAuthHeaders(): Promise<Record<string, string>> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (typeof window === "undefined") return headers;
+  try {
+    const { getSupabaseBrowser } = await import("@/lib/supabase/browser");
+    const supabase = getSupabaseBrowser();
+    if (!supabase) return headers;
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
+    if (token) headers.Authorization = `Bearer ${token}`;
+  } catch {
+    /* guest path */
+  }
+  return headers;
+}
+
 export async function postGenerate(
   body: GenerateRequestBody,
   init?: { signal?: AbortSignal }
 ): Promise<GenerateResult> {
   try {
+    const headers = await generateAuthHeaders();
     const res = await fetch("/api/generate", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify(body),
       signal: init?.signal,
     });

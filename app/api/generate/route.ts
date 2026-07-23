@@ -32,10 +32,11 @@ import type {
 } from "@/lib/contracts";
 import {
   shadowRelease,
-  shadowReserveForGuest,
+  shadowReserveForGenerate,
   shadowSettle,
   type ShadowReservation,
 } from "@/lib/durableCredits/shadow";
+import { getAuthUserFromRequest } from "@/lib/supabase/user";
 import {
   recordFailedGenerate,
   recordSucceededGenerate,
@@ -220,10 +221,13 @@ export async function POST(req: Request) {
 
     session = deductCredits(session, check.cost);
     await saveSession(session);
-    // Optional durable shadow ledger (Cookie remains authoritative until Supabase auth).
-    let shadow: ShadowReservation | null = await shadowReserveForGuest(
-      session.id
-    );
+    // Optional durable shadow ledger — prefer signed-in Supabase user.
+    // Cookie remains authoritative until REQUIRE_DURABLE_CREDITS=1.
+    const authUser = await getAuthUserFromRequest(req);
+    let shadow: ShadowReservation | null = await shadowReserveForGenerate({
+      authUserId: authUser?.id,
+      guestSessionId: session.id,
+    });
 
     const model = modelForTier({
       freeTier,

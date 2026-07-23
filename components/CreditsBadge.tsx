@@ -2,7 +2,12 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { fetchMe, isDemoMode, type MeResponse } from "@/lib/meClient";
+import {
+  displayCredits,
+  fetchMe,
+  isDemoMode,
+  type MeResponse,
+} from "@/lib/meClient";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
 import { SESSION_EVENT } from "@/lib/sessionEvents";
 
@@ -39,15 +44,17 @@ export function CreditsBadge({ compact }: { compact?: boolean }) {
     );
   }
 
+  const credits = displayCredits(session);
   const perJob = session.liveJobCredits ?? CREDITS_PER_VIDEO;
-  const clips = Math.floor(session.credits / perJob);
-  const low = session.credits < perJob;
+  const clips = Math.floor(credits / perJob);
+  const low = credits < perJob;
   const demo = isDemoMode(session);
+  const signed = Boolean(session.signedIn && session.durable);
 
   if (compact) {
     return (
       <Link
-        href="/pricing"
+        href={signed ? "/profile" : "/pricing"}
         className={`grid h-8 min-w-8 place-items-center rounded-full border px-1.5 text-[10px] font-bold ${
           low && !demo
             ? "border-amber-400/50 text-amber-300"
@@ -55,18 +62,20 @@ export function CreditsBadge({ compact }: { compact?: boolean }) {
         }`}
         title={
           demo
-            ? `${session.credits} credits · demo-cached free`
-            : `${session.credits} credits`
+            ? `${credits} credits · demo-cached free`
+            : signed
+              ? `${credits} durable shadow · cookie still generates`
+              : `${credits} credits`
         }
       >
-        {session.credits}
+        {credits}
       </Link>
     );
   }
 
   return (
     <Link
-      href="/pricing"
+      href={signed ? "/profile" : "/pricing"}
       className={`hidden items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors sm:flex ${
         low && !demo
           ? "border-[var(--brand)]/50 bg-[var(--grad-soft)] text-[var(--fg)]"
@@ -75,7 +84,9 @@ export function CreditsBadge({ compact }: { compact?: boolean }) {
       title={
         demo
           ? `${session.planName} · demo-cached · live needs ${perJob} credits each`
-          : `${session.planName} · ${session.credits} credits · ~${clips} live jobs`
+          : signed
+            ? `Signed-in · durable shadow ${credits} cr · ~${clips} live · cookie still authoritative for generate`
+            : `${session.planName} · ${credits} credits · ~${clips} live jobs`
       }
     >
       <span
@@ -83,12 +94,16 @@ export function CreditsBadge({ compact }: { compact?: boolean }) {
           low && !demo ? "text-[var(--brand)]" : "text-[var(--mint)]"
         }
       >
-        {session.credits}
+        {credits}
       </span>
       <span>credits</span>
       {demo ? (
         <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-[var(--fg-dim)]">
           demo
+        </span>
+      ) : signed ? (
+        <span className="rounded-full bg-[var(--mint)]/15 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-[var(--mint)]">
+          account
         </span>
       ) : low ? (
         <span className="rounded-full bg-[var(--brand)]/20 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-[var(--brand)]">
