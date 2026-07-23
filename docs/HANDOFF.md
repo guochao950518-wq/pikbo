@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [grok] Landing Free-download honesty + home proof quality gate
+- LandingToolPanel: Free live Download blocked; prefers `/api/downloads/[requestId]`.
+- Showcase: `passesHomeProofQuality` (≥4 all dimensions); provisional Lab scores + reviewerNotes on registry.
+- HOME_PROOF recipes assert scores at load; `listHomeShowcaseProjects` filters failures.
+- Verified: engine-smoke · lint · typecheck. External human QA still open (provisional scores labeled).
+
 ### 2026-07-23 — [grok] Phase F mobile Create/Seller sticky craft
 - Create 390px sticky: ownership checkbox + photo scroll target; launch-8 chips + More recipes on mobile.
 - Result metadata shows Settlement + Download policy.

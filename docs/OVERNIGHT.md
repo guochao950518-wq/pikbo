@@ -65,7 +65,8 @@
 24. [x] Wave B trust: settlement · Retry/Variant · server echo · Free download gate · Explore focus · CI
 25. [x] Phase D local job ledger · /api/downloads gate · demo critical-path acceptance
 26. [x] Library Free-download honesty · local forkRetry · Create download via /api/downloads
-27. 下一拍：T6 bake (ffmpeg/worker) · G6 lives (budget) · Supabase wire when keys
+27. [x] Landing Free-download honesty · HOME_PROOF quality ≥4 gate (provisional Lab scores)
+28. 下一拍：T6 bake · G6 lives (budget) · external QA on proof scores · Supabase when keys
 
 ### 老板醒来验收
 
@@ -79,9 +80,9 @@
 
 ## Grok 本拍状态（3 行）
 
-- Library Free live raw Open/Download/Copy blocked; job download gate used when requestId set.  
-- generations/[id]/retry forks local queued child (not 501); Create download → /api/downloads.  
-- engine-smoke/lint/typecheck green · public NO-GO · G6 still needs 2 lives · no fal spend.
+- LandingToolPanel Free live download blocked + /api/downloads when requestId.  
+- HOME_PROOF quality gate (all scores ≥4) with provisional Lab labels.  
+- engine-smoke/lint/typecheck green · public NO-GO · G6 needs 2 lives · no fal spend.
 
 ---
 

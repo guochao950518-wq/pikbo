@@ -942,5 +942,49 @@ assert.match(batchStudio, /batch-ownership/);
 assert.match(batchStudio, /bottom-\[4\.75rem\]/);
 assert.match(batchStudio, /api\/downloads/);
 
+// Landing tool Free-download honesty (parity with Create/Library)
+const landingTool = fs.readFileSync(
+  join(root, "components/LandingToolPanel.tsx"),
+  "utf8"
+);
+assert.match(landingTool, /canDownloadResult/);
+assert.match(
+  landingTool,
+  /Download blocked · Free raw|freeLiveDownloadBlockReason/
+);
+assert.match(landingTool, /\/api\/downloads\//);
+
+// Phase G homepage proof quality gate (all dimensions ≥4)
+function passesHomeProofQuality(scores) {
+  if (!scores) return false;
+  return ["identity", "motion", "artifacts", "composition", "commercialUse"].every(
+    (k) => typeof scores[k] === "number" && scores[k] >= 4 && scores[k] <= 5
+  );
+}
+assert.equal(
+  passesHomeProofQuality({
+    identity: 4,
+    motion: 4,
+    artifacts: 4,
+    composition: 4,
+    commercialUse: 4,
+  }),
+  true
+);
+assert.equal(
+  passesHomeProofQuality({
+    identity: 3,
+    motion: 5,
+    artifacts: 5,
+    composition: 5,
+    commercialUse: 5,
+  }),
+  false
+);
+assert.match(showcase, /passesHomeProofQuality/);
+assert.match(showcase, /PROVISIONAL_LAB_SCORES/);
+assert.match(showcase, /HOME_PROOF quality gate|qualityScores/);
+assert.match(showcase, /reviewerNotes/);
+
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

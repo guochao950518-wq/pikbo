@@ -20,6 +20,10 @@ import {
   PROVENANCE,
   resultProvenanceLabel,
 } from "@/lib/provenance";
+import {
+  canDownloadResult,
+  freeLiveDownloadBlockReason,
+} from "@/lib/createTrust";
 
 type Status = "idle" | "generating" | "done" | "error";
 
@@ -50,7 +54,12 @@ export function LandingToolPanel({
   const [ownsRights, setOwnsRights] = useState(false);
   const [usedModel, setUsedModel] = useState<string | null>(null);
   const [resultResolution, setResultResolution] = useState<string | null>(null);
+  const [requestId, setRequestId] = useState<string | null>(null);
   const toast = useToast();
+  const downloadAllowed = canDownloadResult({
+    demo,
+    watermark,
+  });
 
   const refreshSession = useCallback(async () => {
     const data = await fetchMe();
@@ -139,6 +148,7 @@ export function LandingToolPanel({
     const resolution = freeTier ? "480p" : "720p";
     setError(null);
     setVideoUrl(null);
+    setRequestId(null);
     setElapsed(0);
     setStatus("generating");
     const result = await postGenerate({
@@ -176,6 +186,11 @@ export function LandingToolPanel({
     setUsedModel(data.model || null);
     setResultResolution(
       typeof data.resolution === "string" ? data.resolution : resolution
+    );
+    setRequestId(
+      typeof data.requestId === "string" && data.requestId
+        ? data.requestId
+        : null
     );
     setStatus("done");
     pushHistory(
@@ -447,15 +462,32 @@ export function LandingToolPanel({
                 {demo ? PROVENANCE.cachedDemo : localLibraryNote()}
               </p>
               <div className="mt-3 flex flex-wrap justify-center gap-2">
-                <a
-                  href={videoUrl}
-                  download={`pikbo-${effectSlug}.mp4`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="btn btn-primary px-3 py-1.5 text-xs"
-                >
-                  Download
-                </a>
+                {downloadAllowed ? (
+                  <a
+                    href={
+                      requestId
+                        ? `/api/downloads/${encodeURIComponent(requestId)}`
+                        : videoUrl || "#"
+                    }
+                    download={
+                      requestId ? undefined : `pikbo-${effectSlug}.mp4`
+                    }
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn btn-primary px-3 py-1.5 text-xs"
+                  >
+                    Download
+                  </a>
+                ) : (
+                  <button
+                    type="button"
+                    disabled
+                    title={freeLiveDownloadBlockReason()}
+                    className="btn btn-primary cursor-not-allowed px-3 py-1.5 text-xs opacity-50"
+                  >
+                    Download blocked · Free raw
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={() => void generate()}
@@ -470,6 +502,11 @@ export function LandingToolPanel({
                   Library
                 </Link>
               </div>
+              {!downloadAllowed ? (
+                <p className="mt-2 text-center text-[10px] leading-snug text-amber-100/80">
+                  {freeLiveDownloadBlockReason()}
+                </p>
+              ) : null}
             </div>
           ) : null}
           {!busy && !videoUrl ? (

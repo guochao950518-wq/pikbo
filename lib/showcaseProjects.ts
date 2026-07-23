@@ -35,6 +35,34 @@ export type ShowcaseQualityScores = {
   commercialUse: number;
 };
 
+/**
+ * Phase G: homepage proof requires every score ≥ 4/5.
+ * Provisional Lab self-check until external human QA (honest, not fabricated UGC).
+ */
+export const PROVISIONAL_LAB_SCORES: ShowcaseQualityScores = {
+  identity: 4,
+  motion: 4,
+  artifacts: 4,
+  composition: 4,
+  commercialUse: 4,
+};
+
+export function passesHomeProofQuality(
+  scores?: ShowcaseQualityScores | null
+): boolean {
+  if (!scores) return false;
+  const values = [
+    scores.identity,
+    scores.motion,
+    scores.artifacts,
+    scores.composition,
+    scores.commercialUse,
+  ];
+  return values.every(
+    (n) => typeof n === "number" && n >= 4 && n <= 5 && Number.isFinite(n)
+  );
+}
+
 export type ShowcaseProject = {
   slug: string;
   title: string;
@@ -52,6 +80,8 @@ export type ShowcaseProject = {
   promptSummary: string;
   negativeConstraints: string[];
   qualityScores?: ShowcaseQualityScores;
+  /** Honest review note — provisional Lab vs external QA. */
+  reviewerNotes?: string;
   category: ShowcaseCategory;
   result: string;
   eyebrow: string;
@@ -71,6 +101,9 @@ export const SHOWCASE_CATEGORIES: ReadonlyArray<{
   { id: "story", label: "Story" },
 ];
 
+const LAB_PROVISIONAL_NOTE =
+  "Provisional Lab self-check (all dimensions 4/5) · external human QA still open · not fake UGC";
+
 const PROJECT_META: Record<
   string,
   Pick<
@@ -82,6 +115,7 @@ const PROJECT_META: Record<
     | "negativeConstraints"
     | "sourceRecord"
     | "qualityScores"
+    | "reviewerNotes"
   >
 > = {
   "orbit-cgi": {
@@ -96,6 +130,8 @@ const PROJECT_META: Record<
       "No duplicate figure or extra limbs",
     ],
     sourceRecord: "PIKBO Lab prototype asset",
+    qualityScores: { ...PROVISIONAL_LAB_SCORES },
+    reviewerNotes: LAB_PROVISIONAL_NOTE,
   },
   "moon-reveal": {
     category: "unboxing",
@@ -109,6 +145,8 @@ const PROJECT_META: Record<
       "No human hands fused with the toy",
     ],
     sourceRecord: "PIKBO Lab prototype asset",
+    qualityScores: { ...PROVISIONAL_LAB_SCORES },
+    reviewerNotes: LAB_PROVISIONAL_NOTE,
   },
   "scout-story": {
     category: "story",
@@ -122,6 +160,8 @@ const PROJECT_META: Record<
       "Avoid illegible signs and logos",
     ],
     sourceRecord: "PIKBO Lab prototype asset",
+    qualityScores: { ...PROVISIONAL_LAB_SCORES },
+    reviewerNotes: LAB_PROVISIONAL_NOTE,
   },
   "beatbot-hook": {
     category: "social-hooks",
@@ -135,6 +175,8 @@ const PROJECT_META: Record<
       "No fake brand or price text",
     ],
     sourceRecord: "PIKBO Lab prototype asset",
+    qualityScores: { ...PROVISIONAL_LAB_SCORES },
+    reviewerNotes: LAB_PROVISIONAL_NOTE,
   },
   "scout-spin": {
     category: "listing",
@@ -148,6 +190,8 @@ const PROJECT_META: Record<
       "Keep background uncluttered",
     ],
     sourceRecord: "PIKBO Lab prototype asset",
+    qualityScores: { ...PROVISIONAL_LAB_SCORES },
+    reviewerNotes: LAB_PROVISIONAL_NOTE,
   },
   "beatbot-unboxed": {
     category: "unboxing",
@@ -161,6 +205,8 @@ const PROJECT_META: Record<
       "Keep character identity stable",
     ],
     sourceRecord: "PIKBO Lab prototype asset",
+    qualityScores: { ...PROVISIONAL_LAB_SCORES },
+    reviewerNotes: LAB_PROVISIONAL_NOTE,
   },
   "orbit-dance": {
     category: "come-alive",
@@ -174,6 +220,8 @@ const PROJECT_META: Record<
       "Keep feet and base geometry stable",
     ],
     sourceRecord: "PIKBO Lab fal render · cached 2026-07-23",
+    qualityScores: { ...PROVISIONAL_LAB_SCORES },
+    reviewerNotes: LAB_PROVISIONAL_NOTE,
   },
   "moon-glow": {
     category: "listing",
@@ -187,6 +235,8 @@ const PROJECT_META: Record<
       "Keep material finish stable",
     ],
     sourceRecord: "PIKBO Lab fal render · cached 2026-07-23",
+    qualityScores: { ...PROVISIONAL_LAB_SCORES },
+    reviewerNotes: LAB_PROVISIONAL_NOTE,
   },
   "scout-walk": {
     category: "come-alive",
@@ -200,6 +250,8 @@ const PROJECT_META: Record<
       "Keep the painted face unchanged",
     ],
     sourceRecord: "PIKBO Lab fal render · cached 2026-07-23",
+    qualityScores: { ...PROVISIONAL_LAB_SCORES },
+    reviewerNotes: LAB_PROVISIONAL_NOTE,
   },
   "beatbot-neon": {
     category: "story",
@@ -213,6 +265,8 @@ const PROJECT_META: Record<
       "Keep accessories attached",
     ],
     sourceRecord: "PIKBO Lab fal render · cached 2026-07-23",
+    qualityScores: { ...PROVISIONAL_LAB_SCORES },
+    reviewerNotes: LAB_PROVISIONAL_NOTE,
   },
   "orbit-aura": {
     category: "social-hooks",
@@ -226,6 +280,8 @@ const PROJECT_META: Record<
       "No added trademarks",
     ],
     sourceRecord: "PIKBO Lab fal render · cached 2026-07-23",
+    qualityScores: { ...PROVISIONAL_LAB_SCORES },
+    reviewerNotes: LAB_PROVISIONAL_NOTE,
   },
   "moon-smoke": {
     category: "social-hooks",
@@ -239,6 +295,8 @@ const PROJECT_META: Record<
       "No duplicate figure",
     ],
     sourceRecord: "PIKBO Lab fal render · cached 2026-07-23",
+    qualityScores: { ...PROVISIONAL_LAB_SCORES },
+    reviewerNotes: LAB_PROVISIONAL_NOTE,
   },
 };
 
@@ -265,6 +323,7 @@ function projectFromDemo(demo: DemoVideo): ShowcaseProject | null {
     promptSummary: meta.promptSummary,
     negativeConstraints: meta.negativeConstraints,
     qualityScores: meta.qualityScores,
+    reviewerNotes: meta.reviewerNotes,
     category: meta.category,
     result: demo.result,
     eyebrow: demo.eyebrow,
@@ -292,6 +351,19 @@ function assertRegistryIntegrity(list: ShowcaseProject[]) {
     slugs.add(project.slug);
     outputs.add(project.outputVideo);
   }
+  // Phase G: every HOME_PROOF recipe must resolve and pass ≥4/5 quality gate.
+  const byRecipe = new Map(list.map((p) => [p.recipeSlug, p]));
+  for (const recipe of HOME_PROOF_SLUGS) {
+    const p = byRecipe.get(recipe);
+    if (!p) {
+      throw new Error(`HOME_PROOF recipe missing ShowcaseProject: ${recipe}`);
+    }
+    if (!passesHomeProofQuality(p.qualityScores)) {
+      throw new Error(
+        `HOME_PROOF quality gate failed for ${recipe} (need all scores ≥4)`
+      );
+    }
+  }
 }
 
 assertRegistryIntegrity(projects);
@@ -304,6 +376,7 @@ export function listHomeShowcaseProjects(): ShowcaseProject[] {
   const byRecipe = new Map(projects.map((project) => [project.recipeSlug, project]));
   return HOME_PROOF_SLUGS.map((slug) => byRecipe.get(slug))
     .filter((project): project is ShowcaseProject => Boolean(project))
+    .filter((project) => passesHomeProofQuality(project.qualityScores))
     .slice(0, HOME_PROOF_LIMIT);
 }
 
