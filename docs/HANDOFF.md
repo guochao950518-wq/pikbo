@@ -4,6 +4,14 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [grok] MOONSHOT world-class bar · $60k/day reverse plan
+- Boss demand: world's best toy video site, Google traffic explosion, path to **$60k/day** sub revenue.
+- Strategy: `docs/MOONSHOT_WORLD_CLASS.md` — unit-econ reverse, W1–W8 pillars, S0→S4 stages, kill HF shell theater.
+- Dispatch: GPT `world-class-prd`, Codex `world-class-copy`, Claude `world-class-create` (spawned).
+- Paste: `docs/PASTE_WORLD_CLASS.md`
+- Honesty: $60k/day is **S4** (category leadership), not Sunday; build to that standard from S0.
+- Public domain still GO-gated; quality bar upgraded from meh soft to W1–W5.
+
 ### 2026-07-23 — [claude] shell triage G1–G4/G7 soft (branch `agent/claude/shell-triage`)
 - **G1 nav:** Primary = Explore · Create · Effects · Lab + Pricing/Generate CTAs. Models/Cinema/Batch/Feed/Image/Library under **More**. Mobile = Home · Effects · Generate · Lab · Pricing.
 - **G2 density:** Homepage uses `buildHomeShowcaseFeed()` — max **8 unique** Lab demos; removed multi-pass shared-loop wall. Lab/Feed `buildVideoFeed()` no longer density-triplicates presets.
