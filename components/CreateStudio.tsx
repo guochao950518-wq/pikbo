@@ -397,6 +397,8 @@ export function CreateStudio({
         fallbackDuration: effectiveDuration,
         fallbackAspect: aspectRatio,
         fallbackResolution: resolvedRes,
+        sourceProject: remix.intent?.sourceProjectSlug,
+        channel: remix.intent?.channel,
       })
     );
     emitSessionRefresh();

@@ -28,6 +28,11 @@ for p in / /create /effects /tools /library /pricing /community /explore /api/he
   check "$p"
 done
 
+# Remake loop: official project detail (demo Lab id)
+check "/projects/orbit-cgi"
+check "/projects/moon-reveal"
+check "/create?effect=360-spin-showcase&source=scout-spin&ratio=1:1&duration=5&channel=etsy"
+
 # SEO tools cluster (sample — full list is in sitemap)
 for p in \
   /tools/ai-toy-video-generator \

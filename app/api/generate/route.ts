@@ -174,6 +174,28 @@ export async function POST(req: Request) {
       prefer: modelPref as ModelPreference,
     });
 
+    // G6 ops: prove post-debit refund without burning fal when not on production.
+    // Never enable on Vercel production or NODE_ENV=production.
+    const forceFail =
+      process.env.PIKBO_FORCE_GENERATE_FAIL === "1" &&
+      process.env.NODE_ENV !== "production" &&
+      process.env.VERCEL_ENV !== "production";
+    if (forceFail) {
+      session = refundCredits(session, check.cost);
+      await saveSession(session);
+      return err(
+        {
+          error:
+            "Forced generate failure (PIKBO_FORCE_GENERATE_FAIL) — credits restored",
+          code: "GENERATION_FAILED",
+          model,
+          session: publicSession(session),
+          creditsRefunded: true,
+        },
+        500
+      );
+    }
+
     try {
       fal.config({ credentials: process.env.FAL_KEY });
 

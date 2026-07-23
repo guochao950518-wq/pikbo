@@ -14,6 +14,10 @@ export type HistoryItem = {
   aspectRatio?: string;
   resolution?: string;
   requestId?: string;
+  /** Official Lab project id when generated via remix handoff */
+  sourceProject?: string;
+  /** Remix channel hint (etsy / reels / …) */
+  channel?: string;
   createdAt: string;
 };
 
@@ -47,6 +51,9 @@ function normalizeItem(raw: unknown): HistoryItem | null {
     aspectRatio: typeof o.aspectRatio === "string" ? o.aspectRatio : undefined,
     resolution: typeof o.resolution === "string" ? o.resolution : undefined,
     requestId: typeof o.requestId === "string" ? o.requestId : undefined,
+    sourceProject:
+      typeof o.sourceProject === "string" ? o.sourceProject : undefined,
+    channel: typeof o.channel === "string" ? o.channel : undefined,
     createdAt:
       typeof o.createdAt === "string" && o.createdAt
         ? o.createdAt

@@ -355,7 +355,7 @@ const es: Dict = {
   "home.feat.cinema.title": "Escena de cine",
   "home.feat.cinema.sub": "Coloca una figura en un mundo",
   "home.viral.title": "Ajustes de juguetes virales",
-  "home.viral.all": "TODO",
+  "home.viral.all": "TODOS",
   "create.presets": "Ajustes de juguete",
   "create.searchPresets": "Buscar giro, unboxing…",
   "create.yourPhoto": "Tu foto de juguete",

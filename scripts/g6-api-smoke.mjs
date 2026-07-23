@@ -155,6 +155,37 @@ async function main() {
     console.log("OK   HOME_PROOF_SLUGS present");
   }
 
+  // 5) Optional forced post-debit refund (dev/local only — set env on server)
+  if (process.env.G6_TEST_REFUND === "1") {
+    const meBefore = await (await fetch(`${BASE}/api/me`)).json();
+    const before = meBefore?.credits ?? 0;
+    const r = await postGenerate(
+      {
+        effect: "360-spin-showcase",
+        image: tinyPngDataUrl(),
+        ownsRights: true,
+      },
+      undefined,
+      15_000
+    );
+    assert.equal(r.status, 500, `force fail status ${r.status}`);
+    assert.equal(r.json?.code, "GENERATION_FAILED");
+    assert.equal(r.json?.creditsRefunded, true);
+    assert.ok(r.json?.session);
+    assert.equal(
+      r.json.session.credits,
+      before,
+      "credits must restore after forced fail"
+    );
+    console.log(
+      `OK   forced refund · credits ${before}→${r.json.session.credits} (G6 refund leg)`
+    );
+  } else {
+    console.log(
+      "skip forced refund (start Next with PIKBO_FORCE_GENERATE_FAIL=1 then G6_TEST_REFUND=1)"
+    );
+  }
+
   console.log("g6-api-smoke: PASS (partial — not full G6)");
 }
 

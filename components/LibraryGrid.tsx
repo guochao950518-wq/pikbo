@@ -273,6 +273,10 @@ export function LibraryGrid() {
                 {item.duration ? ` · ${item.duration}s` : ""}
                 {item.aspectRatio ? ` · ${item.aspectRatio}` : ""}
                 {item.resolution ? ` · ${item.resolution}` : ""}
+                {item.sourceProject
+                  ? ` · remix from ${item.sourceProject}`
+                  : ""}
+                {item.channel ? ` · ${item.channel}` : ""}
               </p>
               {remoteClipMayExpire(item) && (
                 <p className="mt-1 text-[10px] text-amber-600/90">

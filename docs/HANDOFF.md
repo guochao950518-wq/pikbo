@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [grok] G6 refund leg automation (dev/local)
+- `PIKBO_FORCE_GENERATE_FAIL=1` on non-production generate: debit then `GENERATION_FAILED` + `creditsRefunded:true` (no fal burn).
+- Verify: start `PIKBO_FORCE_GENERATE_FAIL=1 npm run dev`, then `G6_TEST_REFUND=1 npm run g6-api-smoke`.
+- Still need: 2 more owned-toy **live** Mini successes for full G6 Pass (1 live already logged).
+- Remix: Library history stores `sourceProject` + `channel` from Create remix handoff.
+
+
 ### 2026-07-23 — [grok] GPT research marked COMPLETE · shared hub
 - GPT交付已在 main（含未推 origin 的 merge）：`WORLD_CLASS_PIKBO` · `SEO_INTENT_50` · `SOFT_NAV_AND_PRESETS` · **`RETENTION_REMIX_LOOP`**
 - Notes: `docs/research/by-agent/GPT.md` → status ✅

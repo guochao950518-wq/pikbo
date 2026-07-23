@@ -199,6 +199,11 @@ assert.match(topup, /FORBIDDEN|Dev topup disabled/);
 assert.match(topup, /VERCEL_ENV|NODE_ENV/);
 assert.match(topup, /production/);
 
+// G6 forced fail must be non-production only
+assert.match(genRoute, /PIKBO_FORCE_GENERATE_FAIL/);
+assert.match(genRoute, /VERCEL_ENV !== "production"/);
+assert.match(genRoute, /creditsRefunded:\s*true/);
+
 const pbFull = fs.readFileSync(join(root, "lib/promptBuild.ts"), "utf8");
 assert.match(pbFull, /TOY_IDENTITY_LOCK/);
 assert.match(pbFull, /withIdentityLock|Keep the exact same toy/i);
@@ -248,6 +253,14 @@ assert.match(appShell, /const MORE/);
 assert.match(appShell, /MoreMenu|More/);
 const historySrc = fs.readFileSync(join(root, "lib/history.ts"), "utf8");
 assert.match(historySrc, /historyProvenance|provenance/);
+assert.match(historySrc, /sourceProject/);
+
+// Remake loop handoff contract
+const remix = fs.readFileSync(join(root, "lib/remixIntent.ts"), "utf8");
+assert.match(remix, /export function buildCreateRemixHref/);
+assert.match(remix, /export function parseRemixSearchParams/);
+assert.match(remix, /sourceProjectSlug/);
+assert.match(createStudio, /sourceProject|remix\.intent/);
 
 // G2: homepage proof whitelist frozen in softLaunch + used by videoFeed
 const softLaunch = fs.readFileSync(join(root, "lib/softLaunch.ts"), "utf8");

@@ -155,6 +155,9 @@ export function historyFieldsFromSuccess(
     fallbackDuration?: number;
     fallbackAspect?: string;
     fallbackResolution?: string;
+    /** Remix handoff — official Lab project id */
+    sourceProject?: string;
+    channel?: string;
   }
 ): Omit<HistoryItem, "id" | "createdAt"> {
   return {
@@ -178,6 +181,8 @@ export function historyFieldsFromSuccess(
         : meta.fallbackResolution,
     requestId:
       typeof data.requestId === "string" ? data.requestId : undefined,
+    sourceProject: meta.sourceProject,
+    channel: meta.channel,
   };
 }
 
