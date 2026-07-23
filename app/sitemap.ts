@@ -17,7 +17,7 @@ import {
  * they are omitted here so search does not treat them as thin pages.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
-  const reviewedAt = "2026-07-23";
+  const reviewedAt = "2026-07-24";
   const proofRecipes = new Set(proofBackedRecipeSlugs());
 
   const staticPages = [

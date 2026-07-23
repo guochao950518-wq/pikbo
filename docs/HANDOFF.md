@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] no-boss-wait: preflight, env.example, website skills, /status
+- Boss deferred Vercel/SQL; continued no-login work.
+- `npm run preflight-launch` · expanded `.env.example` (Supabase/payments/G6).
+- Local skills: `.grok/skills/website-{cro,seo-audit,launch,copy}` + frontend-design/webapp-testing refs.
+- `/status` ops probe (noindex) → /api/health. Sitemap date 2026-07-24.
+
 ### 2026-07-24 — [grok] Phase I payments readiness + reservation TTL expire
 - `paymentsReadiness()`: test/live secret mode, live keys blocked without `PAYMENTS_LIVE=1`, client flag gate.
 - Checkout returns `PAYMENTS_DISABLED` / `LIVE_KEYS_BLOCKED` honestly; health exposes `payments` (no secrets).
