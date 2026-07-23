@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Phase D video-provider webhook + blockers refresh
+- `POST /api/webhooks/video-provider`: idempotent by `eventId`; maps requestId→job; optional `VIDEO_PROVIDER_WEBHOOK_SECRET`.
+- Terminal jobs not overwritten; duplicate events return `duplicate:true`.
+- `docs/BLOCKERS_REQUEST.md` updated (G6/Supabase code done; remaining Vercel login, SQL apply, T6, public DNS).
+- Verified: typecheck · engine-smoke · lint.
+
 ### 2026-07-24 — [grok] G6 PASS + Mode A private launch path
 - **2 additional live Mini** (Seedance Mini): scout `360-spin` `019f8fb8-7b20-77e2-af8c-fcb392e2276f`; moon `blind-box` `019f8fba-1b61-7ac1-9ab7-b41b05f1cb8c`.
 - **Refund:** `PIKBO_FORCE_GENERATE_FAIL=1` → 500 `GENERATION_FAILED` · credits 10→10 · `creditsRefunded:true`.

@@ -790,6 +790,13 @@ assert.match(
     join(root, "app/api/webhooks/video-provider/route.ts"),
     "utf8"
   ),
+  /applyProviderWebhookEvent/
+);
+assert.doesNotMatch(
+  fs.readFileSync(
+    join(root, "app/api/webhooks/video-provider/route.ts"),
+    "utf8"
+  ),
   /NOT_IMPLEMENTED/
 );
 assert.match(createStudio, /track\(\{[\s\S]*generate_start/);
@@ -1111,6 +1118,11 @@ assert.match(batchStudio, /settleSellerPackChildClient/);
 assert.match(batchStudio, /releaseSellerPackChildClient/);
 assert.match(batchStudio, /packReservationId/);
 assert.match(gen, /reserveSellerPackShadowClient/);
+
+// Phase D video-provider webhook idempotency (store + route)
+assert.match(genJobsStore, /applyProviderWebhookEvent/);
+assert.match(genJobsStore, /findJobByRequestOrId/);
+assert.match(genJobsStore, /webhookEvents/);
 
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

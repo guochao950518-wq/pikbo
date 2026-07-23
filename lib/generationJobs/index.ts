@@ -14,5 +14,7 @@ export {
   downloadAllowedForJob,
   forkRetryJob,
   cancelJob,
+  findJobByRequestOrId,
+  applyProviderWebhookEvent,
   __resetGenerationJobsForTests,
 } from "@/lib/generationJobs/store";

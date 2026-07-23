@@ -15,6 +15,11 @@ const MAX_JOBS = 200;
 const jobs = new Map<string, GenerationJob>();
 /** idempotencyKey → job id (session-scoped via key prefix) */
 const byIdempotency = new Map<string, string>();
+/** Provider webhook event id → last apply result (no duplicate side effects) */
+const webhookEvents = new Map<
+  string,
+  { jobId: string; status: GenerationJobStatus; appliedAt: string }
+>();
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -340,8 +345,195 @@ export function toPublicJob(
   return { ...rest, owned: true };
 }
 
+/** Find job by provider request id or job id. */
+export function findJobByRequestOrId(
+  requestIdOrJobId: string
+): GenerationJob | null {
+  const direct = jobs.get(requestIdOrJobId);
+  if (direct) return direct;
+  for (const j of jobs.values()) {
+    if (j.requestId === requestIdOrJobId) return j;
+  }
+  return null;
+}
+
+/**
+ * Idempotent provider webhook apply (Phase D).
+ * Soft-launch generate still settles inline; this path is for async completions
+ * and duplicate webhook retries without double-writing terminal state.
+ */
+export function applyProviderWebhookEvent(input: {
+  eventId: string;
+  requestId: string;
+  status: "succeeded" | "failed" | "canceled";
+  videoUrl?: string;
+  error?: string;
+  errorCode?: string;
+  demo?: boolean;
+  watermark?: boolean;
+  model?: string;
+  provider?: string;
+}):
+  | {
+      ok: true;
+      duplicate: boolean;
+      job: GenerationJob | null;
+      message: string;
+    }
+  | { ok: false; code: string; message: string } {
+  const eventId = input.eventId.trim().slice(0, 128);
+  const requestId = input.requestId.trim().slice(0, 128);
+  if (!eventId || !requestId) {
+    return {
+      ok: false,
+      code: "INVALID_PAYLOAD",
+      message: "eventId and requestId are required",
+    };
+  }
+
+  const prior = webhookEvents.get(eventId);
+  if (prior) {
+    const job = jobs.get(prior.jobId) ?? findJobByRequestOrId(requestId);
+    return {
+      ok: true,
+      duplicate: true,
+      job,
+      message: "Webhook event already applied (idempotent)",
+    };
+  }
+
+  let job = findJobByRequestOrId(requestId);
+  const t = nowIso();
+
+  if (!job) {
+    // Unknown request: create a shell so retries still idempotent.
+    if (input.status === "succeeded" && input.videoUrl) {
+      job = recordSucceededGenerate({
+        sessionId: "webhook-orphan",
+        effect: "unknown",
+        videoUrl: input.videoUrl,
+        demo: Boolean(input.demo),
+        watermark: input.watermark !== false,
+        model: input.model,
+        requestId,
+        provider: input.provider || "webhook",
+        preferredId: requestId,
+        creditsOutcome: input.demo ? "0 cached" : "10 used",
+      });
+    } else if (input.status === "failed" || input.status === "canceled") {
+      job = recordFailedGenerate({
+        sessionId: "webhook-orphan",
+        effect: "unknown",
+        error: input.error || `Provider ${input.status}`,
+        errorCode: input.errorCode || input.status.toUpperCase(),
+        preferredId: requestId,
+      });
+      if (input.status === "canceled") {
+        job = updateJob(job.id, {
+          status: "canceled",
+          error: input.error || "Canceled by provider",
+          errorCode: "CANCELED",
+        })!;
+      }
+    } else {
+      return {
+        ok: false,
+        code: "JOB_NOT_FOUND",
+        message:
+          "No job for requestId and success payload missing videoUrl",
+      };
+    }
+    webhookEvents.set(eventId, {
+      jobId: job.id,
+      status: job.status,
+      appliedAt: t,
+    });
+    return {
+      ok: true,
+      duplicate: false,
+      job,
+      message: "Created job from webhook (orphan / late event)",
+    };
+  }
+
+  // Already terminal with same outcome → record event and no-op.
+  if (job.status === "succeeded" || job.status === "failed" || job.status === "canceled") {
+    webhookEvents.set(eventId, {
+      jobId: job.id,
+      status: job.status,
+      appliedAt: t,
+    });
+    return {
+      ok: true,
+      duplicate: false,
+      job,
+      message: `Job already terminal (${job.status}); webhook recorded without overwrite`,
+    };
+  }
+
+  if (input.status === "succeeded") {
+    if (!input.videoUrl) {
+      return {
+        ok: false,
+        code: "MISSING_VIDEO",
+        message: "succeeded webhook requires videoUrl",
+      };
+    }
+    // Never store raw provider URL as permanent customer storage claim —
+    // soft-launch still uses provider URL for playback; download gate applies.
+    const next = updateJob(job.id, {
+      status: "succeeded",
+      videoUrl: input.videoUrl,
+      demo: Boolean(input.demo),
+      watermark: input.watermark !== false,
+      model: input.model ?? job.model,
+      provider: input.provider || job.provider || "webhook",
+      requestId: job.requestId || requestId,
+      creditsOutcome: input.demo ? "0 cached" : job.creditsOutcome || "10 used",
+      error: undefined,
+      errorCode: undefined,
+    });
+    if (!next) {
+      return { ok: false, code: "UPDATE_FAILED", message: "Could not update job" };
+    }
+    webhookEvents.set(eventId, {
+      jobId: next.id,
+      status: next.status,
+      appliedAt: t,
+    });
+    return {
+      ok: true,
+      duplicate: false,
+      job: next,
+      message: "Job marked succeeded from webhook",
+    };
+  }
+
+  const next = updateJob(job.id, {
+    status: input.status === "canceled" ? "canceled" : "failed",
+    error: input.error || `Provider ${input.status}`,
+    errorCode: input.errorCode || input.status.toUpperCase(),
+    videoUrl: undefined,
+  });
+  if (!next) {
+    return { ok: false, code: "UPDATE_FAILED", message: "Could not update job" };
+  }
+  webhookEvents.set(eventId, {
+    jobId: next.id,
+    status: next.status,
+    appliedAt: t,
+  });
+  return {
+    ok: true,
+    duplicate: false,
+    job: next,
+    message: `Job marked ${next.status} from webhook`,
+  };
+}
+
 /** Test helper — clear process memory. */
 export function __resetGenerationJobsForTests() {
   jobs.clear();
   byIdempotency.clear();
+  webhookEvents.clear();
 }

@@ -1,20 +1,144 @@
 import { NextResponse } from "next/server";
+import {
+  applyProviderWebhookEvent,
+  toPublicJob,
+} from "@/lib/generationJobs";
 
 export const runtime = "nodejs";
 
+type WebhookBody = {
+  eventId?: string;
+  /** Alias used by some providers */
+  id?: string;
+  requestId?: string;
+  jobId?: string;
+  status?: string;
+  videoUrl?: string;
+  error?: string;
+  errorCode?: string;
+  demo?: boolean;
+  watermark?: boolean;
+  model?: string;
+  provider?: string;
+};
+
 /**
- * Phase D — provider completion webhook (idempotent settle/release).
- * Soft-launch uses synchronous fal.subscribe inside /api/generate.
+ * Phase D — provider completion webhook (idempotent).
+ * Soft-launch still settles most jobs inline on /api/generate.
+ * This route records async outcomes + dedupes retries by eventId.
+ *
+ * Auth: optional `VIDEO_PROVIDER_WEBHOOK_SECRET` via header
+ * `x-pikbo-webhook-secret` or `Authorization: Bearer …`.
  */
-export async function POST() {
-  return NextResponse.json(
-    {
-      ok: false,
-      code: "NOT_IMPLEMENTED",
-      phase: "D",
-      message:
-        "Video provider webhooks are not live. Soft-launch settles inline on /api/generate.",
-    },
-    { status: 501 }
-  );
+export async function POST(req: Request) {
+  const expected = process.env.VIDEO_PROVIDER_WEBHOOK_SECRET?.trim();
+  if (expected) {
+    const header =
+      req.headers.get("x-pikbo-webhook-secret")?.trim() ||
+      req.headers.get("authorization")?.replace(/^Bearer\s+/i, "").trim();
+    if (header !== expected) {
+      return NextResponse.json(
+        { ok: false, code: "UNAUTHORIZED", error: "Invalid webhook secret" },
+        { status: 401 }
+      );
+    }
+  }
+
+  let body: WebhookBody = {};
+  try {
+    body = (await req.json()) as WebhookBody;
+  } catch {
+    return NextResponse.json(
+      { ok: false, code: "INVALID_JSON", error: "Expected JSON body" },
+      { status: 400 }
+    );
+  }
+
+  const eventId =
+    (typeof body.eventId === "string" && body.eventId) ||
+    (typeof body.id === "string" && body.id) ||
+    "";
+  const requestId =
+    (typeof body.requestId === "string" && body.requestId) ||
+    (typeof body.jobId === "string" && body.jobId) ||
+    "";
+  const rawStatus = (body.status || "").toLowerCase();
+  const status: "succeeded" | "failed" | "canceled" | null =
+    rawStatus === "succeeded" ||
+    rawStatus === "completed" ||
+    rawStatus === "ok"
+      ? "succeeded"
+      : rawStatus === "failed" || rawStatus === "error"
+        ? "failed"
+        : rawStatus === "canceled" || rawStatus === "cancelled"
+          ? "canceled"
+          : null;
+
+  if (!status) {
+    return NextResponse.json(
+      {
+        ok: false,
+        code: "INVALID_STATUS",
+        error: "status must be succeeded|failed|canceled (or completed/error)",
+      },
+      { status: 400 }
+    );
+  }
+
+  const result = applyProviderWebhookEvent({
+    eventId,
+    requestId,
+    status,
+    videoUrl:
+      typeof body.videoUrl === "string" ? body.videoUrl.slice(0, 2000) : undefined,
+    error: typeof body.error === "string" ? body.error.slice(0, 500) : undefined,
+    errorCode:
+      typeof body.errorCode === "string"
+        ? body.errorCode.slice(0, 64)
+        : undefined,
+    demo: body.demo === true,
+    watermark: body.watermark,
+    model: typeof body.model === "string" ? body.model.slice(0, 120) : undefined,
+    provider:
+      typeof body.provider === "string"
+        ? body.provider.slice(0, 64)
+        : "video-provider",
+  });
+
+  if (!result.ok) {
+    const statusCode =
+      result.code === "JOB_NOT_FOUND"
+        ? 404
+        : result.code === "INVALID_PAYLOAD" || result.code === "MISSING_VIDEO"
+          ? 400
+          : 500;
+    return NextResponse.json(
+      {
+        ok: false,
+        code: result.code,
+        error: result.message,
+        phase: "D",
+      },
+      { status: statusCode }
+    );
+  }
+
+  // Public view without session — strip video for orphan webhook-created jobs
+  // only when not owned by a real session; still return status for ops.
+  const job = result.job
+    ? toPublicJob(result.job, result.job.sessionId)
+    : null;
+
+  return NextResponse.json({
+    ok: true,
+    phase: "D",
+    mode: "local-memory",
+    durable: false,
+    duplicate: result.duplicate,
+    message: result.message,
+    job,
+    note:
+      "Idempotent by eventId. Soft-launch generate still settles inline; raw provider URLs are not permanent customer storage.",
+    secretConfigured: Boolean(expected),
+  });
 }
