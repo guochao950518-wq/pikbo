@@ -6,6 +6,7 @@ import {
   type Workflow,
   type WorkflowId,
 } from "@/lib/workflows";
+import { track } from "@/lib/analytics";
 
 /**
  * Yiha /lego + HF Apps pattern: dense mini-app shelf on Create.
@@ -65,7 +66,15 @@ export function WorkflowShelf({
                 <button
                   key={w.id}
                   type="button"
-                  onClick={() => onPick(w)}
+                  onClick={() => {
+                    track({
+                      event: "recipe_use",
+                      path: "/create",
+                      recipe: w.effect,
+                      meta: { workflow: w.id, surface: "shelf" },
+                    });
+                    onPick(w);
+                  }}
                   className={`min-w-[8.5rem] max-w-[11rem] shrink-0 rounded-2xl border px-3 py-2.5 text-left transition ${
                     active
                       ? "border-[var(--mint)] bg-[var(--mint)]/15 shadow-[0_0_0_1px_var(--mint)]"
@@ -81,6 +90,14 @@ export function WorkflowShelf({
               <Link
                 key={w.id}
                 href={w.href}
+                onClick={() =>
+                  track({
+                    event: "recipe_use",
+                    path: "/create",
+                    recipe: w.effect,
+                    meta: { workflow: w.id, surface: "shelf_link" },
+                  })
+                }
                 className={`min-w-[8.5rem] max-w-[11rem] shrink-0 rounded-2xl border px-3 py-2.5 text-left transition ${
                   active
                     ? "border-[var(--mint)] bg-[var(--mint)]/15"

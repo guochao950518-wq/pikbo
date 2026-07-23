@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { GenerateSuiteChrome } from "@/components/GenerateSuiteChrome";
+import { ModulesMobileCta } from "@/components/ModulesMobileCta";
 import { DEMO_VIDEOS } from "@/lib/demoVideos";
 import {
   listLiveWorkflows,
@@ -127,7 +128,7 @@ export default function ModulesPage() {
   const preview = listPreviewWorkflows();
 
   return (
-    <div className="min-h-[calc(100vh-3.5rem)]">
+    <div className="min-h-[calc(100vh-3.5rem)] pb-28 lg:pb-0">
       <Suspense
         fallback={
           <div className="border-b border-white/10 px-4 py-3 text-sm text-white/40">
@@ -150,7 +151,13 @@ export default function ModulesPage() {
             Pikbo Lab.
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
-            <Link href="/create" className="btn btn-primary text-sm">
+            <Link
+              href="/create?try=1&sample=scout"
+              className="btn btn-primary text-sm"
+            >
+              Try free · Lab sample
+            </Link>
+            <Link href="/create" className="btn btn-ghost text-sm">
               Open Generate
             </Link>
             <Link
@@ -243,6 +250,7 @@ export default function ModulesPage() {
           </section>
         </div>
       </div>
+      <ModulesMobileCta />
     </div>
   );
 }
