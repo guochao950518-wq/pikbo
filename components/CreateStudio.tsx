@@ -8,12 +8,12 @@ import {
   postGenerate,
 } from "@/lib/generateClient";
 import { pushHistory } from "@/lib/history";
+import { fetchMe, isDemoMode, type MeResponse } from "@/lib/meClient";
 import { isValidImageDataUrl } from "@/lib/providerError";
 import { SAMPLE_TOYS, sampleToDataUrl } from "@/lib/samples";
 import { PRESETS } from "@/lib/presets";
 import { viralName } from "@/lib/viralNames";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
-import type { PublicSession } from "@/lib/session";
 import { site } from "@/lib/site";
 import { useToast } from "@/components/Toast";
 import { PaywallCard } from "@/components/PaywallCard";
@@ -82,7 +82,7 @@ export function CreateStudio({
   const [error, setError] = useState<string | null>(null);
   const [demo, setDemo] = useState(false);
   const [watermark, setWatermark] = useState(true);
-  const [session, setSession] = useState<PublicSession | null>(null);
+  const [session, setSession] = useState<MeResponse | null>(null);
   const [showPaywall, setShowPaywall] = useState(false);
   const [upgradedBanner, setUpgradedBanner] = useState(false);
   const [usedModel, setUsedModel] = useState<string | null>(null);
@@ -181,18 +181,14 @@ export function CreateStudio({
   }
 
   const refreshSession = useCallback(async () => {
-    try {
-      const res = await fetch("/api/me");
-      const data = (await res.json()) as PublicSession;
-      setSession(data);
-      setWatermark(data.watermark);
-      // Free path: Mini (cheapest wool) + 480p
-      if (data.plan === "free" || data.watermark) {
-        setModelId("seedance-mini");
-        setResolution("480p");
-      }
-    } catch {
-      // ignore
+    const data = await fetchMe();
+    if (!data) return;
+    setSession(data);
+    setWatermark(data.watermark);
+    // Free path: Mini (cheapest wool) + 480p
+    if (data.plan === "free" || data.watermark) {
+      setModelId("seedance-mini");
+      setResolution("480p");
     }
   }, []);
 
@@ -260,6 +256,7 @@ export function CreateStudio({
   const creditsLeft = session?.credits ?? null;
   const canAfford = creditsLeft === null || creditsLeft >= CREDITS_PER_VIDEO;
   const isFree = session?.plan === "free" || session?.watermark;
+  const demoMode = isDemoMode(session);
   // Free tier is hard-locked to 5s server-side; keep UI in sync without an effect.
   const effectiveDuration = isFree ? 5 : duration;
 
@@ -306,7 +303,11 @@ export function CreateStudio({
     });
 
     if (!result.ok) {
-      if (result.session) setSession(result.session);
+      if (result.session) {
+        setSession((prev) =>
+          prev ? { ...prev, ...result.session } : (result.session as MeResponse)
+        );
+      }
       if (result.paywall) setShowPaywall(true);
       setError(
         result.error ||
@@ -320,7 +321,11 @@ export function CreateStudio({
     }
 
     const data = result.data;
-    if (data.session) setSession(data.session);
+    if (data.session) {
+      setSession((prev) =>
+        prev ? { ...prev, ...data.session } : (data.session as MeResponse)
+      );
+    }
     setVideoUrl(data.videoUrl);
     setDemo(Boolean(data.demo));
     setWatermark(Boolean(data.watermark));
@@ -850,9 +855,11 @@ export function CreateStudio({
               ? "Generating…"
               : mode === "t2v"
                 ? "Text→Video soon — use Image→Video"
-                : !canAfford
-                  ? `Generate · live needs ${CREDITS_PER_VIDEO} credits (cached demo free offline)`
-                  : `Generate · ${CREDITS_PER_VIDEO} credits · ${effectiveDuration}s · ${aspectRatio}`}
+                : demoMode
+                  ? `Generate · cached demo free · ${effectiveDuration}s · ${aspectRatio}`
+                  : !canAfford
+                    ? `Generate · live needs ${CREDITS_PER_VIDEO} credits`
+                    : `Generate · ${CREDITS_PER_VIDEO} credits · ${effectiveDuration}s · ${aspectRatio}`}
           </button>
 
           {error && (

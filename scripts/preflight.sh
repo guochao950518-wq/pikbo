@@ -33,6 +33,24 @@ if [[ "$missing" -ne 0 ]]; then
 fi
 echo "OK: lab demos present"
 
+# One-click sample stills for Studio / Batch
+missing_still=0
+for f in \
+  public/demos/orbit-still.webp \
+  public/demos/moon-float.webp \
+  public/demos/scout-still.webp \
+  public/demos/beatbot-still.webp
+do
+  if [[ ! -f "$f" ]]; then
+    echo "FAIL: missing sample still $f"
+    missing_still=1
+  fi
+done
+if [[ "$missing_still" -ne 0 ]]; then
+  exit 1
+fi
+echo "OK: sample stills present"
+
 node scripts/engine-smoke.mjs
 echo "OK: engine-smoke"
 

@@ -12,7 +12,7 @@ import { CATEGORIES, PRESETS, type CategoryId } from "@/lib/presets";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
 import { isValidImageDataUrl } from "@/lib/providerError";
 import { SAMPLE_TOYS, sampleToDataUrl } from "@/lib/samples";
-import type { PublicSession } from "@/lib/session";
+import { fetchMe, type MeResponse } from "@/lib/meClient";
 import { emitSessionRefresh } from "@/lib/sessionEvents";
 
 type Job = {
@@ -23,10 +23,6 @@ type Job = {
   videoUrl?: string;
   demo?: boolean;
   model?: string;
-};
-
-type MePayload = PublicSession & {
-  mode?: "live-generate" | "demo-cached" | string;
 };
 
 /**
@@ -68,14 +64,11 @@ export function BatchStudio({
   );
   const [duration, setDuration] = useState<5 | 10>(5);
   const [catFilter, setCatFilter] = useState<CategoryId | "all">("all");
-  const [me, setMe] = useState<MePayload | null>(null);
+  const [me, setMe] = useState<MeResponse | null>(null);
 
   useEffect(() => {
     const t = window.setTimeout(() => {
-      fetch("/api/me")
-        .then((r) => r.json())
-        .then((d: MePayload) => setMe(d))
-        .catch(() => setMe(null));
+      void fetchMe().then(setMe);
     }, 0);
     return () => window.clearTimeout(t);
   }, []);
@@ -181,7 +174,9 @@ export function BatchStudio({
         );
         if (result.session) {
           setMe((prev) =>
-            prev ? { ...prev, ...result.session } : (result.session as MePayload)
+            prev
+              ? { ...prev, ...result.session }
+              : (result.session as MeResponse)
           );
           emitSessionRefresh();
         }
@@ -196,7 +191,9 @@ export function BatchStudio({
       const data = result.data;
       if (data.session) {
         setMe((prev) =>
-          prev ? { ...prev, ...data.session } : (data.session as MePayload)
+          prev
+            ? { ...prev, ...data.session }
+            : (data.session as MeResponse)
         );
       }
       pushHistory(

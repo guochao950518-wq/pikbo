@@ -2,23 +2,28 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { clearHistory, loadHistory } from "@/lib/history";
-import type { PublicSession } from "@/lib/session";
+import {
+  clearHistory,
+  loadHistory,
+  remoteClipMayExpire,
+} from "@/lib/history";
+import { fetchMe, type MeResponse } from "@/lib/meClient";
+import { CREDITS_PER_VIDEO } from "@/lib/pricing";
 
 export default function SettingsPage() {
-  const [session, setSession] = useState<PublicSession | null>(null);
+  const [session, setSession] = useState<MeResponse | null>(null);
   const [libCount, setLibCount] = useState(0);
+  const [agingCount, setAgingCount] = useState(0);
   const [msg, setMsg] = useState<string | null>(null);
 
   function refreshLocal() {
-    setLibCount(loadHistory().length);
+    const list = loadHistory();
+    setLibCount(list.length);
+    setAgingCount(list.filter((i) => remoteClipMayExpire(i)).length);
   }
 
   useEffect(() => {
-    fetch("/api/me")
-      .then((r) => r.json())
-      .then(setSession)
-      .catch(() => {});
+    void fetchMe().then(setSession);
     const t = window.setTimeout(() => {
       refreshLocal();
     }, 0);
@@ -34,6 +39,10 @@ export default function SettingsPage() {
       setMsg("Could not clear");
     }
   }
+
+  const mode = session?.mode ?? "—";
+  const demoMode = session?.mode === "demo-cached";
+  const liveMode = session?.mode === "live-generate";
 
   return (
     <div className="px-4 py-10 sm:px-8">
@@ -56,19 +65,60 @@ export default function SettingsPage() {
             </span>
           </div>
           <div className="flex justify-between">
+            <span className="text-[var(--fg-muted)]">Live jobs left (est.)</span>
+            <span className="font-semibold">
+              {session
+                ? Math.floor(
+                    session.credits /
+                      (session.liveJobCredits ?? CREDITS_PER_VIDEO)
+                  )
+                : "—"}
+            </span>
+          </div>
+          <div className="flex justify-between gap-4">
+            <span className="text-[var(--fg-muted)]">Generate mode</span>
+            <span
+              className={`text-right font-semibold ${
+                demoMode ? "text-[var(--fg-dim)]" : "text-[var(--mint)]"
+              }`}
+            >
+              {demoMode
+                ? "demo-cached · free labeled demos"
+                : mode === "live-generate"
+                  ? "live-generate · Seedance"
+                  : mode}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-[var(--fg-muted)]">Cached demos</span>
+            <span className="font-semibold">
+              {session?.cachedDemoFree === false ? "may charge" : "0 credits"}
+            </span>
+          </div>
+          <div className="flex justify-between">
             <span className="text-[var(--fg-muted)]">Library clips</span>
             <span className="font-semibold">{libCount}</span>
           </div>
+          {agingCount > 0 && (
+            <div className="flex justify-between">
+              <span className="text-[var(--fg-muted)]">Aging CDN links</span>
+              <span className="font-semibold text-amber-600">
+                {agingCount} · download soon
+              </span>
+            </div>
+          )}
           <div className="flex justify-between">
             <span className="text-[var(--fg-muted)]">Video engine</span>
-            <span className="font-semibold">Seedance (ByteDance)</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-[var(--fg-muted)]">FAL_KEY</span>
-            <span className="text-xs text-[var(--fg-dim)]">
-              server-side only
+            <span className="font-semibold">
+              {liveMode ? "Seedance (ByteDance)" : "Cached Lab demos"}
             </span>
           </div>
+          <p className="text-[11px] leading-relaxed text-[var(--fg-dim)]">
+            Soft-live needs <code className="text-[var(--fg-muted)]">SESSION_SECRET</code>{" "}
+            + <code className="text-[var(--fg-muted)]">FAL_KEY</code> on the
+            server. Paid needs durable entitlements + Stripe (see LAUNCH.md on
+            the repo).
+          </p>
         </div>
 
         <div className="card mt-4 space-y-2 p-6">
@@ -123,6 +173,9 @@ export default function SettingsPage() {
           </Link>
           <Link href="/pricing" className="text-[var(--brand)] hover:underline">
             Pricing
+          </Link>
+          <Link href="/library" className="text-[var(--brand)] hover:underline">
+            Library
           </Link>
           <Link href="/privacy" className="text-[var(--fg-dim)] hover:underline">
             Privacy

@@ -1,8 +1,17 @@
 import { NextResponse } from "next/server";
 import { probeEntitlementsStore } from "@/lib/entitlements";
 import { generateMode } from "@/lib/requestMeta";
+// NextResponse used for GET + HEAD
 
 export const runtime = "nodejs";
+
+/** Uptime probes that only need a 200 without JSON body. */
+export async function HEAD() {
+  return new NextResponse(null, {
+    status: 200,
+    headers: { "Cache-Control": "no-store" },
+  });
+}
 
 /** Lightweight health for ops / uptime checks — foundation L0 + soft-launch readiness */
 export async function GET() {

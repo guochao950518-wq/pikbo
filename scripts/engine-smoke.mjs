@@ -164,5 +164,16 @@ assert.match(batch, /effectiveModel/);
 assert.match(batch, /seedance-mini/);
 assert.match(batch, /effectiveResolution/);
 
+const meClient = fs.readFileSync(join(root, "lib/meClient.ts"), "utf8");
+assert.match(meClient, /export async function fetchMe/);
+assert.match(meClient, /cachedDemoFree/);
+
+const samples = fs.readFileSync(join(root, "lib/samples.ts"), "utf8");
+assert.match(samples, /isValidImageDataUrl/);
+assert.match(samples, /requiredSampleStillPaths/);
+
+const health = fs.readFileSync(join(root, "app/api/health/route.ts"), "utf8");
+assert.match(health, /export async function HEAD/);
+
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

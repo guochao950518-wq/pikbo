@@ -2,18 +2,17 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import type { PublicSession } from "@/lib/session";
+import { fetchMe, isDemoMode, type MeResponse } from "@/lib/meClient";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
 import { SESSION_EVENT } from "@/lib/sessionEvents";
 
 export function CreditsBadge({ compact }: { compact?: boolean }) {
-  const [session, setSession] = useState<PublicSession | null>(null);
+  const [session, setSession] = useState<MeResponse | null>(null);
 
   const load = useCallback(() => {
-    fetch("/api/me")
-      .then((r) => r.json())
-      .then((data: PublicSession) => setSession(data))
-      .catch(() => {});
+    void fetchMe().then((data) => {
+      if (data) setSession(data);
+    });
   }, []);
 
   useEffect(() => {
@@ -40,19 +39,25 @@ export function CreditsBadge({ compact }: { compact?: boolean }) {
     );
   }
 
-  const clips = Math.floor(session.credits / CREDITS_PER_VIDEO);
-  const low = session.credits < CREDITS_PER_VIDEO;
+  const perJob = session.liveJobCredits ?? CREDITS_PER_VIDEO;
+  const clips = Math.floor(session.credits / perJob);
+  const low = session.credits < perJob;
+  const demo = isDemoMode(session);
 
   if (compact) {
     return (
       <Link
         href="/pricing"
         className={`grid h-8 min-w-8 place-items-center rounded-full border px-1.5 text-[10px] font-bold ${
-          low
+          low && !demo
             ? "border-amber-400/50 text-amber-300"
             : "border-white/10 text-[var(--mint)]"
         }`}
-        title={`${session.credits} credits`}
+        title={
+          demo
+            ? `${session.credits} credits · demo-cached free`
+            : `${session.credits} credits`
+        }
       >
         {session.credits}
       </Link>
@@ -63,17 +68,29 @@ export function CreditsBadge({ compact }: { compact?: boolean }) {
     <Link
       href="/pricing"
       className={`hidden items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors sm:flex ${
-        low
+        low && !demo
           ? "border-[var(--brand)]/50 bg-[var(--grad-soft)] text-[var(--fg)]"
           : "border-[var(--border)] bg-white/5 text-[var(--fg-muted)] hover:border-white/20 hover:text-[var(--fg)]"
       }`}
-      title={`${session.planName} · ${session.credits} credits · ~${clips} current jobs`}
+      title={
+        demo
+          ? `${session.planName} · demo-cached · live needs ${perJob} credits each`
+          : `${session.planName} · ${session.credits} credits · ~${clips} live jobs`
+      }
     >
-      <span className={low ? "text-[var(--brand)]" : "text-[var(--mint)]"}>
+      <span
+        className={
+          low && !demo ? "text-[var(--brand)]" : "text-[var(--mint)]"
+        }
+      >
         {session.credits}
       </span>
       <span>credits</span>
-      {low ? (
+      {demo ? (
+        <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-[var(--fg-dim)]">
+          demo
+        </span>
+      ) : low ? (
         <span className="rounded-full bg-[var(--brand)]/20 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-[var(--brand)]">
           upgrade
         </span>

@@ -17,6 +17,7 @@
 | Grok engine | softLive: IP rate limit + inflight lock + me.mode + checklist |
 | Grok engine | promptBuild + library aging + checkout RL |
 | Grok engine | batch free-tier honesty + invoice idempotency |
+| Grok engine | meClient / settings mode / sample stills / health HEAD |
 
 ---
 
