@@ -761,6 +761,21 @@ assert.match(
   fs.readFileSync(join(root, "app/robots.ts"), "utf8"),
   /\/login/
 );
+assert.match(
+  fs.readFileSync(
+    join(root, "app/api/assets/upload-url/route.ts"),
+    "utf8"
+  ),
+  /NOT_IMPLEMENTED/
+);
+assert.match(
+  fs.readFileSync(
+    join(root, "app/api/webhooks/video-provider/route.ts"),
+    "utf8"
+  ),
+  /NOT_IMPLEMENTED/
+);
+assert.match(createStudio, /track\(\{[\s\S]*generate_start/);
 
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

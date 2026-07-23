@@ -37,6 +37,7 @@ import {
   type GenerationSpec,
   type RequestCreditState,
 } from "@/lib/createTrust";
+import { track } from "@/lib/analytics";
 
 type Status = "idle" | "uploading" | "generating" | "done" | "error";
 type Mode = "i2v" | "t2v";
@@ -473,6 +474,11 @@ export function CreateStudio({
     // Do not hard-block on client credits: demo-cached mode (no FAL_KEY) is free.
     // Live path enforces credits server-side and returns 402 / paywall.
 
+    track({
+      event: "generate_start",
+      recipe: fx,
+      path: "/create",
+    });
     setError(null);
     setLastRefunded(false);
     // Clear only the *request* settlement for a new attempt — version chips stay.
@@ -657,6 +663,16 @@ export function CreateStudio({
       })
     );
     emitSessionRefresh();
+    track({
+      event: "generate_result",
+      recipe: serverEffect,
+      demo: Boolean(data.demo),
+      path: "/create",
+      meta: {
+        costCredits:
+          typeof data.costCredits === "number" ? data.costCredits : null,
+      },
+    });
     toast(
       data.demo
         ? `${PROVENANCE.cachedDemo} ready`
