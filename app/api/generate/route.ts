@@ -144,6 +144,10 @@ export async function POST(req: Request) {
         aspectRatio: aspect,
         resolution,
         session: publicSession(session),
+        // Wave B — echo server-validated recipe + free settlement
+        effect: preset.slug,
+        costCredits: 0,
+        creditsOutcome: "0 cached",
       };
       return NextResponse.json(payload);
     }
@@ -280,6 +284,10 @@ export async function POST(req: Request) {
         session: publicSession(session),
         requestId: result.requestId,
         provider: "bytedance-seedance",
+        // Wave B — echo server-validated recipe + live settlement
+        effect: preset.slug,
+        costCredits: check.cost,
+        creditsOutcome: "10 used",
       };
       return NextResponse.json(payload);
     } catch (e) {

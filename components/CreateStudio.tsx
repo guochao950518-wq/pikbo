@@ -24,14 +24,20 @@ import {
   resultProvenanceLabel,
 } from "@/lib/provenance";
 import { parseRemixSearchParams } from "@/lib/remixIntent";
+import {
+  buildGenerationSpec,
+  canDownloadResult,
+  freeLiveDownloadBlockReason,
+  preserveRequestSettlementOnVersionRestore,
+  requestCreditStateFromFailure,
+  requestCreditStateFromSuccess,
+  requestSettlementAfterSelectVersion,
+  type GenerationSpec,
+  type RequestCreditState,
+} from "@/lib/createTrust";
 
 type Status = "idle" | "uploading" | "generating" | "done" | "error";
 type Mode = "i2v" | "t2v";
-type ResultCreditState =
-  | "0 cached"
-  | "10 used"
-  | "10 restored"
-  | "refund unconfirmed";
 
 type ResultVersion = {
   id: string;
@@ -42,6 +48,7 @@ type ResultVersion = {
   duration: number;
   aspectRatio: string;
   resolution: string;
+  /** What this successful version cost — never "restored" / unconfirmed. */
   creditState: "0 cached" | "10 used";
   createdAt: string;
   /** Still used for this version — Before/After stays honest when switching Vn */
@@ -50,6 +57,12 @@ type ResultVersion = {
   provider?: string;
   effect: string;
   effectName: string;
+  /** Immutable inputs that produced this success (Retry must reuse). */
+  spec: GenerationSpec;
+  /** Credits the server reported for this success (only when present). */
+  costCredits?: number;
+  /** True when effect/model/duration/etc. came from the generate response. */
+  serverEcho: boolean;
 };
 
 function localProjectId(image: string, source?: string): string {
@@ -192,8 +205,13 @@ export function CreateStudio({
   /** Successful retries/variants remain selectable; a new run never overwrites one. */
   const [versions, setVersions] = useState<ResultVersion[]>([]);
   const [activeVersionId, setActiveVersionId] = useState<string | null>(null);
-  const [lastCreditState, setLastCreditState] =
-    useState<ResultCreditState | null>(null);
+  /**
+   * Wave B: settlement of the *last generate request* — independent of which
+   * historical version is selected. Failures must not be overwritten by Vn's
+   * used/cached chip.
+   */
+  const [lastRequestCreditState, setLastRequestCreditState] =
+    useState<RequestCreditState>(null);
   const toast = useToast();
 
   const preset = useMemo(
@@ -406,10 +424,31 @@ export function CreateStudio({
     rightsOverride?: boolean;
     /** Official Lab sample id — stored as Library sourceProject for support */
     labSampleId?: string;
+    /**
+     * Wave B Retry — immutable GenerationSpec from a prior success.
+     * When set, overrides composer fields for this request only.
+     */
+    retrySpec?: GenerationSpec;
   }) {
-    const img = opts?.imageOverride ?? image;
-    const fx = opts?.effectOverride ?? effect;
+    const retry = opts?.retrySpec;
+    const img = retry?.image ?? opts?.imageOverride ?? image;
+    const fx = retry?.effect ?? opts?.effectOverride ?? effect;
     const rights = opts?.rightsOverride ?? ownsRights;
+    const requestExtra = retry ? retry.extra : extra;
+    const requestAspect = (retry?.aspectRatio ?? aspectRatio) as
+      | "9:16"
+      | "16:9"
+      | "1:1";
+    const requestDuration = retry?.duration ?? effectiveDuration;
+    const requestModel = retry?.model ?? modelId;
+    const requestRes =
+      retry?.resolution ?? (isFree ? "480p" : resolution);
+    const requestSeed =
+      retry && typeof retry.seed === "number"
+        ? retry.seed
+        : seed.trim() === ""
+          ? undefined
+          : Number(seed);
     if (!img || !isValidImageDataUrl(img)) {
       setError(
         "Upload a reference image first (JPEG, PNG, WebP, or GIF · image-to-video)."
@@ -429,27 +468,26 @@ export function CreateStudio({
 
     setError(null);
     setLastRefunded(false);
-    setLastCreditState(null);
+    // Clear only the *request* settlement for a new attempt — version chips stay.
+    setLastRequestCreditState(null);
     setShowPaywall(false);
     setElapsed(0);
     setStatus("generating");
     document
       .getElementById("create-result")
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
-    const resolvedRes = isFree ? "480p" : resolution;
-    const seedNum = seed.trim() === "" ? undefined : Number(seed);
     const result = await postGenerate({
       effect: fx,
       image: img,
-      extra,
-      duration: effectiveDuration,
-      aspectRatio,
-      model: modelId,
-      resolution: resolvedRes,
+      extra: requestExtra,
+      duration: requestDuration,
+      aspectRatio: requestAspect,
+      model: requestModel,
+      resolution: requestRes,
       ownsRights: true,
       seed:
-        typeof seedNum === "number" && Number.isFinite(seedNum)
-          ? seedNum
+        typeof requestSeed === "number" && Number.isFinite(requestSeed)
+          ? requestSeed
           : undefined,
     });
 
@@ -461,13 +499,11 @@ export function CreateStudio({
       }
       if (result.paywall) setShowPaywall(true);
       setLastRefunded(Boolean(result.creditsRefunded));
-      setLastCreditState(
-        result.creditsRefunded
-          ? "10 restored"
-          : result.status === 0
-            ? "refund unconfirmed"
-            : null
-      );
+      const failSettlement = requestCreditStateFromFailure({
+        creditsRefunded: result.creditsRefunded,
+        status: result.status,
+      });
+      setLastRequestCreditState(failSettlement);
       setError(
         result.error ||
           (result.paywall
@@ -475,6 +511,7 @@ export function CreateStudio({
             : "Something went wrong")
       );
       // Keep prior versions visible after a failed attempt; leave error banner on.
+      // Wave B B1: do NOT overwrite lastRequestCreditState with keep.creditState.
       if (versions.length > 0) {
         const keep =
           versions.find((v) => v.id === activeVersionId) ?? versions[0];
@@ -487,7 +524,12 @@ export function CreateStudio({
           setResultDuration(keep.duration);
           setResultAspect(keep.aspectRatio);
           setResultResolution(keep.resolution);
-          setLastCreditState(keep.creditState);
+          setLastRequestCreditState(
+            preserveRequestSettlementOnVersionRestore(
+              failSettlement,
+              keep.creditState
+            )
+          );
           setStatus("done");
         } else {
           setStatus("error");
@@ -505,60 +547,86 @@ export function CreateStudio({
         prev ? { ...prev, ...data.session } : (data.session as MeResponse)
       );
     }
+    const serverDuration =
+      typeof data.duration === "number" ? data.duration : requestDuration;
+    const serverAspect =
+      typeof data.aspectRatio === "string" ? data.aspectRatio : requestAspect;
+    const serverRes =
+      typeof data.resolution === "string" ? data.resolution : requestRes;
+    const serverModel = data.model || requestModel;
+    const serverEffect =
+      typeof data.effect === "string" && data.effect ? data.effect : fx;
+    const usedPreset = PRESETS.find((p) => p.slug === serverEffect) ?? preset;
+    const creditState =
+      typeof data.creditsOutcome === "string"
+        ? data.creditsOutcome
+        : requestCreditStateFromSuccess(Boolean(data.demo));
     setVideoUrl(data.videoUrl);
     setDemo(Boolean(data.demo));
     setWatermark(Boolean(data.watermark));
-    setUsedModel(data.model || null);
-    setResultDuration(
-      typeof data.duration === "number" ? data.duration : effectiveDuration
-    );
-    setResultAspect(
-      typeof data.aspectRatio === "string" ? data.aspectRatio : aspectRatio
-    );
-    setResultResolution(
-      typeof data.resolution === "string" ? data.resolution : resolvedRes
-    );
-    const usedPreset = PRESETS.find((p) => p.slug === fx) ?? preset;
+    setUsedModel(serverModel);
+    setResultDuration(serverDuration);
+    setResultAspect(serverAspect);
+    setResultResolution(serverRes);
     const versionId =
       typeof data.requestId === "string" && data.requestId
         ? data.requestId
-        : `v-${versions.length + 1}-${fx}-${resultDuration ?? effectiveDuration}`;
+        : `v-${versions.length + 1}-${serverEffect}-${serverDuration}`;
+    const spec = buildGenerationSpec({
+      image: img,
+      effect: serverEffect,
+      extra: requestExtra,
+      aspectRatio: serverAspect,
+      duration: serverDuration,
+      resolution: serverRes,
+      model: serverModel,
+      seed:
+        typeof requestSeed === "number" && Number.isFinite(requestSeed)
+          ? requestSeed
+          : undefined,
+      requestId:
+        typeof data.requestId === "string" ? data.requestId : undefined,
+    });
     const version: ResultVersion = {
       id: versionId,
       videoUrl: data.videoUrl,
       demo: Boolean(data.demo),
       watermark: Boolean(data.watermark),
-      model: data.model || modelId,
-      duration:
-        typeof data.duration === "number" ? data.duration : effectiveDuration,
-      aspectRatio:
-        typeof data.aspectRatio === "string" ? data.aspectRatio : aspectRatio,
-      resolution:
-        typeof data.resolution === "string" ? data.resolution : resolvedRes,
-      creditState: data.demo ? "0 cached" : "10 used",
+      model: serverModel,
+      duration: serverDuration,
+      aspectRatio: serverAspect,
+      resolution: serverRes,
+      creditState,
       createdAt: new Date().toISOString(),
       sourceImage: img,
       requestId:
         typeof data.requestId === "string" ? data.requestId : undefined,
       provider: typeof data.provider === "string" ? data.provider : undefined,
-      effect: fx,
+      effect: serverEffect,
       effectName: usedPreset.name,
+      spec,
+      costCredits:
+        typeof data.costCredits === "number" ? data.costCredits : undefined,
+      serverEcho:
+        typeof data.effect === "string" ||
+        typeof data.costCredits === "number" ||
+        typeof data.requestId === "string",
     };
     setVersions((current) => [
       version,
       ...current.filter((item) => item.id !== version.id),
     ].slice(0, 8));
     setActiveVersionId(version.id);
-    setLastCreditState(version.creditState);
+    setLastRequestCreditState(creditState);
     setStatus("done");
-    rememberEffect(fx);
+    rememberEffect(serverEffect);
     pushHistory(
       historyFieldsFromSuccess(data, {
-        effect: fx,
+        effect: serverEffect,
         effectName: usedPreset.name,
-        fallbackDuration: effectiveDuration,
-        fallbackAspect: aspectRatio,
-        fallbackResolution: resolvedRes,
+        fallbackDuration: requestDuration,
+        fallbackAspect: requestAspect,
+        fallbackResolution: requestRes,
         sourceProject: opts?.labSampleId
           ? `lab-sample-${opts.labSampleId}`
           : remix.intent?.sourceProjectSlug,
@@ -585,6 +653,22 @@ export function CreateStudio({
     );
   }
 
+  /** Wave B Retry — exact GenerationSpec from the active success; appends a new version. */
+  function retryActiveVersion() {
+    const v =
+      versions.find((item) => item.id === activeVersionId) ?? versions[0];
+    if (!v?.spec) {
+      void generate();
+      return;
+    }
+    void generate({ retrySpec: v.spec, rightsOverride: true });
+  }
+
+  /** Wave B Make variant — current Composer settings, not the frozen spec. */
+  function makeVariant() {
+    void generate();
+  }
+
   async function copyLink() {
     if (!videoUrl) return;
     try {
@@ -606,16 +690,30 @@ export function CreateStudio({
     setResultDuration(version.duration);
     setResultAspect(version.aspectRatio);
     setResultResolution(version.resolution);
-    setLastCreditState(version.creditState);
+    // Wave B B1: switching Vn must not clear/overwrite last request settlement.
+    setLastRequestCreditState((prev) =>
+      requestSettlementAfterSelectVersion(prev)
+    );
     // Do not overwrite the compose upload — Before/After uses version.sourceImage.
     setStatus("done");
-    setError(null);
+    // Keep refund banners visible; only clear soft non-settlement errors.
+    if (
+      lastRequestCreditState !== "refund unconfirmed" &&
+      lastRequestCreditState !== "10 restored" &&
+      !lastRefunded
+    ) {
+      setError(null);
+    }
   }
 
   const activeVersion =
     versions.find((v) => v.id === activeVersionId) ?? versions[0] ?? null;
   /** Still tied to the active result version (honest A/B when switching Vn). */
   const compareStill = activeVersion?.sourceImage || image;
+  const downloadAllowed = canDownloadResult({
+    demo: Boolean(activeVersion?.demo ?? demo),
+    watermark: Boolean(activeVersion?.watermark ?? watermark),
+  });
 
   function shareX() {
     if (!videoUrl) return;
@@ -1405,24 +1503,27 @@ export function CreateStudio({
             {primaryLabel}
           </button>
 
-          {(error || lastRefunded) && (
+          {(error ||
+            lastRefunded ||
+            lastRequestCreditState === "refund unconfirmed" ||
+            lastRequestCreditState === "10 restored") && (
             <div
               role="alert"
               className={`rounded-xl border px-3 py-2.5 text-sm ${
-                lastRefunded
+                lastRefunded || lastRequestCreditState === "10 restored"
                   ? "border-amber-400/40 bg-amber-400/[0.08] text-amber-100"
-                  : lastCreditState === "refund unconfirmed"
+                  : lastRequestCreditState === "refund unconfirmed"
                     ? "border-amber-300/30 bg-amber-300/[0.06] text-amber-100"
                   : "border-[var(--brand)]/40 bg-[var(--brand)]/10 text-[var(--brand)]"
               }`}
             >
-              <p className="font-semibold">{error}</p>
-              {lastRefunded && (
+              {error ? <p className="font-semibold">{error}</p> : null}
+              {(lastRefunded || lastRequestCreditState === "10 restored") && (
                 <p className="mt-1 text-[11px] font-bold uppercase tracking-wide text-amber-200/90">
                   10 credits restored · not charged for this failed job
                 </p>
               )}
-              {lastCreditState === "refund unconfirmed" ? (
+              {lastRequestCreditState === "refund unconfirmed" ? (
                 <p className="mt-1 text-[11px] font-bold uppercase tracking-wide text-amber-200/90">
                   Refund unconfirmed · check your balance before retrying
                 </p>
@@ -1502,15 +1603,24 @@ export function CreateStudio({
                         {PROVENANCE.onPlayerMark}
                       </span>
                     )}
-                    {lastCreditState ? (
+                    {lastRequestCreditState === "refund unconfirmed" ||
+                    lastRequestCreditState === "10 restored" ? (
                       <span
                         className={`rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
-                          lastCreditState === "refund unconfirmed"
+                          lastRequestCreditState === "refund unconfirmed"
                             ? "border-amber-300/30 bg-amber-300/10 text-amber-100"
-                            : "border-white/10 bg-black/40 text-white/60"
+                            : "border-amber-400/40 bg-amber-400/10 text-amber-100"
                         }`}
                       >
-                        {lastCreditState}
+                        last request · {lastRequestCreditState}
+                      </span>
+                    ) : activeVersion ? (
+                      <span className="rounded-full border border-white/10 bg-black/40 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white/60">
+                        {activeVersion.creditState}
+                      </span>
+                    ) : lastRequestCreditState ? (
+                      <span className="rounded-full border border-white/10 bg-black/40 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white/60">
+                        {lastRequestCreditState}
                       </span>
                     ) : null}
                   </div>
@@ -1622,15 +1732,26 @@ export function CreateStudio({
                     : `${PROVENANCE.liveGeneration} — each run creates a separate version. Returned provider failures restore credits; ambiguous network results are marked unconfirmed.`}
                 </p>
                 <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
-                  <a
-                    href={videoUrl}
-                    download={`pikbo-${activeVersion?.effect || effect}.mp4`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="btn btn-primary px-4 py-2 text-xs"
-                  >
-                    Download · keep it
-                  </a>
+                  {downloadAllowed ? (
+                    <a
+                      href={videoUrl}
+                      download={`pikbo-${activeVersion?.effect || effect}.mp4`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="btn btn-primary px-4 py-2 text-xs"
+                    >
+                      Download · keep it
+                    </a>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled
+                      title={freeLiveDownloadBlockReason()}
+                      className="btn btn-primary cursor-not-allowed px-4 py-2 text-xs opacity-50"
+                    >
+                      Download · blocked (Free raw)
+                    </button>
+                  )}
                   <button
                     type="button"
                     onClick={copyLink}
@@ -1647,18 +1768,25 @@ export function CreateStudio({
                   </button>
                   <button
                     type="button"
-                    onClick={() => void generate()}
+                    onClick={retryActiveVersion}
+                    title="Reuse this version's exact recipe, still, duration, aspect, model, and seed. Appends a new version."
                     className="btn btn-ghost px-4 py-2 text-xs"
                   >
-                    Retry · new version
+                    Retry · same settings
                   </button>
                   <button
                     type="button"
-                    onClick={() => void generate()}
+                    onClick={makeVariant}
+                    title="Uses your current Composer settings (recipe, duration, aspect, model) — not the frozen version."
                     className="btn btn-ghost px-4 py-2 text-xs"
                   >
-                    Make variant
+                    Make variant · current settings
                   </button>
+                {!downloadAllowed ? (
+                  <p className="basis-full text-center text-[10px] leading-relaxed text-amber-100/80">
+                    {freeLiveDownloadBlockReason()}
+                  </p>
+                ) : null}
                   <Link
                     href="/effects"
                     className="btn btn-ghost px-4 py-2 text-xs"
@@ -1727,11 +1855,29 @@ export function CreateStudio({
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-[var(--fg-dim)]">Credits</dt>
+                    <dt className="text-[var(--fg-dim)]">This version</dt>
                     <dd className="font-semibold text-[var(--fg)]">
-                      {lastCreditState || (demo ? "0 cached" : "10 used")}
+                      {activeVersion?.creditState ||
+                        (demo ? "0 cached" : "10 used")}
                     </dd>
                   </div>
+                  {typeof activeVersion?.costCredits === "number" ? (
+                    <div>
+                      <dt className="text-[var(--fg-dim)]">Cost (server)</dt>
+                      <dd className="font-semibold text-[var(--fg)]">
+                        {activeVersion.costCredits} cr
+                      </dd>
+                    </div>
+                  ) : null}
+                  {lastRequestCreditState === "refund unconfirmed" ||
+                  lastRequestCreditState === "10 restored" ? (
+                    <div>
+                      <dt className="text-[var(--fg-dim)]">Last request</dt>
+                      <dd className="font-semibold text-amber-100">
+                        {lastRequestCreditState}
+                      </dd>
+                    </div>
+                  ) : null}
                   {activeVersion?.provider ? (
                     <div>
                       <dt className="text-[var(--fg-dim)]">Provider</dt>
@@ -1750,8 +1896,9 @@ export function CreateStudio({
                   ) : null}
                 </dl>
                 <p className="mt-2 text-center text-[10px] text-[var(--fg-dim)]">
-                  Metadata is what the server returned for this version — not a
-                  client-side guess.
+                  {activeVersion?.serverEcho
+                    ? "Metadata includes server-echoed fields for this version (recipe, cost, task id when live)."
+                    : "Metadata uses the last response when available — client prefs only fill gaps."}
                   {versions.length > 1
                     ? ` · ${versions.length} versions in this session`
                     : ""}

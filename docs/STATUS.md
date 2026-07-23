@@ -24,8 +24,8 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | P-GO | GO_NO_GO + nav/preset whitelist PRD | GPT | done | agent/gpt/world-class-prd | Formal pass criteria, exact nav, eight proof slugs, route inventory and day-of checklist |
 | W-PRD | World-class product contract, Seller OS, recipe quality, SEO Intent 50 | GPT | done | agent/gpt/world-class-prd | Create canonical Seller Pack, exact 12/8 recipes, five-score proof gate, structured 50-intent map |
 | H-PARITY | Higgsfield complete public-surface inventory and parity contract | GPT | done | agent/gpt/higgsfield-parity-spec | 17 top-level + project/preset/assets surfaces mapped; no copied content or fake doors |
-| H-WAVE-A | Core video parity: Home, Explore, Create, Effects, Project, Assets, Seller Pack | Grok | review | agent/grok/final-takeover | Close remaining review findings inside final takeover; Wave A core is already on main |
-| H-WAVE-B | Generation settlement truth, version retry, watermark gate, accessibility and CI | Grok | todo | agent/grok/final-takeover | First phase of final takeover. T6 stays blocked unless the downloaded file itself is watermarked |
+| H-WAVE-A | Core video parity: Home, Explore, Create, Effects, Project, Assets, Seller Pack | Grok | review | main | Core loop on main; close residual findings inside final takeover |
+| H-WAVE-B | Generation settlement truth, version retry, watermark gate, accessibility and CI | Grok | review | main | B1–B6 shipped: last-request settlement, Retry/Variant + GenerationSpec, server effect/costCredits echo, Free raw download blocked, Explore focusable=false, CI template at docs/ci/. engine-smoke/lint/typecheck/build green. T6 still blocked (download disabled ≠ baked watermark) |
 | P-COPY | Shell honesty copy pass | Codex | done | main @ `32c634c` | Superseded and completed by the world-class seller copy pass |
 | W-COPY | World-class seller copy, official-demo truth, ROI and 10 intent pages | Codex | done | agent/gpt/world-class-copy | Lint, typecheck, build and rendered metadata/H1 checks passed |
 | P6 | Home retention + official project + Remix→Create contract | GPT | done | agent/gpt/retention-remix | HF/Yiha evidence translated into frozen product flow, data contract, events and responsive acceptance |
@@ -62,8 +62,8 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | T8 | Batch generate for Shop plan | Grok | todo | agent/grok/final-takeover | Complete after durable auth/credits; reuse Seller Pack child state model |
 | T9 | Effect preset expansion (studio + SEO landing) | Claude | done | agent/claude/seo-presets | +3 effects |
 | T11 | Guides: informational long-tail content | Claude | done | agent/claude/guides | 3 how-to/tips/ideas articles at /guides; Article+FAQ JSON-LD; cross-linked to effects |
-| T23 | CI build + conflict-marker gate | Grok | doing | agent/grok/final-takeover | Add real workflow and record a green run URL |
-| T24 | Generate honesty: demo vs live + regen/refund copy | Grok | doing | agent/grok/final-takeover | Complete as Wave B attempt-settlement and version semantics |
+| T23 | CI build + conflict-marker gate | Grok | review | main | Workflow template `docs/ci/github-actions-ci.yml` (engine-smoke · lint · typecheck · build). OAuth token lacks `workflow` scope so cannot push under `.github/workflows/` yet — boss: copy + push with workflow scope |
+| T24 | Generate honesty: demo vs live + regen/refund copy | Grok | review | main | Wave B: lastRequestCreditState, Retry/Variant, Free download gate, server costCredits/effect echo |
 | T25 | Homepage truth labels + overclaim sweep | GPT | done | agent/gpt/claude-copy-audit | PR #6; cached/shared previews and provider-gated paths labeled |
 | T26 | Unit economics doc + free-tier recommendation | GPT | done | agent/gpt/convert-truth | Superseded by C1–C5: implemented Free Mini 5s trial; current 1 / 5 / 15 allowances |
 | T27 | Preset/SEO proof and copy wave 2 | Grok | todo | agent/grok/final-takeover | Only proof-backed pages index; no thin-page expansion |

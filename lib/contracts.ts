@@ -39,6 +39,15 @@ export type GenerateSuccess = {
   provider?: string;
   /** why demo was returned — only when demo:true */
   demoReason?: "no_provider_key";
+  /**
+   * Wave B — server-validated recipe slug actually used for this job.
+   * Client must only label "server returned" when this field is present.
+   */
+  effect?: string;
+  /** Credits charged for this success (0 cached demo · CREDITS_PER_VIDEO live). */
+  costCredits?: number;
+  /** Human credit outcome for the result strip. */
+  creditsOutcome?: "0 cached" | "10 used";
 };
 
 export type GenerateErrorBody = {

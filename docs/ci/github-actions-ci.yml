@@ -1,0 +1,52 @@
+# Pikbo CI — install:
+#   mkdir -p .github/workflows && cp docs/ci/github-actions-ci.yml .github/workflows/ci.yml
+# Requires a GitHub token with `workflow` scope (OAuth `gho_` without workflow is rejected).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  engine:
+    name: Engine · lint · typecheck · build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Conflict markers
+        run: |
+          if git grep -nE '^(<<<<<<<|>>>>>>>|=======)' -- app lib components scripts docs 2>/dev/null; then
+            echo "Conflict markers found"
+            exit 1
+          fi
+          echo "No conflict markers"
+
+      - name: Engine smoke
+        run: npm run engine-smoke
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+        env:
+          # Build must succeed without live keys (demo path honesty)
+          NEXT_TELEMETRY_DISABLED: "1"

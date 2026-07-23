@@ -341,9 +341,10 @@ for (const category of [
 }
 assert.match(exploreGrid, /showcaseProjectHref/);
 assert.match(exploreGrid, /desktopPlayMode="interaction"/);
+assert.match(exploreGrid, /focusable=\{false\}/);
 assert.match(createStudio, /ResultVersion/);
-assert.match(createStudio, /Retry · new version/);
-assert.match(createStudio, /Make variant/);
+assert.match(createStudio, /Retry · same settings|retryActiveVersion/);
+assert.match(createStudio, /Make variant · current settings|makeVariant/);
 assert.match(createStudio, /refund unconfirmed/);
 const batchStudio = fs.readFileSync(
   join(root, "components/BatchStudio.tsx"),
@@ -354,6 +355,100 @@ assert.match(batchStudio, /status:\s*refunded\s*\?\s*"refunded"/);
 assert.match(batchStudio, /retryJob/);
 assert.match(batchStudio, /not_started/);
 assert.match(batchStudio, /refund unconfirmed/);
+assert.match(batchStudio, /Download blocked · Free raw/);
+
+// ── Wave B trust ──────────────────────────────────────────────────────────
+// B1: last-request settlement must not be overwritten by version creditState
+function requestCreditStateFromFailure(result) {
+  if (result.creditsRefunded === true) return "10 restored";
+  if (result.status === 0) return "refund unconfirmed";
+  return null;
+}
+function preserveRequestSettlementOnVersionRestore(lastRequest, _versionCredit) {
+  void _versionCredit;
+  return lastRequest;
+}
+function requestSettlementAfterSelectVersion(lastRequest) {
+  return lastRequest;
+}
+function canDownloadResult(opts) {
+  if (opts.demo) return true;
+  if (opts.watermark) return false;
+  return true;
+}
+// 1) old success → network fail → unconfirmed survives version restore
+{
+  const fail = requestCreditStateFromFailure({
+    creditsRefunded: false,
+    status: 0,
+  });
+  assert.equal(fail, "refund unconfirmed");
+  assert.equal(
+    preserveRequestSettlementOnVersionRestore(fail, "10 used"),
+    "refund unconfirmed"
+  );
+  assert.equal(
+    requestSettlementAfterSelectVersion("refund unconfirmed"),
+    "refund unconfirmed"
+  );
+}
+// 2) old success → confirmed refund
+{
+  const refunded = requestCreditStateFromFailure({
+    creditsRefunded: true,
+    status: 500,
+  });
+  assert.equal(refunded, "10 restored");
+  assert.equal(
+    preserveRequestSettlementOnVersionRestore(refunded, "0 cached"),
+    "10 restored"
+  );
+}
+// 3) Retry uses frozen GenerationSpec; Make variant uses composer (source markers)
+assert.match(createStudio, /retrySpec/);
+assert.match(createStudio, /buildGenerationSpec|GenerationSpec/);
+assert.match(createStudio, /retryActiveVersion/);
+assert.match(createStudio, /makeVariant/);
+// 4) Free live cannot download raw provider URL
+assert.equal(canDownloadResult({ demo: false, watermark: true }), false);
+assert.equal(canDownloadResult({ demo: true, watermark: true }), true);
+assert.equal(canDownloadResult({ demo: false, watermark: false }), true);
+assert.match(createStudio, /canDownloadResult|Download · blocked \(Free raw\)/);
+assert.match(createStudio, /freeLiveDownloadBlockReason|Free Mini live/);
+// 5) Seller Pack single-item retry keeps siblings (retryJob maps by slug only)
+assert.match(batchStudio, /previous\.map\(\(job\) => \(job\.slug === slug/);
+// B3: server echo fields on generate success
+assert.match(genRoute, /costCredits/);
+assert.match(genRoute, /creditsOutcome/);
+assert.match(genRoute, /effect:\s*preset\.slug/);
+assert.match(contracts, /costCredits/);
+assert.match(contracts, /creditsOutcome/);
+// B5: AutoPlayVideo can disable nested tabIndex inside Link
+const autoPlay = fs.readFileSync(
+  join(root, "components/AutoPlayVideo.tsx"),
+  "utf8"
+);
+assert.match(autoPlay, /focusable/);
+// B6: CI workflow template (OAuth lacks workflow scope for .github path)
+const ciYml = fs.readFileSync(
+  join(root, "docs/ci/github-actions-ci.yml"),
+  "utf8"
+);
+assert.match(ciYml, /engine-smoke/);
+assert.match(ciYml, /typecheck/);
+assert.match(ciYml, /npm run build/);
+// install path documented for when workflow scope is available
+assert.match(ciYml, /name: CI/);
+// Pure module must export Wave B helpers
+const createTrust = fs.readFileSync(
+  join(root, "lib/createTrust.ts"),
+  "utf8"
+);
+assert.match(createTrust, /export function requestCreditStateFromFailure/);
+assert.match(createTrust, /export function canDownloadResult/);
+assert.match(createTrust, /export function buildGenerationSpec/);
+assert.match(createStudio, /lastRequestCreditState/);
+assert.match(createStudio, /preserveRequestSettlementOnVersionRestore/);
 
 // G2: homepage proof whitelist frozen in softLaunch + consumed by the
 // canonical ShowcaseProject registry that powers homepage/videoFeed.

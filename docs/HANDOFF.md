@@ -4,6 +4,19 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [grok] Wave B generation trust (B1–B6)
+- Branch: `agent/grok/higgsfield-wave-b-trust` → main.
+- **B1** `lastRequestCreditState` separate from version `creditState`; success→fail keeps `refund unconfirmed` / `10 restored` (not overwritten by Vn used/cached).
+- **B2** Immutable `GenerationSpec` per success; **Retry · same settings** reuses spec; **Make variant · current settings** uses Composer; Seller Pack `retryJob` still maps by slug only.
+- **B3** `/api/generate` success echoes `effect`, `costCredits`, `creditsOutcome`; Create only labels server echo when present.
+- **B4** Free live (`!demo && watermark`) Download disabled + reason; Batch same gate. **T6 remains blocked** (no ffmpeg bake).
+- **B5** Explore `AutoPlayVideo focusable={false}` so Link is sole focus target.
+- **B6** CI workflow authored at `docs/ci/github-actions-ci.yml` (conflict markers, engine-smoke, lint, typecheck, build). **Blocked pushing to `.github/workflows/`** — OAuth token has no `workflow` scope; boss should copy file with a token that has workflow scope.
+- Pure helpers: `lib/createTrust.ts`. Regressions in `scripts/engine-smoke.mjs`.
+- Verified: `npm run engine-smoke` · lint · typecheck · `npm run build` PASS.
+- **Not done:** live G6×2, first GitHub Actions green URL (needs `.github` install), server watermark bake (T6), public launch still NO-GO.
+- Next per `docs/GROK_FINAL_TAKEOVER.md`: durable auth/credits → async jobs → T6 bake → product finish.
+
 ### 2026-07-23 — [gpt] all remaining work reassigned to Grok
 - Boss assigned Grok as the sole temporary implementation owner while Claude is unavailable and GPT quota is low.
 - Canonical runbook: `docs/GROK_FINAL_TAKEOVER.md`; branch: `agent/grok/final-takeover`.

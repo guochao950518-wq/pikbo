@@ -92,6 +92,8 @@ export function ExploreProjectGrid({
                     webm={project.outputWebm}
                     mp4={project.outputVideo}
                     desktopPlayMode="interaction"
+                    /** Wave B: Link owns focus — no nested tabIndex video */
+                    focusable={false}
                     eager={index === 0}
                     className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.025]"
                   />
