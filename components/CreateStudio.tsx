@@ -1008,22 +1008,28 @@ export function CreateStudio({
 
   return (
     <div className="flex h-full min-h-[calc(100vh-3.5rem)] flex-col pb-36 lg:min-h-screen lg:pb-0">
-      {/* HF Generate–class suite chrome · toy vertical */}
-      <GenerateSuiteChrome compact />
+      {/* Suite chrome: desktop only — mobile uses bottom nav + Modules shelf */}
+      <div className="hidden lg:block">
+        <GenerateSuiteChrome compact />
+      </div>
       <ActivationChecklist
         hasImage={Boolean(image)}
         hasGenerated={status === "done" || versions.length > 0}
       />
-      {/* Yiha/lego-class module shelf inside the workbench */}
+      {/* Job modules shelf — compact; replaces JobIntentBar on small screens */}
       <WorkflowShelf
+        compact
         activeId={jobIntentId}
         onPick={applyWorkflow}
       />
-      <JobIntentBar activeId={jobIntentId} onPick={applyJobIntent} />
-      {/* ── Mode banner: demo vs live impossible to miss (W5) ── */}
+      {/* Outcome chips: desktop only (overlap Modules on phone) */}
+      <div className="hidden lg:block">
+        <JobIntentBar activeId={jobIntentId} onPick={applyJobIntent} />
+      </div>
+      {/* ── Mode banner: demo vs live (W5) · tighter on phone ── */}
       <div
         role="status"
-        className={`border-b px-4 py-2.5 ${
+        className={`border-b px-4 py-1.5 sm:py-2.5 ${
           demoMode
             ? "border-white/10 bg-white/[0.04]"
             : "border-[var(--mint)]/25 bg-[var(--mint)]/[0.08]"
@@ -1047,14 +1053,18 @@ export function CreateStudio({
             <p className="text-[11px] leading-snug text-[var(--fg-muted)] sm:text-xs">
               {demoMode ? (
                 <>
-                  Returns a Lab example · <b className="text-[var(--fg)]">does not use your photo</b> · 0 credits
+                  Lab example · <b className="text-[var(--fg)]">not your photo</b>
+                  <span className="hidden sm:inline"> · 0 credits</span>
                 </>
               ) : (
                 <>
-                  Uses your photo · {isFree ? "Seedance Mini · 5s · 480p" : `${effectiveDuration}s · ${resolution}`} ·{" "}
-                  {CREDITS_PER_VIDEO} credits
-                  {creditsLeft !== null ? ` · ${creditsLeft} left` : ""} ·{" "}
-                  <b className="text-[var(--fg)]">failed jobs refund</b>
+                  Your photo · {isFree ? "Mini 5s 480p" : `${effectiveDuration}s · ${resolution}`} ·{" "}
+                  {CREDITS_PER_VIDEO} cr
+                  {creditsLeft !== null ? ` · ${creditsLeft} left` : ""}
+                  <span className="hidden sm:inline">
+                    {" "}
+                    · <b className="text-[var(--fg)]">failed jobs refund</b>
+                  </span>
                 </>
               )}
             </p>
@@ -2338,9 +2348,14 @@ export function CreateStudio({
         </section>
       </div>
 
-      {/* ── Sticky mobile primary CTA — sits above AppShell bottom tab nav ── */}
+      {/* ── Sticky mobile primary CTA — above AppShell tab nav ── */}
       <div className="fixed inset-x-0 bottom-[4.75rem] z-40 border-t border-white/10 bg-black/90 px-4 py-2.5 pb-[max(0.6rem,env(safe-area-inset-bottom))] backdrop-blur-md lg:hidden">
-        {/* Phase F 390px: ownership + Generate without traversing the full catalog */}
+        {image ? (
+          <p className="mb-1.5 truncate text-center text-[10px] text-white/50">
+            {preset.emoji} {viralName(preset.slug, preset.name)} · {aspectRatio}
+            {toyIdentity.sku ? ` · ${toyIdentity.sku}` : ""}
+          </p>
+        ) : null}
         {image && !ownsRights ? (
           <label className="mb-2 flex cursor-pointer items-start gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-2 text-[10px] leading-snug text-[var(--fg-muted)]">
             <input
@@ -2377,17 +2392,27 @@ export function CreateStudio({
           </label>
         ) : null}
         {!image ? (
-          <button
-            type="button"
-            onClick={() =>
-              document
-                .getElementById("create-photo-step")
-                ?.scrollIntoView({ behavior: "smooth", block: "center" })
-            }
-            className="btn btn-primary w-full py-3 text-sm"
-          >
-            Add a toy photo first
-          </button>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() =>
+                document
+                  .getElementById("create-photo-step")
+                  ?.scrollIntoView({ behavior: "smooth", block: "center" })
+              }
+              className="btn btn-primary min-w-0 flex-1 py-3 text-sm"
+            >
+              Add toy photo
+            </button>
+            <button
+              type="button"
+              disabled={sampleLoading || busy}
+              onClick={() => void loadSampleToy("scout", true)}
+              className="btn btn-ghost shrink-0 px-3 py-3 text-xs"
+            >
+              Try free
+            </button>
+          </div>
         ) : (
           <button
             type="button"
