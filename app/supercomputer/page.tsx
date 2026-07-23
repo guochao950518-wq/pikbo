@@ -49,17 +49,22 @@ export default async function SupercomputerPage({
           Seedance. For the fixed three-format seller path use Seller Pack.
         </p>
         <p className="mt-2 text-xs text-[var(--fg-dim)]">
-          Need a single careful shot?{" "}
-          <Link href="/create" className="text-[var(--brand)] hover:underline">
-            Open Generate
-          </Link>
-          {" · "}
+          Prefer fixed shop formats?{" "}
           <Link
             href="/create?mode=seller-pack"
             className="text-[var(--mint)] hover:underline"
           >
             Seller Pack
           </Link>
+          {" · "}
+          <Link href="/modules" className="text-[var(--mint)] hover:underline">
+            Modules
+          </Link>
+          {" · "}
+          <Link href="/create" className="text-[var(--brand)] hover:underline">
+            single Generate
+          </Link>
+          . This page is custom batch Preview.
         </p>
         <BatchStudio initialEffects={initialEffects} />
       </div>

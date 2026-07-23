@@ -78,12 +78,27 @@ export default function ImageStudioPage() {
   return (
     <div className="px-4 py-10 sm:px-8">
       <div className="mx-auto max-w-4xl">
-        <span className="chip">🖼️ Stills · live</span>
+        <span className="chip">🖼️ Stills · suite Preview</span>
         <h1 className="mt-3 text-3xl font-bold">Still studio</h1>
         <p className="mt-2 text-sm text-[var(--fg-muted)]">
           Mock packaging & colorways before motion. Flux via fal (
-          {CREDITS_PER_VIDEO} credits). Then animate in Generate.
+          {CREDITS_PER_VIDEO} credits). Then animate in Generate — or jump to a
+          Module job.
         </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Link href="/create" className="btn btn-ghost !px-3 !py-1.5 text-xs">
+            Generate
+          </Link>
+          <Link href="/modules" className="btn btn-ghost !px-3 !py-1.5 text-xs">
+            Modules
+          </Link>
+          <Link
+            href="/create?mode=seller-pack"
+            className="btn btn-ghost !px-3 !py-1.5 text-xs"
+          >
+            Seller Pack
+          </Link>
+        </div>
 
         <div className="card mt-8 grid gap-6 p-6 lg:grid-cols-2">
           <div>
@@ -144,6 +159,32 @@ export default function ImageStudioPage() {
                   }}
                 >
                   Animate in Generate →
+                </Link>
+                <Link
+                  href="/create?mode=seller-pack"
+                  className="btn btn-ghost w-full text-sm"
+                  onClick={() => {
+                    try {
+                      sessionStorage.setItem("pikbo_pending_still", imageUrl);
+                    } catch {
+                      // ignore
+                    }
+                  }}
+                >
+                  Seller Pack · 3 clips →
+                </Link>
+                <Link
+                  href="/modules"
+                  className="btn btn-ghost w-full text-sm"
+                  onClick={() => {
+                    try {
+                      sessionStorage.setItem("pikbo_pending_still", imageUrl);
+                    } catch {
+                      // ignore
+                    }
+                  }}
+                >
+                  Pick a Module job →
                 </Link>
                 <Link
                   href="/effects/360-spin-showcase"

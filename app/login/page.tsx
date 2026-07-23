@@ -46,6 +46,15 @@ export default function LoginPage() {
           <Link href="/create" className="text-[var(--mint)] hover:underline">
             Continue as guest → Generate
           </Link>
+          <Link href="/modules" className="text-[var(--mint)] hover:underline">
+            Modules
+          </Link>
+          <Link
+            href="/create?mode=seller-pack"
+            className="text-[var(--fg-muted)] hover:text-white"
+          >
+            Seller Pack
+          </Link>
           <Link href="/profile" className="text-[var(--fg-muted)] hover:text-white">
             Profile
           </Link>
