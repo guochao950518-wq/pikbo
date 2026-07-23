@@ -71,7 +71,8 @@
 30. [x] G6 PASS (3 lives + refund) · Mode A runbook · video-provider webhook
 31. [x] Job timeout sweep · T6 health status (blocked honest)
 32. [x] Phase I payments readiness · live-key block · reservation TTL expire · vercel headers
-33. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
+33. [x] Batch assetId reuse · Mode A critical-path + mode-a-acceptance script
+34. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
 
 ### 老板醒来验收
 
@@ -85,8 +86,8 @@
 
 ## Grok 本拍状态（3 行）
 
-- paymentsReadiness + checkout PAYMENTS_DISABLED / LIVE_KEYS_BLOCKED gates.  
-- Local durable reservation TTL expire on health probe; vercel security headers.  
+- Seller Pack/batch: register still once, children use assetId (smaller POSTs).  
+- critical-path + `npm run mode-a-acceptance` for private preview gates.  
 - G6 PASS · engine-smoke green · Mode B still needs boss Vercel + domain OK.
 
 ---

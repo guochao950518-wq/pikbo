@@ -1224,6 +1224,24 @@ assert.match(
 );
 assert.match(createStudio, /registerLocalAsset|assetId/);
 assert.match(library, /Session jobs|\/api\/generations/);
+assert.match(batchStudio, /registerLocalAsset|sharedAssetId/);
+const critPathModeA = fs.readFileSync(
+  join(root, "scripts/critical-path.sh"),
+  "utf8"
+);
+assert.match(critPathModeA, /\/status/);
+assert.match(critPathModeA, /\/login/);
+assert.match(critPathModeA, /\/api\/auth\/status/);
+assert.match(critPathModeA, /\/api\/generations/);
+assert.match(critPathModeA, /HEAD \/api\/health|HEAD.*health/);
+const modeA = fs.readFileSync(
+  join(root, "scripts/mode-a-acceptance.sh"),
+  "utf8"
+);
+assert.match(modeA, /mode-a-acceptance|Mode A acceptance/);
+assert.match(modeA, /critical-path|link-check/);
+const pkgJson = fs.readFileSync(join(root, "package.json"), "utf8");
+assert.match(pkgJson, /mode-a-acceptance/);
 
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

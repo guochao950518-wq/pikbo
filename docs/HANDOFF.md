@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Batch assetId + Mode A critical-path expansion
+- BatchStudio/Seller Pack registers still once via `registerLocalAsset`; children send `assetId` (fallback Base64).
+- `critical-path`: /login /status /api/auth/status /api/generations + HEAD health; health payments/t6 fields.
+- `npm run mode-a-acceptance` wraps critical-path + link-check + Mode A honesty gates.
+- Verified: engine-smoke · typecheck · lint.
+
 ### 2026-07-24 — [grok] Phase D assetId generate + Library session jobs
 - Generate accepts `assetId` (session local asset) to avoid re-posting large Base64.
 - Create registers uploads via upload-url + PUT; prefers assetId on generate.

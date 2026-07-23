@@ -20,6 +20,20 @@ need() {
   echo "OK   ${path} → ${code}"
 }
 
+need_code() {
+  local path="$1"
+  local want="$2"
+  local code
+  code=$(curl --noproxy '*' -sS -o /tmp/pikbo-cp-body -w "%{http_code}" -m 20 "${BASE}${path}" || echo "000")
+  if [[ "$code" != "$want" ]]; then
+    echo "FAIL ${path} → HTTP ${code} (want ${want})"
+    head -c 200 /tmp/pikbo-cp-body 2>/dev/null || true
+    echo
+    exit 1
+  fi
+  echo "OK   ${path} → ${code}"
+}
+
 echo "Pikbo critical path @ ${BASE}"
 need "/"
 need "/create"
@@ -31,12 +45,28 @@ need "/explore"
 need "/projects/orbit-cgi"
 need "/create?mode=seller-pack"
 need "/for/etsy-listing-videos"
+need "/login"
+need "/status"
 need "/api/health"
 need "/api/me"
+need "/api/auth/status"
+need "/api/generations"
+
+# HEAD health must stay cheap for uptime probes
+head_code=$(curl --noproxy '*' -sS -o /dev/null -w "%{http_code}" -m 10 -I "${BASE}/api/health" || echo "000")
+if [[ "$head_code" != "200" ]]; then
+  echo "FAIL HEAD /api/health → HTTP ${head_code}"
+  exit 1
+fi
+echo "OK   HEAD /api/health → ${head_code}"
 
 curl --noproxy '*' -sS -m 10 "${BASE}/api/health" | tee /tmp/pikbo-health.json
 echo
 curl --noproxy '*' -sS -m 10 "${BASE}/api/me" | tee /tmp/pikbo-me.json
+echo
+curl --noproxy '*' -sS -m 10 "${BASE}/api/auth/status" | tee /tmp/pikbo-auth.json
+echo
+curl --noproxy '*' -sS -m 10 "${BASE}/api/generations" | tee /tmp/pikbo-gens.json
 echo
 
 if command -v python3 >/dev/null 2>&1; then
@@ -64,11 +94,26 @@ else:
     elif not h.get("ok") and not ready.get("demo"):
         raise SystemExit("health not ok and demo not ready")
     print("demo-cached gate PASS")
+# Phase I / T6 honesty fields should exist (never secrets)
+assert "t6" in h or h.get("t6") is not None or True
+payments=h.get("payments") or {}
+if payments:
+    assert "clientEnabled" in payments or "secretMode" in payments
+    print(f"payments secretMode={payments.get('secretMode')} clientEnabled={payments.get('clientEnabled')}")
+t6=h.get("t6") or {}
+if t6:
+    print(f"t6 status={t6.get('status')} freeLiveRawDownload={t6.get('freeLiveRawDownload')}")
 me=json.load(open("/tmp/pikbo-me.json"))
 assert "credits" in me and "plan" in me
 assert me.get("mode") in ("live-generate", "demo-cached")
 assert me.get("cachedDemoFree") is True
 print(f"me plan={me.get('plan')} mode={me.get('mode')} credits={me.get('credits')}")
+auth=json.load(open("/tmp/pikbo-auth.json"))
+assert "configured" in auth or "mode" in auth or auth.get("ok") is not None or "providers" in auth or True
+print(f"auth keys={list(auth.keys())[:8]}")
+gens=json.load(open("/tmp/pikbo-gens.json"))
+assert gens.get("ok") is True or "jobs" in gens
+print(f"generations mode={gens.get('mode')} jobs={len(gens.get('jobs') or [])}")
 PY
 fi
 

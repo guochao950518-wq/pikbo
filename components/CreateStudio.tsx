@@ -38,6 +38,12 @@ import {
   type RequestCreditState,
 } from "@/lib/createTrust";
 import { track } from "@/lib/analytics";
+import { JobIntentBar } from "@/components/JobIntentBar";
+import {
+  ActivationChecklist,
+  markActivationJob,
+} from "@/components/ActivationChecklist";
+import { getJobIntent, type JobIntentId } from "@/lib/jobIntents";
 
 type Status = "idle" | "uploading" | "generating" | "done" | "error";
 type Mode = "i2v" | "t2v";
@@ -832,6 +838,7 @@ export function CreateStudio({
   ]);
 
   const [showAllRecipes, setShowAllRecipes] = useState(false);
+  const [jobIntentId, setJobIntentId] = useState<JobIntentId | null>(null);
   const featuredPresets = useMemo(() => {
     // Phase F: eight launch recipes first (HOME_PROOF + seller staples).
     const heroes = [
@@ -855,8 +862,24 @@ export function CreateStudio({
     return ordered;
   }, [filteredPresets, presetFilter, showAllRecipes]);
 
+  function applyJobIntent(id: JobIntentId) {
+    const job = getJobIntent(id);
+    if (!job || job.href) return;
+    setJobIntentId(id);
+    selectEffect(job.effect);
+    setAspectRatio(job.aspectRatio);
+    markActivationJob();
+    track({ event: "recipe_use", path: "/create", recipe: job.effect, meta: { job: id } });
+    toast(`${job.label} · recipe ready`);
+  }
+
   return (
     <div className="flex h-full min-h-[calc(100vh-3.5rem)] flex-col pb-36 lg:min-h-screen lg:pb-0">
+      <ActivationChecklist
+        hasImage={Boolean(image)}
+        hasGenerated={status === "done" || versions.length > 0}
+      />
+      <JobIntentBar activeId={jobIntentId} onPick={applyJobIntent} />
       {/* ── Mode banner: demo vs live impossible to miss (W5) ── */}
       <div
         role="status"

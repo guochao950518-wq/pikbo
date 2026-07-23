@@ -10,6 +10,7 @@ import {
   settleSellerPackChildClient,
   sleep,
 } from "@/lib/generateClient";
+import { registerLocalAsset } from "@/lib/clientAssets";
 import { pushHistory } from "@/lib/history";
 import { CATEGORIES, PRESETS, type CategoryId } from "@/lib/presets";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
@@ -210,13 +211,18 @@ export function BatchStudio({
   async function executeJob(
     job: Job,
     projectId: string,
-    packReservationId?: string | null
+    packReservationId?: string | null,
+    /** Phase D: shared still asset — avoids re-posting multi-MB Base64 per child */
+    sharedAssetId?: string | null
   ): Promise<{ job: Job; stopQueue: boolean }> {
     const jobAspect = job.aspectRatio ?? aspectRatio;
     const result = await postGenerateWithRetry(
       {
         effect: job.slug,
-        image: image ?? undefined,
+        // Prefer assetId when registered; fall back to data URL for samples.
+        ...(sharedAssetId
+          ? { assetId: sharedAssetId }
+          : { image: image ?? undefined }),
         duration: effectiveDuration,
         aspectRatio: jobAspect,
         model: effectiveModel,
@@ -366,6 +372,13 @@ export function BatchStudio({
       }
     }
 
+    // Phase D: register still once — Seller Pack / batch children reuse assetId.
+    let sharedAssetId: string | null = null;
+    if (image && image.startsWith("data:image")) {
+      const reg = await registerLocalAsset(image);
+      if (reg?.assetId) sharedAssetId = reg.assetId;
+    }
+
     const queue: Job[] = selected.map((slug) => {
       const p = PRESETS.find((x) => x.slug === slug)!;
       const packItem = SELLER_PACK_ITEMS.find((i) => i.slug === slug);
@@ -386,7 +399,8 @@ export function BatchStudio({
       const outcome = await executeJob(
         queue[i],
         projectId,
-        packReservationId
+        packReservationId,
+        sharedAssetId
       );
       queue[i] = outcome.job;
       setJobs((previous) =>
@@ -434,6 +448,11 @@ export function BatchStudio({
     setRunProjectId(projectId);
     setRunning(true);
     setError(null);
+    let sharedAssetId: string | null = null;
+    if (image.startsWith("data:image")) {
+      const reg = await registerLocalAsset(image);
+      if (reg?.assetId) sharedAssetId = reg.assetId;
+    }
     const retrying: Job = {
       ...target,
       status: "running",
@@ -445,7 +464,12 @@ export function BatchStudio({
     setJobs((previous) =>
       previous.map((job) => (job.slug === slug ? retrying : job))
     );
-    const outcome = await executeJob(retrying, projectId);
+    const outcome = await executeJob(
+      retrying,
+      projectId,
+      null,
+      sharedAssetId
+    );
     setJobs((previous) =>
       previous.map((job) => (job.slug === slug ? outcome.job : job))
     );
