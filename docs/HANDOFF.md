@@ -4,11 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
-### 2026-07-23 — [grok] Wave A core loop (partial)
-- Seller Pack canonical: `/create?mode=seller-pack`; `/supercomputer?pack=seller` redirects.
-- Library groups device-local clips by project/lab-sample (not cloud).
-- Explore category chips (`?cat=`); ShowcaseProject registry `lib/showcaseProjects.ts`.
-- Merged GPT Wave A handoff docs. Public launch still NO-GO until GO_NO_GO green.
+### 2026-07-23 — [grok] Higgsfield Wave A core loop ready for review
+- Implementation SHA: `2e4a0a8` on `agent/grok/higgsfield-wave-a`.
+- Scope: one canonical ShowcaseProject registry now drives Home, Explore, Inside Project, and recipe deep links; unknown project slugs return 404.
+- Create keeps successful versions, labels cached/live and credit/refund state, and saves device-local project history without claiming cloud sync.
+- Seller Pack canonical is `/create?mode=seller-pack`; its three fixed children settle independently, retain successes, and retry only failed items.
+- Verification passed: engine-smoke, ESLint, TypeScript, production build, link-check, critical-path, and browser checks at 390/768/1440; public launch remains NO-GO.
 
 
 ### 2026-07-23 — [gpt] Wave A engineering reassigned to Grok
