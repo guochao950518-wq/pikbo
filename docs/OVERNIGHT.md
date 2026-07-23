@@ -65,8 +65,8 @@
 ## Grok 本拍状态（3 行）
 
 - Merged Claude home-hf media-rich promo CTA (0fa0353).  
-- Honesty keep on promo body; Profile/Landing on meClient + mode.  
-- smoke+typecheck+lint green · pushing main.
+- Honesty + Profile/Landing meClient on `62f12ab`.  
+- smoke+typecheck+lint green · **pushed main**. Next: more Claude when pushed.
 
 ---
 
