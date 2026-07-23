@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { site } from "@/lib/site";
 import { CreditsBadge } from "@/components/CreditsBadge";
+import { Logo } from "@/components/Logo";
 import { CommandPalette } from "@/components/CommandPalette";
 import { ToastProvider } from "@/components/Toast";
 import { Footer } from "@/components/Footer";
@@ -51,11 +52,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="flex min-h-screen flex-col bg-black text-white">
         {/* Desktop top nav — Higgsfield style */}
         <header className="sticky top-0 z-50 hidden h-14 items-center gap-6 border-b border-white/[0.07] bg-black/80 px-5 backdrop-blur-md lg:flex">
-          <Link href="/" className="flex shrink-0 items-center gap-2" title={site.name}>
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-[#c8ff3d] text-sm font-black text-black">
-              P
-            </span>
-            <span className="font-display text-lg font-bold tracking-tight">{site.name}</span>
+          <Link href="/" className="flex shrink-0 items-center" title={site.name}>
+            <Logo size={30} />
           </Link>
           <nav className="flex min-w-0 flex-1 items-center gap-5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {TOP.map((item) => (
@@ -99,11 +97,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 : "border-b border-white/[0.07] bg-black/80 backdrop-blur-md"
             )}
           >
-            <Link href="/" className="flex items-center gap-2 text-sm font-bold">
-              <span className="grid h-7 w-7 place-items-center rounded-lg bg-[#c8ff3d] text-xs font-black text-black">
-                P
-              </span>
-              {site.name}
+            <Link href="/" className="flex items-center">
+              <Logo size={26} wordClassName="text-base" />
             </Link>
             <div className="flex items-center gap-2">
               <CreditsBadge compact />

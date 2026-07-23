@@ -267,19 +267,26 @@ function ModelGrid() {
           <Link
             key={f.title}
             href={f.href}
-            className="card-i group flex flex-col justify-between rounded-[18px] border border-white/10 bg-white/[0.03] p-5"
+            className="card-i group relative flex flex-col justify-between overflow-hidden rounded-[18px] border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
           >
-            <div className="flex items-start justify-between">
-              <span className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/[0.04] text-white/85 transition-colors group-hover:text-[#c8ff3d]">
+            {/* lime glow that blooms on hover */}
+            <div className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-[#c8ff3d]/0 blur-2xl transition-all duration-300 group-hover:bg-[#c8ff3d]/20" />
+            <div className="relative flex items-start justify-between">
+              <span className="grid h-11 w-11 place-items-center rounded-xl border border-[#c8ff3d]/25 bg-[#c8ff3d]/[0.08] text-[#c8ff3d] shadow-[0_0_20px_-6px_rgba(200,255,61,0.4)]">
                 <LineIcon name={f.icon} />
               </span>
-              <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wide text-[#c8ff3d]">
+              <span className="rounded-full border border-[#c8ff3d]/30 bg-[#c8ff3d]/10 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wide text-[#c8ff3d]">
                 {f.badge}
               </span>
             </div>
-            <div className="mt-8">
-              <h4 className="font-display text-[17px] font-bold text-white">{f.title}</h4>
-              <p className="mt-1 text-[12.5px] text-white/45">{f.sub}</p>
+            <div className="relative mt-6">
+              <h4 className="font-display text-[17px] font-bold text-white transition-colors group-hover:text-[#c8ff3d]">
+                {f.title}
+              </h4>
+              <p className="mt-1 text-[12.5px] leading-relaxed text-white/50">{f.sub}</p>
+              <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide text-white/30 transition-colors group-hover:text-[#c8ff3d]">
+                Open <span aria-hidden>→</span>
+              </span>
             </div>
           </Link>
         ))}
