@@ -2,20 +2,25 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { GenerateSuiteChrome } from "@/components/GenerateSuiteChrome";
+import { DEMO_VIDEOS } from "@/lib/demoVideos";
 import { WORKFLOWS } from "@/lib/workflows";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Modules · Toy workflow blocks",
   description:
-    "Modular toy video workflows — listing spin, TikTok hook, blind-box drop, shelf glam, Seller Pack. Pick a block, upload one photo, generate. Yiha/lego-style modules for designer toys.",
+    "Modular toy video workflows — listing spin, TikTok hook, blind-box drop, shelf glam, Seller Pack. Pick a block, upload one photo, generate. Designer-toy suite modules.",
   alternates: { canonical: "/modules" },
 };
 
+function posterForEffect(effect?: string): string | null {
+  if (!effect) return null;
+  return DEMO_VIDEOS.find((d) => d.preset === effect)?.poster ?? null;
+}
+
 /**
  * Yiha /lego pattern for the toy vertical:
- * dense modular workflow wall → deep link into Generate.
- * Not a LEGO brand page; not competitor media.
+ * dense modular workflow wall with Lab proof posters → deep link Generate.
  */
 export default function ModulesPage() {
   const live = WORKFLOWS.filter((w) => w.live);
@@ -40,14 +45,17 @@ export default function ModulesPage() {
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[var(--fg-muted)]">
             The modular side of {site.name}: each block is a fixed seller or
             collector job that opens Generate with recipe and aspect ready —
-            same Seedance engine, no fake multi-model shelf. Structure inspired
-            by suite mini-apps; all copy and media are Pikbo-owned.
+            same Seedance engine. Structure of suite mini-apps; all media is
+            Pikbo Lab.
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
             <Link href="/create" className="btn btn-primary text-sm">
               Open Generate
             </Link>
-            <Link href="/create?mode=seller-pack" className="btn btn-ghost text-sm">
+            <Link
+              href="/create?mode=seller-pack"
+              className="btn btn-ghost text-sm"
+            >
               Seller Pack · 3 clips
             </Link>
             <Link href="/effects" className="btn btn-ghost text-sm">
@@ -65,44 +73,76 @@ export default function ModulesPage() {
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {live.map((w) => (
-                <Link
-                  key={w.id}
-                  href={w.href}
-                  className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.06] to-transparent p-5 transition hover:-translate-y-0.5 hover:border-[var(--mint)]/40"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <span className="grid h-12 w-12 place-items-center rounded-2xl bg-[var(--grad-soft)] text-2xl shadow-inner">
-                      {w.emoji}
-                    </span>
-                    <div className="flex flex-wrap justify-end gap-1">
-                      <span className="rounded-full bg-[var(--mint)]/15 px-1.5 py-0.5 text-[9px] font-bold text-[var(--mint)]">
-                        LIVE
-                      </span>
-                      {w.badge && (
-                        <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[9px] font-bold text-white/50">
-                          {w.badge}
+              {live.map((w) => {
+                const poster = posterForEffect(w.effect);
+                return (
+                  <Link
+                    key={w.id}
+                    href={w.href}
+                    className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.06] to-transparent transition hover:-translate-y-0.5 hover:border-[var(--mint)]/40"
+                  >
+                    {poster ? (
+                      <div className="relative aspect-[16/10] overflow-hidden bg-black/50">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={poster}
+                          alt=""
+                          className="h-full w-full object-cover opacity-90 transition duration-300 group-hover:scale-[1.03]"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+                        <span className="absolute left-3 top-3 text-2xl drop-shadow">
+                          {w.emoji}
                         </span>
+                        <div className="absolute right-3 top-3 flex flex-wrap justify-end gap-1">
+                          <span className="rounded-full bg-[var(--mint)]/90 px-1.5 py-0.5 text-[9px] font-bold text-black">
+                            LIVE
+                          </span>
+                          {w.badge && (
+                            <span className="rounded-full bg-black/60 px-1.5 py-0.5 text-[9px] font-bold text-white/80 backdrop-blur">
+                              {w.badge}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-start justify-between gap-3 p-5 pb-0">
+                        <span className="grid h-12 w-12 place-items-center rounded-2xl bg-[var(--grad-soft)] text-2xl">
+                          {w.emoji}
+                        </span>
+                        <div className="flex flex-wrap justify-end gap-1">
+                          <span className="rounded-full bg-[var(--mint)]/15 px-1.5 py-0.5 text-[9px] font-bold text-[var(--mint)]">
+                            LIVE
+                          </span>
+                          {w.badge && (
+                            <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[9px] font-bold text-white/50">
+                              {w.badge}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    <div className="p-5 pt-4">
+                      <h3 className="text-lg font-bold group-hover:text-[var(--mint)]">
+                        {w.label}
+                      </h3>
+                      <p className="mt-1.5 text-xs leading-relaxed text-[var(--fg-muted)]">
+                        {w.blurb}
+                      </p>
+                      {w.effect && (
+                        <p className="mt-3 text-[10px] text-white/35">
+                          Recipe · {w.effect}
+                          {w.aspectRatio ? ` · ${w.aspectRatio}` : ""}
+                          {poster ? " · Lab proof" : ""}
+                        </p>
                       )}
+                      <p className="mt-3 text-[11px] font-bold text-[var(--mint)]">
+                        Launch module →
+                      </p>
                     </div>
-                  </div>
-                  <h3 className="mt-4 text-lg font-bold group-hover:text-[var(--mint)]">
-                    {w.label}
-                  </h3>
-                  <p className="mt-1.5 text-xs leading-relaxed text-[var(--fg-muted)]">
-                    {w.blurb}
-                  </p>
-                  {w.effect && (
-                    <p className="mt-3 text-[10px] text-white/35">
-                      Recipe · {w.effect}
-                      {w.aspectRatio ? ` · ${w.aspectRatio}` : ""}
-                    </p>
-                  )}
-                  <p className="mt-4 text-[11px] font-bold text-[var(--mint)]">
-                    Launch module →
-                  </p>
-                </Link>
-              ))}
+                  </Link>
+                );
+              })}
             </div>
           </section>
 
@@ -126,7 +166,10 @@ export default function ModulesPage() {
                   d: "Review, download, or same-photo next job for another channel.",
                 },
               ].map((s) => (
-                <li key={s.n} className="rounded-xl border border-white/8 bg-white/[0.03] p-4">
+                <li
+                  key={s.n}
+                  className="rounded-xl border border-white/8 bg-white/[0.03] p-4"
+                >
                   <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[var(--mint)] text-[11px] font-black text-black">
                     {s.n}
                   </span>

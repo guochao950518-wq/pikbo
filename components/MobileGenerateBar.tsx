@@ -3,25 +3,28 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-/** Sticky mobile CTA when not already on Generate */
+/** Sticky mobile CTA when not already on Generate / Seller Pack */
 export function MobileGenerateBar() {
   const path = usePathname() || "/";
   // Hide when a full tool surface is already on-screen
   if (
     path.startsWith("/create") ||
+    path.startsWith("/generate") ||
     path.startsWith("/supercomputer") ||
     path.startsWith("/effects/") ||
     path.startsWith("/for/") ||
-    path.startsWith("/toys/")
+    path.startsWith("/toys/") ||
+    path.startsWith("/modules")
   ) {
     return null;
   }
-  // The home hero already owns the primary CTA. Keep this extra bar only on
-  // browse walls, where users may be several cards away from Generate.
+  // Browse walls + home-adjacent — keep suite doors one tap away
   const showBar =
     path.startsWith("/explore") ||
     path.startsWith("/community") ||
-    path === "/effects";
+    path === "/effects" ||
+    path === "/apps" ||
+    path === "/library";
   if (!showBar) return null;
 
   return (
@@ -30,13 +33,19 @@ export function MobileGenerateBar() {
         href="/create"
         className="pointer-events-auto btn btn-primary px-5 py-2.5 text-xs shadow-[0_0_30px_rgba(200,255,61,0.35)]"
       >
-        Use free trial
+        Generate
+      </Link>
+      <Link
+        href="/modules"
+        className="pointer-events-auto rounded-full border border-[var(--mint)]/40 bg-black/70 px-4 py-2.5 text-xs font-semibold text-[var(--mint)] backdrop-blur"
+      >
+        Modules
       </Link>
       <Link
         href="/effects"
         className="pointer-events-auto rounded-full border border-white/15 bg-black/70 px-4 py-2.5 text-xs font-semibold text-white backdrop-blur"
       >
-        Browse looks
+        Recipes
       </Link>
     </div>
   );

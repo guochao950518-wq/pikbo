@@ -927,6 +927,31 @@ export function BatchStudio({
             </span>
           </div>
         )}
+        {/* Delivery pack — value only when clips leave the device */}
+        {sellerPackActive && doneCount > 0 && (
+          <div className="rounded-xl border border-[var(--mint)]/25 bg-[var(--mint)]/[0.06] px-3 py-2.5">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--mint)]">
+              Delivery pack · {doneCount}/3 ready
+            </p>
+            <ul className="mt-1.5 space-y-1 text-[11px] text-[var(--fg-muted)]">
+              <li>○ Download each succeeded clip (or open Library)</li>
+              <li>○ Listing Spin → shop gallery (1:1) · verify sculpt</li>
+              <li>○ Blind-box Reveal → drop / restock story (9:16)</li>
+              <li>○ Social Flash → TikTok / Reels first second (9:16)</li>
+              <li>
+                ○{" "}
+                <Link href="/library" className="text-[var(--mint)] hover:underline">
+                  Library
+                </Link>{" "}
+                keeps this device set ·{" "}
+                <Link href="/create" className="text-[var(--mint)] hover:underline">
+                  single Generate
+                </Link>{" "}
+                for one more variant
+              </li>
+            </ul>
+          </div>
+        )}
         {jobs.map((j) => (
           <div
             key={j.slug}

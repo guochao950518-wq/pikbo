@@ -1,6 +1,9 @@
 import Link from "next/link";
 
-/** HF model chips under promo — icon + name + type */
+/**
+ * Suite chips under home — product doors first (Generate / Modules / Pack).
+ * Cinema & multi-model demoted: not the critical path.
+ */
 type ToolChip = {
   href: string;
   label: string;
@@ -10,13 +13,19 @@ type ToolChip = {
 };
 
 const TOOLS: ToolChip[] = [
-  { href: "/create", label: "Seedance", sub: "Video", emoji: "✦", hot: true },
-  { href: "/effects", label: "Presets", sub: "Viral", emoji: "▶" },
-  { href: "/supercomputer", label: "Batch", sub: "Agent", emoji: "⚡" },
-  { href: "/image", label: "Image", sub: "Still", emoji: "▣" },
-  { href: "/cinema", label: "Cinema", sub: "Scene", emoji: "◎" },
-  { href: "/community", label: "PIKBO Lab", sub: "Official examples", emoji: "◉" },
-  { href: "/models", label: "Models", sub: "Paths", emoji: "◎" },
+  { href: "/create", label: "Generate", sub: "Workbench", emoji: "✦", hot: true },
+  { href: "/modules", label: "Modules", sub: "Job blocks", emoji: "▦", hot: true },
+  {
+    href: "/create?mode=seller-pack",
+    label: "Seller Pack",
+    sub: "3 clips",
+    emoji: "🛍️",
+    hot: true,
+  },
+  { href: "/effects", label: "Recipes", sub: "Presets", emoji: "▶" },
+  { href: "/library", label: "Library", sub: "Local", emoji: "▢" },
+  { href: "/community", label: "PIKBO Lab", sub: "Examples", emoji: "◉" },
+  { href: "/image", label: "Stills", sub: "Preview", emoji: "▣" },
   { href: "/guides", label: "Learn", sub: "Free", emoji: "◎" },
 ];
 

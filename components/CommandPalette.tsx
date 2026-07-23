@@ -5,13 +5,19 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PRESETS } from "@/lib/presets";
 
-/** Critical path first — first-principles command palette */
+/** Critical path first — suite doors over vanity surfaces */
 const LINKS = [
   { href: "/", label: "Home" },
-  { href: "/create", label: "Generate" },
-  { href: "/effects", label: "Toy presets" },
+  { href: "/create", label: "Generate · Toy Studio" },
+  { href: "/modules", label: "Modules · job blocks" },
+  { href: "/create?mode=seller-pack", label: "Seller Pack · 3 clips" },
+  { href: "/create?job=etsy-listing", label: "Job · Etsy listing spin" },
+  { href: "/create?job=tiktok-hook", label: "Job · TikTok hook" },
+  { href: "/create?job=blind-box-drop", label: "Job · Blind-box drop" },
+  { href: "/effects", label: "Toy presets / recipes" },
   { href: "/library", label: "Library" },
   { href: "/pricing", label: "Pricing" },
+  { href: "/create?try=1&sample=scout", label: "Try free · Lab sample" },
   { href: "/profile", label: "Profile" },
   { href: "/image", label: "Still studio" },
   { href: "/supercomputer", label: "Batch agent" },
@@ -20,9 +26,8 @@ const LINKS = [
   { href: "/for/tiktok-shop-product-videos", label: "For TikTok Shop" },
   { href: "/explore", label: "Explore" },
   { href: "/community", label: "PIKBO Lab" },
-  { href: "/cinema", label: "Cinema Studio" },
-  { href: "/apps", label: "Apps" },
-  { href: "/models", label: "Models" },
+  { href: "/apps", label: "Apps catalog" },
+  { href: "/models", label: "Models (honest)" },
   { href: "/settings", label: "Settings" },
 ];
 

@@ -11,6 +11,7 @@ import {
   type ShowcaseProject,
 } from "@/lib/showcaseProjects";
 import { track } from "@/lib/analytics";
+import { SuiteEntryStrip } from "@/components/SuiteEntryStrip";
 
 /** Soft concurrent autoplay budget — pause extras when many tiles enter view. */
 const playingVideos = new Set<HTMLVideoElement>();
@@ -197,6 +198,19 @@ export function HfExploreHome({
               Use this recipe
             </Link>
             <Link
+              href="/modules"
+              onClick={() =>
+                track({
+                  event: "landing_view",
+                  path: "/",
+                  meta: { cta: "modules" },
+                })
+              }
+              className="inline-flex items-center justify-center rounded-full border border-[#c8ff3d]/40 bg-[#c8ff3d]/10 px-5 py-3 text-sm font-bold text-[#c8ff3d] backdrop-blur transition hover:bg-[#c8ff3d]/15"
+            >
+              Toy Modules
+            </Link>
+            <Link
               href={item.projectHref || item.detailHref || "/effects"}
               onClick={() =>
                 track({
@@ -211,7 +225,7 @@ export function HfExploreHome({
             </Link>
           </div>
           <p className="mt-3 text-[11px] text-white/45">
-            Official Lab still · cached demos free · live Mini uses 10 credits
+            Designer-toy suite · Lab demos free · live Mini uses 10 credits
           </p>
 
           {/* Progress rail */}
@@ -243,6 +257,9 @@ export function HfExploreHome({
           </div>
         </div>
       </section>
+
+      {/* Suite doors — Generate + Modules + Seller Pack */}
+      <SuiteEntryStrip />
 
       {/* ── Screen 2: Before → after ── */}
       <section className="border-b border-white/10 px-3 py-10 sm:px-5">

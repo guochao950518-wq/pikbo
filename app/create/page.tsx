@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { CreateStudio } from "@/components/CreateStudio";
 import { CreateSeoFooter } from "@/components/CreateSeoFooter";
 import { BatchStudio } from "@/components/BatchStudio";
+import { GenerateSuiteChrome } from "@/components/GenerateSuiteChrome";
 import { getPreset } from "@/lib/presets";
 import { site } from "@/lib/site";
 
@@ -62,34 +63,54 @@ export default async function CreatePage({
   // Wave A: Seller Pack is a Create mode, not a separate suite door.
   if (sp.mode === "seller-pack" || sp.mode === "seller") {
     return (
-      <div className="px-4 py-8 sm:px-8">
-        <div className="mx-auto max-w-6xl">
-          <span className="chip">Seller Pack · MVP</span>
-          <h1 className="mt-3 text-3xl font-bold">
-            One photo · three seller formats
-          </h1>
-          <p className="mt-2 max-w-2xl text-sm text-[var(--fg-muted)]">
-            Listing Spin (1:1), Blind-box Reveal (9:16), Social Flash (9:16).
-            Cached demos free and labeled. Live path charges per successful
-            child; only confirmed post-debit failures are marked restored.
-            Ambiguous outcomes remain refund unconfirmed. Device-local results
-            only — not cloud-synced.
-          </p>
-          <p className="mt-2 text-xs text-[var(--fg-dim)]">
-            Single careful shot?{" "}
-            <Link href="/create" className="text-[var(--brand)] hover:underline">
-              Open single Generate
-            </Link>
-            {" · "}
-            <Link
-              href="/supercomputer"
-              className="text-[var(--fg-muted)] hover:underline"
-            >
-              Custom batch
-            </Link>
-          </p>
-          <div className="mt-6">
-            <BatchStudio pack="seller" />
+      <div>
+        <Suspense
+          fallback={
+            <div className="border-b border-white/10 px-4 py-3 text-sm text-white/40">
+              Generate · Seller Pack
+            </div>
+          }
+        >
+          <GenerateSuiteChrome />
+        </Suspense>
+        <div className="px-4 py-8 sm:px-8">
+          <div className="mx-auto max-w-6xl">
+            <span className="chip">Seller Pack · suite module</span>
+            <h1 className="mt-3 text-3xl font-bold">
+              One photo · three seller formats
+            </h1>
+            <p className="mt-2 max-w-2xl text-sm text-[var(--fg-muted)]">
+              Listing Spin (1:1), Blind-box Reveal (9:16), Social Flash (9:16).
+              Cached demos free and labeled. Live path charges per successful
+              child; only confirmed post-debit failures are marked restored.
+              Device-local results — not cloud-synced.
+            </p>
+            <p className="mt-2 text-xs text-[var(--fg-dim)]">
+              Single careful shot?{" "}
+              <Link
+                href="/create"
+                className="text-[var(--brand)] hover:underline"
+              >
+                Open single Generate
+              </Link>
+              {" · "}
+              <Link
+                href="/modules"
+                className="text-[var(--mint)] hover:underline"
+              >
+                All modules
+              </Link>
+              {" · "}
+              <Link
+                href="/supercomputer"
+                className="text-[var(--fg-muted)] hover:underline"
+              >
+                Custom batch
+              </Link>
+            </p>
+            <div className="mt-6">
+              <BatchStudio pack="seller" />
+            </div>
           </div>
         </div>
       </div>
