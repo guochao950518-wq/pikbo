@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { loadFavorites, toggleFavorite } from "@/lib/favorites";
 import {
   historyFieldsFromSuccess,
-  postGenerate,
+  postGenerateWithRetry,
 } from "@/lib/generateClient";
 import { pushHistory } from "@/lib/history";
 import { fetchMe, isDemoMode, type MeResponse } from "@/lib/meClient";
@@ -555,21 +555,32 @@ export function CreateStudio({
       .getElementById("create-result")
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
     // Prefer assetId when registered (smaller POST); Retry uses frozen still/asset only.
-    const result = await postGenerate({
-      effect: fx,
-      image: useAsset ? undefined : img ?? undefined,
-      assetId: useAsset && postAssetId ? postAssetId : undefined,
-      extra: requestExtra,
-      duration: requestDuration,
-      aspectRatio: requestAspect,
-      model: requestModel,
-      resolution: requestRes,
-      ownsRights: true,
-      seed:
-        typeof requestSeed === "number" && Number.isFinite(requestSeed)
-          ? requestSeed
-          : undefined,
-    });
+    // ASSET_NOT_FOUND auto-recovers via fallbackImage (local TTL / process restart).
+    const fallbackStill =
+      (img && isValidImageDataUrl(img) ? img : null) ||
+      (image && isValidImageDataUrl(image) ? image : null) ||
+      undefined;
+    const result = await postGenerateWithRetry(
+      {
+        effect: fx,
+        image: useAsset ? undefined : img ?? undefined,
+        assetId: useAsset && postAssetId ? postAssetId : undefined,
+        extra: requestExtra,
+        duration: requestDuration,
+        aspectRatio: requestAspect,
+        model: requestModel,
+        resolution: requestRes,
+        ownsRights: true,
+        seed:
+          typeof requestSeed === "number" && Number.isFinite(requestSeed)
+            ? requestSeed
+            : undefined,
+      },
+      {
+        maxRetries: 1,
+        fallbackImage: useAsset ? fallbackStill : undefined,
+      }
+    );
 
     if (!result.ok) {
       if (result.session) {

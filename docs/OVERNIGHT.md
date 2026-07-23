@@ -75,7 +75,8 @@
 34. [x] Suite honesty: Modules JOB/PREVIEW · PRIMARY_NAV · Seller delivery T6 count
 35. [x] Retry still freeze: re-upload must not steal version photo (resolveGenerateStill)
 36. [x] Downloads resolve job id **or** provider requestId; GenerationSpec.assetId
-37. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
+37. [x] ASSET_NOT_FOUND → inline still recovery (Create/Landing/Batch); Library quota save
+38. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
 
 ### 老板醒来验收
 
@@ -89,8 +90,8 @@
 
 ## Grok 本拍状态（3 行）
 
-- Retry freezes version still — re-upload no longer steals assetId on Retry.  
-- `/api/downloads` finds job by id **or** provider requestId; spec stores assetId.  
+- ASSET_NOT_FOUND auto-recovers with local still (asset TTL / process restart).  
+- Create/Landing/Batch wired; Library saveHistory strips heavy stills on quota.  
 - engine-smoke + tsc + lint green · Mode A still needs boss Vercel login.
 
 ---

@@ -110,6 +110,9 @@ const fs = require("node:fs");
 const gen = fs.readFileSync(join(root, "lib/generateClient.ts"), "utf8");
 assert.match(gen, /export async function postGenerateWithRetry/);
 assert.match(gen, /historyFieldsFromSuccess/);
+assert.match(gen, /ASSET_NOT_FOUND/);
+assert.match(gen, /fallbackImage/);
+assert.match(gen, /assetId:\s*undefined/);
 const pe = fs.readFileSync(join(root, "lib/providerError.ts"), "utf8");
 assert.match(pe, /export function isValidImageDataUrl/);
 assert.match(pe, /export function classifyProviderError/);
@@ -162,6 +165,7 @@ assert.match(pb, /MAX_EXTRA_CHARS/);
 
 const hist = fs.readFileSync(join(root, "lib/history.ts"), "utf8");
 assert.match(hist, /remoteClipMayExpire/);
+assert.match(hist, /inputImage:\s*_drop|QuotaExceeded|strip heavy/);
 
 assert.match(ent, /lastInvoiceId/);
 const wh = fs.readFileSync(join(root, "app/api/webhooks/stripe/route.ts"), "utf8");
@@ -1331,6 +1335,9 @@ assert.match(createTrust, /export function resolveGenerateStill/);
 assert.match(createTrust, /assetId\?:/);
 assert.match(createStudio, /resolveGenerateStill/);
 assert.match(createStudio, /retry-still|mode === "retry/);
+assert.match(createStudio, /postGenerateWithRetry|fallbackImage/);
+assert.match(batchStudio, /fallbackImage/);
+assert.match(landingTool, /postGenerateWithRetry|fallbackImage/);
 function resolveSpecImagePure(spec, store) {
   if (spec.sourceKey && store[spec.sourceKey]) return store[spec.sourceKey];
   if (typeof spec.image === "string" && spec.image) return spec.image;

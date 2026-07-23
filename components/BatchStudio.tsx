@@ -229,7 +229,14 @@ export function BatchStudio({
         resolution: effectiveResolution,
         ownsRights: true,
       },
-      { maxRetries: 1 }
+      {
+        maxRetries: 1,
+        // Mid-pack asset TTL / process restart: recover with local still once.
+        fallbackImage:
+          sharedAssetId && image && image.startsWith("data:image")
+            ? image
+            : undefined,
+      }
     );
 
     if (!result.ok) {

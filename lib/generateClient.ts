@@ -94,7 +94,9 @@ export function interpretGenerateResponse(
               ? "Unknown effect — pick a registered recipe"
               : code === "IMAGE_TOO_LARGE"
                 ? "Image too large (max ~8MB)"
-                : "Generation failed");
+                : code === "ASSET_NOT_FOUND"
+                  ? "Photo asset expired on the server — re-upload or retry with the same still"
+                  : "Generation failed");
 
   // PRD §5: recoverable failures must say whether the 10 credits were restored.
   if (
@@ -322,12 +324,22 @@ export async function releaseSellerPackChildClient(input: {
 }
 
 /**
- * POST generate with one automatic retry on RATE_LIMITED / PROVIDER_RATE_LIMIT.
- * Used by batch so sequential jobs survive the soft 8/min window.
+ * POST generate with automatic recovery:
+ * - one retry on RATE_LIMITED / PROVIDER_RATE_LIMIT / JOB_IN_FLIGHT
+ * - one ASSET_NOT_FOUND recovery: drop expired assetId and re-POST inline still
+ *   (Phase D local assets TTL ~15m / process restart — Seller Pack mid-queue)
  */
 export async function postGenerateWithRetry(
   body: GenerateRequestBody,
-  opts?: { maxRetries?: number; signal?: AbortSignal }
+  opts?: {
+    maxRetries?: number;
+    signal?: AbortSignal;
+    /**
+     * Local data URL for the still. Used only when the server returns
+     * ASSET_NOT_FOUND for body.assetId (never re-debits on the failed attempt).
+     */
+    fallbackImage?: string;
+  }
 ): Promise<GenerateResult> {
   const maxRetries = opts?.maxRetries ?? 1;
   let attempt = 0;
@@ -344,6 +356,23 @@ export async function postGenerateWithRetry(
       result.code === "JOB_IN_FLIGHT" ? 2 : (result.retryAfterSec ?? 8);
     await sleep(Math.min(60, Math.max(1, waitSec)) * 1000);
     result = await postGenerate(body, { signal: opts?.signal });
+  }
+
+  // Asset registry miss: re-post with inline still once (no second rate-limit loop).
+  const fallback = opts?.fallbackImage;
+  if (
+    !result.ok &&
+    result.code === "ASSET_NOT_FOUND" &&
+    typeof body.assetId === "string" &&
+    body.assetId &&
+    typeof fallback === "string" &&
+    fallback.startsWith("data:image") &&
+    fallback.length >= 32
+  ) {
+    result = await postGenerate(
+      { ...body, assetId: undefined, image: fallback },
+      { signal: opts?.signal }
+    );
   }
   return result;
 }

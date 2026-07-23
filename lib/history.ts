@@ -118,10 +118,35 @@ export function loadHistory(): HistoryItem[] {
 }
 
 export function saveHistory(list: HistoryItem[]): void {
+  const capped = list.slice(0, MAX);
   try {
-    localStorage.setItem(KEY, JSON.stringify(list.slice(0, MAX)));
+    localStorage.setItem(KEY, JSON.stringify(capped));
+    return;
   } catch {
-    // quota
+    // QuotaExceeded — strip heavy still previews and retry (keep clip metadata).
+  }
+  try {
+    const slim = capped.map((item) => {
+      if (!item.inputImage || item.inputImage.length < 8_000) return item;
+      const { inputImage: _drop, ...rest } = item;
+      void _drop;
+      return rest;
+    });
+    localStorage.setItem(KEY, JSON.stringify(slim));
+    return;
+  } catch {
+    /* still over quota */
+  }
+  try {
+    // Last resort: newest half, no input images.
+    const half = capped.slice(0, Math.max(8, Math.floor(MAX / 2))).map((item) => {
+      const { inputImage: _drop, ...rest } = item;
+      void _drop;
+      return rest;
+    });
+    localStorage.setItem(KEY, JSON.stringify(half));
+  } catch {
+    // give up — previous library remains until next successful write
   }
 }
 

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import {
   historyFieldsFromSuccess,
-  postGenerate,
+  postGenerateWithRetry,
 } from "@/lib/generateClient";
 import { pushHistory } from "@/lib/history";
 import { fetchMe, type MeResponse } from "@/lib/meClient";
@@ -165,15 +165,21 @@ export function LandingToolPanel({
     setElapsed(0);
     setStatus("generating");
     const useAsset = Boolean(assetId);
-    const result = await postGenerate({
-      effect: effectSlug,
-      image: useAsset ? undefined : image,
-      assetId: useAsset && assetId ? assetId : undefined,
-      duration,
-      aspectRatio,
-      resolution,
-      ownsRights: true,
-    });
+    const result = await postGenerateWithRetry(
+      {
+        effect: effectSlug,
+        image: useAsset ? undefined : image,
+        assetId: useAsset && assetId ? assetId : undefined,
+        duration,
+        aspectRatio,
+        resolution,
+        ownsRights: true,
+      },
+      {
+        maxRetries: 1,
+        fallbackImage: useAsset && image ? image : undefined,
+      }
+    );
     if (result.ok === false) {
       if (result.session) {
         setSession((prev) =>
