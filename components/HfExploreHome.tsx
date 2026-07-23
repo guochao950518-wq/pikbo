@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { DemoVideo } from "@/lib/demoVideos";
 import type { CommunityProject, FeedItem } from "@/lib/videoFeed";
 import { CATEGORIES } from "@/lib/presets";
+import { useI18n } from "@/components/LanguageProvider";
 
 function useAutoPlay(eager = false) {
   const ref = useRef<HTMLVideoElement>(null);
@@ -67,21 +68,22 @@ function Clip({
 
 /* ---- 1. Top feature row — big landscape media cards, TITLE BELOW (HF pattern) ---- */
 function FeatureRow({ demos }: { demos: DemoVideo[] }) {
+  const { t } = useI18n();
   const cards = [
     {
-      title: "Seedance Mini free path",
-      blurb: "Cached example; configured live trial is 5s at 480p",
+      titleKey: "home.hero1.title",
+      blurbKey: "home.hero1.blurb",
       href: "/create",
-      badge: "Cached demo",
+      badgeKey: "badge.cachedDemo",
     },
     {
-      title: "Blind-box unboxing",
-      blurb: "The reveal loop, built for Reels",
+      titleKey: "home.hero2.title",
+      blurbKey: "home.hero2.blurb",
       href: "/create?effect=blind-box-unboxing",
     },
     {
-      title: "360° listing spin",
-      blurb: "Marketplace packshot from one photo",
+      titleKey: "home.hero3.title",
+      blurbKey: "home.hero3.blurb",
       href: "/create?effect=360-spin-showcase",
     },
   ];
@@ -91,7 +93,7 @@ function FeatureRow({ demos }: { demos: DemoVideo[] }) {
         const hero = i === 0;
         return (
           <Link
-            key={c.title}
+            key={c.titleKey}
             href={c.href}
             className={`group block ${hero ? "col-span-2 md:col-span-1" : ""}`}
           >
@@ -106,20 +108,22 @@ function FeatureRow({ demos }: { demos: DemoVideo[] }) {
                 className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
               />
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-              {c.badge && (
+              {c.badgeKey && (
                 <span className="absolute left-2.5 top-2.5 rounded-full bg-[#c8ff3d] px-2 py-0.5 text-[9px] font-black uppercase tracking-wide text-black sm:left-3 sm:top-3 sm:px-2.5 sm:py-1 sm:text-[10px]">
-                  {c.badge}
+                  {t(c.badgeKey)}
                 </span>
               )}
               {/* mobile: title overlaid on the video so the first screen stays video-first */}
               <h3 className="font-display absolute inset-x-0 bottom-0 p-2.5 text-[12px] font-bold uppercase leading-tight tracking-tight text-white sm:hidden">
-                {c.title}
+                {t(c.titleKey)}
               </h3>
             </div>
             <h3 className="font-display mt-3 hidden text-[17px] font-bold uppercase leading-tight tracking-tight text-white transition-colors group-hover:text-[#c8ff3d] sm:block sm:text-[19px]">
-              {c.title}
+              {t(c.titleKey)}
             </h3>
-            <p className="mt-1 hidden text-[13px] text-white/50 sm:block">{c.blurb}</p>
+            <p className="mt-1 hidden text-[13px] text-white/50 sm:block">
+              {t(c.blurbKey)}
+            </p>
           </Link>
         );
       })}
@@ -129,6 +133,7 @@ function FeatureRow({ demos }: { demos: DemoVideo[] }) {
 
 /* ---- 2. Compact media-rich promo CTA (refined, not a flat slab) ---- */
 function LimePromo({ demo }: { demo: DemoVideo }) {
+  const { t } = useI18n();
   return (
     <section className="px-3 py-3 sm:px-5 sm:py-4">
       <div className="relative overflow-hidden rounded-[22px] bg-[radial-gradient(120%_140%_at_0%_0%,#dcff72_0%,#c8ff3d_45%,#9fe23a_100%)] p-4 sm:p-5">
@@ -137,21 +142,19 @@ function LimePromo({ demo }: { demo: DemoVideo }) {
           <div className="flex-1 sm:pl-3">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-black px-3 py-1 text-[11px] font-black uppercase tracking-wider text-[#c8ff3d]">
               <span className="h-1.5 w-1.5 rounded-full bg-[#c8ff3d]" />
-              1 Mini trial · free
+              {t("home.promo.chip")}
             </span>
             <h2 className="font-display mt-3 text-[28px] font-black uppercase leading-[0.95] tracking-tight text-black sm:text-[40px]">
-              Animate a toy
-              <br className="hidden sm:block" /> you already own
+              {t("home.promo.title")}
             </h2>
             <p className="mt-2 hidden max-w-md text-[13px] font-medium text-black/65 sm:block">
-              One figure photo → Seedance Mini 480p when live is on. No card.
-              Cached demos labeled. Never fake &quot;unlimited&quot;.
+              {t("home.promo.sub")}
             </p>
             <Link
               href="/create"
               className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-black px-6 py-3 text-sm font-black text-[#c8ff3d] transition-transform hover:-translate-y-0.5"
             >
-              Try Mini free →
+              {t("cta.tryMiniFree")}
             </Link>
           </div>
           {/* media side */}
@@ -230,13 +233,20 @@ function LineIcon({ name }: { name: string }) {
 
 /* ---- 3. Two-col: pitch card + model/feature grid (HF icon+badge+title cards) ---- */
 function ModelGrid() {
-  const features = [
-    { icon: "film", title: "Seedance Mini", sub: "One 5s 480p trial when live", badge: "Free", href: "/create" },
-    { icon: "spark", title: "Seedance 2.0", sub: "Paid higher-quality path", badge: "Paid", href: "/pricing" },
-    { icon: "box", title: "Blind-box unboxing", sub: "The reveal collectors share", badge: "Viral", href: "/create?effect=blind-box-unboxing" },
-    { icon: "spin", title: "360° listing spin", sub: "Marketplace-ready packshot", badge: "Seller", href: "/create?effect=360-spin-showcase" },
-    { icon: "wand", title: "Make it dance", sub: "Come-alive loop for Reels", badge: "Viral", href: "/create?effect=make-figure-dance" },
-    { icon: "clap", title: "Cinema scene", sub: "Drop a figure into a world", badge: "Scene", href: "/cinema" },
+  const { t } = useI18n();
+  const features: {
+    icon: string;
+    titleKey: string;
+    subKey: string;
+    badgeKey: string;
+    href: string;
+  }[] = [
+    { icon: "film", titleKey: "home.feat.mini.title", subKey: "home.feat.mini.sub", badgeKey: "badge.free", href: "/create" },
+    { icon: "spark", titleKey: "home.feat.pro.title", subKey: "home.feat.pro.sub", badgeKey: "badge.paid", href: "/pricing" },
+    { icon: "box", titleKey: "home.feat.blindbox.title", subKey: "home.feat.blindbox.sub", badgeKey: "badge.viral", href: "/create?effect=blind-box-unboxing" },
+    { icon: "spin", titleKey: "home.feat.spin.title", subKey: "home.feat.spin.sub", badgeKey: "badge.seller", href: "/create?effect=360-spin-showcase" },
+    { icon: "wand", titleKey: "home.feat.dance.title", subKey: "home.feat.dance.sub", badgeKey: "badge.viral", href: "/create?effect=make-figure-dance" },
+    { icon: "clap", titleKey: "home.feat.cinema.title", subKey: "home.feat.cinema.sub", badgeKey: "badge.scene", href: "/cinema" },
   ];
   return (
     <section className="grid grid-cols-1 gap-3 px-3 py-4 sm:px-5 lg:grid-cols-[minmax(0,340px)_1fr] lg:gap-4">
@@ -244,20 +254,20 @@ function ModelGrid() {
       <div className="flex flex-col justify-between rounded-[20px] border border-white/10 bg-gradient-to-br from-[#12242a] to-[#0e1417] p-6">
         <div>
           <h3 className="font-display text-2xl font-black uppercase leading-tight tracking-tight text-white">
-            Toy video paths
+            {t("home.pitch.title")}
           </h3>
           <ul className="mt-4 space-y-2 text-sm text-white/70">
-            <li>✓ Free: one Mini 5s 480p trial</li>
-            <li>✓ Failed gens refund credits</li>
-            <li>✓ Paid = commercial use</li>
-            <li>✓ Priced for model cost, not fake volume</li>
+            <li>✓ {t("home.pitch.b1")}</li>
+            <li>✓ {t("home.pitch.b2")}</li>
+            <li>✓ {t("home.pitch.b3")}</li>
+            <li>✓ {t("home.pitch.b4")}</li>
           </ul>
         </div>
         <Link
           href="/pricing"
           className="mt-6 inline-flex w-fit rounded-full bg-[#c8ff3d] px-5 py-2.5 text-sm font-black text-black"
         >
-          See pricing
+          {t("cta.seePricing")}
         </Link>
       </div>
 
@@ -265,7 +275,7 @@ function ModelGrid() {
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {features.map((f) => (
           <Link
-            key={f.title}
+            key={f.titleKey}
             href={f.href}
             className="card-i group relative flex flex-col justify-between overflow-hidden rounded-[18px] border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
           >
@@ -276,14 +286,16 @@ function ModelGrid() {
                 <LineIcon name={f.icon} />
               </span>
               <span className="rounded-full border border-[#c8ff3d]/30 bg-[#c8ff3d]/10 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wide text-[#c8ff3d]">
-                {f.badge}
+                {t(f.badgeKey)}
               </span>
             </div>
             <div className="relative mt-6">
               <h4 className="font-display text-[17px] font-bold text-white transition-colors group-hover:text-[#c8ff3d]">
-                {f.title}
+                {t(f.titleKey)}
               </h4>
-              <p className="mt-1 text-[12.5px] leading-relaxed text-white/50">{f.sub}</p>
+              <p className="mt-1 text-[12.5px] leading-relaxed text-white/50">
+                {t(f.subKey)}
+              </p>
               <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide text-white/30 transition-colors group-hover:text-[#c8ff3d]">
                 Open <span aria-hidden>→</span>
               </span>
@@ -297,13 +309,14 @@ function ModelGrid() {
 
 /* ---- 4. Dense autoplaying viral video wall ---- */
 function ViralGrid({ items }: { items: FeedItem[] }) {
+  const { t } = useI18n();
   const [filter, setFilter] = useState("all");
   const chips = useMemo(
     () => [
-      { id: "all", label: "ALL" },
+      { id: "all", label: t("home.viral.all") },
       ...CATEGORIES.map((c) => ({ id: c.id, label: c.label.toUpperCase() })),
     ],
-    []
+    [t]
   );
   const wall = useMemo(
     () => (filter === "all" ? items : items.filter((i) => i.category === filter)),
@@ -314,10 +327,10 @@ function ViralGrid({ items }: { items: FeedItem[] }) {
     <section className="px-2 py-6 sm:px-3">
       <div className="mb-3 flex items-end justify-between px-2">
         <h2 className="font-display text-[22px] font-bold uppercase tracking-tight text-white sm:text-[26px]">
-          Viral toy presets
+          {t("home.viral.title")}
         </h2>
         <Link href="/effects" className="text-[12px] font-semibold text-[#c8ff3d]">
-          View all →
+          {t("cta.viewAll")}
         </Link>
       </div>
       <div className="mb-3 flex gap-2 overflow-x-auto px-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
