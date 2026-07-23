@@ -4,6 +4,11 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [grok] continuous: Phase D stubs + Create analytics hooks
+- `POST /api/assets/upload-url` and `POST /api/webhooks/video-provider` → honest 501.
+- Create `track(generate_start|generate_result)` no-ops unless `NEXT_PUBLIC_ANALYTICS_URL`.
+- `.github/workflows/ci.yml` still **cannot push** (OAuth lacks `workflow` scope) — template remains `docs/ci/`.
+
 ### 2026-07-23 — [grok] continuous: fonts offline, Create launch-8, analytics stub
 - Removed next/font/google (CI/offline builds no longer need fonts.googleapis.com).
 - Create shows 8 launch recipes first + “More recipes” expand.
