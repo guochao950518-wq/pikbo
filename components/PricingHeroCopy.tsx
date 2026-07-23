@@ -17,34 +17,34 @@ const COPY: Record<
   }
 > = {
   outcome: {
-    badge: "Clear credits · 1 free trial",
-    eyebrow: "For owned designer-toy photos",
+    badge: "Start with one owned-toy photo",
+    eyebrow: "For collectors, toy sellers, and small shops",
     title: (
       <>
-        One figure photo →
+        Turn one toy photo into
         <br />
-        <span className="text-grad">a clip worth posting.</span>
+        <span className="text-grad">a listing-ready product clip.</span>
       </>
     ),
     description:
-      "Free: one Seedance Mini trial with an on-player mark (5s · 480p). Creator ~5 / Shop ~15 at the current flat rate. Cached demos are free to replay; live generation is always finite.",
-    primary: "Start free trial",
-    secondary: "Compare plans",
+      "Reuse the product photos you already have instead of setting up a new shoot for every listing or drop. Start with one 5-second Mini trial; paid plans add finite commercial-use credits.",
+    primary: "Animate one SKU",
+    secondary: "See seller plans",
   },
   "cost-control": {
-    badge: "Priced for model cost",
-    eyebrow: "Finite usage · no unlimited promise",
+    badge: "Finite credits · visible limits",
+    eyebrow: "Plan content before you spend",
     title: (
       <>
-        Know the allowance
+        Know how many product clips
         <br />
-        <span className="text-grad">before you render.</span>
+        <span className="text-grad">your plan can produce.</span>
       </>
     ),
     description:
-      "The current contract is Free ~1 · Creator ~5 · Shop ~15 at 10 credits per eligible job. Provider cost still varies by model and duration, so weighted metering comes next.",
-    primary: "Open Generate",
-    secondary: "Review allowances",
+      "The current validation contract is Free ~1, Creator ~5, and Shop ~15 live jobs at 10 credits each. That is a planning estimate—not a sales guarantee or an unlimited-generation promise.",
+    primary: "Build my first clip",
+    secondary: "Compare allowances",
   },
 };
 
@@ -84,9 +84,9 @@ export function PricingHeroCopy({
           </Button>
         </div>
         <div className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-[var(--fg-dim)]">
-          <span>✓ Cached examples use no credits</span>
-          <span>✓ Failed live jobs refund their credit charge</span>
-          <span>✓ No unlimited live generation</span>
+          <span>✓ Cached official examples use no credits</span>
+          <span>✓ Failed live jobs return their credit charge</span>
+          <span>✓ Commercial use starts on paid plans</span>
         </div>
       </div>
     </section>

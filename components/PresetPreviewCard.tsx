@@ -51,7 +51,7 @@ export function PresetPreviewCard({ preset }: { preset: Preset }) {
         </video>
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent" />
         <span className="absolute right-2 top-2 rounded-full bg-[var(--mint)] px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-black">
-          {exact ? "Lab example" : "Concept · shared loop"}
+          {exact ? "Official example" : "Concept · shared loop"}
         </span>
         <div className="absolute inset-x-0 bottom-0 p-3">
           <p className="text-sm font-bold text-white">{preset.name}</p>

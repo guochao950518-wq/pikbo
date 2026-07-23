@@ -24,7 +24,7 @@ export type CommunityProject = {
   look: string;
   remakeHref: string;
   detailHref: string;
-  visibility: "Concept" | "Official";
+  visibility: "Concept" | "Official example";
   author: { name: string; initials: string; badge?: string };
   demo: DemoVideo;
 };
@@ -61,7 +61,7 @@ export function buildHomeShowcaseFeed(
       subtitle: d.character,
       href: createHref(d.preset),
       detailHref: `/effects/${d.preset}`,
-      badge: "Cached Lab",
+      badge: "Official example · cached",
       ratio: d.ratio,
       demo: d,
       kind: "demo",
@@ -89,7 +89,7 @@ export function buildVideoFeed(): FeedItem[] {
       subtitle: d.character,
       href: createHref(d.preset),
       detailHref: `/effects/${d.preset}`,
-      badge: "Cached Lab",
+      badge: "Official example · cached",
       ratio: d.ratio,
       demo: d,
       kind: "demo",
@@ -130,7 +130,7 @@ export function featuredStrip(): FeedItem[] {
     subtitle: d.result,
     href: createHref(d.preset),
     detailHref: `/effects/${d.preset}`,
-    badge: "Cached Lab",
+    badge: "Official example · cached",
     ratio: d.ratio,
     demo: d,
     kind: "demo" as const,
@@ -146,11 +146,11 @@ export function communityProjects(): CommunityProject[] {
     look: d.eyebrow,
     remakeHref: createHref(d.preset),
     detailHref: `/effects/${d.preset}`,
-    visibility: "Official" as const,
+    visibility: "Official example" as const,
     author: {
       name: "Pikbo Lab",
       initials: "P",
-      badge: "Official",
+      badge: "Pikbo Lab",
     },
     demo: d,
   }));
@@ -197,7 +197,7 @@ export function feedByCategory(cat: CategoryId): FeedItem[] {
         : `Concept recipe · shared Lab loop · ${p.tagline}`,
       href: createHref(p.slug),
       detailHref: `/effects/${p.slug}`,
-      badge: mapped ? "Lab example" : "Concept",
+      badge: mapped ? "Official example" : "Concept",
       ratio:
         p.aspectRatio === "1:1"
           ? "1:1"

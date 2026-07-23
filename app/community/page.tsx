@@ -10,9 +10,9 @@ import { VideoRail } from "@/components/VideoRail";
 import { ProjectCard } from "@/components/ProjectCard";
 
 export const metadata: Metadata = {
-  title: "PIKBO Lab",
+  title: "Official AI Toy Video Examples",
   description:
-    "Cached PIKBO Lab references and concept recipes for owned-toy videos. No user uploads or engagement are implied.",
+    "Browse official cached Pikbo examples and toy-video recipes. These are product demonstrations, not customer posts or claimed community activity.",
   alternates: { canonical: "/community" },
 };
 
@@ -27,9 +27,9 @@ export default function CommunityPage() {
       <div className="sticky top-0 z-20 border-b border-[var(--border)] bg-[var(--bg)]/90 px-4 py-3 backdrop-blur sm:px-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="section-label">PIKBO Lab</p>
+            <p className="section-label">Official examples</p>
             <h1 className="text-lg font-bold tracking-tight sm:text-xl">
-              Cached references · try with your figure
+              See what each toy-video recipe is designed to make
             </h1>
           </div>
           <div className="flex gap-2">
@@ -45,21 +45,21 @@ export default function CommunityPage() {
           </div>
         </div>
         <p className="mt-1 text-[11px] text-[var(--fg-dim)]">
-          No user accounts or engagement are shown · every card is labeled
-          Cached or Concept before it opens Studio
+          These are Pikbo product demonstrations—not customer posts. Every card
+          is labeled Official example or Concept before it opens Studio.
         </p>
       </div>
 
       <section className="border-b border-[var(--border)] px-3 py-6 sm:px-5">
         <div className="mb-4 flex flex-wrap items-end justify-between gap-2 px-1">
           <div>
-            <p className="section-label">PIKBO Lab references</p>
+            <p className="section-label">Pikbo Lab · official examples</p>
             <h2 className="mt-1 text-xl font-bold tracking-tight">
-              Review a cached look or concept recipe
+              Start from a demonstrated look or a clearly marked concept
             </h2>
             <p className="mt-1 text-xs text-[var(--fg-muted)]">
-              Effect pages explain the recipe · Try recipe opens Studio with the
-              preset selected
+              Each effect page explains the intended output and opens Studio
+              with that recipe selected.
             </p>
           </div>
         </div>
@@ -71,8 +71,8 @@ export default function CommunityPage() {
       </section>
 
       <VideoRail
-        label="Cached workflow references"
-        title="Configured paths · preview media labeled"
+        label="Product workflow references"
+        title="Official cached examples · no claimed customer activity"
         href="/apps"
         items={suite}
         wide

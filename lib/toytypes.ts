@@ -47,7 +47,7 @@ export const TOY_TYPES: ToyType[] = [
     faq: [
       {
         q: "Does it animate my figure or generate a new one?",
-        a: "It animates the figure in your photo — same sculpt and colors — rather than generating a generic character.",
+        a: "It uses the figure in your photo as the visual reference rather than starting from a generic character. Generated motion can still change sculpt, color, or small details, so review the result.",
       },
     ],
   },
@@ -215,7 +215,7 @@ export const TOY_TYPES: ToyType[] = [
     faq: [
       {
         q: "Does it work with custom paint jobs?",
-        a: "Yes — it animates your actual build, keeping your paint, decals, and weathering intact.",
+        a: "Your photo guides the paint, decals, and weathering, but generated motion can change fine details. Compare the output with the real build before publishing.",
       },
     ],
   },

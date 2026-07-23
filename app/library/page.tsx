@@ -5,6 +5,7 @@ import { LibraryGrid } from "@/components/LibraryGrid";
 export const metadata: Metadata = {
   title: "Library",
   description: "Your generated videos and assets.",
+  robots: { index: false, follow: false },
 };
 
 export default function LibraryPage() {

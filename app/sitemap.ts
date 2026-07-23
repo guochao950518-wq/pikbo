@@ -6,7 +6,7 @@ import { GUIDES } from "@/lib/guides";
 import { site } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
+  const reviewedAt = "2026-07-23";
   const staticPages = [
     "",
     "/effects",
@@ -15,45 +15,38 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/pricing",
     "/privacy",
     "/terms",
-    "/apps",
-    "/models",
-    "/cinema",
-    "/image",
-    "/library",
     "/community",
-    "/profile",
-    "/supercomputer",
   ].map((path) => ({
     url: `${site.url}${path}`,
-    lastModified: now,
+    lastModified: reviewedAt,
     changeFrequency: "weekly" as const,
     priority: path === "" ? 1 : 0.8,
   }));
 
   const effectPages = PRESETS.map((p) => ({
     url: `${site.url}/effects/${p.slug}`,
-    lastModified: now,
+    lastModified: reviewedAt,
     changeFrequency: "weekly" as const,
     priority: 0.7,
   }));
 
   const useCasePages = USE_CASES.map((u) => ({
     url: `${site.url}/for/${u.slug}`,
-    lastModified: now,
+    lastModified: reviewedAt,
     changeFrequency: "weekly" as const,
     priority: 0.7,
   }));
 
   const toyTypePages = TOY_TYPES.map((t) => ({
     url: `${site.url}/toys/${t.slug}`,
-    lastModified: now,
+    lastModified: reviewedAt,
     changeFrequency: "weekly" as const,
     priority: 0.7,
   }));
 
   const guidePages = GUIDES.map((g) => ({
     url: `${site.url}/guides/${g.slug}`,
-    lastModified: now,
+    lastModified: reviewedAt,
     changeFrequency: "monthly" as const,
     priority: 0.6,
   }));

@@ -18,7 +18,7 @@ export const CATEGORIES: Category[] = [
   {
     id: "showcase",
     label: "Product Showcase",
-    blurb: "Clean, premium product videos that sell — spin, glam, float.",
+    blurb: "Clean product-video drafts for listings, launches, and ads.",
   },
   {
     id: "unboxing",
@@ -69,14 +69,14 @@ export const PRESETS: Preset[] = [
     category: "showcase",
     audience: "seller",
     tagline: "One photo → a listing spin that shows every angle.",
-    h1: "360° Spin Video Maker for Designer Toys",
-    seoTitle: "360° Spin Video Maker for Figures & Designer Toys | Pikbo",
+    h1: "Make a 360° Product Video of a Toy From One Photo",
+    seoTitle: "Toy 360° Product Video Generator From One Photo | Pikbo",
     seoDescription:
       "Turn a single product photo into a smooth 360° turntable video. Perfect for toy listings, storefronts, and product ads. No filming, no rig.",
     intro:
       "A slow, clean 360° spin is the fastest way to show a collectible from every angle. Upload one photo of your figure and Pikbo renders a studio turntable video ready for your listing or storefront.",
     body: [
-      "Marketplace listings with video convert noticeably better than photos alone. Instead of booking a photographer and a motorized turntable, you get the same look from a single image.",
+      "A short spin can help buyers inspect a collectible, but it does not guarantee a sale. Pikbo offers a generated alternative when you do not have a photographed turntable clip; inferred angles must be reviewed against the real product.",
       "Great for blind box figures, resin art toys, sofubi, and vinyl collectibles. Export in vertical for TikTok Shop or square for marketplace galleries.",
     ],
     keywords: [
@@ -86,6 +86,10 @@ export const PRESETS: Preset[] = [
       "figure 360 video",
     ],
     faq: [
+      {
+        q: "Can I make a 360° toy video from one photo?",
+        a: "Yes. Pikbo uses one front photo as the reference and generates the unseen angles. Because those angles are inferred rather than photographed, check sculpt, paint, logos, and packaging before using the clip in a listing.",
+      },
       {
         q: "Do I need a real turntable?",
         a: "No. Pikbo generates the rotation from a single photo, so no rig, lighting, or filming is required.",
@@ -143,8 +147,8 @@ export const PRESETS: Preset[] = [
     category: "showcase",
     audience: "seller",
     tagline: "A floating hero shot that looks ad-agency expensive.",
-    h1: "Levitating Product Video Maker for Toys",
-    seoTitle: "Floating / Levitating Product Video Maker | Pikbo",
+    h1: "Create a Floating Toy Product Video From One Photo",
+    seoTitle: "Floating Toy Product Video Generator From One Photo | Pikbo",
     seoDescription:
       "Make your figure float and rotate in mid-air for a high-end hero shot. One photo, no CGI, no filming — ready for ads and listings.",
     intro:
@@ -159,6 +163,10 @@ export const PRESETS: Preset[] = [
       "toy hero shot video",
     ],
     faq: [
+      {
+        q: "How do I make a toy float in a product video?",
+        a: "Upload a clear photo of a toy you own and open the Floating Hero recipe. Pikbo generates the lift, shadow, and camera movement; review the toy's generated details before publishing.",
+      },
       {
         q: "Will it look fake?",
         a: "Pikbo adds a soft shadow and gentle drift so the float reads as an intentional studio effect, not a cutout.",
@@ -213,7 +221,7 @@ export const PRESETS: Preset[] = [
     category: "unboxing",
     audience: "seller",
     tagline: "The blind-box reveal — without opening a box.",
-    h1: "AI Blind Box Unboxing Video Generator",
+    h1: "Create a Blind Box Unboxing Video From One Product Photo",
     seoTitle: "Blind Box Unboxing Video Generator | Pikbo",
     seoDescription:
       "Create an unboxing reveal video from one photo. The box opens, the figure drops in — the exact moment collectors love. Made for Reels, Shorts, and TikTok.",
@@ -230,6 +238,10 @@ export const PRESETS: Preset[] = [
       "mystery box unboxing",
     ],
     faq: [
+      {
+        q: "Can AI make a blind box unboxing video from a photo?",
+        a: "Yes. Upload a photo of your own figure or packaging and choose the Blind Box Unboxing recipe. The opening action and unseen packaging surfaces are generated, so verify artwork and product details before posting.",
+      },
       {
         q: "Can I use my own box art?",
         a: "Yes — upload a photo that includes your packaging and Pikbo animates the reveal around it.",
@@ -322,8 +334,8 @@ export const PRESETS: Preset[] = [
     category: "comealive",
     audience: "collector",
     tagline: "Make your figure dance — the clip collectors share.",
-    h1: "Make Your Figure Dance — AI Video",
-    seoTitle: "Make Your Figure Dance | Toy Animation Video Maker | Pikbo",
+    h1: "Make a Toy Figure Dance From One Photo",
+    seoTitle: "Make a Toy Figure Dance From a Photo | Pikbo",
     seoDescription:
       "Upload a photo of your figure and create a playful animated clip for Reels or TikTok. Live renders usually take 30–90 seconds when the provider is configured.",
     intro:
@@ -339,6 +351,10 @@ export const PRESETS: Preset[] = [
       "bring toy to life video",
     ],
     faq: [
+      {
+        q: "How can I make my action figure dance in a video?",
+        a: "Upload one clear, front-facing photo of a figure you own, then choose the dance recipe. Pikbo uses the photo as a visual reference while generating the motion.",
+      },
       {
         q: "Will it preserve every detail of my figure?",
         a: "Your upload guides the character and colors, but generated motion can change small details. Review each result before publishing.",
@@ -499,8 +515,8 @@ export const PRESETS: Preset[] = [
     category: "scene",
     audience: "collector",
     tagline: "Drop your figure into a tiny cinematic world.",
-    h1: "Miniature Scene Come-to-Life Video",
-    seoTitle: "Miniature Scene Toy Video Maker | Pikbo",
+    h1: "Put Your Toy in a Miniature World Video",
+    seoTitle: "Miniature World Video Generator for Toys | Pikbo",
     seoDescription:
       "Place your collectible inside a tiny cinematic world and watch the scene come alive. Atmospheric, storybook clips from one photo.",
     intro:
@@ -515,6 +531,10 @@ export const PRESETS: Preset[] = [
       "cinematic toy world video",
     ],
     faq: [
+      {
+        q: "Can I put my toy into a miniature AI video scene?",
+        a: "Yes. Upload the toy photo you own and choose the Miniature Scene recipe. Pikbo generates the surrounding world and camera movement while using your photo as the subject reference.",
+      },
       {
         q: "Can I choose the scene?",
         a: "The preset picks an atmospheric world; describe your own in the studio prompt box to customize it.",
@@ -643,7 +663,7 @@ export const PRESETS: Preset[] = [
     intro:
       "Make your figure famous. Pikbo drops it onto a glamorous red carpet with paparazzi flashes popping all around — the viral, high-energy clip collectors love to share.",
     body: [
-      "A playful, trend-driven format that stands out and gets shares.",
+      "A playful, trend-driven format you can test against simpler product footage; reach and shares are not guaranteed.",
       "Perfect for a 'star of my collection' post or hyping a grail piece.",
     ],
     keywords: [

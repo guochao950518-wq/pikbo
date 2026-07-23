@@ -10,9 +10,9 @@ import { VideoRail } from "@/components/VideoRail";
 import { PRESETS } from "@/lib/presets";
 
 export const metadata: Metadata = {
-  title: "Explore",
+  title: "Explore AI Toy Video Recipes",
   description:
-    "Explore cached PIKBO Lab references, concept recipes, and configured toy-video workflows. Shared preview media is labeled.",
+    "Explore official Pikbo examples and toy-video recipes for listings, drops, and social posts. Cached examples and unverified concepts are labeled separately.",
   alternates: { canonical: "/explore" },
 };
 
@@ -29,7 +29,7 @@ export default function ExplorePage() {
           <div>
             <p className="section-label">Explore</p>
             <h1 className="text-lg font-bold tracking-tight">
-              Labeled recipe feed · {feed.length} cards
+              Find a recipe for your next toy listing or drop
             </h1>
           </div>
           <div className="flex gap-2">
@@ -73,8 +73,8 @@ export default function ExplorePage() {
       </div>
 
       <VideoRail
-        label="PIKBO Lab examples"
-        title="Cached motion studies"
+        label="Official Pikbo examples"
+        title="Demonstrated looks you can open in Studio"
         href="/community"
         items={featured}
       />
@@ -94,7 +94,7 @@ export default function ExplorePage() {
               {PRESETS.length}+ effect recipes
             </p>
             <h2 className="mt-1 text-xl font-bold tracking-tight">
-              Cached references and shared concept loops are labeled
+              Official examples and unverified concepts stay clearly separated
             </h2>
           </div>
         </div>

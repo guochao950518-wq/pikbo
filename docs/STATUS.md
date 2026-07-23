@@ -15,13 +15,14 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | GO | Public pikbo.ai Mode B | boss+all | **blocked** | — | G3/G5/G6 still red; public NO-GO |
 | G1 | Nav whitelist / kill empty doors | Claude | **review** | main (shell-triage) | SOFT PASS; GPT formal whitelist open |
 | G2 | ≤8 hero presets, unique demos | Claude | **review** | main | SOFT PASS unique≤8; GPT pick exact 8 |
-| G3 | Official demos copy (no fake UGC) | Codex | todo | agent/gpt/shell-honesty-copy | **still red — paste Codex** |
+| G3 | Official demos copy (no fake UGC) | Codex | **review** | agent/gpt/world-class-copy | Official example / cached / concept language unified; merge evidence pending |
 | G4 | Zero 404 on linked URLs | Claude | **review** | main | redirects in next.config |
-| G5 | Plain-language ICP + meta | Codex | todo | agent/gpt/shell-honesty-copy | **still red — paste Codex** |
+| G5 | Plain-language ICP + meta | Codex | **review** | agent/gpt/world-class-copy | Home H1 + buyer meta + seller ROI copy implemented; merge evidence pending |
 | G6 | 3 live toy gens + 1 refund | any | todo | — | **still red — hand test** |
 | G7 | build + prod no devTopup | Claude | **review** | main | topup hard-off prod |
 | P-GO | GO_NO_GO + nav/preset whitelist PRD | GPT | **doing** | agent/gpt/go-no-go-soft | **STILL NEED PASTE TO GPT** |
 | P-COPY | Shell honesty copy pass | Codex | todo | agent/gpt/shell-honesty-copy | **STILL NEED PASTE TO CODEX** |
+| W-COPY | World-class seller copy, official-demo truth, ROI and 10 intent pages | Codex | done | agent/gpt/world-class-copy | Lint, typecheck, build and rendered metadata/H1 checks passed |
 | T1 | Multi-agent collab protocol + board | Grok | done | main | COLLAB.md + STATUS + HANDOFF |
 | T2 | Real fal sample clips / homepage demos | GPT | done | agent/gpt/homepage-demos | 6 original encoded demos; cached/no FAL cost; verified fal renders can replace assets later |
 | T3 | Keyword + preset expansion (long-tail SEO) | Claude | done | agent/claude/seo-keywords | +use-cases + toy-types |

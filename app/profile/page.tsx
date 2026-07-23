@@ -4,6 +4,7 @@ import { ProfilePanel } from "@/components/ProfilePanel";
 export const metadata: Metadata = {
   title: "Profile",
   description: "Plan, credits, and your Pikbo session.",
+  robots: { index: false, follow: false },
 };
 
 export default function ProfilePage() {

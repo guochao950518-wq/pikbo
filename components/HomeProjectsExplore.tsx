@@ -18,14 +18,14 @@ export function HomeProjectsExplore({
             Explore the inside of every project
           </h2>
           <p className="mt-1 text-sm text-white/45">
-            Watch cached PIKBO Lab motion studies — tap to try the recipe with your figure
+            Watch official cached Pikbo examples — tap to try the recipe with your figure
           </p>
         </div>
         <Link
           href="/community"
           className="shrink-0 text-xs font-semibold text-[var(--mint)] hover:underline"
         >
-          Explore PIKBO Lab
+          See official examples
         </Link>
       </div>
 

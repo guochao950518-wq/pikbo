@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [gpt] world-class seller copy + official proof + search intent
+- Home now leads with “One toy photo. A clip ready to list or post.” and a seller/collector workflow instead of model-engineering language.
+- Official examples, cached playback, and unverified concepts use distinct labels; Lab does not imply customer posts or engagement.
+- Pricing frames finite output capacity and seller workload without promising sales; Free/Creator/Shop numbers remain on the active contract.
+- Ten high-intent effect/use-case pages now use search-language H1s plus honest, page-specific FAQs; generated unseen angles require review.
+- Technical SEO: buyer metadata, branded OG/X card, private-page noindex, stable sitemap dates, and `/create?effect=` canonical cleanup.
+
 ### 2026-07-23 — [claude] world-class Create + home proof wall (branch `agent/claude/world-class-create`)
 - **Create flagship (390 mobile):** stepped Photo → Recipe → Generate → Result; sticky single primary CTA above bottom tab nav; demo/live/refund banner impossible to miss; advanced (model/duration/seed/prompt) collapsed; Text→Video / multi-model shelf off primary surface.
 - **Home:** one ICP H1 + single CTA “Try free · Generate”; proof wall ≤8 unique Lab demos; multi-model theater / product shelf removed; thin Seller Pack entry only.

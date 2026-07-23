@@ -118,23 +118,25 @@ export function HfExploreHome({
         <div className="relative mx-auto max-w-3xl px-4 pb-10 pt-10 text-center sm:px-6 sm:pb-14 sm:pt-16">
           <p className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/50 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[#c8ff3d]">
             <span className="h-1.5 w-1.5 rounded-full bg-[#c8ff3d]" />
-            Official demos · free Mini trial
+            Official examples · one free Mini trial
           </p>
           <h1 className="font-display mt-4 text-[1.85rem] font-black uppercase leading-[1.05] tracking-tight text-white sm:text-5xl">
-            One photo of a toy you own → a 5s clip for TikTok / Etsy
+            One toy photo. A clip ready to list or post.
           </h1>
           <p className="mx-auto mt-3 max-w-lg text-[13px] leading-relaxed text-white/60 sm:text-[15px]">
-            Free Mini trial. No card. Cached demos labeled. Failed live jobs refund credits.
+            Built for collectors, toy sellers, and small shops. Choose a
+            toy-specific recipe, review the generated details, then prepare it
+            for Etsy, Whatnot, TikTok, or your next drop.
           </p>
           <div className="mt-6 flex flex-col items-center gap-3">
             <Link
               href="/create"
               className="inline-flex w-full max-w-xs items-center justify-center rounded-full bg-[#c8ff3d] px-8 py-3.5 text-sm font-black text-black shadow-[0_0_40px_-8px_rgba(200,255,61,0.55)] transition hover:-translate-y-0.5 sm:w-auto"
             >
-              Try free · Generate
+              Animate my toy
             </Link>
             <p className="text-[11px] text-white/40">
-              Upload → pick a recipe → generate. One primary path.
+              Upload one owned-toy photo → choose a recipe → review the result.
             </p>
           </div>
         </div>
@@ -145,10 +147,11 @@ export function HfExploreHome({
         <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
           <div>
             <h2 className="font-display text-[20px] font-bold uppercase tracking-tight text-white sm:text-[26px]">
-              Proof wall
+              Official Pikbo examples
             </h2>
             <p className="mt-1 text-[12px] text-white/45">
-              Official cached demos — one unique clip per card. Not a shared-loop wall.
+              Cached Pikbo product demonstrations—not customer posts. One
+              unique clip per card.
             </p>
           </div>
           <Link
@@ -172,7 +175,7 @@ export function HfExploreHome({
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/15 to-transparent" />
               <span className="absolute left-2 top-2 rounded-full bg-black/70 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-[#c8ff3d] ring-1 ring-white/10">
-                {item.badge ?? "Cached Lab"}
+                {item.badge ?? "Official example · cached"}
               </span>
               <p className="absolute inset-x-0 bottom-0 p-2 text-[11px] font-bold uppercase leading-tight tracking-wide text-white transition-colors group-hover:text-[#c8ff3d] sm:text-xs">
                 {item.title}
@@ -190,10 +193,11 @@ export function HfExploreHome({
               Seller Pack · MVP
             </p>
             <h3 className="mt-1 font-display text-lg font-bold uppercase tracking-tight text-white sm:text-xl">
-              One photo → listing spin + unbox + social hook
+              One photo → listing spin + reveal + social hook
             </h3>
             <p className="mt-1 max-w-md text-[12px] text-white/50">
-              Three fixed formats for marketplace sellers. Cached demos free; live uses credits per clip.
+              Three fixed formats for marketplace sellers. Official cached
+              examples are free to view; live jobs use credits per clip.
             </p>
           </div>
           <Link
@@ -211,10 +215,10 @@ export function HfExploreHome({
           href="/create"
           className="inline-flex items-center justify-center rounded-full bg-[#c8ff3d] px-8 py-3 text-sm font-black text-black"
         >
-          Try free · Generate
+          Animate one SKU
         </Link>
         <p className="mt-2 text-[11px] text-white/35">
-          Soft launch · no Stripe · no fake multi-model shelf
+          One Mini trial when live generation is available · no card required
         </p>
       </section>
     </div>

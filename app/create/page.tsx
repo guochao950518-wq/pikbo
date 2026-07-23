@@ -15,13 +15,14 @@ export async function generateMetadata({
     return {
       title: { absolute: `Generate · ${preset.name} | ${site.name}` },
       description: preset.seoDescription,
-      alternates: { canonical: `/create?effect=${preset.slug}` },
+      alternates: { canonical: `/effects/${preset.slug}` },
+      robots: { index: false, follow: true },
     };
   }
   return {
     title: "Generate",
     description:
-      "AI image-to-video studio for designer toys. Upload a figure photo, pick a preset, generate with ByteDance Seedance.",
+      "Upload a photo of a toy you own, choose a listing, reveal, or social-video recipe, and generate a short clip to review and export.",
     alternates: { canonical: "/create" },
   };
 }

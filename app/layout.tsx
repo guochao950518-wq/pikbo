@@ -21,18 +21,20 @@ const display = Bricolage_Grotesque({
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} — AI video for designer toys`,
+    default: `${site.name} — AI Toy Video Generator for Sellers`,
     template: `%s | ${site.name}`,
   },
   description: site.description,
   keywords: [
-    "designer toy video maker",
-    "figure spin video",
-    "blind box video from photo",
-    "image to video seedance",
+    "AI toy video generator",
+    "toy image to video",
+    "figure product video maker",
+    "blind box unboxing video generator",
+    "Etsy toy listing video",
+    "TikTok toy ad generator",
   ],
   openGraph: {
-    title: `${site.name} — AI video for designer toys`,
+    title: `${site.name} — Turn one toy photo into a video ready to sell`,
     description: site.description,
     url: site.url,
     siteName: site.name,
@@ -40,7 +42,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: `${site.name}`,
+    title: `${site.name} — AI Toy Video Generator`,
     description: site.description,
   },
 };

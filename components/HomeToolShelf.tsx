@@ -15,7 +15,7 @@ const TOOLS: ToolChip[] = [
   { href: "/supercomputer", label: "Batch", sub: "Agent", emoji: "⚡" },
   { href: "/image", label: "Image", sub: "Still", emoji: "▣" },
   { href: "/cinema", label: "Cinema", sub: "Scene", emoji: "◎" },
-  { href: "/community", label: "PIKBO Lab", sub: "Cached", emoji: "◉" },
+  { href: "/community", label: "PIKBO Lab", sub: "Official examples", emoji: "◉" },
   { href: "/models", label: "Models", sub: "Paths", emoji: "◎" },
   { href: "/guides", label: "Learn", sub: "Free", emoji: "◎" },
 ];

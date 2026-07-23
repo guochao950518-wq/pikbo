@@ -29,12 +29,12 @@ export const USE_CASES: UseCase[] = [
     emoji: "🛍️",
     label: "Etsy sellers",
     audience: "seller",
-    h1: "Etsy Listing Video Maker for Toys & Collectibles",
-    seoTitle: "Etsy Listing Video Maker for Toys | Pikbo",
+    h1: "Make an Etsy Listing Video for a Toy From One Photo",
+    seoTitle: "Etsy Toy Listing Video Generator From One Photo | Pikbo",
     seoDescription:
-      "Turn one product photo into an Etsy listing video. Spin, float, and glam videos that make handmade toys and collectibles sell. No filming.",
+      "Turn one owned product photo into a short Etsy listing video. Generate a spin, floating hero, or glam look without setting up a new product shoot.",
     intro:
-      "Etsy listings with video get more views and sales. Pikbo turns a single photo of your handmade toy or collectible into a clean listing video — no camera, no rig, no editing.",
+      "Pikbo turns one photo of your handmade toy or collectible into a short listing-video draft—no camera rig or turntable. Review generated angles and product details before publishing.",
     body: [
       "Etsy shows listing videos right in the gallery, so a short spin or floating hero shot gives buyers the confidence a photo can't.",
       "Batch a whole shop's worth of product videos from the photos you already have, and keep a consistent look across every listing.",
@@ -47,6 +47,10 @@ export const USE_CASES: UseCase[] = [
     ],
     recommendedEffects: ["360-spin-showcase", "floating-hero", "display-case-glam"],
     faq: [
+      {
+        q: "How do I make an Etsy listing video for a toy without filming?",
+        a: "Upload one product photo you own, choose a listing recipe, and generate a short draft. Check Etsy's current listing requirements and verify every generated product detail before uploading.",
+      },
       {
         q: "What video does Etsy allow on listings?",
         a: "Etsy supports listing videos. Pikbo can be configured for a 5-second square or vertical clip; confirm the marketplace requirements before publishing.",
@@ -62,12 +66,12 @@ export const USE_CASES: UseCase[] = [
     emoji: "🎵",
     label: "TikTok Shop",
     audience: "seller",
-    h1: "TikTok Shop Product Video Maker for Toys",
-    seoTitle: "TikTok Shop Product Video Maker for Toys | Pikbo",
+    h1: "Create a TikTok Shop Video for a Toy From One Photo",
+    seoTitle: "TikTok Shop Toy Video Generator From One Photo | Pikbo",
     seoDescription:
-      "Create scroll-stopping TikTok Shop videos from one photo. Unboxing reveals and dancing figures built to sell designer toys and blind boxes.",
+      "Create short TikTok Shop video drafts from one toy photo. Try unboxing, product-spin, and character-motion hooks built for vertical viewing.",
     intro:
-      "On TikTok Shop, the first second decides everything. Pikbo turns one product photo into a hook — an unboxing reveal or a dancing figure — that stops the scroll and drives the sale.",
+      "On TikTok Shop, the opening beat matters. Pikbo turns one owned product photo into an unboxing reveal, product spin, or character-motion draft you can review and test.",
     body: [
       "Vertical 9:16 output drops straight into TikTok with no reformatting.",
       "Post a reveal for a new drop, a dance for a viral moment, and a spin for the product page — all from the same photo.",
@@ -80,6 +84,10 @@ export const USE_CASES: UseCase[] = [
     ],
     recommendedEffects: ["blind-box-unboxing", "make-figure-dance", "mystery-box-reveal"],
     faq: [
+      {
+        q: "Can I make a TikTok Shop toy video from one product photo?",
+        a: "Yes. Start with one clear photo, choose a vertical recipe, and generate a short draft. Performance is not guaranteed, so test hooks and verify product details before publishing.",
+      },
       {
         q: "Are videos vertical for TikTok?",
         a: "Yes — these effects export in 9:16 vertical, ready to upload directly.",
@@ -95,14 +103,14 @@ export const USE_CASES: UseCase[] = [
     emoji: "📦",
     label: "Amazon listings",
     audience: "seller",
-    h1: "Amazon Product Video Maker for Toys & Figures",
-    seoTitle: "Amazon Product Video Maker for Toys | Pikbo",
+    h1: "Make an Amazon Product Video for a Toy From One Photo",
+    seoTitle: "Amazon Toy Product Video Generator From One Photo | Pikbo",
     seoDescription:
-      "Add a product video to your Amazon toy listing from one photo. 360 spins and floating hero shots that lift conversions and cut returns.",
+      "Draft a product video for an Amazon toy listing from one owned photo. Generate a product spin or floating hero shot, then verify every inferred detail.",
     intro:
-      "Amazon shoppers who watch a product video are far more likely to buy. Pikbo turns one photo of your figure into a clean 360° spin or floating hero video that fits right into your listing.",
+      "Pikbo turns one photo of your figure into a short product-spin or floating-hero draft. Generated unseen angles are illustrative, not product documentation, and must be checked before publishing.",
     body: [
-      "A spin video answers the 'what does it actually look like' question that drives returns and hesitation.",
+      "A reviewed spin draft can provide another product view, but generated angles are not a substitute for accurate product documentation.",
       "No studio booking — produce listing videos for your whole catalog from existing product photos.",
     ],
     keywords: [
@@ -113,6 +121,10 @@ export const USE_CASES: UseCase[] = [
     ],
     recommendedEffects: ["360-spin-showcase", "floating-hero", "blind-box-unboxing"],
     faq: [
+      {
+        q: "Can I create an Amazon toy product video without a studio shoot?",
+        a: "You can generate a short draft from one owned product photo. Confirm Amazon's current media rules and compare every generated angle with the real product before using it in a listing.",
+      },
       {
         q: "What format does Amazon need?",
         a: "Square or 16:9 clips work well for Amazon listings — Pikbo's showcase effects export in those ratios.",
@@ -131,7 +143,7 @@ export const USE_CASES: UseCase[] = [
     intro:
       "Grow your collector account with Reels that move. Pikbo turns photos of the figures you own into dancing clips, shelf pans, and cinematic scenes — the content that gets shared.",
     body: [
-      "Reels reward motion and personality. A dancing figure or a slow shelf pan outperforms a static grid post.",
+      "Reels are built around motion and personality. Test a dancing figure or slow shelf pan against your static posts; performance varies by account and audience.",
       "Build a signature look for your account and post consistently without a camera setup.",
     ],
     keywords: [
@@ -152,8 +164,8 @@ export const USE_CASES: UseCase[] = [
     emoji: "🎁",
     label: "Blind box brands",
     audience: "seller",
-    h1: "Video Maker for Blind Box Brands & Drops",
-    seoTitle: "Blind Box Brand Marketing Video Maker | Pikbo",
+    h1: "Create Blind Box Drop Videos From One Product Photo",
+    seoTitle: "Blind Box Drop Video Generator for Toy Brands | Pikbo",
     seoDescription:
       "Launch drops with hype. Turn one figure photo into unboxing reveals and mystery-box teasers for your blind box brand — no production shoot.",
     intro:
@@ -170,6 +182,10 @@ export const USE_CASES: UseCase[] = [
     recommendedEffects: ["blind-box-unboxing", "mystery-box-reveal", "360-spin-showcase"],
     faq: [
       {
+        q: "How can a blind box brand make a drop teaser from one image?",
+        a: "Upload an image your brand owns, select an unboxing or mystery-reveal recipe, and generate a short teaser draft. Packaging text and unrevealed surfaces are model-generated and require review.",
+      },
+      {
         q: "Can I tease before the product ships?",
         a: "Yes — a single render or product mockup photo is enough to build a reveal teaser.",
       },
@@ -180,12 +196,12 @@ export const USE_CASES: UseCase[] = [
     emoji: "📡",
     label: "Whatnot sellers",
     audience: "seller",
-    h1: "Whatnot Video Maker for Toy & Collectible Sellers",
-    seoTitle: "Whatnot Live Selling Video Maker for Toys | Pikbo",
+    h1: "Make a Whatnot Promo Video for a Toy From One Photo",
+    seoTitle: "Whatnot Toy Promo Video Generator From One Photo | Pikbo",
     seoDescription:
       "Promote your Whatnot shows and drops with quick hype videos. Turn one figure photo into an unboxing or spin clip that pulls buyers into your live.",
     intro:
-      "Whatnot lives are won on hype. Pikbo turns one figure photo into a fast unboxing or spin clip you can post before a show to pull collectors into your stream — no filming between sales.",
+      "Prepare a Whatnot show promo from one owned figure photo. Pikbo drafts an unboxing or spin clip you can post before a show—without setting up another shoot between sales.",
     body: [
       "Announce a drop, tease a grail, or recap a break with a clip that matches the energy of live selling.",
       "Vertical output fits the social posts that funnel viewers to your Whatnot show.",
@@ -197,6 +213,10 @@ export const USE_CASES: UseCase[] = [
     ],
     recommendedEffects: ["blind-box-unboxing", "360-spin-showcase", "mystery-box-reveal"],
     faq: [
+      {
+        q: "How do I make a promo video for a Whatnot toy show?",
+        a: "Upload a photo of a toy you own, choose an unboxing or spin recipe, and prepare the clip before your show. Pikbo does not publish to Whatnot or guarantee attendance.",
+      },
       {
         q: "Can I make clips between lives?",
         a: "Yes — create a promo from one photo. With a configured provider, live renders usually take 30–90 seconds, so prepare them before the show.",

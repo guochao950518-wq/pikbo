@@ -21,7 +21,7 @@ const PROMOS: Promo[] = [
     blurb: "Cached preview · live: 5s / 480p",
     href: "/create",
     cta: "Try Mini",
-    badge: "Cached Lab",
+    badge: "Official example · cached",
     demoIndex: 0,
   },
   {

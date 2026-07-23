@@ -19,8 +19,8 @@ import {
 } from "@/components/ui/card";
 
 export const metadata: Metadata = {
-  title: "Pricing",
-  description: `Preview finite-credit plans for ${site.name}. Test the labeled designer-toy video workflow before live billing opens.`,
+  title: "Pricing for Toy Sellers and Collectors",
+  description: `Compare finite-credit ${site.name} plans for turning owned toy photos into listing, launch, and social videos. Live billing remains closed during validation.`,
 };
 
 export default async function PricingPage({
@@ -44,12 +44,13 @@ export default async function PricingPage({
           <CardContent className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-bold text-[var(--fg)]">
-                Allowance contract — live billing is still gated
+                Plan around finished product clips—not vague AI usage
               </p>
               <p className="mt-1 max-w-3xl text-xs leading-5 text-[var(--fg-muted)]">
-                These cards match the current server grants: one Free trial,
-                about five Creator clips, or about fifteen Shop clips at the
-                flat 10-credit rate. Model-aware metering is the next step.
+                The current validation allowances are one Free trial, about
+                five Creator jobs, or about fifteen Shop jobs at the flat
+                10-credit rate. Use them to compare production capacity, not as
+                a promise of sales or exact output quality.
               </p>
             </div>
             <Badge variant="outline" className="shrink-0">
@@ -64,11 +65,11 @@ export default async function PricingPage({
           <div className="mb-8 text-center">
             <p className="section-label">Plans</p>
             <h2 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
-              Compare the current allowances
+              Choose the volume that matches your catalog
             </h2>
             <p className="mx-auto mt-2 max-w-xl text-sm text-[var(--fg-muted)]">
-              Every tier is finite and matches the current credit contract. No
-              plan promises unlimited model usage.
+              Test one owned toy, prepare a small product batch, or plan a
+              finite catalog run. No plan promises unlimited model usage.
             </p>
           </div>
           <PricingPlanCards />
@@ -80,7 +81,7 @@ export default async function PricingPage({
           <div className="mb-6">
             <p className="section-label">Compare</p>
             <h2 className="mt-2 text-2xl font-bold sm:text-3xl">
-              See exactly what changes by tier
+              What changes when your product workload grows
             </h2>
           </div>
           <Card className="overflow-hidden p-0">
@@ -154,12 +155,12 @@ export default async function PricingPage({
                 `The current foundation charges ${CREDITS_PER_VIDEO} credits per eligible generation. Model-, resolution-, and duration-aware weights are next. Failed live generations are refunded.`,
               ],
               [
-                "What can I test today?",
-                `You can browse cached ${site.name} Lab examples and use the labeled Studio workflow with your own toy photo. With provider access configured, Free includes one 5-second, 480p Seedance Mini live trial; otherwise the result stays a labeled cached demo.`,
+                "Can I test this with one real product photo?",
+                `Yes. Browse cached official ${site.name} examples, then open Studio with a photo of a toy you own. With provider access configured, Free includes one 5-second 480p Mini live trial; otherwise Studio returns a clearly labeled cached demo that does not animate your upload.`,
               ],
               [
                 "Can I use clips commercially?",
-                "Creator and Shop include commercial use for listings and ads made from toy photos you own. Confirm the final terms before using a live output commercially.",
+                "Creator and Shop are intended to include commercial use for reviewed listings and ads made from toy photos you own. Live billing is not open yet, and generated angles or product details must be checked before publishing.",
               ],
               [
                 "Is any plan unlimited?",
@@ -190,18 +191,18 @@ export default async function PricingPage({
         <Card className="mt-16 overflow-hidden border-[var(--mint)]/20 bg-gradient-to-br from-[var(--card)] to-black/40">
           <CardHeader className="sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <CardTitle className="text-xl">Ready to test the toy workflow?</CardTitle>
+              <CardTitle className="text-xl">Start with one SKU you already sell</CardTitle>
               <p className="mt-2 text-sm text-[var(--fg-muted)]">
-                Upload one owned-toy photo. Cached output stays labeled until
-                live generation is configured and verified.
+                Upload one owned-toy photo, choose a listing or launch recipe,
+                and review the result before you publish it.
               </p>
             </div>
             <div className="mt-4 flex flex-wrap gap-2 sm:mt-0">
               <Button asChild>
-                <Link href="/create?source=pricing-bottom">Open the demo</Link>
+                <Link href="/create?source=pricing-bottom">Animate one SKU</Link>
               </Button>
               <Button asChild variant="secondary">
-                <Link href="/community">Browse cached Lab references</Link>
+                <Link href="/community">See official examples</Link>
               </Button>
             </div>
           </CardHeader>
