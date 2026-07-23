@@ -16,6 +16,7 @@ import { viralName } from "@/lib/viralNames";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
 import { site } from "@/lib/site";
 import { useToast } from "@/components/Toast";
+import { useI18n } from "@/components/LanguageProvider";
 import { PaywallCard } from "@/components/PaywallCard";
 import { emitSessionRefresh } from "@/lib/sessionEvents";
 import {
@@ -113,6 +114,7 @@ export function CreateStudio({
   const [resolution, setResolution] = useState<"480p" | "720p">("720p");
   const [seed, setSeed] = useState<string>("");
   const toast = useToast();
+  const { t } = useI18n();
 
   const preset = useMemo(
     () => PRESETS.find((p) => p.slug === effect)!,
@@ -524,12 +526,12 @@ export function CreateStudio({
         {/* Preset rail */}
         <aside className="max-h-[40vh] overflow-y-auto border-b border-[var(--border)] p-3 lg:max-h-none lg:border-b-0 lg:border-r">
           <p className="mb-2 px-1 text-[10px] font-bold uppercase tracking-wider text-[var(--fg-dim)]">
-            🧸 Toy presets
+            🧸 {t("create.presets")}
           </p>
           <input
             value={presetFilter}
             onChange={(e) => setPresetFilter(e.target.value)}
-            placeholder="Search spin, unbox…"
+            placeholder={t("create.searchPresets")}
             className="mb-2 w-full rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] px-2.5 py-1.5 text-xs outline-none focus:border-[var(--brand)]"
           />
           {favorites.length > 0 && !presetFilter && (
@@ -652,7 +654,7 @@ export function CreateStudio({
           {mode === "i2v" ? (
             <div>
               <label className="text-xs font-semibold text-[var(--fg-muted)]">
-                Your toy photo
+                {t("create.yourPhoto")}
               </label>
               <label
                 className="mt-2 flex aspect-video cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-[var(--border)] bg-[var(--bg-soft)] transition-colors hover:border-[var(--brand)]/50"
@@ -668,10 +670,10 @@ export function CreateStudio({
                   />
                 ) : (
                   <span className="px-6 text-center text-sm text-[var(--fg-dim)]">
-                    🧸 Drop a photo of a figure you own
+                    🧸 {t("create.dropPhoto")}
                     <br />
                     <span className="text-xs">
-                      or click · PNG/JPG · clean background works best
+                      {t("create.dropHint")}
                     </span>
                   </span>
                 )}
@@ -688,13 +690,13 @@ export function CreateStudio({
                   className="mt-1 text-[10px] text-[var(--fg-dim)] hover:text-[var(--brand)]"
                   onClick={() => setImage(null)}
                 >
-                  Remove photo
+                  {t("create.removePhoto")}
                 </button>
               )}
               {!image && (
                 <div className="mt-2">
                   <p className="mb-1 text-[10px] font-semibold text-[var(--fg-dim)]">
-                    Or try a sample still
+                    {t("create.trySample")}
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {SAMPLE_TOYS.map((s) => (
@@ -720,8 +722,7 @@ export function CreateStudio({
                 </div>
               )}
               <p className="mt-2 text-[10px] text-[var(--fg-dim)]">
-                Tip: only animate toys you own. Works great for blind boxes,
-                resin, plush, gunpla.
+                {t("create.ownTip")}
               </p>
             </div>
           ) : (
@@ -734,7 +735,7 @@ export function CreateStudio({
 
           <div>
             <p className="text-xs font-semibold text-[var(--fg-muted)]">
-              Duration
+              {t("create.duration")}
             </p>
             <div className="mt-1.5 flex gap-2">
               {([5, 10] as const).map((d) => {
@@ -764,14 +765,14 @@ export function CreateStudio({
             </div>
             {isFree && (
               <p className="mt-1 text-[10px] text-[var(--fg-dim)]">
-                Free trial locked to Mini · 5s · 480p · on-player mark
+                {t("create.freeLock")}
               </p>
             )}
           </div>
 
           <div>
             <p className="text-xs font-semibold text-[var(--fg-muted)]">
-              Aspect ratio
+              {t("create.aspect")}
             </p>
             <div className="mt-1.5 flex gap-2">
               {(
@@ -799,7 +800,7 @@ export function CreateStudio({
 
           <div>
             <p className="text-xs font-semibold text-[var(--fg-muted)]">
-              Resolution
+              {t("create.resolution")}
             </p>
             <div className="mt-1.5 flex gap-2">
               {(["480p", "720p"] as const).map((r) => {
@@ -833,7 +834,7 @@ export function CreateStudio({
           <div>
             <div className="flex items-center justify-between gap-2">
               <label className="text-xs font-semibold text-[var(--fg-muted)]">
-                Seed (optional)
+                {t("create.seed")}
               </label>
               <button
                 type="button"
@@ -848,7 +849,7 @@ export function CreateStudio({
             <input
               value={seed}
               onChange={(e) => setSeed(e.target.value.replace(/[^\d]/g, ""))}
-              placeholder="Empty = random"
+              placeholder={t("create.seedPlaceholder")}
               className="mt-1.5 w-full rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] px-3 py-2 text-sm outline-none focus:border-[var(--brand)]"
             />
           </div>
@@ -856,14 +857,14 @@ export function CreateStudio({
           <div>
             <div className="flex items-center justify-between">
               <label className="text-xs font-semibold text-[var(--fg-muted)]">
-                Motion prompt
+                {t("create.motionPrompt")}
               </label>
               <button
                 type="button"
                 className="text-[10px] text-[var(--brand)] hover:underline"
                 onClick={() => setExtra(preset.promptTemplate)}
               >
-                Reset to preset
+                {t("create.resetPreset")}
               </button>
             </div>
             <textarea
@@ -901,7 +902,7 @@ export function CreateStudio({
           {/* PRD soft-launch §5: consolidated preflight before the final action */}
           <div className="mb-2 rounded-xl border border-[var(--border)] bg-[var(--bg-soft)] p-3 text-xs">
             <p className="mb-1.5 text-[10px] font-black uppercase tracking-wider text-[var(--fg-dim)]">
-              Before you generate
+              {t("create.beforeGen")}
             </p>
             {demoMode ? (
               <p className="flex items-start gap-1.5 text-[var(--fg-muted)]">
@@ -941,9 +942,7 @@ export function CreateStudio({
               className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-[var(--mint)]"
             />
             <span>
-              I own this photo and have the right to animate and publish this
-              toy or character. Pikbo grants no rights to third-party brands,
-              characters, or likenesses.
+              {t("create.rights")}
             </span>
           </label>
 
@@ -956,14 +955,14 @@ export function CreateStudio({
             className="btn btn-primary w-full disabled:opacity-50"
           >
             {busy
-              ? "Generating…"
+              ? t("create.generating")
               : mode === "t2v"
-                ? "Text→Video soon — use Image→Video"
+                ? "Text → Video soon"
                 : demoMode
-                  ? `Generate · cached demo free · ${effectiveDuration}s · ${aspectRatio}`
+                  ? `${t("create.generate")} · ${t("badge.cachedDemo")} · ${effectiveDuration}s · ${aspectRatio}`
                   : !canAfford
-                    ? `Generate · live needs ${CREDITS_PER_VIDEO} credits`
-                    : `Generate · ${CREDITS_PER_VIDEO} credits · ${effectiveDuration}s · ${aspectRatio}`}
+                    ? `${t("create.generate")} · ${CREDITS_PER_VIDEO} credits`
+                    : `${t("create.generate")} · ${CREDITS_PER_VIDEO} credits · ${effectiveDuration}s · ${aspectRatio}`}
           </button>
 
           {error && (
@@ -978,7 +977,7 @@ export function CreateStudio({
         {/* Result — large preview like HF generate */}
         <section className="flex flex-col bg-[var(--bg-soft)] p-4">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold">Output</h2>
+            <h2 className="text-sm font-semibold">{t("create.output")}</h2>
             <span className="rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--fg-dim)]">
               {usedModel || MODELS.find((m) => m.id === modelId)?.label}
             </span>
@@ -1169,10 +1168,10 @@ export function CreateStudio({
                   </svg>
                 </span>
                 <p className="mt-5 font-display text-lg font-bold uppercase tracking-tight text-white">
-                  Your clip lands here
+                  {t("create.clipLands")}
                 </p>
                 <p className="mt-1.5 text-xs text-[var(--fg-muted)]">
-                  Built for TikTok · Etsy · Whatnot · shelf flexes
+                  {t("create.builtFor")}
                 </p>
                 <span className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-[var(--mint)]/25 bg-black/40 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--mint)]">
                   <span className="h-1.5 w-1.5 rounded-full bg-[var(--mint)]" />
