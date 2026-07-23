@@ -62,8 +62,8 @@
 ## Grok 本拍状态（3 行）
 
 - No agent merges (home-hf still at main tip).  
-- Engine: promptBuild keeps toy template · library CDN aging badge · checkout/confirm rate limits.  
-- smoke+typecheck+lint green · pushing main.
+- Engine `440f5b9`: promptBuild keeps template · library CDN aging · checkout RL.  
+- smoke+typecheck+lint green · **pushed main**. Next: Claude D5+ when pushed.
 
 ---
 
