@@ -84,6 +84,103 @@ Validate:
 Commit [grok], push agent/grok/higgsfield-wave-a, update STATUS + HANDOFF.
 ```
 
+### Grok Wave B — 生成可信度与可交付结果（老板续派，2026-07-23）
+
+**目标：** 不再增加页面。把 Wave A 的生成结果从“看起来能用”修到
+“状态不撒谎、重试不串配置、免费结果不可绕过水印、CI 可证明”。
+
+**分支：** `agent/grok/higgsfield-wave-b-trust`
+
+**提交前缀：** `[grok]`
+
+```text
+git fetch origin --prune
+git checkout main
+git pull --ff-only origin main
+git checkout -b agent/grok/higgsfield-wave-b-trust
+
+必读：
+- docs/prd/SOFT_LAUNCH.md
+- docs/prd/SELLER_PACK.md
+- docs/prd/AUTH_CREDITS.md
+- docs/api/GENERATE.md
+- docs/STATUS.md
+- docs/HANDOFF.md
+
+P0（按顺序完成）：
+
+B1. 修复本次请求结算状态
+- Create 中“本次请求的 credits 结果”与“当前选中的历史成功版本”分开存储。
+- 已有成功版本后发生网络错误，界面仍必须显示 refund unconfirmed，不能被旧版本
+  的 used/cached 状态覆盖。
+- 已确认退款显示 10 restored；无法从服务端确认时只能显示 refund unconfirmed。
+- 切换历史版本不得清空或篡改最近一次失败的结算结果。
+
+B2. 区分 Retry 与 Make variant
+- 每个成功版本保存不可变 GenerationSpec：输入素材引用、effect、aspect、duration、
+  resolution、model 及服务端 requestId。
+- Retry 严格复用所选版本的 GenerationSpec，并追加新版本；不得覆盖旧成功结果。
+- Make variant 使用当前 Composer 设置创建新变体，按钮说明要让用户知道会采用当前设置。
+- Seller Pack 单项失败重试只影响该项，其他成功项继续可播放和下载。
+
+B3. 让结果元数据真正来自服务端
+- Generate 响应回显服务端已验证的 effect/recipe、model、aspect、duration、
+  resolution、costCredits、credits outcome、requestId 和 provider。
+- 前端只有真正由响应返回的字段才可写 “server returned”。
+- 可以扩展 app/api/generate 响应字段，但禁止重写 session、扣退积分、Stripe
+  或 provider 路由逻辑。
+
+B4. 关闭免费原片绕过
+- Free live 结果不得把供应商 raw URL 当作可下载交付物。
+- 最低可接受实现：未完成服务端烧录水印前，Free 的 Download 明确禁用并解释；
+  不得用播放器 CSS overlay 冒充文件水印。
+- 完整实现需返回独立水印文件；原片只保留服务端受控引用。没有对象存储/转码能力
+  就把 T6 保持 blocked，禁止假报 done。
+- Cached official examples 可以继续播放，但不得冒充当前用户的 live 输出。
+
+B5. 修复 Explore 键盘结构
+- Link 内不能再嵌套独立 tabIndex 视频；每张卡只保留一个清晰焦点目标。
+- 桌面 hover/focus 播放、移动端单视频播放行为保持不变。
+
+B6. 建立可见 CI
+- .github/workflows/ci.yml 在 PR 与 push main 时运行：
+  conflict marker check、engine-smoke、lint、typecheck、build。
+- GitHub Actions 必须出现一次真实绿色 run，不能只在本地口头报告。
+
+P1（P0 后再做）：
+- 结果版本不得长期复制 8 份大型 Base64 sourceImage；改为共享 source 引用或
+  object URL，并正确 revoke。不得另造第二套持久化系统。
+
+必须新增回归覆盖：
+1. 旧成功 → 网络失败 → refund unconfirmed 不被覆盖。
+2. 旧成功 → 服务端确认退款 → 10 restored。
+3. Retry 沿用旧版本参数；Make variant 使用当前 Composer 参数。
+4. Free live 不可下载 raw provider URL。
+5. Seller Pack 单项失败不删除成功项。
+
+验证：
+- npm run engine-smoke
+- npm run lint
+- npm run typecheck
+- npm run build
+- npm run link-check
+- npm run critical-path
+- 390 / 768 / 1440 px 无横向溢出。
+
+禁止：
+- 新增 SEO 页面、导航入口、Audio/Canvas/MCP/Academy/Plugins 空壳。
+- 修改价格、启用 Stripe、连接正式域名。
+- 重写 session/credits 逻辑，或把无法验证的退款、水印、云端保存写成已完成。
+
+完成后：
+- H-WAVE-B 更新为 review，T23/T24 按实际证据更新。
+- T6 只有下载文件本身确认烧录水印才可 review；仅禁用下载时仍是 blocked。
+- 在 HANDOFF 顶部写实现范围、测试结果、CI run URL、未完成阻塞和提交 SHA。
+- git add 只添加自己修改的文件。
+- git commit -m "[grok] fix generation trust, retry semantics and CI"
+- git push -u origin agent/grok/higgsfield-wave-b-trust
+```
+
 ---
 
 ## GPT — 立刻（世界级产品规格）

@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [gpt] Grok Wave B trust fixes dispatched
+- Boss reassigned the next engineering pass to Grok on `agent/grok/higgsfield-wave-b-trust`.
+- P0 order is frozen: settlement truth, Retry/Variant semantics, server metadata, free-download watermark gate, Explore focus, then visible CI.
+- Existing successful versions and Seller Pack children must survive failed attempts; unknown refunds stay `refund unconfirmed`.
+- Free live raw provider URLs cannot be downloadable; T6 stays blocked until the file itself is verified watermarked.
+- Exact tests, forbidden scope, validation commands, and handoff evidence are in `docs/DISPATCH.md`; tracking row is `H-WAVE-B`.
+
 ### 2026-07-23 — [grok] Create version compare polish on Wave A
 - Fast-forwarded `agent/grok/higgsfield-wave-a` onto main.
 - Each success keeps source still + requestId/provider; switching versions restores Before still.
