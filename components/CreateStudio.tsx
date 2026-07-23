@@ -792,7 +792,7 @@ export function CreateStudio({
             )}
           </div>
           <Link
-            href="/supercomputer?pack=seller"
+            href="/create?mode=seller-pack"
             className="mt-3 block rounded-xl border border-[var(--mint)]/30 bg-[var(--mint)]/[0.06] px-3 py-2.5 text-[11px] leading-snug text-[var(--fg-muted)] transition hover:border-[var(--mint)]/50"
           >
             <span className="font-bold text-[var(--mint)]">Seller Pack · 3 outputs</span>
@@ -970,7 +970,7 @@ export function CreateStudio({
               ))}
             </div>
             <Link
-              href="/supercomputer?pack=seller"
+              href="/create?mode=seller-pack"
               className="mt-2 inline-flex text-[11px] font-semibold text-[var(--mint)] hover:underline"
             >
               Need 3 seller formats? Seller Pack →
@@ -1510,7 +1510,7 @@ export function CreateStudio({
                     Library
                   </Link>
                   <Link
-                    href="/supercomputer?pack=seller"
+                    href="/create?mode=seller-pack"
                     className="btn btn-ghost px-4 py-2 text-xs"
                   >
                     Seller Pack

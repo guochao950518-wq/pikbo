@@ -17,6 +17,7 @@ import { useToast } from "@/components/Toast";
 import { PROVENANCE, resultProvenanceLabel } from "@/lib/provenance";
 
 type KindFilter = "all" | "live" | "demo";
+type GroupMode = "flat" | "project";
 
 export function LibraryGrid() {
   const [items, setItems] = useState<HistoryItem[]>([]);
@@ -24,6 +25,8 @@ export function LibraryGrid() {
   const [filter, setFilter] = useState("");
   const [kind, setKind] = useState<KindFilter>("all");
   const [sort, setSort] = useState<"new" | "name">("new");
+  /** Wave A: group device-local clips by remix/sample project key */
+  const [groupMode, setGroupMode] = useState<GroupMode>("project");
   const toast = useToast();
 
   useEffect(() => {
@@ -49,7 +52,8 @@ export function LibraryGrid() {
       list = list.filter(
         (i) =>
           i.effectName.toLowerCase().includes(q) ||
-          i.effect.toLowerCase().includes(q)
+          i.effect.toLowerCase().includes(q) ||
+          (i.sourceProject || "").toLowerCase().includes(q)
       );
     }
     if (sort === "name") {
@@ -59,6 +63,36 @@ export function LibraryGrid() {
     }
     return list;
   }, [items, filter, sort, kind]);
+
+  /** Group by sourceProject / lab-sample / ungrouped (device-local only). */
+  const grouped = useMemo(() => {
+    if (groupMode !== "project") {
+      return [{ key: "all", label: "All clips", items: filtered }];
+    }
+    const map = new Map<string, HistoryItem[]>();
+    for (const item of filtered) {
+      const key = item.sourceProject?.trim() || "ungrouped";
+      const list = map.get(key) || [];
+      list.push(item);
+      map.set(key, list);
+    }
+    return [...map.entries()]
+      .map(([key, groupItems]) => ({
+        key,
+        label:
+          key === "ungrouped"
+            ? "No project tag"
+            : key.startsWith("lab-sample-")
+              ? `Lab sample · ${key.replace("lab-sample-", "")}`
+              : `Project · ${key}`,
+        items: groupItems,
+      }))
+      .sort((a, b) => {
+        if (a.key === "ungrouped") return 1;
+        if (b.key === "ungrouped") return -1;
+        return a.label.localeCompare(b.label);
+      });
+  }, [filtered, groupMode]);
 
   function onImportFile(file: File | undefined) {
     if (!file) return;
@@ -168,8 +202,17 @@ export function LibraryGrid() {
             <option value="live">{PROVENANCE.liveGeneration}</option>
             <option value="demo">{PROVENANCE.cachedDemo}s</option>
           </select>
+          <select
+            value={groupMode}
+            onChange={(e) => setGroupMode(e.target.value as GroupMode)}
+            className="rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] px-2 py-1.5 text-xs outline-none"
+            aria-label="Group by project"
+          >
+            <option value="project">By project</option>
+            <option value="flat">Flat list</option>
+          </select>
           <span className="text-[10px] text-[var(--fg-dim)]">
-            {filtered.length} / {items.length}
+            {filtered.length} / {items.length} · this browser only
           </span>
         </div>
         <div className="flex items-center gap-3">
@@ -240,107 +283,125 @@ export function LibraryGrid() {
         </div>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {filtered.map((item) => (
-          <article key={item.id} className="card group overflow-hidden p-0">
-            <div className="relative aspect-video bg-black/50">
-              <video
-                src={item.videoUrl}
-                className="h-full w-full object-contain"
-                controls
-                muted
-                playsInline
-                preload="metadata"
-              />
-              <div className="pointer-events-none absolute left-2 top-2 flex flex-wrap gap-1">
-                <span
-                  className={`rounded px-1.5 py-0.5 text-[9px] font-bold uppercase text-white/90 ${
-                    item.demo ? "bg-black/70" : "bg-[var(--mint)]/80 text-black"
-                  }`}
-                >
-                  {resultProvenanceLabel(Boolean(item.demo))}
-                </span>
-                {item.watermark && (
-                  <span className="rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-bold uppercase text-white/80">
-                    {PROVENANCE.onPlayerMark}
-                  </span>
-                )}
-                {remoteClipMayExpire(item) && (
-                  <span className="rounded bg-amber-500/90 px-1.5 py-0.5 text-[9px] font-bold uppercase text-black">
-                    link aging
-                  </span>
-                )}
-              </div>
+      {grouped.map((group) => (
+        <section key={group.key} className="mb-8">
+          {groupMode === "project" && (
+            <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+              <h2 className="text-sm font-bold text-[var(--fg)]">
+                {group.label}
+              </h2>
+              <span className="text-[10px] text-[var(--fg-dim)]">
+                {group.items.length} clip{group.items.length === 1 ? "" : "s"} ·
+                local browser
+              </span>
             </div>
-            <div className="p-3">
-              <p className="text-sm font-semibold">{item.effectName}</p>
-              <p className="mt-0.5 text-[10px] text-[var(--fg-dim)]">
-                {new Date(item.createdAt).toLocaleString()}
-                {item.model ? ` · ${item.model.split("/").pop()}` : ""}
-                {item.duration ? ` · ${item.duration}s` : ""}
-                {item.aspectRatio ? ` · ${item.aspectRatio}` : ""}
-                {item.resolution ? ` · ${item.resolution}` : ""}
-                {item.sourceProject
-                  ? ` · remix from ${item.sourceProject}`
-                  : ""}
-                {item.channel ? ` · ${item.channel}` : ""}
-              </p>
-              {remoteClipMayExpire(item) && (
-                <p className="mt-1 text-[10px] text-amber-600/90">
-                  Provider CDN links expire — download soon or re-generate.
-                </p>
-              )}
-              <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
-                <button
-                  type="button"
-                  onClick={() => void downloadClip(item)}
-                  className="text-xs font-medium text-[var(--mint)] hover:underline"
-                >
-                  Download
-                </button>
-                <button
-                  type="button"
-                  className="text-xs text-[var(--fg-muted)] hover:text-[var(--mint)]"
-                  onClick={() => void copyLink(item.videoUrl)}
-                >
-                  Copy link
-                </button>
-                <Link
-                  href={`/effects/${item.effect}`}
-                  className="text-xs text-[var(--fg-muted)] hover:text-[var(--mint)]"
-                >
-                  Tool page
-                </Link>
-                <Link
-                  href={
-                    item.sourceProject
-                      ? createRemixHref(item.effect, item.sourceProject)
-                      : `/create?effect=${encodeURIComponent(item.effect)}`
-                  }
-                  className="text-xs text-[var(--fg-muted)] hover:text-[var(--mint)]"
-                >
-                  {item.sourceProject ? "Remix again" : "Studio"}
-                </Link>
-                {item.sourceProject ? (
-                  <Link
-                    href={`/projects/${item.sourceProject}`}
-                    className="text-xs text-[var(--fg-muted)] hover:text-[var(--mint)]"
-                  >
-                    Source
-                  </Link>
-                ) : null}
-                <button
-                  type="button"
-                  className="text-xs text-[var(--fg-dim)] hover:text-[var(--brand)]"
-                  onClick={() => setItems(removeHistoryItem(item.id))}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          </article>
-        ))}
-      </div>
+          )}
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {group.items.map((item) => (
+              <article key={item.id} className="card group overflow-hidden p-0">
+                <div className="relative aspect-video bg-black/50">
+                  <video
+                    src={item.videoUrl}
+                    className="h-full w-full object-contain"
+                    controls
+                    muted
+                    playsInline
+                    preload="metadata"
+                  />
+                  <div className="pointer-events-none absolute left-2 top-2 flex flex-wrap gap-1">
+                    <span
+                      className={`rounded px-1.5 py-0.5 text-[9px] font-bold uppercase text-white/90 ${
+                        item.demo
+                          ? "bg-black/70"
+                          : "bg-[var(--mint)]/80 text-black"
+                      }`}
+                    >
+                      {resultProvenanceLabel(Boolean(item.demo))}
+                    </span>
+                    {item.watermark && (
+                      <span className="rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-bold uppercase text-white/80">
+                        {PROVENANCE.onPlayerMark}
+                      </span>
+                    )}
+                    {remoteClipMayExpire(item) && (
+                      <span className="rounded bg-amber-500/90 px-1.5 py-0.5 text-[9px] font-bold uppercase text-black">
+                        link aging
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div className="p-3">
+                  <p className="text-sm font-semibold">{item.effectName}</p>
+                  <p className="mt-0.5 text-[10px] text-[var(--fg-dim)]">
+                    {new Date(item.createdAt).toLocaleString()}
+                    {item.model ? ` · ${item.model.split("/").pop()}` : ""}
+                    {item.duration ? ` · ${item.duration}s` : ""}
+                    {item.aspectRatio ? ` · ${item.aspectRatio}` : ""}
+                    {item.resolution ? ` · ${item.resolution}` : ""}
+                    {item.sourceProject
+                      ? ` · remix from ${item.sourceProject}`
+                      : ""}
+                    {item.channel ? ` · ${item.channel}` : ""}
+                  </p>
+                  {remoteClipMayExpire(item) && (
+                    <p className="mt-1 text-[10px] text-amber-600/90">
+                      Provider CDN links expire — download soon or re-generate.
+                    </p>
+                  )}
+                  <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
+                    <button
+                      type="button"
+                      onClick={() => void downloadClip(item)}
+                      className="text-xs font-medium text-[var(--mint)] hover:underline"
+                    >
+                      Download
+                    </button>
+                    <button
+                      type="button"
+                      className="text-xs text-[var(--fg-muted)] hover:text-[var(--mint)]"
+                      onClick={() => void copyLink(item.videoUrl)}
+                    >
+                      Copy link
+                    </button>
+                    <Link
+                      href={`/effects/${item.effect}`}
+                      className="text-xs text-[var(--fg-muted)] hover:text-[var(--mint)]"
+                    >
+                      Tool page
+                    </Link>
+                    <Link
+                      href={
+                        item.sourceProject
+                          ? createRemixHref(item.effect, item.sourceProject)
+                          : `/create?effect=${encodeURIComponent(item.effect)}`
+                      }
+                      className="text-xs text-[var(--fg-muted)] hover:text-[var(--mint)]"
+                    >
+                      {item.sourceProject ? "Remix again" : "Studio"}
+                    </Link>
+                    {item.sourceProject &&
+                    !item.sourceProject.startsWith("lab-sample-") ? (
+                      <Link
+                        href={`/projects/${item.sourceProject}`}
+                        className="text-xs text-[var(--fg-muted)] hover:text-[var(--mint)]"
+                      >
+                        Source
+                      </Link>
+                    ) : null}
+                    <button
+                      type="button"
+                      className="text-xs text-[var(--fg-dim)] hover:text-[var(--brand)]"
+                      onClick={() => setItems(removeHistoryItem(item.id))}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      ))}
       {filtered.length === 0 && (
         <p className="py-10 text-center text-sm text-[var(--fg-dim)]">
           No saved results match this filter

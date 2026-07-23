@@ -28,6 +28,11 @@ for p in / /create /effects /tools /library /pricing /community /explore /api/he
   check "$p"
 done
 
+# Wave A Seller Pack + Explore categories
+check "/create?mode=seller-pack"
+check "/explore?cat=showcase"
+check "/explore?cat=unboxing"
+
 # Remake loop: official project detail (demo Lab id)
 check "/projects/orbit-cgi"
 check "/projects/moon-reveal"

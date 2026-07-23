@@ -283,6 +283,23 @@ assert.match(createStudio, /labSampleId|lab-sample-/);
 assert.match(createStudio, /Official Lab|official Lab/);
 assert.match(createStudio, /10 credits|cached demo free/i);
 
+// Wave A: Seller Pack canonical Create mode + legacy supercomputer redirect
+const createPage = fs.readFileSync(join(root, "app/create/page.tsx"), "utf8");
+assert.match(createPage, /seller-pack/);
+assert.match(createPage, /BatchStudio/);
+const batchPage = fs.readFileSync(
+  join(root, "app/supercomputer/page.tsx"),
+  "utf8"
+);
+assert.match(batchPage, /redirect\("\/create\?mode=seller-pack"\)|mode=seller-pack/);
+const showcase = fs.readFileSync(
+  join(root, "lib/showcaseProjects.ts"),
+  "utf8"
+);
+assert.match(showcase, /listShowcaseProjects/);
+assert.match(showcase, /getShowcaseProject/);
+assert.match(libraryGrid, /By project|groupMode|sourceProject/);
+
 // G2: homepage proof whitelist frozen in softLaunch + used by videoFeed
 const softLaunch = fs.readFileSync(join(root, "lib/softLaunch.ts"), "utf8");
 assert.match(softLaunch, /HOME_PROOF_SLUGS/);

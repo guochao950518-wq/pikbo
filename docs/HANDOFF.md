@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [grok] Wave A core loop (partial)
+- Seller Pack canonical: `/create?mode=seller-pack`; `/supercomputer?pack=seller` redirects.
+- Library groups device-local clips by project/lab-sample (not cloud).
+- Explore category chips (`?cat=`); ShowcaseProject registry `lib/showcaseProjects.ts`.
+- Merged GPT Wave A handoff docs. Public launch still NO-GO until GO_NO_GO green.
+
+
 ### 2026-07-23 — [gpt] Wave A engineering reassigned to Grok
 - Boss reassigned implementation because Claude is unavailable until Monday.
 - Grok branch: `agent/grok/higgsfield-wave-a`; exact takeover block is in `docs/DISPATCH.md`.

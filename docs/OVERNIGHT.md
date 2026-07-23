@@ -60,7 +60,8 @@
 19. [x] G6 force-fail refund hook (non-prod) · remix history source/channel · i18n ES fix · remake link-check  
 20. [x] projects SSG+sitemap · Library Remix again · health forceGenerateFail flag · image force-fail parity  
 21. [x] one-tap Lab sample honesty (cached free vs Mini 10cr) · lab-sample Library provenance  
-22. 下一拍：2 more live G6 toys when fal budget allows · avoid product-foundation
+22. [x] Wave A: seller-pack Create mode · Library project groups · Explore cat filter · showcase registry  
+23. 下一拍：Create version compare polish · G6 lives · avoid product-foundation
 
 ### 老板醒来验收
 
@@ -74,9 +75,9 @@
 
 ## Grok 本拍状态（3 行）
 
-- One-tap sample: honest cached-free vs live Mini 10cr; Lab still provenance.  
-- Library tags `lab-sample-*` when sample path used; home CTA copy de-overclaim.  
-- push main · public still NO-GO · G6 lives still partial.
+- Wave A: `/create?mode=seller-pack` canonical + supercomputer legacy redirect.  
+- Library by project · Explore `?cat=` · ShowcaseProject registry.  
+- shipping main · public still NO-GO.
 
 ---
 

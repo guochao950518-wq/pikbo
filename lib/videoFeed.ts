@@ -163,6 +163,8 @@ export function communityProjects(): CommunityProject[] {
 
 /** Resolve official Lab project by demo id (for /projects/[slug]). */
 export function getOfficialProject(slug: string) {
+  // Delegate to ShowcaseProject registry (Wave A single source of truth).
+  // Local shape kept for existing call sites.
   const d = DEMO_VIDEOS.find((x) => x.id === slug);
   if (!d) return null;
   return {
@@ -181,6 +183,9 @@ export function getOfficialProject(slug: string) {
 export function listOfficialProjectSlugs(): string[] {
   return DEMO_VIDEOS.map((d) => d.id);
 }
+
+/** @deprecated prefer getShowcaseProject from lib/showcaseProjects */
+export { getShowcaseProject, listShowcaseProjects } from "@/lib/showcaseProjects";
 
 /** Wide HF-style app / model promo rail */
 export function suiteRail(): FeedItem[] {

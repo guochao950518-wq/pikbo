@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { BatchStudio } from "@/components/BatchStudio";
 
 export async function generateMetadata({
@@ -9,6 +10,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const sp = await searchParams;
   if (sp.pack === "seller") {
+    // Legacy entry — still resolve metadata before redirect.
     return {
       title: "Seller Pack · 3 outputs",
       description:
@@ -28,7 +30,10 @@ export default async function SupercomputerPage({
   searchParams: Promise<{ effects?: string; pack?: string }>;
 }) {
   const sp = await searchParams;
-  const isSeller = sp.pack === "seller";
+  // Wave A: Seller Pack canonical is /create?mode=seller-pack
+  if (sp.pack === "seller") {
+    redirect("/create?mode=seller-pack");
+  }
   const initialEffects = sp.effects
     ? sp.effects.split(",").map((s) => s.trim()).filter(Boolean)
     : undefined;
@@ -36,50 +41,26 @@ export default async function SupercomputerPage({
   return (
     <div className="px-4 py-10 sm:px-8">
       <div className="mx-auto max-w-6xl">
-        <span className="chip">
-          {isSeller ? "Seller Pack · MVP" : "🧠 Batch agent"}
-        </span>
-        <h1 className="mt-3 text-3xl font-bold">
-          {isSeller
-            ? "One photo · three seller formats"
-            : "One photo · many clips"}
-        </h1>
+        <span className="chip">🧠 Batch agent · Preview</span>
+        <h1 className="mt-3 text-3xl font-bold">One photo · many clips</h1>
         <p className="mt-2 max-w-2xl text-sm text-[var(--fg-muted)]">
-          {isSeller ? (
-            <>
-              Listing Spin (1:1), Blind-box Reveal (9:16), Social Flash (9:16).
-              Cached demos free and labeled. Live path charges per successful
-              child; failed jobs refund credits. Not a full Seller OS yet —
-              thin MVP entry.
-            </>
-          ) : (
-            <>
-              Shop workflow: upload a figure once, queue effects, render with
-              Seedance. Seller Pack (3 outputs) built in.
-            </>
-          )}
+          Shop workflow: upload a figure once, queue effects, render with
+          Seedance. For the fixed three-format seller path use Seller Pack.
         </p>
         <p className="mt-2 text-xs text-[var(--fg-dim)]">
           Need a single careful shot?{" "}
           <Link href="/create" className="text-[var(--brand)] hover:underline">
             Open Generate
           </Link>
-          {!isSeller && (
-            <>
-              {" · "}
-              <Link
-                href="/supercomputer?pack=seller"
-                className="text-[var(--mint)] hover:underline"
-              >
-                Seller Pack
-              </Link>
-            </>
-          )}
+          {" · "}
+          <Link
+            href="/create?mode=seller-pack"
+            className="text-[var(--mint)] hover:underline"
+          >
+            Seller Pack
+          </Link>
         </p>
-        <BatchStudio
-          initialEffects={initialEffects}
-          pack={isSeller ? "seller" : undefined}
-        />
+        <BatchStudio initialEffects={initialEffects} />
       </div>
     </div>
   );

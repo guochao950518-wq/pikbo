@@ -377,7 +377,7 @@ export function HfExploreHome({
             {[
               { href: "/create?try=1", label: "Try free", sub: "Sample ready" },
               { href: "/effects", label: "Presets", sub: "Viral recipes" },
-              { href: "/supercomputer?pack=seller", label: "Seller Pack", sub: "3 outputs" },
+              { href: "/create?mode=seller-pack", label: "Seller Pack", sub: "3 outputs" },
               { href: "/image", label: "Stills", sub: "Flux" },
               { href: "/community", label: "Lab", sub: "Examples" },
               { href: "/models", label: "Models", sub: "Honest shelf" },
@@ -411,7 +411,7 @@ export function HfExploreHome({
             </p>
           </div>
           <Link
-            href="/supercomputer?pack=seller"
+            href="/create?mode=seller-pack"
             className="inline-flex shrink-0 items-center rounded-full border border-[#c8ff3d]/40 px-5 py-2.5 text-sm font-bold text-[#c8ff3d] transition hover:bg-[#c8ff3d]/10"
           >
             Open Seller Pack →

@@ -1,15 +1,25 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { CreateStudio } from "@/components/CreateStudio";
 import { CreateSeoFooter } from "@/components/CreateSeoFooter";
+import { BatchStudio } from "@/components/BatchStudio";
 import { getPreset } from "@/lib/presets";
 import { site } from "@/lib/site";
 
 export async function generateMetadata({
   searchParams,
 }: {
-  searchParams: Promise<{ effect?: string }>;
+  searchParams: Promise<{ effect?: string; mode?: string }>;
 }): Promise<Metadata> {
   const sp = await searchParams;
+  if (sp.mode === "seller-pack" || sp.mode === "seller") {
+    return {
+      title: { absolute: `Seller Pack · 3 outputs | ${site.name}` },
+      description:
+        "One owned toy photo → listing spin, blind-box reveal, and social hook. Three fixed seller formats. Cached demos free; live jobs charge per child.",
+      alternates: { canonical: "/create?mode=seller-pack" },
+    };
+  }
   const preset = sp.effect ? getPreset(sp.effect) : undefined;
   if (preset) {
     return {
@@ -45,6 +55,43 @@ export default async function CreatePage({
   }>;
 }) {
   const sp = await searchParams;
+
+  // Wave A: Seller Pack is a Create mode, not a separate suite door.
+  if (sp.mode === "seller-pack" || sp.mode === "seller") {
+    return (
+      <div className="px-4 py-8 sm:px-8">
+        <div className="mx-auto max-w-6xl">
+          <span className="chip">Seller Pack · MVP</span>
+          <h1 className="mt-3 text-3xl font-bold">
+            One photo · three seller formats
+          </h1>
+          <p className="mt-2 max-w-2xl text-sm text-[var(--fg-muted)]">
+            Listing Spin (1:1), Blind-box Reveal (9:16), Social Flash (9:16).
+            Cached demos free and labeled. Live path charges per successful
+            child; failed jobs refund credits. Device-local results only — not
+            cloud-synced.
+          </p>
+          <p className="mt-2 text-xs text-[var(--fg-dim)]">
+            Single careful shot?{" "}
+            <Link href="/create" className="text-[var(--brand)] hover:underline">
+              Open single Generate
+            </Link>
+            {" · "}
+            <Link
+              href="/supercomputer"
+              className="text-[var(--fg-muted)] hover:underline"
+            >
+              Custom batch
+            </Link>
+          </p>
+          <div className="mt-6">
+            <BatchStudio pack="seller" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const firstRunSample =
     sp.sample ||
     (sp.try === "1" || sp.try === "true" ? "scout" : undefined);

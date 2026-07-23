@@ -37,7 +37,7 @@ const FLOWS: {
   {
     title: "Seller Pack",
     blurb: "Listing spin + reveal + social hook from one photo.",
-    href: "/supercomputer?pack=seller",
+    href: "/create?mode=seller-pack",
     badge: "Shop",
     demoIndex: 1,
   },
