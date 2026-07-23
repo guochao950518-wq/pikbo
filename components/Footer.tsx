@@ -49,6 +49,7 @@ export function Footer() {
                 ["/library", "Library"],
                 ["/pricing", "Pricing"],
                 ["/effects", "Presets"],
+                ["/tools", "Tools"],
                 ["/guides", "Guides"],
                 ["/privacy", "Privacy"],
                 ["/terms", "Terms"],

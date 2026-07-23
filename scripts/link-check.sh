@@ -24,7 +24,18 @@ check() {
 echo "Pikbo G4 link-check @ ${BASE}"
 
 # Critical path
-for p in / /create /effects /library /pricing /community /explore /api/health /api/me; do
+for p in / /create /effects /tools /library /pricing /community /explore /api/health /api/me; do
+  check "$p"
+done
+
+# SEO tools cluster (sample — full list is in sitemap)
+for p in \
+  /tools/ai-toy-video-generator \
+  /tools/toy-image-to-video-ai \
+  /tools/ai-product-video-generator-for-toys \
+  /tools/toy-unboxing-hook-generator \
+  /tools/toy-social-content-pack
+do
   check "$p"
 done
 

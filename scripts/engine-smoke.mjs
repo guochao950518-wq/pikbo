@@ -193,6 +193,12 @@ const confirm = fs.readFileSync(
 assert.match(confirm, /lastCheckoutSessionId/);
 assert.match(confirm, /idempotent/);
 
+// G7: dev topup never open on production hosts
+const topup = fs.readFileSync(join(root, "app/api/dev/topup/route.ts"), "utf8");
+assert.match(topup, /FORBIDDEN|Dev topup disabled/);
+assert.match(topup, /VERCEL_ENV|NODE_ENV/);
+assert.match(topup, /production/);
+
 const pbFull = fs.readFileSync(join(root, "lib/promptBuild.ts"), "utf8");
 assert.match(pbFull, /TOY_IDENTITY_LOCK/);
 assert.match(pbFull, /withIdentityLock|Keep the exact same toy/i);
@@ -301,6 +307,24 @@ assert.equal(refunded.creditsRefunded, true);
 const linkCheck = fs.readFileSync(join(root, "scripts/link-check.sh"), "utf8");
 assert.match(linkCheck, /etsy-sellers/);
 assert.match(linkCheck, /link-check: PASS/);
+assert.match(linkCheck, /\/tools/);
+
+// SEO tools axis (SEO_INTENT_50) — registered + primary effects exist
+const toolsSrc = fs.readFileSync(join(root, "lib/tools.ts"), "utf8");
+assert.match(toolsSrc, /export const TOOLS/);
+assert.match(toolsSrc, /ai-toy-video-generator/);
+assert.match(toolsSrc, /toy-social-content-pack/);
+const toolsPage = fs.readFileSync(
+  join(root, "app/tools/[slug]/page.tsx"),
+  "utf8"
+);
+assert.match(toolsPage, /generateStaticParams/);
+assert.match(toolsPage, /LandingToolPanel/);
+const toolsIndex = fs.readFileSync(join(root, "app/tools/page.tsx"), "utf8");
+assert.match(toolsIndex, /TOOLS\.map/);
+const sitemap = fs.readFileSync(join(root, "app/sitemap.ts"), "utf8");
+assert.match(sitemap, /TOOLS/);
+assert.match(sitemap, /toolPages|\/tools\//);
 const usecases = fs.readFileSync(join(root, "lib/usecases.ts"), "utf8");
 assert.match(usecases, /FOR_SLUG_ALIASES/);
 assert.match(usecases, /etsy-sellers/);

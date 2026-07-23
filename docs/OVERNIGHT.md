@@ -56,7 +56,8 @@
 15. [x] soft-launch primary nav + More · creditsRefunded on fail · Library export provenance · README demo free  
 16. [x] merge GPT world-class-copy · Lab unique-demo wall (no shared-loop flood) · link-check G4 · refund smoke  
 17. [x] merge GPT world-class-prd + retention-remix · cherry-pick +5 viral effects · HOME_PROOF_SLUGS enforce · g6-api-smoke · More Local/Preview tags  
-18. 下一拍：G6 full (2 more lives + forced refund log) · avoid product-foundation
+18. [x] cherry-pick Claude /tools SEO cluster (18) · sitemap+index+footer · link-check sample · G7 topup smoke  
+19. 下一拍：G6 full (2 more lives + forced refund) · avoid product-foundation
 
 ### 老板醒来验收
 
@@ -70,8 +71,8 @@
 
 ## Grok 本拍状态（3 行）
 
-- Merged GPT PRDs (world-class + retention-remix) · +5 viral effect presets.  
-- G2 `HOME_PROOF_SLUGS` enforced · More Local/Preview tags · `npm run g6-api-smoke`.  
+- Cherry-picked Claude /tools SEO axis (18 pages) + hub `/tools` + sitemap/footer.  
+- link-check samples tools; engine-smoke G7 topup forbidden on prod.  
 - shipping main · G6 still PARTIAL · public NO-GO.
 
 ---
