@@ -192,7 +192,7 @@ export function CreateStudio({
   }
 
   /** One-tap joy path: sample photo + matching recipe + rights checked. */
-  async function loadSampleToy(sampleId: string) {
+  async function loadSampleToy(sampleId: string, autoGenerate = false) {
     const s = SAMPLE_TOYS.find((x) => x.id === sampleId) ?? SAMPLE_TOYS[0];
     setSampleLoading(true);
     setError(null);
@@ -201,7 +201,16 @@ export function CreateStudio({
       setImage(data);
       selectEffect(s.effect);
       setOwnsRights(true);
-      toast("Sample ready — tap the green Generate button");
+      if (autoGenerate) {
+        toast("Generating your free sample…");
+        await generate({
+          imageOverride: data,
+          effectOverride: s.effect,
+          rightsOverride: true,
+        });
+      } else {
+        toast("Sample ready — tap the green Generate button");
+      }
     } catch {
       setError("Could not load sample photo — try another or upload your own");
     } finally {
@@ -231,13 +240,13 @@ export function CreateStudio({
     return () => window.clearTimeout(t);
   }, []);
 
-  // First-run: ?sample=scout or ?try=1
+  // First-run: ?sample=scout or ?try=1 → load sample and auto-generate
   useEffect(() => {
     if (!initialSample) return;
     const id = SAMPLE_TOYS.some((s) => s.id === initialSample)
       ? initialSample
       : "scout";
-    void loadSampleToy(id);
+    void loadSampleToy(id, true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialSample]);
 
@@ -341,18 +350,25 @@ export function CreateStudio({
   // Free tier is hard-locked to 5s server-side; keep UI in sync without an effect.
   const effectiveDuration = isFree ? 5 : duration;
 
-  async function generate() {
-    if (!image || !isValidImageDataUrl(image)) {
+  async function generate(opts?: {
+    imageOverride?: string;
+    effectOverride?: string;
+    rightsOverride?: boolean;
+  }) {
+    const img = opts?.imageOverride ?? image;
+    const fx = opts?.effectOverride ?? effect;
+    const rights = opts?.rightsOverride ?? ownsRights;
+    if (!img || !isValidImageDataUrl(img)) {
       setError(
         "Upload a reference image first (JPEG, PNG, WebP, or GIF · image-to-video)."
       );
       return;
     }
-    if (image.length > 12_000_000) {
+    if (img.length > 12_000_000) {
       setError("Image is too large. Use a photo under ~8MB.");
       return;
     }
-    if (!ownsRights) {
+    if (!rights) {
       setError("Confirm you own this photo before generating.");
       return;
     }
@@ -365,11 +381,14 @@ export function CreateStudio({
     setShowPaywall(false);
     setElapsed(0);
     setStatus("generating");
+    document
+      .getElementById("create-result")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
     const resolvedRes = isFree ? "480p" : resolution;
     const seedNum = seed.trim() === "" ? undefined : Number(seed);
     const result = await postGenerate({
-      effect,
-      image,
+      effect: fx,
+      image: img,
       extra,
       duration: effectiveDuration,
       aspectRatio,
@@ -421,11 +440,11 @@ export function CreateStudio({
       typeof data.resolution === "string" ? data.resolution : resolvedRes
     );
     setStatus("done");
-    rememberEffect(effect);
+    rememberEffect(fx);
     pushHistory(
       historyFieldsFromSuccess(data, {
-        effect,
-        effectName: preset.name,
+        effect: fx,
+        effectName: (PRESETS.find((p) => p.slug === fx) ?? preset).name,
         fallbackDuration: effectiveDuration,
         fallbackAspect: aspectRatio,
         fallbackResolution: resolvedRes,
@@ -857,14 +876,24 @@ export function CreateStudio({
                   Pick a sample toy below — we fill the recipe for you. Then hit
                   the green Generate button. Takes about 10 seconds to start.
                 </p>
+                <button
+                  type="button"
+                  disabled={sampleLoading || busy}
+                  onClick={() => void loadSampleToy("scout", true)}
+                  className="btn btn-primary mt-3 w-full py-3 text-sm disabled:opacity-50"
+                >
+                  {sampleLoading || busy
+                    ? "Working…"
+                    : "▶  One tap · free sample now"}
+                </button>
                 <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
                   {SAMPLE_TOYS.map((s) => (
                     <button
                       key={s.id}
                       type="button"
-                      disabled={sampleLoading}
+                      disabled={sampleLoading || busy}
                       className="group overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--bg)] text-left transition hover:border-[var(--mint)] disabled:opacity-50"
-                      onClick={() => void loadSampleToy(s.id)}
+                      onClick={() => void loadSampleToy(s.id, true)}
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
@@ -1486,6 +1515,17 @@ export function CreateStudio({
                 </p>
               </div>
             )}
+            {status === "generating" && !videoUrl && (
+              <div className="flex flex-col items-center p-10 text-center">
+                <div className="h-12 w-12 animate-spin rounded-full border-2 border-[var(--mint)] border-t-transparent" />
+                <p className="mt-5 font-display text-lg font-bold uppercase tracking-tight text-white">
+                  Making your clip… {elapsed}s
+                </p>
+                <p className="mt-2 max-w-xs text-xs text-[var(--fg-muted)]">
+                  Live jobs take a bit. Cached demos come back faster.
+                </p>
+              </div>
+            )}
             {(status === "idle" || status === "error") && !videoUrl && (
               <div className="flex flex-col items-center p-8 text-center sm:p-10">
                 <span className="grid h-14 w-14 place-items-center rounded-2xl border border-[var(--mint)]/30 bg-[var(--mint)]/[0.06] text-[var(--mint)] sm:h-16 sm:w-16">
@@ -1507,9 +1547,19 @@ export function CreateStudio({
                 </p>
                 <p className="mt-1.5 max-w-xs text-xs text-[var(--fg-muted)]">
                   {image
-                    ? "Confirm ownership, then Generate — one primary action."
-                    : "Upload a toy photo you own to start."}
+                    ? "Hit the green Generate button — one primary action."
+                    : "No photo? One-tap free sample below."}
                 </p>
+                {!image && (
+                  <button
+                    type="button"
+                    disabled={sampleLoading || busy}
+                    onClick={() => void loadSampleToy("scout", true)}
+                    className="btn btn-primary mt-5 px-6 py-2.5 text-sm disabled:opacity-50"
+                  >
+                    ▶ Free sample now
+                  </button>
+                )}
                 <span className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-[var(--mint)]/25 bg-black/40 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--mint)]">
                   <span className="h-1.5 w-1.5 rounded-full bg-[var(--mint)]" />
                   {aspectRatio} · {effectiveDuration}s

@@ -111,11 +111,17 @@ export function LibraryGrid() {
           {PROVENANCE.cachedDemo.toLowerCase()} that does not animate your upload.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
-          <Link href="/create" className="btn btn-primary text-sm">
+          <Link
+            href="/create?try=1&sample=scout"
+            className="btn btn-primary text-sm"
+          >
+            ▶ Free sample now
+          </Link>
+          <Link href="/create" className="btn btn-ghost text-sm">
             Open Studio
           </Link>
           <Link href="/community" className="btn btn-ghost text-sm">
-            Try a PIKBO Lab recipe
+            Browse Lab recipes
           </Link>
           <Link href="/effects" className="btn btn-ghost text-sm">
             Browse presets
