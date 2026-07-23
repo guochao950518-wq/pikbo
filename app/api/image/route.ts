@@ -107,6 +107,26 @@ export async function POST(req: Request) {
     session = deductCredits(session, check.cost);
     await saveSession(session);
 
+    // Match generate: non-prod forced fail for refund path tests (never production).
+    const forceFail =
+      process.env.PIKBO_FORCE_GENERATE_FAIL === "1" &&
+      process.env.NODE_ENV !== "production" &&
+      process.env.VERCEL_ENV !== "production";
+    if (forceFail) {
+      session = refundCredits(session, check.cost);
+      await saveSession(session);
+      return NextResponse.json(
+        {
+          error:
+            "Forced image failure (PIKBO_FORCE_GENERATE_FAIL) — credits restored",
+          code: "GENERATION_FAILED",
+          session: publicSession(session),
+          creditsRefunded: true,
+        },
+        { status: 500 }
+      );
+    }
+
     try {
       fal.config({ credentials: process.env.FAL_KEY });
       const aspect = body.aspect || "3:4";

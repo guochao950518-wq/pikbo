@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getOfficialProject } from "@/lib/videoFeed";
+import {
+  getOfficialProject,
+  listOfficialProjectSlugs,
+} from "@/lib/videoFeed";
 import { getPreset } from "@/lib/presets";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
 
 type Props = { params: Promise<{ slug: string }> };
+
+export function generateStaticParams() {
+  return listOfficialProjectSlugs().map((slug) => ({ slug }));
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;

@@ -90,6 +90,7 @@ export async function GET() {
         "Soft public (Sunday): SESSION_SECRET + FAL_KEY only — Stripe is Coming soon",
         "Demo works without FAL_KEY (cached Lab clips, 0 credits)",
         "Paid later: durable entitlements + Stripe price IDs + webhook",
+        "PIKBO_FORCE_GENERATE_FAIL is ops-only and hard-off in production",
         "See docs/LAUNCH.md",
       ],
     },
@@ -98,6 +99,14 @@ export async function GET() {
       (process.env.VERCEL_ENV !== "production" &&
         process.env.NODE_ENV !== "production" &&
         process.env.PIKBO_DEV_TOPUP === "1"),
+    /**
+     * G6 ops: force-fail refund path. Never true on production hosts.
+     * Presence only — does not echo other secrets.
+     */
+    forceGenerateFail:
+      process.env.PIKBO_FORCE_GENERATE_FAIL === "1" &&
+      process.env.NODE_ENV !== "production" &&
+      process.env.VERCEL_ENV !== "production",
     video: {
       free:
         process.env.FAL_MODEL_FREE ||

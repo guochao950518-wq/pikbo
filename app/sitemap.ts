@@ -4,6 +4,7 @@ import { USE_CASES } from "@/lib/usecases";
 import { TOY_TYPES } from "@/lib/toytypes";
 import { GUIDES } from "@/lib/guides";
 import { TOOLS } from "@/lib/tools";
+import { listOfficialProjectSlugs } from "@/lib/videoFeed";
 import { site } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -39,6 +40,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.75,
   }));
 
+  const projectPages = listOfficialProjectSlugs().map((slug) => ({
+    url: `${site.url}/projects/${slug}`,
+    lastModified: reviewedAt,
+    changeFrequency: "weekly" as const,
+    priority: 0.65,
+  }));
+
   const useCasePages = USE_CASES.map((u) => ({
     url: `${site.url}/for/${u.slug}`,
     lastModified: reviewedAt,
@@ -64,6 +72,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...staticPages,
     ...effectPages,
     ...toolPages,
+    ...projectPages,
     ...useCasePages,
     ...toyTypePages,
     ...guidePages,

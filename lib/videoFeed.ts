@@ -177,6 +177,11 @@ export function getOfficialProject(slug: string) {
   };
 }
 
+/** All official Lab project slugs — SSG + sitemap. */
+export function listOfficialProjectSlugs(): string[] {
+  return DEMO_VIDEOS.map((d) => d.id);
+}
+
 /** Wide HF-style app / model promo rail */
 export function suiteRail(): FeedItem[] {
   const apps = APPS.filter((a) => a.live).map((a, i) => ({

@@ -12,6 +12,7 @@ import {
   removeHistoryItem,
   type HistoryItem,
 } from "@/lib/history";
+import { createRemixHref } from "@/lib/remixIntent";
 import { useToast } from "@/components/Toast";
 import { PROVENANCE, resultProvenanceLabel } from "@/lib/provenance";
 
@@ -305,11 +306,23 @@ export function LibraryGrid() {
                   Tool page
                 </Link>
                 <Link
-                  href={`/create?effect=${item.effect}`}
+                  href={
+                    item.sourceProject
+                      ? createRemixHref(item.effect, item.sourceProject)
+                      : `/create?effect=${encodeURIComponent(item.effect)}`
+                  }
                   className="text-xs text-[var(--fg-muted)] hover:text-[var(--mint)]"
                 >
-                  Studio
+                  {item.sourceProject ? "Remix again" : "Studio"}
                 </Link>
+                {item.sourceProject ? (
+                  <Link
+                    href={`/projects/${item.sourceProject}`}
+                    className="text-xs text-[var(--fg-muted)] hover:text-[var(--mint)]"
+                  >
+                    Source
+                  </Link>
+                ) : null}
                 <button
                   type="button"
                   className="text-xs text-[var(--fg-dim)] hover:text-[var(--brand)]"

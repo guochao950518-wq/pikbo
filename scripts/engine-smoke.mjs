@@ -261,6 +261,21 @@ assert.match(remix, /export function buildCreateRemixHref/);
 assert.match(remix, /export function parseRemixSearchParams/);
 assert.match(remix, /sourceProjectSlug/);
 assert.match(createStudio, /sourceProject|remix\.intent/);
+const projectsPage = fs.readFileSync(
+  join(root, "app/projects/[slug]/page.tsx"),
+  "utf8"
+);
+assert.match(projectsPage, /generateStaticParams/);
+assert.match(projectsPage, /listOfficialProjectSlugs/);
+const videoFeedSrc = fs.readFileSync(join(root, "lib/videoFeed.ts"), "utf8");
+assert.match(videoFeedSrc, /export function listOfficialProjectSlugs/);
+assert.match(health, /forceGenerateFail/);
+assert.match(imgRoute, /PIKBO_FORCE_GENERATE_FAIL/);
+const libraryGrid = fs.readFileSync(
+  join(root, "components/LibraryGrid.tsx"),
+  "utf8"
+);
+assert.match(libraryGrid, /Remix again|createRemixHref/);
 
 // G2: homepage proof whitelist frozen in softLaunch + used by videoFeed
 const softLaunch = fs.readFileSync(join(root, "lib/softLaunch.ts"), "utf8");
@@ -338,6 +353,7 @@ assert.match(toolsIndex, /TOOLS\.map/);
 const sitemap = fs.readFileSync(join(root, "app/sitemap.ts"), "utf8");
 assert.match(sitemap, /TOOLS/);
 assert.match(sitemap, /toolPages|\/tools\//);
+assert.match(sitemap, /listOfficialProjectSlugs|projectPages/);
 const usecases = fs.readFileSync(join(root, "lib/usecases.ts"), "utf8");
 assert.match(usecases, /FOR_SLUG_ALIASES/);
 assert.match(usecases, /etsy-sellers/);

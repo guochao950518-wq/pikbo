@@ -58,7 +58,8 @@
 17. [x] merge GPT world-class-prd + retention-remix · cherry-pick +5 viral effects · HOME_PROOF_SLUGS enforce · g6-api-smoke · More Local/Preview tags  
 18. [x] cherry-pick Claude /tools SEO cluster (18) · sitemap+index+footer · link-check sample · G7 topup smoke  
 19. [x] G6 force-fail refund hook (non-prod) · remix history source/channel · i18n ES fix · remake link-check  
-20. 下一拍：2 more live G6 toys when fal budget allows · avoid product-foundation
+20. [x] projects SSG+sitemap · Library Remix again · health forceGenerateFail flag · image force-fail parity  
+21. 下一拍：2 more live G6 toys when fal budget allows · avoid product-foundation
 
 ### 老板醒来验收
 
@@ -72,9 +73,9 @@
 
 ## Grok 本拍状态（3 行）
 
-- G6: `PIKBO_FORCE_GENERATE_FAIL` post-debit refund (non-prod only) + g6 smoke leg.  
-- Remix: Library stores sourceProject/channel · link-check /projects + create remix URL.  
-- ES i18n TODO→TODOS · shipping main · public still NO-GO.
+- Projects: `generateStaticParams` + sitemap `/projects/*` for remake loop SEO.  
+- Library Remix again + Source; health exposes forceGenerateFail; image force-fail parity.  
+- smoke green · shipping main · public still NO-GO · G6 lives still partial.
 
 ---
 
