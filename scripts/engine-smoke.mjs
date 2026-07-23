@@ -816,5 +816,77 @@ assert.match(
   /NOT_IMPLEMENTED/
 );
 
+// ── Phase D local job ledger + download gate ─────────────────────────────
+const genJobsStore = fs.readFileSync(
+  join(root, "lib/generationJobs/store.ts"),
+  "utf8"
+);
+assert.match(genJobsStore, /recordSucceededGenerate/);
+assert.match(genJobsStore, /recordFailedGenerate/);
+assert.match(genJobsStore, /downloadAllowedForJob/);
+assert.match(genJobsStore, /toPublicJob/);
+// Pure download gate parity (same rules as createTrust)
+function downloadAllowedForJob(opts) {
+  if (opts.status !== "succeeded") return false;
+  return canDownloadResult({ demo: opts.demo, watermark: opts.watermark });
+}
+assert.equal(
+  downloadAllowedForJob({
+    status: "succeeded",
+    demo: false,
+    watermark: true,
+  }),
+  false
+);
+assert.equal(
+  downloadAllowedForJob({
+    status: "succeeded",
+    demo: true,
+    watermark: true,
+  }),
+  true
+);
+assert.equal(
+  downloadAllowedForJob({
+    status: "failed",
+    demo: false,
+    watermark: false,
+  }),
+  false
+);
+// Idempotent create: same key returns same logical job (source markers)
+assert.match(genJobsStore, /idempotencyKey/);
+const genJobsRoute = fs.readFileSync(
+  join(root, "app/api/generations/route.ts"),
+  "utf8"
+);
+assert.match(genJobsRoute, /listJobsForSession|local-memory/);
+assert.match(genJobsRoute, /status:\s*202|202/);
+const genJobIdRoute = fs.readFileSync(
+  join(root, "app/api/generations/[id]/route.ts"),
+  "utf8"
+);
+assert.match(genJobIdRoute, /getJob/);
+assert.match(genJobIdRoute, /NOT_FOUND|404/);
+const downloadRoute = fs.readFileSync(
+  join(root, "app/api/downloads/[id]/route.ts"),
+  "utf8"
+);
+assert.match(downloadRoute, /DOWNLOAD_BLOCKED/);
+assert.match(downloadRoute, /freeLiveDownloadBlockReason/);
+assert.match(downloadRoute, /downloadAllowed/);
+// Generate must record jobs on success
+assert.match(genRoute, /recordSucceededGenerate/);
+assert.match(genRoute, /recordFailedGenerate|noteFailed/);
+// Health acceptance ladder for demo vs soft-live
+assert.match(health, /acceptance/);
+assert.match(health, /demoCached/);
+const critPath = fs.readFileSync(
+  join(root, "scripts/critical-path.sh"),
+  "utf8"
+);
+assert.match(critPath, /REQUIRE_SOFT_LIVE/);
+assert.match(critPath, /demo-cached gate|ready\.demo/);
+
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

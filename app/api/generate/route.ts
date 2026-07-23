@@ -36,6 +36,10 @@ import {
   shadowSettle,
   type ShadowReservation,
 } from "@/lib/durableCredits/shadow";
+import {
+  recordFailedGenerate,
+  recordSucceededGenerate,
+} from "@/lib/generationJobs";
 
 export const runtime = "nodejs";
 export const maxDuration = 180;
@@ -46,6 +50,25 @@ function err(
   headers?: HeadersInit
 ): NextResponse<GenerateErrorBody> {
   return NextResponse.json(body, { status, headers });
+}
+
+function noteFailed(
+  sessionId: string,
+  effect: string,
+  body: GenerateErrorBody
+) {
+  try {
+    recordFailedGenerate({
+      sessionId,
+      effect,
+      error: body.error,
+      errorCode: body.code,
+      model: body.model,
+      creditsRefunded: body.creditsRefunded,
+    });
+  } catch {
+    /* job ledger is best-effort */
+  }
 }
 
 export async function POST(req: Request) {
@@ -155,6 +178,25 @@ export async function POST(req: Request) {
         costCredits: 0,
         creditsOutcome: "0 cached",
       };
+      try {
+        const job = recordSucceededGenerate({
+          sessionId: session.id,
+          effect: preset.slug,
+          videoUrl: payload.videoUrl,
+          demo: true,
+          watermark: plan.watermark,
+          model: payload.model,
+          duration: secs,
+          aspectRatio: aspect,
+          resolution,
+          costCredits: 0,
+          creditsOutcome: "0 cached",
+          provider: "demo-cached",
+        });
+        payload.requestId = job.id;
+      } catch {
+        /* best-effort job ledger */
+      }
       return NextResponse.json(payload);
     }
 
@@ -199,17 +241,16 @@ export async function POST(req: Request) {
       await saveSession(session);
       await shadowRelease(shadow, "force_fail");
       shadow = null;
-      return err(
-        {
-          error:
-            "Forced generate failure (PIKBO_FORCE_GENERATE_FAIL) — credits restored",
-          code: "GENERATION_FAILED",
-          model,
-          session: publicSession(session),
-          creditsRefunded: true,
-        },
-        500
-      );
+      const failBody: GenerateErrorBody = {
+        error:
+          "Forced generate failure (PIKBO_FORCE_GENERATE_FAIL) — credits restored",
+        code: "GENERATION_FAILED",
+        model,
+        session: publicSession(session),
+        creditsRefunded: true,
+      };
+      noteFailed(session.id, preset.slug, failBody);
+      return err(failBody, 500);
     }
 
     try {
@@ -276,16 +317,15 @@ export async function POST(req: Request) {
         session = refundCredits(session, check.cost);
         await saveSession(session);
         await shadowRelease(shadow, "model_empty");
-        return err(
-          {
-            error: "Model returned no video",
-            code: "MODEL_EMPTY",
-            model,
-            session: publicSession(session),
-            creditsRefunded: true,
-          },
-          502
-        );
+        const failBody: GenerateErrorBody = {
+          error: "Model returned no video",
+          code: "MODEL_EMPTY",
+          model,
+          session: publicSession(session),
+          creditsRefunded: true,
+        };
+        noteFailed(session.id, preset.slug, failBody);
+        return err(failBody, 502);
       }
 
       await shadowSettle(shadow, result.requestId);
@@ -305,6 +345,26 @@ export async function POST(req: Request) {
         costCredits: check.cost,
         creditsOutcome: "10 used",
       };
+      try {
+        recordSucceededGenerate({
+          sessionId: session.id,
+          effect: preset.slug,
+          videoUrl,
+          demo: false,
+          watermark: plan.watermark,
+          model,
+          duration: secs,
+          aspectRatio: aspect,
+          resolution,
+          costCredits: check.cost,
+          creditsOutcome: "10 used",
+          requestId: result.requestId,
+          provider: "bytedance-seedance",
+          preferredId: result.requestId,
+        });
+      } catch {
+        /* best-effort */
+      }
       return NextResponse.json(payload);
     } catch (e) {
       console.error("generate error:", model, e);
@@ -328,16 +388,15 @@ export async function POST(req: Request) {
             ? "PROVIDER_RATE_LIMIT"
             : "GENERATION_FAILED";
       const status = kind === "balance" ? 402 : kind === "rate" ? 429 : 500;
-      return err(
-        {
-          error: msg,
-          code,
-          model,
-          session: publicSession(session),
-          creditsRefunded: true,
-        },
-        status
-      );
+      const failBody: GenerateErrorBody = {
+        error: msg,
+        code,
+        model,
+        session: publicSession(session),
+        creditsRefunded: true,
+      };
+      noteFailed(session.id, preset.slug, failBody);
+      return err(failBody, status);
     }
   } finally {
     endJob(session.id);

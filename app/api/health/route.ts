@@ -55,6 +55,15 @@ export async function GET() {
   return NextResponse.json({
     ok: !degraded && !durableGate,
     degraded: degraded || durableGate,
+    /**
+     * Phase B honesty: demo-cached acceptance is independent of soft-live secrets.
+     * Ops scripts default to accepting ready.demo; REQUIRE_SOFT_LIVE=1 for live.
+     */
+    acceptance: {
+      demoCached: ready.demo === true,
+      softLive: ready.softLive === true,
+      paid: ready.paid === true,
+    },
     service: "pikbo",
     foundation: "L0-L3",
     time: new Date().toISOString(),

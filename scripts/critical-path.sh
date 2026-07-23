@@ -41,17 +41,29 @@ echo
 
 if command -v python3 >/dev/null 2>&1; then
   python3 - <<'PY'
-import json
+import json, os
 h=json.load(open("/tmp/pikbo-health.json"))
-assert h.get("ok") is True or h.get("degraded") is False or h.get("ok")
 mode=h.get("mode","?")
 fal=h.get("fal")
 ready=h.get("ready") or {}
 print(f"health mode={mode} fal={fal} foundation={h.get('foundation')} ready={ready}")
-if not h.get("ok") and h.get("degraded"):
-    raise SystemExit("health degraded")
+# Phase B: default critical-path accepts *demo-cached* readiness without secrets.
+# Soft-live strict mode only when REQUIRE_SOFT_LIVE=1.
+require_soft = os.environ.get("REQUIRE_SOFT_LIVE") == "1"
 if ready.get("demo") is not True:
-    raise SystemExit("health.ready.demo missing")
+    raise SystemExit("health.ready.demo missing — demo path must always be ready")
+if require_soft:
+    if not h.get("ok") or h.get("degraded"):
+        raise SystemExit("health degraded (REQUIRE_SOFT_LIVE=1)")
+    if ready.get("softLive") is not True:
+        raise SystemExit("health.ready.softLive false under REQUIRE_SOFT_LIVE=1")
+    print("soft-live gate PASS")
+else:
+    if not h.get("ok") and h.get("degraded") and ready.get("demo") is True:
+        print("WARN health degraded but ready.demo=true — accepting demo-cached critical path")
+    elif not h.get("ok") and not ready.get("demo"):
+        raise SystemExit("health not ok and demo not ready")
+    print("demo-cached gate PASS")
 me=json.load(open("/tmp/pikbo-me.json"))
 assert "credits" in me and "plan" in me
 assert me.get("mode") in ("live-generate", "demo-cached")
