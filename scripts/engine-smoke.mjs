@@ -1170,5 +1170,46 @@ const localStore = fs.readFileSync(
 assert.match(localStore, /schemaReady/);
 assert.match(localStore, /probeSupabaseCreditsSchema/);
 
+// Phase I payments readiness + checkout live-key / flag gates
+const stripeSrc = fs.readFileSync(join(root, "lib/stripe.ts"), "utf8");
+assert.match(stripeSrc, /export function paymentsReadiness/);
+assert.match(stripeSrc, /readyForTestCheckout/);
+assert.match(stripeSrc, /liveKeysBlocked|sk_live/);
+assert.match(stripeSrc, /paymentsClientEnabled/);
+const checkoutSrc = fs.readFileSync(
+  join(root, "app/api/checkout/route.ts"),
+  "utf8"
+);
+assert.match(checkoutSrc, /PAYMENTS_DISABLED|paymentsClientEnabled/);
+assert.match(checkoutSrc, /LIVE_KEYS_BLOCKED|PAYMENTS_LIVE/);
+assert.match(health, /paymentsReadiness|payments:/);
+// Pure secret mode classifier
+function stripeSecretMode(key) {
+  if (!key) return "missing";
+  if (key.startsWith("sk_test_")) return "test";
+  if (key.startsWith("sk_live_")) return "live";
+  return "unknown";
+}
+assert.equal(stripeSecretMode(""), "missing");
+assert.equal(stripeSecretMode("sk_test_abc"), "test");
+assert.equal(stripeSecretMode("sk_live_abc"), "live");
+
+// Reservation TTL expire sweep (pure engine export)
+const engineSrc = fs.readFileSync(
+  join(root, "lib/durableCredits/engine.ts"),
+  "utf8"
+);
+assert.match(engineSrc, /export function expireStaleReservations/);
+assert.match(durableIdx, /durableExpireStaleReservations|expireStaleReservations/);
+assert.match(health, /reservationSweep|durableExpireStaleReservations/);
+const softliveChk = fs.readFileSync(
+  join(root, "scripts/softlive-checklist.sh"),
+  "utf8"
+);
+assert.match(softliveChk, /SUPABASE_URL|SUPABASE/);
+assert.match(softliveChk, /PAYMENTS_ENABLED|sk_live/);
+const vercelJson = fs.readFileSync(join(root, "vercel.json"), "utf8");
+assert.match(vercelJson, /X-Content-Type-Options|X-Frame-Options/);
+
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

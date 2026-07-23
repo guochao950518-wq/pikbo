@@ -38,10 +38,21 @@ echo "Soft launch needs SESSION_SECRET + FAL_KEY only. Stripe is Coming soon."
 echo
 check_req "SESSION_SECRET|CREDITS_SECRET" "$([[ -n "${SESSION_SECRET:-}${CREDITS_SECRET:-}" ]] && echo 1 || echo 0)"
 check_req "FAL_KEY (live generate)" "$([[ -n "${FAL_KEY:-}" ]] && echo 1 || echo 0)"
-check_opt "STRIPE_SECRET_KEY" "$([[ -n "${STRIPE_SECRET_KEY:-}" ]] && echo 1 || echo 0)"
+check_opt "SUPABASE_URL (auth + durable)" "$([[ -n "${SUPABASE_URL:-}${NEXT_PUBLIC_SUPABASE_URL:-}" ]] && echo 1 || echo 0)"
+check_opt "SUPABASE_SERVICE_ROLE_KEY" "$([[ -n "${SUPABASE_SERVICE_ROLE_KEY:-}" ]] && echo 1 || echo 0)"
+check_opt "STRIPE_SECRET_KEY (test only for Phase I)" "$([[ -n "${STRIPE_SECRET_KEY:-}" ]] && echo 1 || echo 0)"
 check_opt "STRIPE_WEBHOOK_SECRET" "$([[ -n "${STRIPE_WEBHOOK_SECRET:-}" ]] && echo 1 || echo 0)"
 check_opt "STRIPE_PRICE_CREATOR" "$([[ -n "${STRIPE_PRICE_CREATOR:-}" ]] && echo 1 || echo 0)"
 check_opt "STRIPE_PRICE_SHOP" "$([[ -n "${STRIPE_PRICE_SHOP:-}" ]] && echo 1 || echo 0)"
+check_opt "NEXT_PUBLIC_PAYMENTS_ENABLED (keep 0 for Mode A)" "$([[ "${NEXT_PUBLIC_PAYMENTS_ENABLED:-0}" == "1" ]] && echo 1 || echo 0)"
+if [[ "${STRIPE_SECRET_KEY:-}" == sk_live_* ]]; then
+  echo "WARN STRIPE_SECRET_KEY looks like sk_live — blocked without PAYMENTS_LIVE=1"
+fi
+if [[ "${PIKBO_T6_FILE_BAKE:-}" == "1" ]]; then
+  echo "OK   PIKBO_T6_FILE_BAKE=1 (operator asserts file watermark bake)"
+else
+  echo "skip T6 file bake  (Free raw download stays blocked — correct for Mode A)"
+fi
 
 if [[ -n "${1:-}" ]]; then
   BASE="${1}"

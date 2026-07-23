@@ -17,6 +17,7 @@ export {
   reserveCredits,
   settleReservationItem,
   releaseReservationItem,
+  expireStaleReservations,
   migrateGuestCredits,
 } from "./engine";
 export {
@@ -31,6 +32,7 @@ export {
 
 import {
   createPersonalAccount,
+  expireStaleReservations,
   grantCredits,
   migrateGuestCredits,
   releaseReservationItem,
@@ -286,4 +288,38 @@ export async function getPersonalWallet(userId: string): Promise<{
     planId: account.planId,
     backend: "local-file",
   };
+}
+
+/**
+ * Sweep expired local-file reservations (Postgres TTL job later).
+ * Idempotent release keys `expire:{reservationId}`.
+ */
+export async function durableExpireStaleReservations(): Promise<{
+  expired: number;
+  releasedCredits: number;
+  backend: "local-file" | "skipped-remote";
+}> {
+  if (await prefersSupabaseBackend()) {
+    return { expired: 0, releasedCredits: 0, backend: "skipped-remote" };
+  }
+  const result = await withState((state) => {
+    const r = expireStaleReservations(state);
+    if (!r.ok) {
+      return {
+        ok: false as const,
+        state,
+        code: r.code || "EXPIRE_FAILED",
+        error: r.error || "expire failed",
+      };
+    }
+    return {
+      ok: true as const,
+      state: r.state,
+      data: r.data,
+    };
+  });
+  if (!result.ok) {
+    return { expired: 0, releasedCredits: 0, backend: "local-file" };
+  }
+  return { ...result.data, backend: "local-file" };
 }

@@ -8,6 +8,89 @@ export function stripeConfigured(): boolean {
   );
 }
 
+/**
+ * Phase I — payment readiness (presence only; never echoes secrets).
+ * Soft launch keeps public pay off. Live secret keys stay blocked unless
+ * PAYMENTS_LIVE=1 (separate boss approval).
+ */
+export type PaymentsReadiness = {
+  /** UI may show buy buttons */
+  clientEnabled: boolean;
+  /** Server will start Checkout sessions when keys+prices ok */
+  serverCheckoutAllowed: boolean;
+  secretPresent: boolean;
+  secretMode: "missing" | "test" | "live" | "unknown";
+  webhookSecretPresent: boolean;
+  priceCreatorPresent: boolean;
+  priceShopPresent: boolean;
+  liveKeysBlocked: boolean;
+  readyForTestCheckout: boolean;
+  notes: string[];
+};
+
+export function paymentsClientEnabled(): boolean {
+  return (
+    process.env.NEXT_PUBLIC_PAYMENTS_ENABLED === "1" ||
+    process.env.PAYMENTS_ENABLED === "1"
+  );
+}
+
+export function stripeSecretMode(
+  key = process.env.STRIPE_SECRET_KEY || ""
+): PaymentsReadiness["secretMode"] {
+  if (!key) return "missing";
+  if (key.startsWith("sk_test_")) return "test";
+  if (key.startsWith("sk_live_")) return "live";
+  return "unknown";
+}
+
+export function paymentsReadiness(): PaymentsReadiness {
+  const clientEnabled = paymentsClientEnabled();
+  const secretPresent = Boolean(process.env.STRIPE_SECRET_KEY);
+  const secretMode = stripeSecretMode();
+  const webhookSecretPresent = Boolean(process.env.STRIPE_WEBHOOK_SECRET);
+  const priceCreatorPresent = Boolean(process.env.STRIPE_PRICE_CREATOR);
+  const priceShopPresent = Boolean(process.env.STRIPE_PRICE_SHOP);
+  const liveAllowed = process.env.PAYMENTS_LIVE === "1";
+  const liveKeysBlocked = secretMode === "live" && !liveAllowed;
+  const notes: string[] = [];
+  if (!clientEnabled) {
+    notes.push("NEXT_PUBLIC_PAYMENTS_ENABLED is not 1 — Coming soon UI");
+  }
+  if (liveKeysBlocked) {
+    notes.push("sk_live blocked without PAYMENTS_LIVE=1");
+  }
+  if (secretMode === "test") {
+    notes.push("test secret present — private preview only");
+  }
+  if (!webhookSecretPresent) {
+    notes.push("webhook secret missing — renewals not durable");
+  }
+  const readyForTestCheckout =
+    clientEnabled &&
+    secretMode === "test" &&
+    !liveKeysBlocked &&
+    (priceCreatorPresent || priceShopPresent);
+  const serverCheckoutAllowed =
+    clientEnabled &&
+    secretPresent &&
+    !liveKeysBlocked &&
+    (priceCreatorPresent || priceShopPresent);
+
+  return {
+    clientEnabled,
+    serverCheckoutAllowed,
+    secretPresent,
+    secretMode,
+    webhookSecretPresent,
+    priceCreatorPresent,
+    priceShopPresent,
+    liveKeysBlocked,
+    readyForTestCheckout,
+    notes,
+  };
+}
+
 export function planFromPriceId(
   priceId: string | undefined | null
 ): PlanId | null {

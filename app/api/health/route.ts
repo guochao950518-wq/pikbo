@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
 import { probeEntitlementsStore } from "@/lib/entitlements";
-import { probeDurableCreditsStore } from "@/lib/durableCredits";
+import {
+  durableExpireStaleReservations,
+  probeDurableCreditsStore,
+} from "@/lib/durableCredits";
 import { generateMode } from "@/lib/requestMeta";
 import { probeSupabase } from "@/lib/supabase/server";
 import { publicAuthStatus } from "@/lib/authConfig";
 import { t6Report } from "@/lib/t6Watermark";
 import { jobTimeoutMs } from "@/lib/generationJobs";
+import { paymentsReadiness } from "@/lib/stripe";
 // NextResponse used for GET + HEAD
 
 export const runtime = "nodejs";
@@ -31,9 +35,21 @@ export async function GET() {
 
   const entitlements = await probeEntitlementsStore();
   const durableCredits = await probeDurableCreditsStore();
+  // Best-effort local reservation TTL sweep (no-op on Supabase backend)
+  let reservationSweep = {
+    expired: 0,
+    releasedCredits: 0,
+    backend: "skipped" as string,
+  };
+  try {
+    reservationSweep = await durableExpireStaleReservations();
+  } catch {
+    /* never break health */
+  }
   const supabase = await probeSupabase();
   const authPublic = publicAuthStatus();
   const mode = generateMode();
+  const payments = paymentsReadiness();
   const durableGate =
     process.env.REQUIRE_DURABLE_CREDITS === "1" && !durableCredits.writable;
 
@@ -46,6 +62,7 @@ export async function GET() {
     /**
      * Real charges — needs durable entitlements (PRELAUNCH R1).
      * File store unwritable ⇒ paid stays false even if Stripe env is set.
+     * Also requires Phase I test readiness (not live keys by accident).
      */
     paid:
       fal &&
@@ -53,7 +70,8 @@ export async function GET() {
       stripe &&
       stripeWebhook &&
       entitlements.writable &&
-      durableCredits.writable,
+      durableCredits.writable &&
+      payments.readyForTestCheckout,
     /** T5 local adapter or Supabase — not live Stripe */
     durableCredits: durableCredits.writable && durableCredits.configured,
   };
@@ -74,6 +92,10 @@ export async function GET() {
     t6: t6Report(),
     /** Phase D local job timeout (ms) for queued/running sweep */
     jobTimeoutMs: jobTimeoutMs(),
+    /** Phase I payments readiness (never echoes secrets) */
+    payments,
+    /** Local durable reservation TTL sweep since last probe */
+    reservationSweep,
     service: "pikbo",
     foundation: "L0-L3",
     time: new Date().toISOString(),

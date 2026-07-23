@@ -7,6 +7,8 @@
 - Checkout + webhook routes under `app/api/checkout` and `app/api/webhooks/stripe`
 - Entitlements file store (`lib/entitlements.ts`) for soft-launch
 - Feature flag pattern: payments disabled without keys / `NEXT_PUBLIC_PAYMENTS_ENABLED`
+- **`paymentsReadiness()`** on `/api/health` → `payments` (test vs live secret mode, never echoes keys)
+- Checkout refuses when flag off (`PAYMENTS_DISABLED`) or `sk_live` without `PAYMENTS_LIVE=1`
 
 ## Before enabling test mode
 

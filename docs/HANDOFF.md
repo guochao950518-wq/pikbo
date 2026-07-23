@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Phase I payments readiness + reservation TTL expire
+- `paymentsReadiness()`: test/live secret mode, live keys blocked without `PAYMENTS_LIVE=1`, client flag gate.
+- Checkout returns `PAYMENTS_DISABLED` / `LIVE_KEYS_BLOCKED` honestly; health exposes `payments` (no secrets).
+- `expireStaleReservations` + health `reservationSweep` for local durable TTL holds.
+- softlive-checklist: Supabase + payments + sk_live warn; vercel.json security headers.
+- Verified: engine-smoke · typecheck · lint. Public pay still off.
+
 ### 2026-07-24 — [grok] Supabase Postgres durable adapter + schema probe
 - `lib/durableCredits/supabaseStore.ts`: ensure/get wallet, reserve/settle/release, guest migrate via service role + optimistic version.
 - Auto-use Postgres when T5 tables exist; else local file. Guest FK failures fall back to local.

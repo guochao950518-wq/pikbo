@@ -11,13 +11,19 @@ import {
   setPlan,
 } from "@/lib/session";
 import { site } from "@/lib/site";
-import { creditsForPlan } from "@/lib/stripe";
+import {
+  creditsForPlan,
+  paymentsClientEnabled,
+  paymentsReadiness,
+  stripeSecretMode,
+} from "@/lib/stripe";
 
 export const runtime = "nodejs";
 
 /**
  * Start a Stripe Checkout session for Creator / Shop.
- * Without Stripe keys, non-production can still "dev upgrade".
+ * Soft launch: requires NEXT_PUBLIC_PAYMENTS_ENABLED=1 (or PAYMENTS_ENABLED=1).
+ * Live secrets blocked unless PAYMENTS_LIVE=1. Dev upgrade remains non-prod only.
  */
 export async function POST(req: Request) {
   let body: { plan?: string; dev?: boolean } = {};
@@ -59,9 +65,37 @@ export async function POST(req: Request) {
   const stripeKey = process.env.STRIPE_SECRET_KEY;
   const priceEnv = plan.stripePriceEnv;
   const priceId = priceEnv ? process.env[priceEnv] : undefined;
+  const readiness = paymentsReadiness();
+  const secretMode = stripeSecretMode(stripeKey);
+
+  // Phase I: never open Checkout when client flag is off (Coming soon).
+  if (!paymentsClientEnabled() && stripeKey && priceId) {
+    return NextResponse.json(
+      {
+        error:
+          "Paid checkout is Coming soon. Free Mini trial stays open; set NEXT_PUBLIC_PAYMENTS_ENABLED=1 only on approved private preview.",
+        code: "PAYMENTS_DISABLED",
+        payments: readiness,
+      },
+      { status: 403 }
+    );
+  }
+
+  // Never charge with live keys without explicit PAYMENTS_LIVE=1.
+  if (secretMode === "live" && process.env.PAYMENTS_LIVE !== "1") {
+    return NextResponse.json(
+      {
+        error:
+          "Live Stripe keys are blocked. Use sk_test_ for Phase I or set PAYMENTS_LIVE=1 after boss approval.",
+        code: "LIVE_KEYS_BLOCKED",
+        payments: readiness,
+      },
+      { status: 403 }
+    );
+  }
 
   // --- Stripe path ---
-  if (stripeKey && priceId) {
+  if (stripeKey && priceId && paymentsClientEnabled()) {
     try {
       const origin =
         req.headers.get("origin") ||

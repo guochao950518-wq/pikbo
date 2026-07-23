@@ -511,6 +511,46 @@ export function releaseReservationItem(
 }
 
 /**
+ * Phase C — release remaining hold on expired reservations.
+ * Returns credits to available; marks reservation status `expired`.
+ * Idempotent via release idempotency key `expire:{reservationId}`.
+ */
+export function expireStaleReservations(
+  state: DurableState,
+  nowMs = Date.now()
+): EngineResult<{ expired: number; releasedCredits: number }> {
+  let next = state;
+  let expired = 0;
+  let releasedCredits = 0;
+  for (const r of Object.values(state.reservations)) {
+    const rem = remainingOnReservation(r);
+    if (rem <= 0) continue;
+    const exp = Date.parse(r.expiresAt);
+    if (!Number.isFinite(exp) || exp > nowMs) continue;
+    const result = releaseReservationItem(next, {
+      reservationId: r.id,
+      credits: rem,
+      idempotencyKey: `expire:${r.id}`,
+      reason: "expired",
+    });
+    if (!result.ok) continue;
+    next = result.state;
+    const res = next.reservations[r.id];
+    if (res) {
+      next = cloneState(next);
+      next.reservations[r.id] = { ...res, status: "expired", updatedAt: nowIso() };
+    }
+    expired += 1;
+    releasedCredits += rem;
+  }
+  return {
+    ok: true,
+    data: { expired, releasedCredits },
+    state: next,
+  };
+}
+
+/**
  * One-time guest Cookie balance → durable Free account.
  * Caps at 10; never migrates paid plan.
  */

@@ -70,7 +70,8 @@
 29. [x] Seller Pack shadow reserve 30 · settle/release 10 per child · BatchStudio wired
 30. [x] G6 PASS (3 lives + refund) · Mode A runbook · video-provider webhook
 31. [x] Job timeout sweep · T6 health status (blocked honest)
-32. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
+32. [x] Phase I payments readiness · live-key block · reservation TTL expire · vercel headers
+33. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
 
 ### 老板醒来验收
 
@@ -84,9 +85,9 @@
 
 ## Grok 本拍状态（3 行）
 
-- Job timeout recovery: queued/running → TIMEOUT after jobTimeoutMs; generations GET sweeps.  
-- T6 health report blocked (no fake file-bake); Free download stays gated.  
-- G6 PASS · engine-smoke green · public Mode B still needs boss Vercel + domain OK.
+- paymentsReadiness + checkout PAYMENTS_DISABLED / LIVE_KEYS_BLOCKED gates.  
+- Local durable reservation TTL expire on health probe; vercel security headers.  
+- G6 PASS · engine-smoke green · Mode B still needs boss Vercel + domain OK.
 
 ---
 
