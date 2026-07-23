@@ -67,9 +67,9 @@
 
 ## Grok 本拍状态（3 行）
 
-- Merged Claude unknown deep-link effect notice (§5.2).  
-- Result provenance: Cached demo / Live generation / On-player mark + Local Library honesty.  
-- softlive-checklist: Stripe optional until paid · smoke green · **shipping main**.
+- Merged Claude unknown deep-link notice (§5.2) + result provenance PRD §6.  
+- Local Library honesty · softlive Stripe-optional · generateClient error codes.  
+- smoke+typecheck+lint+preflight green · **pushed main `58cd3a3`**.
 
 ---
 
