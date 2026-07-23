@@ -45,8 +45,16 @@ import {
   markActivationJob,
   markActivationShared,
 } from "@/components/ActivationChecklist";
-import { getJobIntent, type JobIntentId } from "@/lib/jobIntents";
+import { getJobIntent, JOB_INTENTS, type JobIntentId } from "@/lib/jobIntents";
 import type { Workflow } from "@/lib/workflows";
+import {
+  composeExtraWithIdentity,
+  identityProjectName,
+  loadToyIdentity,
+  saveToyIdentity,
+  type ToyIdentity,
+} from "@/lib/toyIdentity";
+import { deliveryItemsForJob } from "@/lib/deliveryPack";
 
 type Status = "idle" | "uploading" | "generating" | "done" | "error";
 type Mode = "i2v" | "t2v";
@@ -167,6 +175,11 @@ export function CreateStudio({
   /** Phase D local asset id — generate prefers assetId over re-posting Base64. */
   const [assetId, setAssetId] = useState<string | null>(null);
   const [extra, setExtra] = useState(initialPrompt ?? "");
+  /** Optional SKU lock — first principles, not Character/Soul cloud */
+  const [toyIdentity, setToyIdentity] = useState<ToyIdentity>({
+    sku: "",
+    preserve: "",
+  });
   const [duration, setDuration] = useState<5 | 10>(() => {
     if (remix.intent?.durationSeconds === 10 || remix.intent?.durationSeconds === 5) {
       return remix.intent.durationSeconds;
@@ -304,6 +317,7 @@ export function CreateStudio({
   useEffect(() => {
     const t = window.setTimeout(() => {
       setFavorites(loadFavorites());
+      setToyIdentity(loadToyIdentity());
       // optional still from Image studio
       try {
         const pending = sessionStorage.getItem("pikbo_pending_still");
@@ -465,6 +479,7 @@ export function CreateStudio({
   async function generate(opts?: {
     imageOverride?: string;
     effectOverride?: string;
+    aspectOverride?: "9:16" | "16:9" | "1:1";
     rightsOverride?: boolean;
     /** Official Lab sample id — stored as Library sourceProject for support */
     labSampleId?: string;
@@ -481,11 +496,13 @@ export function CreateStudio({
       image;
     const fx = retry?.effect ?? opts?.effectOverride ?? effect;
     const rights = opts?.rightsOverride ?? ownsRights;
-    const requestExtra = retry ? retry.extra : extra;
-    const requestAspect = (retry?.aspectRatio ?? aspectRatio) as
-      | "9:16"
-      | "16:9"
-      | "1:1";
+    // Retry freezes prior extra; new runs merge optional Toy Identity into extra.
+    const requestExtra = retry
+      ? retry.extra
+      : composeExtraWithIdentity(toyIdentity, extra);
+    const requestAspect = (retry?.aspectRatio ??
+      opts?.aspectOverride ??
+      aspectRatio) as "9:16" | "16:9" | "1:1";
     const requestDuration = retry?.duration ?? effectiveDuration;
     const requestModel = retry?.model ?? modelId;
     const requestRes =
@@ -701,7 +718,7 @@ export function CreateStudio({
           ? `PIKBO Lab sample · ${opts.labSampleId}`
           : remix.intent?.sourceProjectSlug
             ? `Remix · ${remix.intent.sourceProjectSlug}`
-            : "Owned toy project",
+            : identityProjectName(toyIdentity) || "Owned toy project",
         inputImage: img.length <= 300_000 ? img : undefined,
       })
     );
@@ -891,6 +908,45 @@ export function CreateStudio({
     markActivationJob();
     track({ event: "recipe_use", path: "/create", recipe: job.effect, meta: { job: id } });
     toast(`${job.label} · recipe ready`);
+  }
+
+  /**
+   * Same photo · next job (Step 4 accelerate).
+   * Prefills recipe/aspect and runs generate without a full page remount.
+   */
+  async function generateForJob(id: JobIntentId) {
+    const job = getJobIntent(id);
+    if (!job) return;
+    if (job.href) {
+      window.location.href = job.href;
+      return;
+    }
+    if (!image) {
+      toast("Add your toy photo first");
+      return;
+    }
+    setJobIntentId(id);
+    selectEffect(job.effect);
+    setAspectRatio(job.aspectRatio);
+    markActivationJob();
+    track({
+      event: "recipe_use",
+      path: "/create",
+      recipe: job.effect,
+      meta: { job: id, samePhoto: true },
+    });
+    toast(`${job.label} · generating…`);
+    await generate({
+      effectOverride: job.effect,
+      aspectOverride: job.aspectRatio,
+    });
+  }
+
+  function updateToyIdentity(patch: Partial<ToyIdentity>) {
+    setToyIdentity((prev) => {
+      const next = { ...prev, ...patch };
+      return saveToyIdentity(next);
+    });
   }
 
   /** Yiha/lego mini-app pick: prefill Create without full remount when possible */
@@ -1256,6 +1312,45 @@ export function CreateStudio({
                 onChange={onFile}
               />
             </label>
+
+            {/* Toy Identity — 2 fields only (five-step: not Character cloud) */}
+            <div className="mt-3 rounded-xl border border-white/10 bg-black/25 px-3 py-2.5">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--mint)]/90">
+                Toy identity · optional
+              </p>
+              <p className="mt-0.5 text-[10px] text-white/40">
+                Same SKU across clips. Not a multi-model character train.
+              </p>
+              <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                <label className="block">
+                  <span className="text-[10px] font-semibold text-[var(--fg-dim)]">
+                    Name / SKU
+                  </span>
+                  <input
+                    value={toyIdentity.sku}
+                    onChange={(e) => updateToyIdentity({ sku: e.target.value })}
+                    placeholder="e.g. Scout pink #3"
+                    maxLength={48}
+                    className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-2.5 py-1.5 text-xs outline-none focus:border-[var(--mint)]"
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-[10px] font-semibold text-[var(--fg-dim)]">
+                    Preserve
+                  </span>
+                  <input
+                    value={toyIdentity.preserve}
+                    onChange={(e) =>
+                      updateToyIdentity({ preserve: e.target.value })
+                    }
+                    placeholder="paint lines, logo, sculpt"
+                    maxLength={120}
+                    className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-2.5 py-1.5 text-xs outline-none focus:border-[var(--mint)]"
+                  />
+                </label>
+              </div>
+            </div>
+
             {!image && (
               <div className="mt-3 rounded-2xl border border-[var(--mint)]/25 bg-[var(--mint)]/[0.06] p-3">
                 <p className="text-sm font-bold text-[var(--fg)]">
@@ -1889,6 +1984,66 @@ export function CreateStudio({
                       : "Save it, post it, or make another version. Retry appends a new version — prior clips stay switchable."}
                   </p>
                 </div>
+
+                {/* Delivery pack — value only after export/post (first principles P4) */}
+                <div className="mx-auto mt-3 max-w-md rounded-xl border border-white/10 bg-black/35 px-3 py-2.5 text-left">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-white/45">
+                    Delivery · next steps
+                    {toyIdentity.sku ? ` · ${toyIdentity.sku}` : ""}
+                  </p>
+                  <ul className="mt-1.5 space-y-1 text-[11px] text-white/65">
+                    {deliveryItemsForJob(jobIntentId, { demo }).map((item) => (
+                      <li key={item.id} className="flex gap-2">
+                        <span className="text-[var(--mint)]" aria-hidden>
+                          ○
+                        </span>
+                        {item.href ? (
+                          <Link
+                            href={item.href}
+                            className="text-[var(--mint)] hover:underline"
+                          >
+                            {item.label}
+                          </Link>
+                        ) : (
+                          <span>{item.label}</span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Same photo · next job — accelerate cycle, no new provider */}
+                {image && status === "done" && (
+                  <div className="mx-auto mt-3 max-w-lg">
+                    <p className="mb-1.5 text-center text-[10px] font-bold uppercase tracking-wider text-white/45">
+                      Same photo · next job
+                    </p>
+                    <div className="flex flex-wrap justify-center gap-1.5">
+                      {JOB_INTENTS.filter((j) => j.id !== jobIntentId).map(
+                        (job) =>
+                          job.href ? (
+                            <Link
+                              key={job.id}
+                              href={job.href}
+                              className="rounded-full border border-[var(--mint)]/30 bg-[var(--mint)]/[0.08] px-2.5 py-1 text-[10px] font-semibold text-[var(--mint)] hover:border-[var(--mint)]"
+                            >
+                              {job.label}
+                            </Link>
+                          ) : (
+                            <button
+                              key={job.id}
+                              type="button"
+                              onClick={() => void generateForJob(job.id)}
+                              className="rounded-full border border-white/15 px-2.5 py-1 text-[10px] font-semibold text-white/75 hover:border-white/35"
+                            >
+                              {job.label}
+                            </button>
+                          )
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 <p className="mx-auto mt-2 max-w-md text-center text-[11px] leading-relaxed text-[var(--fg-dim)]">
                   {demo
                     ? `${PROVENANCE.cachedDemo} — does not animate your upload.`
