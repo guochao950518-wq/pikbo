@@ -4,6 +4,10 @@
 **仓库：** https://github.com/guochao950518-wq/pikbo  
 **原则：** 严格按车道推进；**有交叉先沟通再动手**（写进 `docs/DISPATCH.md` 或 `docs/HANDOFF.md` 一条「交叉请求」）。
 
+**共享研究（老板 2026-07-23）：**  
+Grok / GPT / Claude **都必须做竞品与产品研究**，成果 **写入仓库** `docs/research/`，三方 **共同阅读**。  
+协议与索引：`docs/research/README.md` · 粘贴任务：`docs/PASTE_SHARED_RESEARCH.md`。
+
 ---
 
 ## 总表
