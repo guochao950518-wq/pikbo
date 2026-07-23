@@ -14,7 +14,7 @@ export function Footer() {
             <Logo size={30} />
 
             <p className="mt-3 max-w-xs text-sm text-[var(--fg-dim)]">
-              {site.tagline}. Video-first studio for toys you own.
+              {site.tagline} Video-first studio for toys you own.
             </p>
           </div>
           <div>

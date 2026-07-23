@@ -1,8 +1,8 @@
 import {
   buildHomeShowcaseFeed,
-  communityProjects,
 } from "@/lib/videoFeed";
 import { DEMO_VIDEOS } from "@/lib/demoVideos";
+import { listHomeShowcaseProjects } from "@/lib/showcaseProjects";
 import { HfExploreHome } from "@/components/HfExploreHome";
 
 /**
@@ -15,7 +15,7 @@ export default function Home() {
   return (
     <HfExploreHome
       demos={demos.length ? demos : DEMO_VIDEOS.slice(0, 8)}
-      projects={communityProjects()}
+      projects={listHomeShowcaseProjects()}
       feed={showcase}
     />
   );

@@ -68,8 +68,9 @@ export default async function CreatePage({
           <p className="mt-2 max-w-2xl text-sm text-[var(--fg-muted)]">
             Listing Spin (1:1), Blind-box Reveal (9:16), Social Flash (9:16).
             Cached demos free and labeled. Live path charges per successful
-            child; failed jobs refund credits. Device-local results only — not
-            cloud-synced.
+            child; only confirmed post-debit failures are marked restored.
+            Ambiguous outcomes remain refund unconfirmed. Device-local results
+            only — not cloud-synced.
           </p>
           <p className="mt-2 text-xs text-[var(--fg-dim)]">
             Single careful shot?{" "}

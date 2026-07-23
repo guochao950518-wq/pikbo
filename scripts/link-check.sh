@@ -30,12 +30,16 @@ done
 
 # Wave A Seller Pack + Explore categories
 check "/create?mode=seller-pack"
-check "/explore?cat=showcase"
+check "/explore?cat=listing"
 check "/explore?cat=unboxing"
+check "/explore?cat=come-alive"
+check "/explore?cat=social-hooks"
+check "/explore?cat=story"
 
 # Remake loop: official project detail (demo Lab id)
 check "/projects/orbit-cgi"
 check "/projects/moon-reveal"
+check "/projects/not-a-registered-project" 404
 check "/create?effect=360-spin-showcase&source=scout-spin&ratio=1:1&duration=5&channel=etsy"
 
 # SEO tools cluster (sample — full list is in sitemap)

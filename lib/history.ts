@@ -5,6 +5,11 @@ import { resultProvenanceLabel } from "@/lib/provenance";
 export type HistoryItem = {
   id: string;
   videoUrl: string;
+  /** Device-local SKU/project grouping. Not a cloud project id. */
+  projectId?: string;
+  projectName?: string;
+  /** Small local preview only; large uploads are intentionally not duplicated. */
+  inputImage?: string;
   effect: string;
   effectName: string;
   model?: string;
@@ -18,6 +23,8 @@ export type HistoryItem = {
   sourceProject?: string;
   /** Remix channel hint (etsy / reels / …) */
   channel?: string;
+  status?: "succeeded";
+  creditStatus?: "0 cached" | "10 used";
   createdAt: string;
 };
 
@@ -42,6 +49,14 @@ function normalizeItem(raw: unknown): HistoryItem | null {
         ? o.id
         : `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     videoUrl: o.videoUrl,
+    projectId: typeof o.projectId === "string" ? o.projectId : undefined,
+    projectName:
+      typeof o.projectName === "string" ? o.projectName : undefined,
+    inputImage:
+      typeof o.inputImage === "string" &&
+      (o.inputImage.startsWith("data:image/") || o.inputImage.startsWith("/"))
+        ? o.inputImage
+        : undefined,
     effect: o.effect,
     effectName: o.effectName,
     model: typeof o.model === "string" ? o.model : undefined,
@@ -54,6 +69,13 @@ function normalizeItem(raw: unknown): HistoryItem | null {
     sourceProject:
       typeof o.sourceProject === "string" ? o.sourceProject : undefined,
     channel: typeof o.channel === "string" ? o.channel : undefined,
+    status: "succeeded",
+    creditStatus:
+      o.creditStatus === "0 cached" || o.creditStatus === "10 used"
+        ? o.creditStatus
+        : Boolean(o.demo)
+          ? "0 cached"
+          : "10 used",
     createdAt:
       typeof o.createdAt === "string" && o.createdAt
         ? o.createdAt

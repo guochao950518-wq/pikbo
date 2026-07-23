@@ -3,8 +3,13 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { DemoVideo } from "@/lib/demoVideos";
-import type { CommunityProject, FeedItem } from "@/lib/videoFeed";
+import type { FeedItem } from "@/lib/videoFeed";
 import { getPreset } from "@/lib/presets";
+import {
+  showcaseProjectHref,
+  showcaseRecipeHref,
+  type ShowcaseProject,
+} from "@/lib/showcaseProjects";
 
 /** Soft concurrent autoplay budget — pause extras when many tiles enter view. */
 const playingVideos = new Set<HTMLVideoElement>();
@@ -104,7 +109,7 @@ export function HfExploreHome({
   feed,
 }: {
   demos: DemoVideo[];
-  projects: CommunityProject[];
+  projects: ShowcaseProject[];
   feed: FeedItem[];
 }) {
   const showcase: FeedItem[] = feed.length
@@ -126,9 +131,6 @@ export function HfExploreHome({
   const [active, setActive] = useState(0);
   const item = showcase[active] ?? showcase[0];
   const preset = item?.recipeSlug ? getPreset(item.recipeSlug) : undefined;
-
-  // Prefer projects list for remake labels when present
-  void projects;
 
   if (!item) {
     return (
@@ -288,30 +290,30 @@ export function HfExploreHome({
         </div>
       </section>
 
-      {/* ── Screen 3: Recipe rails ── */}
+      {/* ── Screen 3: traceable projects ── */}
       <section className="px-3 py-10 sm:px-5">
         <div className="mx-auto max-w-6xl">
           <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
             <div>
               <h2 className="font-display text-xl font-bold uppercase tracking-tight sm:text-2xl">
-                Pick a recipe
+                Explore inside every project
               </h2>
               <p className="mt-1 text-sm text-white/45">
-                Each card is an executable remix — not a blog link. Unique
-                official clip per card.
+                Open the input, output, recipe, model record, and review state
+                before using it with your own toy.
               </p>
             </div>
             <Link
-              href="/effects"
+              href="/explore"
               className="text-[12px] font-semibold text-[#c8ff3d] hover:underline"
             >
-              All effects →
+              All projects →
             </Link>
           </div>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:gap-3">
-            {showcase.map((s, i) => (
+            {projects.slice(0, 8).map((project, i) => (
               <div
-                key={s.id}
+                key={project.slug}
                 className="group relative overflow-hidden rounded-xl bg-neutral-900 ring-1 ring-white/5 transition hover:-translate-y-1 hover:ring-[#c8ff3d]/40"
               >
                 <button
@@ -321,28 +323,44 @@ export function HfExploreHome({
                 >
                   <div className="relative aspect-[3/4] sm:aspect-[9/14]">
                     <Clip
-                      demo={s.demo}
+                      demo={{
+                        id: project.slug,
+                        title: project.title,
+                        character: project.character,
+                        eyebrow: project.eyebrow,
+                        result: project.result,
+                        preset: project.recipeSlug,
+                        ratio:
+                          project.aspectRatio === "1:1" ||
+                          project.aspectRatio === "16:9"
+                            ? project.aspectRatio
+                            : "9:16",
+                        poster: project.poster,
+                        mp4: project.outputVideo,
+                        webm: project.outputWebm ?? project.outputVideo,
+                        accent: project.accent,
+                      }}
                       eager={i < 2}
                       className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
                     <span className="absolute left-2 top-2 rounded-full bg-black/70 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-[#c8ff3d] ring-1 ring-white/10">
-                      {s.badge ?? "Official"}
+                      Official example · cached
                     </span>
                     <p className="absolute inset-x-0 bottom-12 p-2 text-[11px] font-bold uppercase leading-tight tracking-wide sm:text-xs">
-                      {s.title}
+                      {project.title}
                     </p>
                   </div>
                 </button>
                 <div className="absolute inset-x-0 bottom-0 flex gap-1 p-2">
                   <Link
-                    href={s.href}
+                    href={showcaseRecipeHref(project)}
                     className="flex-1 rounded-full bg-[#c8ff3d] py-1.5 text-center text-[10px] font-black text-black"
                   >
                     Use recipe
                   </Link>
                   <Link
-                    href={s.projectHref || s.detailHref || "/effects"}
+                    href={showcaseProjectHref(project)}
                     className="rounded-full border border-white/20 bg-black/50 px-2 py-1.5 text-[10px] font-bold text-white"
                   >
                     Inside

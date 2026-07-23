@@ -53,6 +53,8 @@ export function LibraryGrid() {
         (i) =>
           i.effectName.toLowerCase().includes(q) ||
           i.effect.toLowerCase().includes(q) ||
+          (i.projectName || "").toLowerCase().includes(q) ||
+          (i.projectId || "").toLowerCase().includes(q) ||
           (i.sourceProject || "").toLowerCase().includes(q)
       );
     }
@@ -64,32 +66,41 @@ export function LibraryGrid() {
     return list;
   }, [items, filter, sort, kind]);
 
-  /** Group by sourceProject / lab-sample / ungrouped (device-local only). */
+  /** Group by the existing device-local project metadata; never imply cloud sync. */
   const grouped = useMemo(() => {
     if (groupMode !== "project") {
-      return [{ key: "all", label: "All clips", items: filtered }];
+      return [
+        { key: "all", label: "All clips", input: undefined, items: filtered },
+      ];
     }
     const map = new Map<string, HistoryItem[]>();
     for (const item of filtered) {
-      const key = item.sourceProject?.trim() || "ungrouped";
+      const key =
+        item.projectId?.trim() ||
+        item.sourceProject?.trim() ||
+        `legacy-${item.effect}`;
       const list = map.get(key) || [];
       list.push(item);
       map.set(key, list);
     }
     return [...map.entries()]
-      .map(([key, groupItems]) => ({
-        key,
-        label:
-          key === "ungrouped"
-            ? "No project tag"
-            : key.startsWith("lab-sample-")
-              ? `Lab sample · ${key.replace("lab-sample-", "")}`
-              : `Project · ${key}`,
-        items: groupItems,
-      }))
+      .map(([key, groupItems]) => {
+        const named = groupItems.find((item) => item.projectName)?.projectName;
+        const input = groupItems.find((item) => item.inputImage)?.inputImage;
+        return {
+          key,
+          label:
+            named ||
+            (key.includes("lab-sample-")
+              ? `PIKBO Lab sample · ${key.split("lab-sample-").pop()}`
+              : key.startsWith("legacy-")
+                ? `Legacy project · ${groupItems[0]?.effectName ?? "clip"}`
+                : `Owned toy project · ${key.replace(/^local-/, "")}`),
+          input,
+          items: groupItems,
+        };
+      })
       .sort((a, b) => {
-        if (a.key === "ungrouped") return 1;
-        if (b.key === "ungrouped") return -1;
         return a.label.localeCompare(b.label);
       });
   }, [filtered, groupMode]);
@@ -284,15 +295,38 @@ export function LibraryGrid() {
       )}
 
       {grouped.map((group) => (
-        <section key={group.key} className="mb-8">
+        <section
+          key={group.key}
+          className="mb-8 rounded-2xl border border-[var(--border)] bg-[var(--bg-soft)]/40 p-3 sm:p-4"
+        >
           {groupMode === "project" && (
-            <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
-              <h2 className="text-sm font-bold text-[var(--fg)]">
-                {group.label}
-              </h2>
-              <span className="text-[10px] text-[var(--fg-dim)]">
-                {group.items.length} clip{group.items.length === 1 ? "" : "s"} ·
-                local browser
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+              <div className="flex min-w-0 items-center gap-3">
+                {group.input ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={group.input}
+                    alt=""
+                    className="h-14 w-14 shrink-0 rounded-xl object-cover ring-1 ring-[var(--border)]"
+                  />
+                ) : (
+                  <span className="grid h-14 w-14 shrink-0 place-items-center rounded-xl border border-dashed border-[var(--border)] text-[10px] text-[var(--fg-dim)]">
+                    input
+                  </span>
+                )}
+                <div className="min-w-0">
+                  <h2 className="truncate text-sm font-bold text-[var(--fg)]">
+                    {group.label}
+                  </h2>
+                  <p className="mt-0.5 text-[10px] text-[var(--fg-dim)]">
+                    {group.items.length} version
+                    {group.items.length === 1 ? "" : "s"} · Saved on this
+                    device
+                  </p>
+                </div>
+              </div>
+              <span className="rounded-full border border-[var(--border)] px-2.5 py-1 text-[10px] font-bold uppercase text-[var(--fg-dim)]">
+                Local only · not cloud-synced
               </span>
             </div>
           )}
@@ -323,6 +357,10 @@ export function LibraryGrid() {
                         {PROVENANCE.onPlayerMark}
                       </span>
                     )}
+                    <span className="rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-bold uppercase text-white/80">
+                      {item.creditStatus ??
+                        (item.demo ? "0 cached" : "10 used")}
+                    </span>
                     {remoteClipMayExpire(item) && (
                       <span className="rounded bg-amber-500/90 px-1.5 py-0.5 text-[9px] font-bold uppercase text-black">
                         link aging
@@ -332,6 +370,9 @@ export function LibraryGrid() {
                 </div>
                 <div className="p-3">
                   <p className="text-sm font-semibold">{item.effectName}</p>
+                  <p className="mt-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--mint)]">
+                    {item.status ?? "succeeded"}
+                  </p>
                   <p className="mt-0.5 text-[10px] text-[var(--fg-dim)]">
                     {new Date(item.createdAt).toLocaleString()}
                     {item.model ? ` · ${item.model.split("/").pop()}` : ""}
@@ -349,6 +390,14 @@ export function LibraryGrid() {
                     </p>
                   )}
                   <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
+                    <a
+                      href={item.videoUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs font-medium text-[var(--mint)] hover:underline"
+                    >
+                      Open result
+                    </a>
                     <button
                       type="button"
                       onClick={() => void downloadClip(item)}
@@ -377,7 +426,7 @@ export function LibraryGrid() {
                       }
                       className="text-xs text-[var(--fg-muted)] hover:text-[var(--mint)]"
                     >
-                      {item.sourceProject ? "Remix again" : "Studio"}
+                      Regenerate
                     </Link>
                     {item.sourceProject &&
                     !item.sourceProject.startsWith("lab-sample-") ? (

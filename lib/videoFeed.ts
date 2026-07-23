@@ -6,10 +6,17 @@ import { viralName } from "@/lib/viralNames";
 import {
   HOME_PROOF_BADGE,
   HOME_PROOF_LIMIT,
-  HOME_PROOF_SLUGS,
-  isHomeProofSlug,
 } from "@/lib/softLaunch";
 import { createRemixHref } from "@/lib/remixIntent";
+import {
+  getShowcaseProject,
+  listHomeShowcaseProjects,
+  listShowcaseProjects,
+  listShowcaseProjectSlugs,
+  showcaseProjectAsDemo,
+  showcaseProjectHref,
+  showcaseRecipeHref,
+} from "@/lib/showcaseProjects";
 
 export type FeedItem = {
   id: string;
@@ -57,35 +64,28 @@ export const HOME_SHOWCASE_LIMIT = HOME_PROOF_LIMIT;
 export function buildHomeShowcaseFeed(
   limit = HOME_SHOWCASE_LIMIT
 ): FeedItem[] {
-  const byPreset = new Map(DEMO_VIDEOS.map((d) => [d.preset, d]));
-  const seenMp4 = new Set<string>();
-  const items: FeedItem[] = [];
-
-  for (const slug of HOME_PROOF_SLUGS) {
-    if (items.length >= limit) break;
-    if (!isHomeProofSlug(slug)) continue;
-    const d = byPreset.get(slug);
-    if (!d) continue; // recipe without approved footage stays off the wall
-    if (seenMp4.has(d.mp4)) continue;
-    seenMp4.add(d.mp4);
-    const preset = PRESETS.find((p) => p.slug === d.preset);
-    items.push({
-      id: `home-${d.id}`,
-      title: viralName(d.preset, d.title),
-      subtitle: d.character,
-      href: createHref(d.preset, d.id),
-      detailHref: `/effects/${d.preset}`,
-      projectHref: `/projects/${d.id}`,
-      badge: HOME_PROOF_BADGE,
-      ratio: d.ratio,
-      demo: d,
-      kind: "demo",
-      category: preset?.category,
-      recipeSlug: d.preset,
+  return listHomeShowcaseProjects()
+    .slice(0, limit)
+    .map((project) => {
+      const preset = PRESETS.find((p) => p.slug === project.recipeSlug);
+      return {
+        id: `home-${project.slug}`,
+        title: viralName(project.recipeSlug, project.title),
+        subtitle: project.character,
+        href: showcaseRecipeHref(project),
+        detailHref: `/effects/${project.recipeSlug}`,
+        projectHref: showcaseProjectHref(project),
+        badge: HOME_PROOF_BADGE,
+        ratio:
+          project.aspectRatio === "1:1" || project.aspectRatio === "16:9"
+            ? project.aspectRatio
+            : "9:16",
+        demo: showcaseProjectAsDemo(project),
+        kind: "demo",
+        category: preset?.category,
+        recipeSlug: project.recipeSlug,
+      } satisfies FeedItem;
     });
-  }
-
-  return items;
 }
 
 /**
@@ -94,30 +94,26 @@ export function buildHomeShowcaseFeed(
  * shared-loop density wall that looks like a full product catalog.
  */
 export function buildVideoFeed(): FeedItem[] {
-  const items: FeedItem[] = [];
-  const seenMp4 = new Set<string>();
-
-  for (const d of DEMO_VIDEOS) {
-    if (seenMp4.has(d.mp4)) continue;
-    seenMp4.add(d.mp4);
-    const preset = PRESETS.find((p) => p.slug === d.preset);
-    items.push({
-      id: `demo-${d.id}`,
-      title: viralName(d.preset, d.title),
-      subtitle: d.character,
-      href: createHref(d.preset, d.id),
-      detailHref: `/effects/${d.preset}`,
-      projectHref: `/projects/${d.id}`,
+  return listShowcaseProjects().map((project) => {
+    const preset = PRESETS.find((p) => p.slug === project.recipeSlug);
+    return {
+      id: `demo-${project.slug}`,
+      title: viralName(project.recipeSlug, project.title),
+      subtitle: project.character,
+      href: showcaseRecipeHref(project),
+      detailHref: `/effects/${project.recipeSlug}`,
+      projectHref: showcaseProjectHref(project),
       badge: "Official example · cached",
-      ratio: d.ratio,
-      demo: d,
+      ratio:
+        project.aspectRatio === "1:1" || project.aspectRatio === "16:9"
+          ? project.aspectRatio
+          : "9:16",
+      demo: showcaseProjectAsDemo(project),
       kind: "demo",
       category: preset?.category,
-      recipeSlug: d.preset,
-    });
-  }
-
-  return items;
+      recipeSlug: project.recipeSlug,
+    } satisfies FeedItem;
+  });
 }
 
 /** Count of recipes without unique Lab footage (for honest empty/CTA copy). */
@@ -127,65 +123,65 @@ export function conceptRecipeCount(): number {
 }
 
 export function featuredStrip(): FeedItem[] {
-  return DEMO_VIDEOS.map((d) => ({
-    id: `feat-${d.id}`,
-    title: viralName(d.preset, d.title),
-    subtitle: d.result,
-    href: createHref(d.preset, d.id),
-    detailHref: `/effects/${d.preset}`,
-    projectHref: `/projects/${d.id}`,
+  return listShowcaseProjects().map((project) => ({
+    id: `feat-${project.slug}`,
+    title: viralName(project.recipeSlug, project.title),
+    subtitle: project.result,
+    href: showcaseRecipeHref(project),
+    detailHref: `/effects/${project.recipeSlug}`,
+    projectHref: showcaseProjectHref(project),
     badge: "Official example · cached",
-    ratio: d.ratio,
-    demo: d,
+    ratio:
+      project.aspectRatio === "1:1" || project.aspectRatio === "16:9"
+        ? project.aspectRatio
+        : "9:16",
+    demo: showcaseProjectAsDemo(project),
     kind: "demo" as const,
-    recipeSlug: d.preset,
+    recipeSlug: project.recipeSlug,
   }));
 }
 
 /** PIKBO Lab projects only; no user identity or engagement is fabricated. */
 export function communityProjects(): CommunityProject[] {
   // Official Lab demos only — no remixed concept filler that reuses loops.
-  return DEMO_VIDEOS.map((d) => ({
-    id: `proj-${d.id}`,
-    title: `${d.character} · ${viralName(d.preset, d.title)}`,
-    look: d.eyebrow,
-    remakeHref: createHref(d.preset, d.id),
-    detailHref: `/projects/${d.id}`,
+  return listShowcaseProjects().map((project) => ({
+    id: `proj-${project.slug}`,
+    title: project.title,
+    look: project.eyebrow,
+    remakeHref: showcaseRecipeHref(project),
+    detailHref: showcaseProjectHref(project),
     visibility: "Official example" as const,
     author: {
       name: "Pikbo Lab",
       initials: "P",
       badge: "Pikbo Lab",
     },
-    demo: d,
+    demo: showcaseProjectAsDemo(project),
   }));
 }
 
 /** Resolve official Lab project by demo id (for /projects/[slug]). */
 export function getOfficialProject(slug: string) {
-  // Delegate to ShowcaseProject registry (Wave A single source of truth).
-  // Local shape kept for existing call sites.
-  const d = DEMO_VIDEOS.find((x) => x.id === slug);
-  if (!d) return null;
+  const project = getShowcaseProject(slug);
+  if (!project) return null;
   return {
-    slug: d.id,
-    title: `${d.character} · ${viralName(d.preset, d.title)}`,
-    recipeSlug: d.preset,
-    demo: d,
-    remakeHref: createHref(d.preset, d.id),
-    effectsHref: `/effects/${d.preset}`,
-    result: d.result,
-    eyebrow: d.eyebrow,
+    ...project,
+    demo: showcaseProjectAsDemo(project),
+    remakeHref: showcaseRecipeHref(project),
+    effectsHref: `/effects/${project.recipeSlug}`,
   };
 }
 
 /** All official Lab project slugs — SSG + sitemap. */
 export function listOfficialProjectSlugs(): string[] {
-  return DEMO_VIDEOS.map((d) => d.id);
+  return listShowcaseProjectSlugs();
 }
 
-/** @deprecated prefer getShowcaseProject from lib/showcaseProjects */
-export { getShowcaseProject, listShowcaseProjects } from "@/lib/showcaseProjects";
+/** @deprecated import registry helpers from lib/showcaseProjects directly. */
+export {
+  getShowcaseProject as getRegisteredShowcaseProject,
+  listShowcaseProjects,
+} from "@/lib/showcaseProjects";
 
 /** Wide HF-style app / model promo rail */
 export function suiteRail(): FeedItem[] {
@@ -194,7 +190,7 @@ export function suiteRail(): FeedItem[] {
     title: a.name,
     subtitle: a.blurb,
     href: a.href,
-      badge: "Configured · cached preview",
+    badge: "Configured · cached preview",
     ratio: "16:9" as const,
     demo: demoForIndex(i),
     kind: "app" as const,

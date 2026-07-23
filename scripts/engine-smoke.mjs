@@ -266,7 +266,8 @@ const projectsPage = fs.readFileSync(
   "utf8"
 );
 assert.match(projectsPage, /generateStaticParams/);
-assert.match(projectsPage, /listOfficialProjectSlugs/);
+assert.match(projectsPage, /listShowcaseProjectSlugs/);
+assert.match(projectsPage, /getShowcaseProject/);
 const videoFeedSrc = fs.readFileSync(join(root, "lib/videoFeed.ts"), "utf8");
 assert.match(videoFeedSrc, /export function listOfficialProjectSlugs/);
 assert.match(health, /forceGenerateFail/);
@@ -298,17 +299,68 @@ const showcase = fs.readFileSync(
 );
 assert.match(showcase, /listShowcaseProjects/);
 assert.match(showcase, /getShowcaseProject/);
+for (const field of [
+  "inputImage",
+  "outputVideo",
+  "poster",
+  "recipeSlug",
+  "provenance",
+  "model",
+  "aspectRatio",
+  "durationSeconds",
+  "resolution",
+  "promptSummary",
+  "negativeConstraints",
+]) {
+  assert.match(showcase, new RegExp(field));
+}
+assert.match(showcase, /assertRegistryIntegrity/);
+assert.match(showcase, /output reused under another title/);
 assert.match(libraryGrid, /By project|groupMode|sourceProject/);
+assert.match(libraryGrid, /Saved on this\s*device/);
 
-// G2: homepage proof whitelist frozen in softLaunch + used by videoFeed
+const exploreGrid = fs.readFileSync(
+  join(root, "components/ExploreProjectGrid.tsx"),
+  "utf8"
+);
+for (const category of [
+  "All",
+  "Listing",
+  "Unboxing",
+  "Come alive",
+  "Social hooks",
+  "Story",
+]) {
+  assert.match(showcase, new RegExp(category));
+}
+assert.match(exploreGrid, /showcaseProjectHref/);
+assert.match(exploreGrid, /desktopPlayMode="interaction"/);
+assert.match(createStudio, /ResultVersion/);
+assert.match(createStudio, /Retry · new version/);
+assert.match(createStudio, /Make variant/);
+assert.match(createStudio, /refund unconfirmed/);
+const batchStudio = fs.readFileSync(
+  join(root, "components/BatchStudio.tsx"),
+  "utf8"
+);
+assert.match(batchStudio, /status:\s*"succeeded"/);
+assert.match(batchStudio, /status:\s*refunded\s*\?\s*"refunded"/);
+assert.match(batchStudio, /retryJob/);
+assert.match(batchStudio, /not_started/);
+assert.match(batchStudio, /refund unconfirmed/);
+
+// G2: homepage proof whitelist frozen in softLaunch + consumed by the
+// canonical ShowcaseProject registry that powers homepage/videoFeed.
 const softLaunch = fs.readFileSync(join(root, "lib/softLaunch.ts"), "utf8");
 assert.match(softLaunch, /HOME_PROOF_SLUGS/);
 assert.match(softLaunch, /floating-hero/);
 assert.match(softLaunch, /mystery-box-reveal/);
 assert.match(softLaunch, /display-case-glam/);
 const videoFeed = fs.readFileSync(join(root, "lib/videoFeed.ts"), "utf8");
+assert.match(showcase, /HOME_PROOF_SLUGS/);
+assert.match(showcase, /listHomeShowcaseProjects/);
 assert.match(videoFeed, /HOME_PROOF_SLUGS|HOME_SHOWCASE_LIMIT/);
-assert.match(videoFeed, /isHomeProofSlug|HOME_PROOF_SLUGS/);
+assert.match(videoFeed, /listHomeShowcaseProjects/);
 assert.match(videoFeed, /conceptRecipeCount/);
 assert.match(videoFeed, /official unique demos only|Official unique demos only/i);
 // Claude viral presets (SEO mesh) must remain registered

@@ -1,161 +1,108 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ExploreProjectGrid } from "@/components/ExploreProjectGrid";
 import {
-  buildVideoFeed,
-  featuredStrip,
-  suiteRail,
-} from "@/lib/videoFeed";
-import { VideoTile } from "@/components/VideoTile";
-import { VideoRail } from "@/components/VideoRail";
-import { CATEGORIES, PRESETS } from "@/lib/presets";
-import { listOfficialProjectSlugs } from "@/lib/videoFeed";
+  SHOWCASE_CATEGORIES,
+  listShowcaseProjects,
+  type ShowcaseCategory,
+} from "@/lib/showcaseProjects";
 
 export const metadata: Metadata = {
-  title: "Explore AI Toy Video Recipes",
+  title: "Explore Official AI Toy Video Projects",
   description:
-    "Explore official Pikbo examples and toy-video recipes for listings, drops, and social posts. Cached examples and unverified concepts are labeled separately.",
+    "Open PIKBO Lab toy-video projects, inspect the owned input and cached output, then reuse the exact recipe with a toy photo you own.",
   alternates: { canonical: "/explore" },
 };
 
-/** Infinite-feel video explore — rails + dense masonry + category filters */
 export default async function ExplorePage({
   searchParams,
 }: {
   searchParams: Promise<{ cat?: string }>;
 }) {
-  const sp = await searchParams;
-  const cat = sp.cat;
-  const featured = featuredStrip();
-  const suite = suiteRail();
-  const feedAll = buildVideoFeed();
-  const feed =
-    cat && CATEGORIES.some((c) => c.id === cat)
-      ? feedAll.filter((item) => item.category === cat)
-      : feedAll;
-  const projectSlug = listOfficialProjectSlugs()[0] || "orbit-cgi";
+  const { cat } = await searchParams;
+  const initialCategory =
+    cat && SHOWCASE_CATEGORIES.some((item) => item.id === cat)
+      ? (cat as "all" | ShowcaseCategory)
+      : "all";
+  const projects = listShowcaseProjects();
 
   return (
-    <div className="pb-24">
-      <div className="sticky top-0 z-20 border-b border-[var(--border)] bg-[var(--bg)]/90 px-4 py-3 backdrop-blur sm:px-6">
-        <div className="flex flex-wrap items-center justify-between gap-2">
+    <main className="min-h-screen bg-black pb-24 text-white">
+      <header className="sticky top-0 z-20 border-b border-white/10 bg-black/90 px-4 py-4 backdrop-blur sm:px-6">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="section-label">Explore</p>
-            <h1 className="text-lg font-bold tracking-tight">
-              Find a recipe for your next toy listing or drop
+            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#c8ff3d]">
+              PIKBO Lab · traceable proof
+            </p>
+            <h1 className="font-display mt-1 text-2xl font-black uppercase tracking-tight sm:text-3xl">
+              Open the project, not just the clip
             </h1>
+            <p className="mt-1 max-w-2xl text-xs leading-relaxed text-white/45 sm:text-sm">
+              Every card has an owned input still, a distinct output file, a
+              registered recipe, and an honest cached/live record.
+            </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Link
               href="/create"
-              className="btn btn-primary !px-4 !py-2 text-xs"
+              className="rounded-full bg-[#c8ff3d] px-5 py-2.5 text-xs font-black text-black"
             >
               Generate
             </Link>
             <Link
               href="/effects"
-              className="btn btn-ghost !px-3 !py-2 text-xs"
+              className="rounded-full border border-white/15 px-4 py-2.5 text-xs font-bold text-white/70"
             >
-              Presets
-            </Link>
-            <Link
-              href="/pricing"
-              className="btn btn-ghost !px-3 !py-2 text-xs"
-            >
-              Pricing
+              All effects
             </Link>
           </div>
         </div>
-        <div className="mt-2 flex gap-2 overflow-x-auto pb-0.5">
-          {[
-            { href: "/effects", label: "All presets" },
-            { href: "/community", label: "Official examples" },
-            { href: "/tools", label: "Tools" },
-            { href: `/projects/${projectSlug}`, label: "Inside a recipe" },
-            { href: "/create?mode=seller-pack", label: "Seller Pack" },
-            { href: "/create", label: "Upload" },
-          ].map((chip) => (
-            <Link
-              key={chip.href}
-              href={chip.href}
-              className="shrink-0 rounded-full border border-[var(--border)] px-3 py-1 text-[11px] font-semibold text-[var(--fg-muted)] hover:border-[var(--mint)] hover:text-[var(--mint)]"
-            >
-              {chip.label}
-            </Link>
-          ))}
+        <div className="mx-auto mt-3 flex max-w-7xl flex-wrap gap-x-4 gap-y-1 text-[10px] text-white/35">
+          <span>{projects.length} distinct output files</span>
+          <span>Cached playback · 0 credits</span>
+          <span>Live runs · current 10-credit contract</span>
+          <span>Mobile · one playing clip maximum</span>
         </div>
-        {/* Wave A: category filter — open recipes by job type */}
-        <div className="mt-2 flex gap-2 overflow-x-auto pb-0.5">
-          <Link
-            href="/explore"
-            className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-semibold ${
-              !cat
-                ? "bg-[var(--mint)] text-black"
-                : "border border-[var(--border)] text-[var(--fg-muted)]"
-            }`}
-          >
-            All categories
-          </Link>
-          {CATEGORIES.map((c) => (
-            <Link
-              key={c.id}
-              href={`/explore?cat=${c.id}`}
-              className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-semibold ${
-                cat === c.id
-                  ? "bg-[var(--mint)] text-black"
-                  : "border border-[var(--border)] text-[var(--fg-muted)]"
-              }`}
-            >
-              {c.label}
-            </Link>
-          ))}
-        </div>
-      </div>
+      </header>
 
-      <VideoRail
-        label="Official Pikbo examples"
-        title="Demonstrated looks you can open in Studio"
-        href="/community"
-        items={featured}
-      />
-
-      <VideoRail
-        label="Cached workflow references"
-        title="Configured paths · preview media labeled"
-        href="/apps"
-        items={suite}
-        wide
-      />
-
-      <section className="px-3 py-5 sm:px-5">
-        <div className="mb-3 flex items-end justify-between px-1">
-          <div>
-            <p className="section-label">
-              {cat
-                ? `${feed.length} in ${CATEGORIES.find((c) => c.id === cat)?.label || cat}`
-                : `${PRESETS.length}+ effect recipes`}
-            </p>
-            <h2 className="mt-1 text-xl font-bold tracking-tight">
-              Official examples and unverified concepts stay clearly separated
-            </h2>
-          </div>
-        </div>
-        <div className="columns-2 gap-2 sm:columns-3 sm:gap-3 lg:columns-4 xl:columns-5">
-          {feed.map((item) => (
-            <div key={item.id} className="mb-2 break-inside-avoid sm:mb-3">
-              <VideoTile item={item} />
-            </div>
-          ))}
-        </div>
-        {feed.length === 0 && (
-          <p className="py-12 text-center text-sm text-[var(--fg-dim)]">
-            No official Lab clips in this category yet — browse{" "}
-            <Link href="/effects" className="text-[var(--mint)] hover:underline">
-              all presets
-            </Link>
-            .
+      <section className="mx-auto max-w-7xl">
+        <div className="px-4 pb-5 pt-7 sm:px-6">
+          <h2 className="text-sm font-black uppercase tracking-wide text-white">
+            Choose a toy job
+          </h2>
+          <p className="mt-1 text-xs text-white/40">
+            Hover or focus to preview on desktop. On mobile, the project in view
+            plays and the previous clip pauses.
           </p>
-        )}
+        </div>
+        <ExploreProjectGrid
+          projects={projects}
+          initialCategory={initialCategory}
+        />
       </section>
-    </div>
+
+      <section className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="flex flex-col items-start justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.04] p-5 sm:flex-row sm:items-center">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-wider text-[#c8ff3d]">
+              Seller workflow
+            </p>
+            <h2 className="mt-1 text-lg font-black">
+              One photo → three fixed marketplace formats
+            </h2>
+            <p className="mt-1 text-xs text-white/45">
+              Listing Spin, Blind-box Reveal, and Social Flash keep independent
+              queue and refund states.
+            </p>
+          </div>
+          <Link
+            href="/create?mode=seller-pack"
+            className="shrink-0 rounded-full border border-[#c8ff3d]/40 px-5 py-2.5 text-xs font-black text-[#c8ff3d]"
+          >
+            Open Seller Pack →
+          </Link>
+        </div>
+      </section>
+    </main>
   );
 }

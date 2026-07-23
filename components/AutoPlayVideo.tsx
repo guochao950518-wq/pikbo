@@ -3,11 +3,15 @@
 import { useEffect, useRef, type CSSProperties } from "react";
 
 const playing = new Set<HTMLVideoElement>();
-const MAX_PLAYING = 2;
+
+function playbackBudget() {
+  if (typeof window === "undefined") return 2;
+  return window.matchMedia("(max-width: 768px)").matches ? 1 : 2;
+}
 
 function claim(v: HTMLVideoElement) {
   if (playing.has(v)) return;
-  if (playing.size >= MAX_PLAYING) {
+  if (playing.size >= playbackBudget()) {
     const oldest = playing.values().next().value;
     if (oldest && oldest !== v) {
       oldest.pause();
@@ -32,14 +36,17 @@ export function AutoPlayVideo({
   className,
   style,
   eager,
+  desktopPlayMode = "viewport",
 }: {
   poster: string;
-  webm: string;
+  webm?: string;
   mp4: string;
   className?: string;
   style?: CSSProperties;
   /** Kick play sooner when near the fold (still preload=metadata) */
   eager?: boolean;
+  /** Explore uses deliberate hover/focus on desktop and viewport play on touch. */
+  desktopPlayMode?: "viewport" | "interaction";
 }) {
   const ref = useRef<HTMLVideoElement>(null);
 
@@ -47,22 +54,41 @@ export function AutoPlayVideo({
     const v = ref.current;
     if (!v) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
-    if (eager) claim(v);
+    if (eager && (isMobile || desktopPlayMode === "viewport")) claim(v);
 
     const io = new IntersectionObserver(
       ([e]) => {
-        if (e.isIntersecting && e.intersectionRatio >= 0.12) claim(v);
+        if (!isMobile && desktopPlayMode === "interaction") {
+          if (!e.isIntersecting) release(v);
+          return;
+        }
+        if (e.isIntersecting && e.intersectionRatio >= 0.35) claim(v);
         else release(v);
       },
-      { threshold: [0, 0.12, 0.35], rootMargin: "80px 0px" }
+      { threshold: [0, 0.12, 0.35, 0.65], rootMargin: "80px 0px" }
     );
     io.observe(v);
     return () => {
       io.disconnect();
       release(v);
     };
-  }, [eager, mp4]);
+  }, [desktopPlayMode, eager, mp4]);
+
+  function playFromInteraction() {
+    if (desktopPlayMode === "interaction") {
+      const video = ref.current;
+      if (video) claim(video);
+    }
+  }
+
+  function pauseFromInteraction() {
+    if (desktopPlayMode === "interaction") {
+      const video = ref.current;
+      if (video) release(video);
+    }
+  }
 
   return (
     <video
@@ -74,8 +100,18 @@ export function AutoPlayVideo({
       loop
       playsInline
       preload="metadata"
+      tabIndex={desktopPlayMode === "interaction" ? 0 : undefined}
+      aria-label={
+        desktopPlayMode === "interaction"
+          ? "Focus to preview video"
+          : undefined
+      }
+      onMouseEnter={playFromInteraction}
+      onMouseLeave={pauseFromInteraction}
+      onFocus={playFromInteraction}
+      onBlur={pauseFromInteraction}
     >
-      <source src={webm} type="video/webm" />
+      {webm ? <source src={webm} type="video/webm" /> : null}
       <source src={mp4} type="video/mp4" />
     </video>
   );

@@ -158,10 +158,17 @@ export function historyFieldsFromSuccess(
     /** Remix handoff — official Lab project id */
     sourceProject?: string;
     channel?: string;
+    /** Existing same-browser Library grouping. */
+    projectId?: string;
+    projectName?: string;
+    inputImage?: string;
   }
 ): Omit<HistoryItem, "id" | "createdAt"> {
   return {
     videoUrl: data.videoUrl,
+    projectId: meta.projectId,
+    projectName: meta.projectName,
+    inputImage: meta.inputImage,
     effect: meta.effect,
     effectName: meta.effectName,
     model: data.model,
@@ -183,6 +190,8 @@ export function historyFieldsFromSuccess(
       typeof data.requestId === "string" ? data.requestId : undefined,
     sourceProject: meta.sourceProject,
     channel: meta.channel,
+    status: "succeeded",
+    creditStatus: data.demo ? "0 cached" : "10 used",
   };
 }
 

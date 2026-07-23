@@ -27,6 +27,35 @@ import { parseRemixSearchParams } from "@/lib/remixIntent";
 
 type Status = "idle" | "uploading" | "generating" | "done" | "error";
 type Mode = "i2v" | "t2v";
+type ResultCreditState =
+  | "0 cached"
+  | "10 used"
+  | "10 restored"
+  | "refund unconfirmed";
+
+type ResultVersion = {
+  id: string;
+  videoUrl: string;
+  demo: boolean;
+  watermark: boolean;
+  model: string;
+  duration: number;
+  aspectRatio: string;
+  resolution: string;
+  creditState: "0 cached" | "10 used";
+  createdAt: string;
+};
+
+function localProjectId(image: string, source?: string): string {
+  if (source) return `project-${source}`;
+  let hash = 2166136261;
+  const sample = image.slice(0, 4096);
+  for (let i = 0; i < sample.length; i += 1) {
+    hash ^= sample.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return `local-${(hash >>> 0).toString(36)}`;
+}
 
 const MODELS = [
   {
@@ -154,6 +183,11 @@ export function CreateStudio({
   /** Last failed live job restored credits (PRD §5 / W5 trust). */
   const [lastRefunded, setLastRefunded] = useState(false);
   const [sampleLoading, setSampleLoading] = useState(false);
+  /** Successful retries/variants remain selectable; a new run never overwrites one. */
+  const [versions, setVersions] = useState<ResultVersion[]>([]);
+  const [activeVersionId, setActiveVersionId] = useState<string | null>(null);
+  const [lastCreditState, setLastCreditState] =
+    useState<ResultCreditState | null>(null);
   const toast = useToast();
 
   const preset = useMemo(
@@ -389,7 +423,7 @@ export function CreateStudio({
 
     setError(null);
     setLastRefunded(false);
-    setVideoUrl(null);
+    setLastCreditState(null);
     setShowPaywall(false);
     setElapsed(0);
     setStatus("generating");
@@ -421,6 +455,13 @@ export function CreateStudio({
       }
       if (result.paywall) setShowPaywall(true);
       setLastRefunded(Boolean(result.creditsRefunded));
+      setLastCreditState(
+        result.creditsRefunded
+          ? "10 restored"
+          : result.status === 0
+            ? "refund unconfirmed"
+            : null
+      );
       setError(
         result.error ||
           (result.paywall
@@ -451,6 +492,30 @@ export function CreateStudio({
     setResultResolution(
       typeof data.resolution === "string" ? data.resolution : resolvedRes
     );
+    const version: ResultVersion = {
+      id:
+        typeof data.requestId === "string" && data.requestId
+          ? data.requestId
+          : `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      videoUrl: data.videoUrl,
+      demo: Boolean(data.demo),
+      watermark: Boolean(data.watermark),
+      model: data.model || modelId,
+      duration:
+        typeof data.duration === "number" ? data.duration : effectiveDuration,
+      aspectRatio:
+        typeof data.aspectRatio === "string" ? data.aspectRatio : aspectRatio,
+      resolution:
+        typeof data.resolution === "string" ? data.resolution : resolvedRes,
+      creditState: data.demo ? "0 cached" : "10 used",
+      createdAt: new Date().toISOString(),
+    };
+    setVersions((current) => [
+      version,
+      ...current.filter((item) => item.id !== version.id),
+    ]);
+    setActiveVersionId(version.id);
+    setLastCreditState(version.creditState);
     setStatus("done");
     rememberEffect(fx);
     pushHistory(
@@ -464,6 +529,18 @@ export function CreateStudio({
           ? `lab-sample-${opts.labSampleId}`
           : remix.intent?.sourceProjectSlug,
         channel: remix.intent?.channel,
+        projectId: localProjectId(
+          img,
+          opts?.labSampleId
+            ? `lab-sample-${opts.labSampleId}`
+            : remix.intent?.sourceProjectSlug
+        ),
+        projectName: opts?.labSampleId
+          ? `PIKBO Lab sample · ${opts.labSampleId}`
+          : remix.intent?.sourceProjectSlug
+            ? `Remix · ${remix.intent.sourceProjectSlug}`
+            : "Owned toy project",
+        inputImage: img.length <= 300_000 ? img : undefined,
       })
     );
     emitSessionRefresh();
@@ -484,6 +561,19 @@ export function CreateStudio({
     } catch {
       setError("Could not copy link");
     }
+  }
+
+  function selectVersion(version: ResultVersion) {
+    setActiveVersionId(version.id);
+    setVideoUrl(version.videoUrl);
+    setDemo(version.demo);
+    setWatermark(version.watermark);
+    setUsedModel(version.model);
+    setResultDuration(version.duration);
+    setResultAspect(version.aspectRatio);
+    setResultResolution(version.resolution);
+    setLastCreditState(version.creditState);
+    setStatus("done");
   }
 
   function shareX() {
@@ -1280,6 +1370,8 @@ export function CreateStudio({
               className={`rounded-xl border px-3 py-2.5 text-sm ${
                 lastRefunded
                   ? "border-amber-400/40 bg-amber-400/[0.08] text-amber-100"
+                  : lastCreditState === "refund unconfirmed"
+                    ? "border-amber-300/30 bg-amber-300/[0.06] text-amber-100"
                   : "border-[var(--brand)]/40 bg-[var(--brand)]/10 text-[var(--brand)]"
               }`}
             >
@@ -1289,6 +1381,11 @@ export function CreateStudio({
                   10 credits restored · not charged for this failed job
                 </p>
               )}
+              {lastCreditState === "refund unconfirmed" ? (
+                <p className="mt-1 text-[11px] font-bold uppercase tracking-wide text-amber-200/90">
+                  Refund unconfirmed · check your balance before retrying
+                </p>
+              ) : null}
             </div>
           )}
 
@@ -1346,7 +1443,7 @@ export function CreateStudio({
                 </div>
               </div>
             )}
-            {status === "done" && videoUrl && (
+            {(status === "done" || status === "error") && videoUrl && (
               <div className="relative w-full p-3">
                 <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
                   <div className="flex flex-wrap items-center gap-1.5">
@@ -1364,6 +1461,17 @@ export function CreateStudio({
                         {PROVENANCE.onPlayerMark}
                       </span>
                     )}
+                    {lastCreditState ? (
+                      <span
+                        className={`rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
+                          lastCreditState === "refund unconfirmed"
+                            ? "border-amber-300/30 bg-amber-300/10 text-amber-100"
+                            : "border-white/10 bg-black/40 text-white/60"
+                        }`}
+                      >
+                        {lastCreditState}
+                      </span>
+                    ) : null}
                   </div>
                   <button
                     type="button"
@@ -1373,6 +1481,27 @@ export function CreateStudio({
                     {compare ? "Video only" : "Photo ↔ video"}
                   </button>
                 </div>
+                {versions.length > 1 ? (
+                  <div className="mb-3 flex items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                    <span className="shrink-0 text-[10px] font-black uppercase tracking-wide text-[var(--fg-dim)]">
+                      Versions
+                    </span>
+                    {versions.map((version, index) => (
+                      <button
+                        key={version.id}
+                        type="button"
+                        onClick={() => selectVersion(version)}
+                        className={`shrink-0 rounded-full border px-3 py-1 text-[10px] font-bold ${
+                          activeVersionId === version.id
+                            ? "border-[var(--mint)] bg-[var(--mint)]/10 text-[var(--mint)]"
+                            : "border-[var(--border)] text-[var(--fg-muted)]"
+                        }`}
+                      >
+                        V{versions.length - index} · {version.creditState}
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
                 {compare && image ? (
                   <div className="grid gap-2 sm:grid-cols-2">
                     <div>
@@ -1443,7 +1572,7 @@ export function CreateStudio({
                 <p className="mx-auto mt-2 max-w-md text-center text-[11px] leading-relaxed text-[var(--fg-dim)]">
                   {demo
                     ? `${PROVENANCE.cachedDemo} — does not animate your upload.`
-                    : `${PROVENANCE.liveGeneration} — each run can look a bit different. Failed jobs refund credits.`}
+                    : `${PROVENANCE.liveGeneration} — each run creates a separate version. Returned provider failures restore credits; ambiguous network results are marked unconfirmed.`}
                 </p>
                 <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
                   <a
@@ -1474,20 +1603,14 @@ export function CreateStudio({
                     onClick={() => void generate()}
                     className="btn btn-ghost px-4 py-2 text-xs"
                   >
-                    Retry / regenerate
+                    Retry · new version
                   </button>
                   <button
                     type="button"
-                    onClick={() => {
-                      setVideoUrl(null);
-                      setStatus("idle");
-                      setError(null);
-                      setLastRefunded(false);
-                      toast("Same recipe · ready for another shot");
-                    }}
+                    onClick={() => void generate()}
                     className="btn btn-ghost px-4 py-2 text-xs"
                   >
-                    Create variant
+                    Make variant
                   </button>
                   <Link
                     href="/effects"
@@ -1507,7 +1630,7 @@ export function CreateStudio({
                     href="/library"
                     className="btn btn-ghost px-4 py-2 text-xs"
                   >
-                    Library
+                    Saved to Library
                   </Link>
                   <Link
                     href="/create?mode=seller-pack"

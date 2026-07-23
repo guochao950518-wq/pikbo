@@ -18,12 +18,29 @@ import { emitSessionRefresh } from "@/lib/sessionEvents";
 type Job = {
   slug: string;
   name: string;
-  status: "queued" | "running" | "done" | "error";
+  status:
+    | "queued"
+    | "running"
+    | "succeeded"
+    | "failed"
+    | "refunded"
+    | "not_started";
   error?: string;
+  errorCode?: string;
   videoUrl?: string;
   demo?: boolean;
   model?: string;
   aspectRatio?: "9:16" | "1:1" | "16:9";
+  duration?: number;
+  resolution?: string;
+  watermark?: boolean;
+  creditState?:
+    | "0 cached"
+    | "10 used"
+    | "10 restored"
+    | "refund unconfirmed"
+    | "not charged";
+  retryCount: number;
 };
 
 /** SELLER_PACK PRD v1 — three fixed outputs, not arbitrary batch. */
@@ -105,6 +122,7 @@ export function BatchStudio({
   const [catFilter, setCatFilter] = useState<CategoryId | "all">("all");
   const [me, setMe] = useState<MeResponse | null>(null);
   const [ownsRights, setOwnsRights] = useState(false);
+  const [runProjectId, setRunProjectId] = useState<string | null>(null);
 
   useEffect(() => {
     const t = window.setTimeout(() => {
@@ -121,7 +139,7 @@ export function BatchStudio({
   const effectiveModel = isFree ? "seedance-mini" : "seedance-fast";
   const cost = demoMode ? 0 : selected.length * CREDITS_PER_VIDEO;
   /** Label only when the frozen trio is selected (PRD: custom batch loses Seller Pack name). */
-  const sellerPackActive = selectedMatchesSellerPack(selected);
+  const sellerPackActive = isSellerPack || selectedMatchesSellerPack(selected);
 
   const visiblePresets = useMemo(() => {
     if (sellerPackActive) {
@@ -151,12 +169,14 @@ export function BatchStudio({
   }
 
   function toggle(slug: string) {
+    if (isSellerPack) return;
     setSelected((prev) =>
       prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]
     );
   }
 
   function selectCategory(id: CategoryId | "all") {
+    if (isSellerPack) return;
     setCatFilter(id);
     if (id === "all") return;
     const slugs = PRESETS.filter((p) => p.category === id).map((p) => p.slug);
@@ -176,6 +196,105 @@ export function BatchStudio({
     return aspectRatio;
   }
 
+  async function executeJob(
+    job: Job,
+    projectId: string
+  ): Promise<{ job: Job; stopQueue: boolean }> {
+    const jobAspect = job.aspectRatio ?? aspectRatio;
+    const result = await postGenerateWithRetry(
+      {
+        effect: job.slug,
+        image: image ?? undefined,
+        duration: effectiveDuration,
+        aspectRatio: jobAspect,
+        model: effectiveModel,
+        resolution: effectiveResolution,
+        ownsRights: true,
+      },
+      { maxRetries: 1 }
+    );
+
+    if (!result.ok) {
+      if (result.session) {
+        setMe((previous) =>
+          previous
+            ? { ...previous, ...result.session }
+            : (result.session as MeResponse)
+        );
+        emitSessionRefresh();
+      }
+      const refunded = result.creditsRefunded === true;
+      const ambiguous = result.status === 0;
+      return {
+        job: {
+          ...job,
+          status: refunded ? "refunded" : "failed",
+          error: result.error,
+          errorCode: result.code,
+          creditState: refunded
+            ? "10 restored"
+            : ambiguous
+              ? "refund unconfirmed"
+              : "not charged",
+        },
+        stopQueue: result.fatal || result.paywall || ambiguous,
+      };
+    }
+
+    const data = result.data;
+    if (data.session) {
+      setMe((previous) =>
+        previous
+          ? { ...previous, ...data.session }
+          : (data.session as MeResponse)
+      );
+    }
+    pushHistory(
+      historyFieldsFromSuccess(data, {
+        effect: job.slug,
+        effectName: job.name,
+        fallbackDuration: effectiveDuration,
+        fallbackAspect: jobAspect,
+        fallbackResolution: effectiveResolution,
+        projectId,
+        projectName: sellerPackActive
+          ? "Seller Pack · 3 outputs"
+          : "Custom batch",
+        inputImage:
+          image && image.length <= 300_000 ? image : undefined,
+        channel: SELLER_PACK_ITEMS.find((item) => item.slug === job.slug)
+          ?.channel,
+      })
+    );
+    emitSessionRefresh();
+    return {
+      job: {
+        ...job,
+        status: "succeeded",
+        videoUrl: data.videoUrl,
+        demo: data.demo,
+        model: data.model,
+        duration:
+          typeof data.duration === "number"
+            ? data.duration
+            : effectiveDuration,
+        resolution:
+          typeof data.resolution === "string"
+            ? data.resolution
+            : effectiveResolution,
+        aspectRatio:
+          data.aspectRatio === "1:1" ||
+          data.aspectRatio === "16:9" ||
+          data.aspectRatio === "9:16"
+            ? data.aspectRatio
+            : jobAspect,
+        watermark: Boolean(data.watermark),
+        creditState: data.demo ? "0 cached" : "10 used",
+      },
+      stopQueue: false,
+    };
+  }
+
   async function runBatch() {
     if (!image || !isValidImageDataUrl(image)) {
       setError("Add a toy photo first (JPEG, PNG, WebP, or GIF).");
@@ -192,6 +311,8 @@ export function BatchStudio({
 
     setError(null);
     setRunning(true);
+    const projectId = `${sellerPackActive ? "seller-pack" : "batch"}-${Date.now()}`;
+    setRunProjectId(projectId);
     const queue: Job[] = selected.map((slug) => {
       const p = PRESETS.find((x) => x.slug === slug)!;
       const packItem = SELLER_PACK_ITEMS.find((i) => i.slug === slug);
@@ -200,6 +321,7 @@ export function BatchStudio({
         name: sellerPackActive && packItem ? packItem.label : p.name,
         status: "queued" as const,
         aspectRatio: aspectForSlug(slug),
+        retryCount: 0,
       };
     });
     setJobs(queue);
@@ -208,82 +330,81 @@ export function BatchStudio({
       setJobs((prev) =>
         prev.map((j, idx) => (idx === i ? { ...j, status: "running" } : j))
       );
-      const jobAspect = queue[i].aspectRatio ?? aspectRatio;
-      const result = await postGenerateWithRetry(
-        {
-          effect: queue[i].slug,
-          image,
-          duration: effectiveDuration,
-          aspectRatio: jobAspect,
-          model: effectiveModel,
-          resolution: effectiveResolution,
-          ownsRights: true,
-        },
-        { maxRetries: 2 }
+      const outcome = await executeJob(queue[i], projectId);
+      queue[i] = outcome.job;
+      setJobs((previous) =>
+        previous.map((job, index) => (index === i ? outcome.job : job))
       );
-
-      if (!result.ok) {
-        setJobs((prev) =>
-          prev.map((j, idx) =>
-            idx === i
-              ? { ...j, status: "error", error: result.error }
-              : j
+      if (outcome.stopQueue) {
+        setError(outcome.job.error ?? "Seller Pack paused");
+        setJobs((previous) =>
+          previous.map((job, index) =>
+            index > i && job.status === "queued"
+              ? { ...job, status: "not_started" }
+              : job
           )
         );
-        if (result.session) {
-          setMe((prev) =>
-            prev
-              ? { ...prev, ...result.session }
-              : (result.session as MeResponse)
-          );
-          emitSessionRefresh();
-        }
-        if (result.fatal || result.paywall) {
-          setError(result.error);
-          // Leave remaining jobs queued so the user sees what did not run.
-          break;
-        }
-        continue;
+        break;
       }
-
-      const data = result.data;
-      if (data.session) {
-        setMe((prev) =>
-          prev
-            ? { ...prev, ...data.session }
-            : (data.session as MeResponse)
-        );
-      }
-      pushHistory(
-        historyFieldsFromSuccess(data, {
-          effect: queue[i].slug,
-          effectName: queue[i].name,
-          fallbackDuration: effectiveDuration,
-          fallbackAspect: jobAspect,
-          fallbackResolution: effectiveResolution,
-        })
-      );
-      setJobs((prev) =>
-        prev.map((j, idx) =>
-          idx === i
-            ? {
-                ...j,
-                status: "done",
-                videoUrl: data.videoUrl,
-                demo: data.demo,
-                model: data.model,
-              }
-            : j
-        )
-      );
-      emitSessionRefresh();
       // Soft gap so sequential batch stays under session/IP soft limits.
       if (i < queue.length - 1) await sleep(400);
     }
     setRunning(false);
   }
 
-  const doneCount = jobs.filter((j) => j.status === "done").length;
+  async function retryJob(slug: string) {
+    if (running || !image || !ownsRights) return;
+    const target = jobs.find((job) => job.slug === slug);
+    if (
+      !target ||
+      (target.status !== "failed" && target.status !== "refunded")
+    ) {
+      return;
+    }
+    const projectId =
+      runProjectId ??
+      `${sellerPackActive ? "seller-pack" : "batch"}-retry-${target.slug}`;
+    setRunProjectId(projectId);
+    setRunning(true);
+    setError(null);
+    const retrying: Job = {
+      ...target,
+      status: "running",
+      error: undefined,
+      errorCode: undefined,
+      creditState: undefined,
+      retryCount: target.retryCount + 1,
+    };
+    setJobs((previous) =>
+      previous.map((job) => (job.slug === slug ? retrying : job))
+    );
+    const outcome = await executeJob(retrying, projectId);
+    setJobs((previous) =>
+      previous.map((job) => (job.slug === slug ? outcome.job : job))
+    );
+    if (!outcome.job.videoUrl) {
+      setError(outcome.job.error ?? "Retry failed");
+    }
+    setRunning(false);
+  }
+
+  const doneCount = jobs.filter((j) => j.status === "succeeded").length;
+  const needsAttentionCount = jobs.filter(
+    (job) =>
+      job.status === "failed" ||
+      job.status === "refunded" ||
+      job.status === "not_started"
+  ).length;
+  const liveQuoteCovered =
+    demoMode ||
+    me?.credits === undefined ||
+    me.credits >= cost;
+  const canRun =
+    !running &&
+    Boolean(image) &&
+    selected.length > 0 &&
+    ownsRights &&
+    liveQuoteCovered;
 
   return (
     <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_1.1fr]">
@@ -297,7 +418,7 @@ export function BatchStudio({
               Listing Spin (1:1) · Blind-box Reveal (9:16) · Social Flash (9:16).
               {demoMode
                 ? " Cached demos · 0 credits · upload not rendered."
-                : ` Live quote ${selected.length * CREDITS_PER_VIDEO} credits · failed children refund.`}
+                : ` Live quote ${selected.length * CREDITS_PER_VIDEO} credits · only a returned post-debit failure is marked restored.`}
             </p>
             <ul className="mt-2 space-y-0.5 text-[10px] text-[var(--fg-dim)]">
               {SELLER_PACK_ITEMS.map((item) => (
@@ -357,55 +478,64 @@ export function BatchStudio({
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <p className="text-[10px] font-semibold text-[var(--fg-dim)]">
-              Duration
-            </p>
-            <div className="mt-1 flex gap-1">
-              {([5, 10] as const).map((d) => (
-                <button
-                  key={d}
-                  type="button"
-                  disabled={isFree && d === 10}
-                  onClick={() => setDuration(d)}
-                  className={`flex-1 rounded-lg border py-1.5 text-xs font-semibold disabled:opacity-40 ${
-                    effectiveDuration === d
-                      ? "border-[var(--brand)]"
-                      : "border-[var(--border)] text-[var(--fg-muted)]"
-                  }`}
-                >
-                  {d}s{isFree && d === 10 ? " · paid" : ""}
-                </button>
-              ))}
+        <div className={`grid gap-2 ${isSellerPack ? "" : "grid-cols-2"}`}>
+          {!isSellerPack ? (
+            <>
+              <div>
+                <p className="text-[10px] font-semibold text-[var(--fg-dim)]">
+                  Duration
+                </p>
+                <div className="mt-1 flex gap-1">
+                  {([5, 10] as const).map((d) => (
+                    <button
+                      key={d}
+                      type="button"
+                      disabled={isFree && d === 10}
+                      onClick={() => setDuration(d)}
+                      className={`flex-1 rounded-lg border py-1.5 text-xs font-semibold disabled:opacity-40 ${
+                        effectiveDuration === d
+                          ? "border-[var(--brand)]"
+                          : "border-[var(--border)] text-[var(--fg-muted)]"
+                      }`}
+                    >
+                      {d}s{isFree && d === 10 ? " · paid" : ""}
+                    </button>
+                  ))}
+                </div>
+                {isFree && (
+                  <p className="mt-1 text-[10px] text-[var(--fg-dim)]">
+                    Free · Mini · 480p · 5s (server-enforced)
+                  </p>
+                )}
+              </div>
+              <div>
+                <p className="text-[10px] font-semibold text-[var(--fg-dim)]">
+                  Aspect
+                </p>
+                <div className="mt-1 flex gap-1">
+                  {(["9:16", "1:1", "16:9"] as const).map((a) => (
+                    <button
+                      key={a}
+                      type="button"
+                      onClick={() => setAspectRatio(a)}
+                      className={`flex-1 rounded-lg border py-1.5 text-[10px] font-semibold ${
+                        aspectRatio === a
+                          ? "border-[var(--brand)]"
+                          : "border-[var(--border)] text-[var(--fg-muted)]"
+                      }`}
+                    >
+                      {a}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-soft)] p-3 text-xs text-[var(--fg-muted)]">
+              Per-output formats are fixed: Listing Spin uses 1:1; Reveal and
+              Social Flash use 9:16. All three use the current 5s plan path.
             </div>
-            {isFree && (
-              <p className="mt-1 text-[10px] text-[var(--fg-dim)]">
-                Free · Mini · 480p · 5s (server-enforced)
-              </p>
-            )}
-          </div>
-          <div>
-            <p className="text-[10px] font-semibold text-[var(--fg-dim)]">
-              Aspect
-            </p>
-            <div className="mt-1 flex gap-1">
-              {(["9:16", "1:1", "16:9"] as const).map((a) => (
-                <button
-                  key={a}
-                  type="button"
-                  onClick={() => setAspectRatio(a)}
-                  className={`flex-1 rounded-lg border py-1.5 text-[10px] font-semibold ${
-                    aspectRatio === a
-                      ? "border-[var(--brand)]"
-                      : "border-[var(--border)] text-[var(--fg-muted)]"
-                  }`}
-                >
-                  {a}
-                </button>
-              ))}
-            </div>
-          </div>
+          )}
         </div>
 
         <div>
@@ -413,78 +543,108 @@ export function BatchStudio({
             <p className="text-xs font-semibold text-[var(--fg-muted)]">
               Presets in this batch
             </p>
-            <div className="flex flex-wrap gap-1">
-              <button
-                type="button"
-                onClick={selectSellerPack}
-                className={`rounded-md border px-2 py-0.5 text-[10px] ${
-                  sellerPackActive
-                    ? "border-[var(--mint)] bg-[var(--mint)]/10 text-[var(--mint)]"
-                    : "border-[var(--border)] text-[var(--mint)] hover:border-[var(--mint)]"
-                }`}
-              >
-                Seller Pack · 3
-              </button>
-              <button
-                type="button"
-                onClick={() => setSelected([])}
-                className="rounded-md border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--fg-dim)]"
-              >
-                Clear
-              </button>
-            </div>
-          </div>
-          <div className="mt-2 flex flex-wrap gap-1">
-            <button
-              type="button"
-              onClick={() => setCatFilter("all")}
-              className={`rounded-full border px-2 py-0.5 text-[10px] ${
-                catFilter === "all"
-                  ? "border-[var(--brand)]"
-                  : "border-[var(--border)] text-[var(--fg-dim)]"
-              }`}
-            >
-              All
-            </button>
-            {CATEGORIES.map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => selectCategory(c.id)}
-                className={`rounded-full border px-2 py-0.5 text-[10px] ${
-                  catFilter === c.id
-                    ? "border-[var(--brand)]"
-                    : "border-[var(--border)] text-[var(--fg-dim)]"
-                }`}
-                title={c.blurb}
-              >
-                {c.label}
-              </button>
-            ))}
-          </div>
-          <div className="mt-2 flex max-h-56 flex-wrap gap-2 overflow-y-auto">
-            {visiblePresets.map((p) => {
-              const on = selected.includes(p.slug);
-              return (
+            {!isSellerPack ? (
+              <div className="flex flex-wrap gap-1">
                 <button
-                  key={p.slug}
                   type="button"
-                  onClick={() => toggle(p.slug)}
-                  className={`rounded-lg border px-2.5 py-1.5 text-xs ${
-                    on
-                      ? "border-[var(--brand)] bg-[var(--grad-soft)]"
-                      : "border-[var(--border)] text-[var(--fg-muted)]"
+                  onClick={selectSellerPack}
+                  className={`rounded-md border px-2 py-0.5 text-[10px] ${
+                    sellerPackActive
+                      ? "border-[var(--mint)] bg-[var(--mint)]/10 text-[var(--mint)]"
+                      : "border-[var(--border)] text-[var(--mint)] hover:border-[var(--mint)]"
                   }`}
                 >
-                  {p.emoji} {p.name}
+                  Seller Pack · 3
                 </button>
-              );
-            })}
+                <button
+                  type="button"
+                  onClick={() => setSelected([])}
+                  className="rounded-md border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--fg-dim)]"
+                >
+                  Clear
+                </button>
+              </div>
+            ) : (
+              <span className="rounded-full border border-[var(--mint)]/30 bg-[var(--mint)]/10 px-2.5 py-1 text-[10px] font-bold text-[var(--mint)]">
+                Frozen v1 configuration
+              </span>
+            )}
           </div>
-          {validInitial && validInitial.length > 0 && (
-            <p className="mt-2 text-[10px] text-[var(--mint)]">
-              Pre-selected from tool page link ({validInitial.length} effects).
-            </p>
+          {!isSellerPack ? (
+            <>
+              <div className="mt-2 flex flex-wrap gap-1">
+                <button
+                  type="button"
+                  onClick={() => setCatFilter("all")}
+                  className={`rounded-full border px-2 py-0.5 text-[10px] ${
+                    catFilter === "all"
+                      ? "border-[var(--brand)]"
+                      : "border-[var(--border)] text-[var(--fg-dim)]"
+                  }`}
+                >
+                  All
+                </button>
+                {CATEGORIES.map((c) => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    onClick={() => selectCategory(c.id)}
+                    className={`rounded-full border px-2 py-0.5 text-[10px] ${
+                      catFilter === c.id
+                        ? "border-[var(--brand)]"
+                        : "border-[var(--border)] text-[var(--fg-dim)]"
+                    }`}
+                    title={c.blurb}
+                  >
+                    {c.label}
+                  </button>
+                ))}
+              </div>
+              <div className="mt-2 flex max-h-56 flex-wrap gap-2 overflow-y-auto">
+                {visiblePresets.map((p) => {
+                  const on = selected.includes(p.slug);
+                  return (
+                    <button
+                      key={p.slug}
+                      type="button"
+                      onClick={() => toggle(p.slug)}
+                      className={`rounded-lg border px-2.5 py-1.5 text-xs ${
+                        on
+                          ? "border-[var(--brand)] bg-[var(--grad-soft)]"
+                          : "border-[var(--border)] text-[var(--fg-muted)]"
+                      }`}
+                    >
+                      {p.emoji} {p.name}
+                    </button>
+                  );
+                })}
+              </div>
+              {validInitial && validInitial.length > 0 && (
+                <p className="mt-2 text-[10px] text-[var(--mint)]">
+                  Pre-selected from tool page link ({validInitial.length} effects).
+                </p>
+              )}
+            </>
+          ) : (
+            <div className="mt-3 grid gap-2 sm:grid-cols-3">
+              {SELLER_PACK_ITEMS.map((item, index) => (
+                <article
+                  key={item.key}
+                  className="rounded-xl border border-[var(--border)] bg-[var(--bg-soft)] p-3"
+                >
+                  <span className="text-[10px] font-black text-[var(--mint)]">
+                    0{index + 1}
+                  </span>
+                  <p className="mt-1 text-xs font-bold">{item.label}</p>
+                  <p className="mt-1 text-[10px] text-[var(--fg-dim)]">
+                    {item.aspectRatio} · 5s · {item.channel}
+                  </p>
+                  <p className="mt-2 text-[10px] font-semibold text-[var(--fg-muted)]">
+                    {demoMode ? "0 cached" : "10 credits"}
+                  </p>
+                </article>
+              ))}
+            </div>
           )}
         </div>
 
@@ -503,7 +663,7 @@ export function BatchStudio({
 
         <button
           type="button"
-          disabled={running || !image || selected.length === 0 || !ownsRights}
+          disabled={!canRun}
           onClick={() => void runBatch()}
           className="btn btn-primary w-full disabled:opacity-50"
         >
@@ -513,6 +673,29 @@ export function BatchStudio({
               ? `${sellerPackActive ? "Preview Seller Pack" : "Run batch"} · ${selected.length} · cached demos free`
               : `${sellerPackActive ? "Run Seller Pack" : "Run batch"} · ${selected.length} · ${cost} credits`}
         </button>
+        {!liveQuoteCovered && sellerPackActive ? (
+          <div className="rounded-xl border border-amber-300/25 bg-amber-300/[0.06] p-3 text-xs text-amber-100">
+            <p className="font-bold">
+              Full live pack needs {cost} credits; this session has{" "}
+              {me?.credits ?? 0}.
+            </p>
+            <p className="mt-1 text-[11px] text-white/50">
+              The current Free allowance supports one Mini job. Choose one
+              recipe in single Generate; paid activation remains gated.
+            </p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {SELLER_PACK_ITEMS.map((item) => (
+                <Link
+                  key={item.key}
+                  href={`/create?effect=${item.slug}`}
+                  className="rounded-full border border-white/15 px-2.5 py-1 text-[10px] font-bold text-white/70"
+                >
+                  Try {item.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        ) : null}
         {error && <p className="text-sm text-[var(--brand)]">{error}</p>}
         <p className="text-[11px] text-[var(--fg-dim)]">
           Sequential jobs use the same generate API
@@ -531,10 +714,22 @@ export function BatchStudio({
 
       <div className="card space-y-3 p-4">
         <div className="flex items-center justify-between">
-          <h2 className="font-semibold">Queue</h2>
+          <div>
+            <h2 className="font-semibold">
+              {sellerPackActive ? "Seller Pack queue" : "Queue"}
+            </h2>
+            {jobs.length > 0 ? (
+              <p className="mt-0.5 text-[10px] text-[var(--fg-dim)]">
+                {doneCount} ready
+                {needsAttentionCount > 0
+                  ? ` · ${needsAttentionCount} need attention`
+                  : ""}
+              </p>
+            ) : null}
+          </div>
           {jobs.length > 0 && (
             <span className="text-[10px] text-[var(--fg-dim)]">
-              {doneCount} done
+              Saved on this device
             </span>
           )}
         </div>
@@ -553,9 +748,9 @@ export function BatchStudio({
               <span className="font-medium">{j.name}</span>
               <span
                 className={`text-[10px] font-bold uppercase ${
-                  j.status === "done"
+                  j.status === "succeeded"
                     ? "text-[var(--mint)]"
-                    : j.status === "error"
+                    : j.status === "failed" || j.status === "refunded"
                       ? "text-[var(--brand)]"
                       : j.status === "running"
                         ? "text-[var(--brand-2)]"
@@ -568,6 +763,22 @@ export function BatchStudio({
             {j.error && (
               <p className="mt-1 text-xs text-[var(--brand)]">{j.error}</p>
             )}
+            <div className="mt-1 flex flex-wrap gap-1.5 text-[10px] text-[var(--fg-dim)]">
+              <span>{j.aspectRatio ?? aspectRatio}</span>
+              <span>· {j.duration ?? effectiveDuration}s</span>
+              <span>· {j.resolution ?? effectiveResolution}</span>
+              {j.creditState ? (
+                <span
+                  className={
+                    j.creditState === "refund unconfirmed"
+                      ? "font-bold text-amber-300"
+                      : "font-bold text-[var(--fg-muted)]"
+                  }
+                >
+                  · {j.creditState}
+                </span>
+              ) : null}
+            </div>
             {j.videoUrl && (
               <video
                 src={j.videoUrl}
@@ -577,7 +788,7 @@ export function BatchStudio({
                 className="mt-2 max-h-40 w-full rounded-lg bg-black/40"
               />
             )}
-            {j.status === "done" && (
+            {j.status === "succeeded" && (
               <div className="mt-1 flex flex-wrap items-center gap-2">
                 <span
                   className={`text-[10px] font-bold uppercase ${
@@ -597,7 +808,25 @@ export function BatchStudio({
                 >
                   Effect page →
                 </Link>
+                <a
+                  href={j.videoUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[10px] text-[var(--mint)] hover:underline"
+                >
+                  Download / open
+                </a>
               </div>
+            )}
+            {(j.status === "failed" || j.status === "refunded") && (
+              <button
+                type="button"
+                disabled={running || !image || !ownsRights}
+                onClick={() => void retryJob(j.slug)}
+                className="mt-2 rounded-full border border-[var(--mint)]/30 px-3 py-1 text-[10px] font-bold text-[var(--mint)] disabled:opacity-40"
+              >
+                Retry this item · new 10-credit quote
+              </button>
             )}
           </div>
         ))}
