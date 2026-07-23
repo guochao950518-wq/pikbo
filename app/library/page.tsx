@@ -16,8 +16,12 @@ export default function LibraryPage() {
           <div>
             <h1 className="text-2xl font-bold">Local Library</h1>
             <p className="mt-1 text-sm text-[var(--fg-muted)]">
-              Saved in this browser only — not cloud-synced. Download, re-run, or
-              open the tool page.
+              <span className="font-semibold text-[var(--mint)]">
+                Saved on this device
+              </span>
+              {" · "}
+              this browser only — not cloud-synced. Download, re-run, or open
+              the tool page. Cloud Library ships with durable sign-in.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">

@@ -14,6 +14,13 @@ import { isValidImageDataUrl } from "@/lib/providerError";
 import { SAMPLE_TOYS, sampleToDataUrl } from "@/lib/samples";
 import { fetchMe, type MeResponse } from "@/lib/meClient";
 import { emitSessionRefresh } from "@/lib/sessionEvents";
+import {
+  canExportSellerPack,
+  sellerPackCsv,
+  sellerPackManifest,
+  type SellerPackExportItem,
+} from "@/lib/sellerPackExport";
+import { canDownloadResult } from "@/lib/createTrust";
 
 type Job = {
   slug: string;
@@ -395,6 +402,61 @@ export function BatchStudio({
       job.status === "refunded" ||
       job.status === "not_started"
   ).length;
+
+  const exportItems: SellerPackExportItem[] = useMemo(() => {
+    return jobs.map((j) => {
+      const packMeta = SELLER_PACK_ITEMS.find((p) => p.slug === j.slug);
+      return {
+        key: packMeta?.key || j.slug,
+        slug: j.slug,
+        label: packMeta?.label || j.name,
+        status: j.status,
+        videoUrl: j.videoUrl,
+        demo: j.demo,
+        watermark: j.watermark,
+        creditState: j.creditState,
+        downloadable: Boolean(
+          j.videoUrl &&
+            canDownloadResult({
+              demo: Boolean(j.demo),
+              watermark: Boolean(j.watermark),
+            })
+        ),
+      };
+    });
+  }, [jobs]);
+  const canExportPack = canExportSellerPack(exportItems);
+
+  function downloadText(filename: string, body: string, mime: string) {
+    const blob = new Blob([body], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function exportAvailableCsv() {
+    const csv = sellerPackCsv(exportItems);
+    if (!csv) return;
+    downloadText(
+      `pikbo-seller-pack-${Date.now()}.csv`,
+      csv,
+      "text/csv;charset=utf-8"
+    );
+  }
+
+  function exportAvailableManifest() {
+    const manifest = sellerPackManifest(exportItems);
+    downloadText(
+      `pikbo-seller-pack-manifest-${Date.now()}.json`,
+      JSON.stringify(manifest, null, 2),
+      "application/json"
+    );
+  }
   const liveQuoteCovered =
     demoMode ||
     me?.credits === undefined ||
@@ -738,6 +800,39 @@ export function BatchStudio({
             No jobs yet. Pick presets (or open Batch from an effect page) and
             run.
           </p>
+        )}
+        {jobs.length > 0 && (
+          <div className="flex flex-wrap items-center gap-2 rounded-xl border border-[var(--border)] bg-black/30 px-3 py-2">
+            <p className="text-[11px] text-[var(--fg-muted)]">
+              Export only succeeded downloadable clips
+              {canExportPack
+                ? ` · ${
+                    exportItems.filter(
+                      (i) => i.downloadable && i.status === "succeeded"
+                    ).length
+                  } available`
+                : " · none ready yet"}
+            </p>
+            <button
+              type="button"
+              disabled={!canExportPack}
+              onClick={exportAvailableCsv}
+              className="rounded-full border border-[var(--mint)]/30 px-3 py-1 text-[10px] font-bold text-[var(--mint)] disabled:opacity-40"
+            >
+              Export CSV
+            </button>
+            <button
+              type="button"
+              disabled={!canExportPack}
+              onClick={exportAvailableManifest}
+              className="rounded-full border border-[var(--border)] px-3 py-1 text-[10px] font-bold text-[var(--fg-muted)] disabled:opacity-40"
+            >
+              Manifest JSON
+            </button>
+            <span className="text-[10px] text-[var(--fg-dim)]">
+              No ZIP until storage · failures omitted
+            </span>
+          </div>
         )}
         {jobs.map((j) => (
           <div

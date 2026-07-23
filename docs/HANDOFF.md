@@ -4,6 +4,11 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [grok] continuous: Seller Pack export + Library honesty + retry stub
+- `lib/sellerPackExport.ts`: CSV/manifest only for succeeded+downloadable children; no fake ZIP.
+- BatchStudio Export CSV / Manifest; Library title says **Saved on this device**.
+- `POST /api/generations/[id]/retry` → 501 honest. Home CTAs fire analytics no-ops.
+
 ### 2026-07-23 — [grok] continuous: Phase D stubs + Create analytics hooks
 - `POST /api/assets/upload-url` and `POST /api/webhooks/video-provider` → honest 501.
 - Create `track(generate_start|generate_result)` no-ops unless `NEXT_PUBLIC_ANALYTICS_URL`.

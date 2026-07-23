@@ -10,6 +10,7 @@ import {
   showcaseRecipeHref,
   type ShowcaseProject,
 } from "@/lib/showcaseProjects";
+import { track } from "@/lib/analytics";
 
 /** Soft concurrent autoplay budget — pause extras when many tiles enter view. */
 const playingVideos = new Set<HTMLVideoElement>();
@@ -174,18 +175,35 @@ export function HfExploreHome({
           <div className="mt-5 flex flex-wrap gap-3">
             <Link
               href="/create?try=1&sample=scout"
+              onClick={() =>
+                track({ event: "landing_view", path: "/", meta: { cta: "try_free" } })
+              }
               className="inline-flex items-center justify-center rounded-full bg-[#c8ff3d] px-6 py-3 text-sm font-black text-black shadow-[0_0_40px_-8px_rgba(200,255,61,0.5)] transition hover:-translate-y-0.5"
             >
               Try free in 10 seconds
             </Link>
             <Link
               href={item.href}
+              onClick={() =>
+                track({
+                  event: "recipe_use",
+                  path: "/",
+                  recipe: item.recipeSlug,
+                })
+              }
               className="inline-flex items-center justify-center rounded-full border border-white/25 bg-black/40 px-5 py-3 text-sm font-bold text-white backdrop-blur transition hover:border-[#c8ff3d]/50"
             >
               Use this recipe
             </Link>
             <Link
               href={item.projectHref || item.detailHref || "/effects"}
+              onClick={() =>
+                track({
+                  event: "project_open",
+                  path: item.projectHref || "/",
+                  recipe: item.recipeSlug,
+                })
+              }
               className="inline-flex items-center justify-center rounded-full border border-white/15 px-4 py-3 text-sm font-semibold text-white/70 hover:text-white"
             >
               What&apos;s inside?

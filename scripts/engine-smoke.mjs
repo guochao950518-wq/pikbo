@@ -777,5 +777,44 @@ assert.match(
 );
 assert.match(createStudio, /track\(\{[\s\S]*generate_start/);
 
+// Seller Pack export honesty
+const packExport = fs.readFileSync(
+  join(root, "lib/sellerPackExport.ts"),
+  "utf8"
+);
+assert.match(packExport, /filterAvailableDeliverables/);
+assert.match(packExport, /sellerPackCsv/);
+function filterAvailable(items) {
+  return items.filter(
+    (i) =>
+      i.status === "succeeded" &&
+      i.videoUrl &&
+      i.downloadable
+  );
+}
+assert.equal(
+  filterAvailable([
+    { status: "succeeded", videoUrl: "/a.mp4", downloadable: true },
+    { status: "failed", videoUrl: "/b.mp4", downloadable: true },
+    { status: "succeeded", videoUrl: "/c.mp4", downloadable: false },
+  ]).length,
+  1
+);
+assert.match(
+  fs.readFileSync(join(root, "components/BatchStudio.tsx"), "utf8"),
+  /exportAvailableCsv|Export CSV/
+);
+assert.match(
+  fs.readFileSync(join(root, "app/library/page.tsx"), "utf8"),
+  /Saved on this device/
+);
+assert.match(
+  fs.readFileSync(
+    join(root, "app/api/generations/[id]/retry/route.ts"),
+    "utf8"
+  ),
+  /NOT_IMPLEMENTED/
+);
+
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node
