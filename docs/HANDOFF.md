@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [grok] Seller Pack durable shadow reserve 30 / child 10
+- `lib/durableCredits/sellerPack.ts`: reserve 30 (purpose seller_pack), settle/release 10 per child.
+- APIs: `POST /api/seller-pack/reserve|settle|release` (Bearer preferred; DURABLE_OFF non-fatal).
+- BatchStudio Seller Pack: reserve before run; settle live success; release fail/not_started siblings.
+- Cookie still debits each `/api/generate` child. Verified: engine-smoke · lint · typecheck.
+
 ### 2026-07-23 — [grok] Phase G perf + proof notes + D cancel/upload local
 - Home/AutoPlay: non-hero `preload=none`; hero metadata; rail `fetchPriority` on first poster.
 - Project page surfaces `reviewerNotes` under quality review.

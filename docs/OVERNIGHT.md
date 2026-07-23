@@ -67,7 +67,8 @@
 26. [x] Library Free-download honesty · local forkRetry · Create download via /api/downloads
 27. [x] Landing Free-download honesty · HOME_PROOF quality ≥4 gate (provisional Lab scores)
 28. [x] Signed-in durable shadow reserve on generate · /api/me auth+wallet · badge displayCredits
-29. 下一拍：T6 bake · G6 lives (budget) · REQUIRE_DURABLE_CREDITS when Postgres ready
+29. [x] Seller Pack shadow reserve 30 · settle/release 10 per child · BatchStudio wired
+30. 下一拍：T6 bake · G6 lives (budget) · REQUIRE_DURABLE_CREDITS when Postgres ready
 
 ### 老板醒来验收
 
@@ -81,8 +82,8 @@
 
 ## Grok 本拍状态（3 行）
 
-- Generate shadow ledger prefers signed-in Supabase user; cookie still debits.  
-- /api/me + fetchMe/postGenerate Bearer; CreditsBadge durable displayCredits.  
+- Seller Pack durable shadow: reserve 30, settle/release 10 per child via API + BatchStudio.  
+- Cookie generate still authoritative; DURABLE_OFF continues cookie-only path.  
 - engine-smoke/lint/typecheck green · public NO-GO · G6 needs 2 lives · no fal spend.
 
 ---

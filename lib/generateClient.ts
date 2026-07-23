@@ -218,6 +218,106 @@ export function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+async function bearerAuthHeaders(): Promise<Record<string, string>> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (typeof window === "undefined") return headers;
+  try {
+    const { getSupabaseBrowser } = await import("@/lib/supabase/browser");
+    const supabase = getSupabaseBrowser();
+    if (!supabase) return headers;
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
+    if (token) headers.Authorization = `Bearer ${token}`;
+  } catch {
+    /* guest */
+  }
+  return headers;
+}
+
+/** Seller Pack durable shadow reserve (30 for 3 children). Non-fatal if durable off. */
+export async function reserveSellerPackShadowClient(input?: {
+  childCount?: number;
+  idempotencyKey?: string;
+}): Promise<{
+  ok: boolean;
+  reservationId?: string;
+  code?: string;
+  error?: string;
+  quoteCredits?: number;
+}> {
+  try {
+    const headers = await bearerAuthHeaders();
+    const res = await fetch("/api/seller-pack/reserve", {
+      method: "POST",
+      headers,
+      body: JSON.stringify(input ?? {}),
+    });
+    const raw = (await res.json().catch(() => ({}))) as {
+      ok?: boolean;
+      code?: string;
+      error?: string;
+      quoteCredits?: number;
+      pack?: { reservationId?: string };
+    };
+    if (raw.ok && raw.pack?.reservationId) {
+      return {
+        ok: true,
+        reservationId: raw.pack.reservationId,
+        quoteCredits: raw.quoteCredits,
+      };
+    }
+    return {
+      ok: false,
+      code: raw.code || String(res.status),
+      error: raw.error,
+      quoteCredits: raw.quoteCredits,
+    };
+  } catch (e) {
+    return {
+      ok: false,
+      code: "NETWORK",
+      error: e instanceof Error ? e.message : "reserve failed",
+    };
+  }
+}
+
+export async function settleSellerPackChildClient(input: {
+  reservationId: string;
+  jobId?: string;
+  childKey?: string;
+}): Promise<void> {
+  try {
+    const headers = await bearerAuthHeaders();
+    await fetch("/api/seller-pack/settle", {
+      method: "POST",
+      headers,
+      body: JSON.stringify(input),
+    });
+  } catch {
+    /* best-effort shadow */
+  }
+}
+
+export async function releaseSellerPackChildClient(input: {
+  reservationId: string;
+  jobId?: string;
+  childKey?: string;
+  reason?: string;
+}): Promise<void> {
+  try {
+    const headers = await bearerAuthHeaders();
+    await fetch("/api/seller-pack/release", {
+      method: "POST",
+      headers,
+      body: JSON.stringify(input),
+    });
+  } catch {
+    /* best-effort shadow */
+  }
+}
+
 /**
  * POST generate with one automatic retry on RATE_LIMITED / PROVIDER_RATE_LIMIT.
  * Used by batch so sequential jobs survive the soft 8/min window.

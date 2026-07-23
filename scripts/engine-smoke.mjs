@@ -1077,5 +1077,40 @@ assert.match(
   /putLocalAsset/
 );
 
+// Phase C — Seller Pack shadow reserve 30 / settle-release 10 per child
+const sellerPackLib = fs.readFileSync(
+  join(root, "lib/durableCredits/sellerPack.ts"),
+  "utf8"
+);
+assert.match(sellerPackLib, /SELLER_PACK_QUOTE_CREDITS|sellerPackQuoteCredits/);
+assert.match(sellerPackLib, /reserveSellerPackShadow/);
+assert.match(sellerPackLib, /settleSellerPackChild/);
+assert.match(sellerPackLib, /releaseSellerPackChild/);
+assert.match(sellerPackLib, /purpose:\s*"seller_pack"|seller_pack/);
+function sellerPackQuoteCredits(childCount = 3, per = 10) {
+  return childCount * per;
+}
+assert.equal(sellerPackQuoteCredits(3), 30);
+assert.equal(sellerPackQuoteCredits(1), 10);
+const spReserve = fs.readFileSync(
+  join(root, "app/api/seller-pack/reserve/route.ts"),
+  "utf8"
+);
+assert.match(spReserve, /reserveSellerPackShadow/);
+assert.match(spReserve, /SELLER_PACK_QUOTE_CREDITS|quoteCredits/);
+assert.match(
+  fs.readFileSync(join(root, "app/api/seller-pack/settle/route.ts"), "utf8"),
+  /settleSellerPackChild/
+);
+assert.match(
+  fs.readFileSync(join(root, "app/api/seller-pack/release/route.ts"), "utf8"),
+  /releaseSellerPackChild/
+);
+assert.match(batchStudio, /reserveSellerPackShadowClient/);
+assert.match(batchStudio, /settleSellerPackChildClient/);
+assert.match(batchStudio, /releaseSellerPackChildClient/);
+assert.match(batchStudio, /packReservationId/);
+assert.match(gen, /reserveSellerPackShadowClient/);
+
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

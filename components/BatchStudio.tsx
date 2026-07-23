@@ -5,6 +5,9 @@ import { useEffect, useMemo, useState } from "react";
 import {
   historyFieldsFromSuccess,
   postGenerateWithRetry,
+  releaseSellerPackChildClient,
+  reserveSellerPackShadowClient,
+  settleSellerPackChildClient,
   sleep,
 } from "@/lib/generateClient";
 import { pushHistory } from "@/lib/history";
@@ -206,7 +209,8 @@ export function BatchStudio({
 
   async function executeJob(
     job: Job,
-    projectId: string
+    projectId: string,
+    packReservationId?: string | null
   ): Promise<{ job: Job; stopQueue: boolean }> {
     const jobAspect = job.aspectRatio ?? aspectRatio;
     const result = await postGenerateWithRetry(
@@ -233,6 +237,15 @@ export function BatchStudio({
       }
       const refunded = result.creditsRefunded === true;
       const ambiguous = result.status === 0;
+      // Phase C: release 10 from Seller Pack shadow reservation on failed child.
+      // Failures only occur on the live debit path (demo never debits).
+      if (packReservationId) {
+        void releaseSellerPackChildClient({
+          reservationId: packReservationId,
+          childKey: job.slug,
+          reason: refunded ? "refunded" : "failed",
+        });
+      }
       return {
         job: {
           ...job,
@@ -256,6 +269,15 @@ export function BatchStudio({
           ? { ...previous, ...data.session }
           : (data.session as MeResponse)
       );
+    }
+    // Settle 10 on shadow pack when live child succeeds (demo = 0, no settle).
+    if (packReservationId && !data.demo) {
+      void settleSellerPackChildClient({
+        reservationId: packReservationId,
+        jobId:
+          typeof data.requestId === "string" ? data.requestId : undefined,
+        childKey: job.slug,
+      });
     }
     pushHistory(
       historyFieldsFromSuccess(data, {
@@ -323,6 +345,27 @@ export function BatchStudio({
     setRunning(true);
     const projectId = `${sellerPackActive ? "seller-pack" : "batch"}-${Date.now()}`;
     setRunProjectId(projectId);
+
+    // Phase C: Seller Pack shadow-reserves 30 (or N×10) when durable is on.
+    // Cookie still debits per child; DURABLE_OFF is non-fatal.
+    let packReservationId: string | null = null;
+    if (sellerPackActive && !demoMode) {
+      const reserved = await reserveSellerPackShadowClient({
+        childCount: selected.length,
+        idempotencyKey: `ui-pack:${projectId}`,
+      });
+      if (reserved.ok && reserved.reservationId) {
+        packReservationId = reserved.reservationId;
+      } else if (reserved.code === "INSUFFICIENT_CREDITS") {
+        // Shadow wallet empty — still allow cookie path; surface honesty only.
+        setError(
+          (reserved.error ||
+            "Durable shadow wallet short — continuing with cookie credits only") +
+            " · cookie generate remains authoritative"
+        );
+      }
+    }
+
     const queue: Job[] = selected.map((slug) => {
       const p = PRESETS.find((x) => x.slug === slug)!;
       const packItem = SELLER_PACK_ITEMS.find((i) => i.slug === slug);
@@ -340,7 +383,11 @@ export function BatchStudio({
       setJobs((prev) =>
         prev.map((j, idx) => (idx === i ? { ...j, status: "running" } : j))
       );
-      const outcome = await executeJob(queue[i], projectId);
+      const outcome = await executeJob(
+        queue[i],
+        projectId,
+        packReservationId
+      );
       queue[i] = outcome.job;
       setJobs((previous) =>
         previous.map((job, index) => (index === i ? outcome.job : job))
@@ -354,6 +401,16 @@ export function BatchStudio({
               : job
           )
         );
+        // Release remaining shadow hold for children that never ran.
+        if (packReservationId) {
+          for (let j = i + 1; j < queue.length; j++) {
+            void releaseSellerPackChildClient({
+              reservationId: packReservationId,
+              childKey: queue[j].slug,
+              reason: "not_started",
+            });
+          }
+        }
         break;
       }
       // Soft gap so sequential batch stays under session/IP soft limits.
