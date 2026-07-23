@@ -196,5 +196,33 @@ assert.match(contracts, /RIGHTS_REQUIRED/);
 assert.match(genRoute, /RIGHTS_REQUIRED/);
 assert.match(genRoute, /ownsRights !== true/);
 
+// Soft-launch PRD §6 provenance labels must stay wired
+const provenance = fs.readFileSync(join(root, "lib/provenance.ts"), "utf8");
+assert.match(provenance, /Cached demo/);
+assert.match(provenance, /Live generation/);
+assert.match(provenance, /On-player mark/);
+assert.match(provenance, /Local Library/);
+const createStudio = fs.readFileSync(
+  join(root, "components/CreateStudio.tsx"),
+  "utf8"
+);
+assert.match(createStudio, /resultProvenanceLabel/);
+assert.match(createStudio, /PROVENANCE\.onPlayerMark|onPlayerMark/);
+const landing = fs.readFileSync(
+  join(root, "components/LandingToolPanel.tsx"),
+  "utf8"
+);
+assert.match(landing, /resultProvenanceLabel/);
+const library = fs.readFileSync(join(root, "components/LibraryGrid.tsx"), "utf8");
+assert.match(library, /resultProvenanceLabel/);
+assert.match(gen, /RIGHTS_REQUIRED|UNKNOWN_EFFECT/);
+
+const softlive = fs.readFileSync(
+  join(root, "scripts/softlive-checklist.sh"),
+  "utf8"
+);
+assert.match(softlive, /required for soft-live/);
+assert.match(softlive, /optional until Stripe/);
+
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

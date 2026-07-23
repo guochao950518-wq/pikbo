@@ -85,7 +85,13 @@ export function interpretGenerateResponse(
         ? "A generate is already running — wait a moment"
         : code === "PROVIDER_BALANCE"
           ? "Provider balance empty — credits refunded."
-          : "Generation failed");
+          : code === "RIGHTS_REQUIRED"
+            ? "Confirm you own this photo and have the right to animate it"
+            : code === "UNKNOWN_EFFECT"
+              ? "Unknown effect — pick a registered recipe"
+              : code === "IMAGE_TOO_LARGE"
+                ? "Image too large (max ~8MB)"
+                : "Generation failed");
 
   return {
     ok: false,

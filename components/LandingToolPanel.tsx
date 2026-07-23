@@ -15,6 +15,11 @@ import { site } from "@/lib/site";
 import { useToast } from "@/components/Toast";
 import { PaywallCard } from "@/components/PaywallCard";
 import { emitSessionRefresh } from "@/lib/sessionEvents";
+import {
+  localLibraryNote,
+  PROVENANCE,
+  resultProvenanceLabel,
+} from "@/lib/provenance";
 
 type Status = "idle" | "generating" | "done" | "error";
 
@@ -43,6 +48,8 @@ export function LandingToolPanel({
   const [elapsed, setElapsed] = useState(0);
   const [loadingSample, setLoadingSample] = useState(false);
   const [ownsRights, setOwnsRights] = useState(false);
+  const [usedModel, setUsedModel] = useState<string | null>(null);
+  const [resultResolution, setResultResolution] = useState<string | null>(null);
   const toast = useToast();
 
   const refreshSession = useCallback(async () => {
@@ -166,6 +173,10 @@ export function LandingToolPanel({
     setVideoUrl(data.videoUrl);
     setDemo(Boolean(data.demo));
     setWatermark(Boolean(data.watermark));
+    setUsedModel(data.model || null);
+    setResultResolution(
+      typeof data.resolution === "string" ? data.resolution : resolution
+    );
     setStatus("done");
     pushHistory(
       historyFieldsFromSuccess(data, {
@@ -177,7 +188,11 @@ export function LandingToolPanel({
       })
     );
     emitSessionRefresh();
-    toast(data.demo ? "Cached demo ready" : "Live clip ready · saved to Library");
+    toast(
+      data.demo
+        ? `${PROVENANCE.cachedDemo} ready`
+        : `${PROVENANCE.liveGeneration} ready · saved to this browser`
+    );
   }
 
   const busy = status === "generating";
@@ -380,6 +395,22 @@ export function LandingToolPanel({
           )}
           {!busy && videoUrl ? (
             <div className="relative p-4">
+              <div className="mb-2 flex flex-wrap items-center justify-center gap-1.5">
+                <span
+                  className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
+                    demo
+                      ? "border border-white/15 bg-white/10 text-[var(--fg-muted)]"
+                      : "border border-[var(--mint)]/30 bg-[var(--mint)]/15 text-[var(--mint)]"
+                  }`}
+                >
+                  {resultProvenanceLabel(demo)}
+                </span>
+                {watermark && (
+                  <span className="rounded-full border border-white/10 bg-black/40 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white/70">
+                    {PROVENANCE.onPlayerMark}
+                  </span>
+                )}
+              </div>
               <video
                 src={videoUrl}
                 controls
@@ -399,14 +430,22 @@ export function LandingToolPanel({
               )}
               {demo ? (
                 <p className="mt-2 text-center text-[10px] text-[var(--fg-dim)]">
-                  Cached demo — it does not animate your upload or call a live model. Configure FAL_KEY for a live Seedance render.
+                  {PROVENANCE.cachedDemo} — does not animate your upload or call a
+                  live model. Configure FAL_KEY for a live Seedance render.
                 </p>
               ) : (
                 <p className="mt-2 text-center text-[10px] text-[var(--fg-dim)]">
-                  AI motion varies. Failed live jobs refund their credit charge.
-                  Free live jobs use Mini at 480p with an on-player mark.
+                  {PROVENANCE.liveGeneration} — AI motion varies. Failed jobs
+                  refund credits. Free live uses Mini · 480p ·{" "}
+                  {PROVENANCE.onPlayerMark.toLowerCase()}.
                 </p>
               )}
+              <p className="mt-1 text-center text-[10px] text-[var(--fg-dim)]">
+                {(usedModel || "Seedance").split("/").pop()} · {duration}s ·{" "}
+                {aspectRatio}
+                {resultResolution ? ` · ${resultResolution}` : ""} ·{" "}
+                {demo ? PROVENANCE.cachedDemo : localLibraryNote()}
+              </p>
               <div className="mt-3 flex flex-wrap justify-center gap-2">
                 <a
                   href={videoUrl}

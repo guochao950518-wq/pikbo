@@ -79,9 +79,17 @@ export async function GET() {
       STRIPE_SECRET_KEY: stripe,
       STRIPE_WEBHOOK_SECRET: stripeWebhook,
       entitlementsWritable: entitlements.writable,
+      /** Soft launch (no Stripe) only needs the required pair. */
+      requiredForSoftLive: ["SESSION_SECRET", "FAL_KEY"],
+      optionalUntilPaid: [
+        "STRIPE_SECRET_KEY",
+        "STRIPE_WEBHOOK_SECRET",
+        "entitlementsWritable",
+      ],
       notes: [
-        "Soft public: SESSION_SECRET + FAL_KEY (demo works without FAL_KEY)",
-        "Paid: durable entitlements (ENTITLEMENTS_PATH) + Stripe price IDs + webhook",
+        "Soft public (Sunday): SESSION_SECRET + FAL_KEY only — Stripe is Coming soon",
+        "Demo works without FAL_KEY (cached Lab clips, 0 credits)",
+        "Paid later: durable entitlements + Stripe price IDs + webhook",
         "See docs/LAUNCH.md",
       ],
     },

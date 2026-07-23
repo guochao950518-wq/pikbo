@@ -13,6 +13,7 @@ import {
   type HistoryItem,
 } from "@/lib/history";
 import { useToast } from "@/components/Toast";
+import { PROVENANCE, resultProvenanceLabel } from "@/lib/provenance";
 
 type KindFilter = "all" | "live" | "demo";
 
@@ -104,8 +105,9 @@ export function LibraryGrid() {
         <p className="text-3xl">▢</p>
         <p className="mt-3 text-[var(--fg-muted)]">No saved results on this device yet</p>
         <p className="mt-2 max-w-sm text-xs text-[var(--fg-dim)]">
-          Live results currently stay in this browser. Without provider access,
-          Studio saves a labeled cached demo that does not animate your upload.
+          {PROVENANCE.localLibrary} · this browser only (not cloud-synced).
+          Without provider access, Studio saves a labeled{" "}
+          {PROVENANCE.cachedDemo.toLowerCase()} that does not animate your upload.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <Link href="/create" className="btn btn-primary text-sm">
@@ -156,8 +158,8 @@ export function LibraryGrid() {
             aria-label="Filter live vs cached demo"
           >
             <option value="all">All kinds</option>
-            <option value="live">Live only</option>
-            <option value="demo">Cached demos</option>
+            <option value="live">{PROVENANCE.liveGeneration}</option>
+            <option value="demo">{PROVENANCE.cachedDemo}s</option>
           </select>
           <span className="text-[10px] text-[var(--fg-dim)]">
             {filtered.length} / {items.length}
@@ -243,25 +245,25 @@ export function LibraryGrid() {
                 playsInline
                 preload="metadata"
               />
-              {(item.demo || item.watermark || remoteClipMayExpire(item)) && (
-                <div className="pointer-events-none absolute left-2 top-2 flex flex-wrap gap-1">
-                  {item.demo && (
-                    <span className="rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-bold uppercase text-white/80">
-                      demo
-                    </span>
-                  )}
-                  {item.watermark && (
-                    <span className="rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-bold uppercase text-white/80">
-                      mark
-                    </span>
-                  )}
-                  {remoteClipMayExpire(item) && (
-                    <span className="rounded bg-amber-500/90 px-1.5 py-0.5 text-[9px] font-bold uppercase text-black">
-                      link aging
-                    </span>
-                  )}
-                </div>
-              )}
+              <div className="pointer-events-none absolute left-2 top-2 flex flex-wrap gap-1">
+                <span
+                  className={`rounded px-1.5 py-0.5 text-[9px] font-bold uppercase text-white/90 ${
+                    item.demo ? "bg-black/70" : "bg-[var(--mint)]/80 text-black"
+                  }`}
+                >
+                  {resultProvenanceLabel(Boolean(item.demo))}
+                </span>
+                {item.watermark && (
+                  <span className="rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-bold uppercase text-white/80">
+                    {PROVENANCE.onPlayerMark}
+                  </span>
+                )}
+                {remoteClipMayExpire(item) && (
+                  <span className="rounded bg-amber-500/90 px-1.5 py-0.5 text-[9px] font-bold uppercase text-black">
+                    link aging
+                  </span>
+                )}
+              </div>
             </div>
             <div className="p-3">
               <p className="text-sm font-semibold">{item.effectName}</p>

@@ -18,6 +18,11 @@ import { site } from "@/lib/site";
 import { useToast } from "@/components/Toast";
 import { PaywallCard } from "@/components/PaywallCard";
 import { emitSessionRefresh } from "@/lib/sessionEvents";
+import {
+  localLibraryNote,
+  PROVENANCE,
+  resultProvenanceLabel,
+} from "@/lib/provenance";
 
 type Status = "idle" | "uploading" | "generating" | "done" | "error";
 type Mode = "i2v" | "t2v";
@@ -86,6 +91,10 @@ export function CreateStudio({
   const [showPaywall, setShowPaywall] = useState(false);
   const [upgradedBanner, setUpgradedBanner] = useState(false);
   const [usedModel, setUsedModel] = useState<string | null>(null);
+  /** Server-enforced meta from last success (prefer over client prefs). */
+  const [resultDuration, setResultDuration] = useState<number | null>(null);
+  const [resultAspect, setResultAspect] = useState<string | null>(null);
+  const [resultResolution, setResultResolution] = useState<string | null>(null);
   const [presetFilter, setPresetFilter] = useState("");
   const [elapsed, setElapsed] = useState(0);
   const [copied, setCopied] = useState(false);
@@ -344,6 +353,15 @@ export function CreateStudio({
     setDemo(Boolean(data.demo));
     setWatermark(Boolean(data.watermark));
     setUsedModel(data.model || null);
+    setResultDuration(
+      typeof data.duration === "number" ? data.duration : effectiveDuration
+    );
+    setResultAspect(
+      typeof data.aspectRatio === "string" ? data.aspectRatio : aspectRatio
+    );
+    setResultResolution(
+      typeof data.resolution === "string" ? data.resolution : resolvedRes
+    );
     setStatus("done");
     rememberEffect(effect);
     pushHistory(
@@ -356,7 +374,11 @@ export function CreateStudio({
       })
     );
     emitSessionRefresh();
-    toast(data.demo ? "Cached demo ready" : "Live clip ready · saved to Library");
+    toast(
+      data.demo
+        ? `${PROVENANCE.cachedDemo} ready`
+        : `${PROVENANCE.liveGeneration} ready · saved to this browser`
+    );
   }
 
   async function copyLink() {
@@ -992,7 +1014,23 @@ export function CreateStudio({
             )}
             {status === "done" && videoUrl && (
               <div className="relative w-full p-3">
-                <div className="mb-2 flex justify-end">
+                <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
+                        demo
+                          ? "border border-white/15 bg-white/10 text-[var(--fg-muted)]"
+                          : "border border-[var(--mint)]/30 bg-[var(--mint)]/15 text-[var(--mint)]"
+                      }`}
+                    >
+                      {resultProvenanceLabel(demo)}
+                    </span>
+                    {watermark && (
+                      <span className="rounded-full border border-white/10 bg-black/40 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white/70">
+                        {PROVENANCE.onPlayerMark}
+                      </span>
+                    )}
+                  </div>
                   <button
                     type="button"
                     onClick={() => setCompare((c) => !c)}
@@ -1060,8 +1098,8 @@ export function CreateStudio({
                 )}
                 <p className="mx-auto mt-2 max-w-md text-center text-[11px] leading-relaxed text-[var(--fg-dim)]">
                   {demo
-                    ? "Cached demo — it does not animate your upload or call a live model. Configure FAL_KEY for a live Seedance render."
-                    : "AI motion varies — same photo can look different each run. Not happy? Regenerate; failed jobs refund credits."}
+                    ? `${PROVENANCE.cachedDemo} — it does not animate your upload or call a live model. Configure FAL_KEY for a live Seedance render.`
+                    : `${PROVENANCE.liveGeneration} — AI motion varies; same photo can look different each run. Failed jobs refund credits.`}
                 </p>
                 <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
                   <a
@@ -1108,13 +1146,19 @@ export function CreateStudio({
                   </Link>
                 </div>
                 <p className="mt-2 text-center text-[10px] text-[var(--fg-dim)]">
-                  {effectiveDuration}s · {aspectRatio} · ⌘/Ctrl+Enter
+                  {(usedModel || MODELS.find((m) => m.id === modelId)?.label || "—")
+                    .toString()
+                    .split("/")
+                    .pop()}{" "}
+                  · {resultDuration ?? effectiveDuration}s ·{" "}
+                  {resultAspect ?? aspectRatio} ·{" "}
+                  {resultResolution ?? (isFree ? "480p" : resolution)}
                 </p>
-                {demo && (
-                  <p className="mt-2 text-center text-xs text-[var(--fg-dim)]">
-                    Cached demo only — configure FAL_KEY for a live Seedance render.
-                  </p>
-                )}
+                <p className="mt-1 text-center text-[10px] text-[var(--fg-dim)]">
+                  {demo
+                    ? `${PROVENANCE.cachedDemo} only — not from your upload · not cloud-backed`
+                    : localLibraryNote()}
+                </p>
               </div>
             )}
             {(status === "idle" || status === "error") && !videoUrl && (
