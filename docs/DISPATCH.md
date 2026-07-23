@@ -7,6 +7,10 @@
 
 ## 刚合流（已进 main）
 
+| Claude home-hf | media-rich home promo CTA (merged) |
+| Grok engine | profile/landing meClient + promo honesty |
+
+
 | 谁 | 内容 |
 |----|------|
 | Claude home-hf | 纯黑+lime、视频墙 denser、community 4-col、create stage |
