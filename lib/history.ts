@@ -1,4 +1,6 @@
-/** Client-side generation history (Library). No server DB yet. */
+/** Client-side generation history (Local Library). No server DB / cloud sync. */
+
+import { resultProvenanceLabel } from "@/lib/provenance";
 
 export type HistoryItem = {
   id: string;
@@ -14,6 +16,11 @@ export type HistoryItem = {
   requestId?: string;
   createdAt: string;
 };
+
+/** Support / export helper — cached vs live without guessing from URL. */
+export function historyProvenance(item: Pick<HistoryItem, "demo">): string {
+  return resultProvenanceLabel(Boolean(item.demo));
+}
 
 const KEY = "pikbo_library_v1";
 const MAX = 48;
@@ -183,9 +190,14 @@ export async function downloadVideoFile(
   }
 }
 
-/** Backup library as JSON file for the user. */
+/** Backup library as JSON file for the user / support. */
 export function exportHistoryJson(): void {
-  const list = loadHistory();
+  const list = loadHistory().map((item) => ({
+    ...item,
+    /** Soft-launch PRD ops: identify cached demo vs live without guessing. */
+    provenance: historyProvenance(item),
+    storage: "local-browser",
+  }));
   const blob = new Blob([JSON.stringify(list, null, 2)], {
     type: "application/json",
   });

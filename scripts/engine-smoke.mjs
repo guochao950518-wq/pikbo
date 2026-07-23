@@ -224,5 +224,17 @@ const softlive = fs.readFileSync(
 assert.match(softlive, /required for soft-live/);
 assert.match(softlive, /optional until Stripe/);
 
+// Soft-launch refund honesty + primary nav (first principles)
+assert.match(contracts, /creditsRefunded/);
+assert.match(genRoute, /creditsRefunded:\s*true/);
+assert.match(gen, /creditsRefunded/);
+assert.match(gen, /10 credits restored/);
+const appShell = fs.readFileSync(join(root, "components/AppShell.tsx"), "utf8");
+assert.match(appShell, /const PRIMARY/);
+assert.match(appShell, /const MORE/);
+assert.match(appShell, /MoreMenu|More/);
+const historySrc = fs.readFileSync(join(root, "lib/history.ts"), "utf8");
+assert.match(historySrc, /historyProvenance|provenance/);
+
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node
