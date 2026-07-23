@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] In-flight lock TTL + job requestId resolve
+- `rateLimit` inflight Map + TTL (~200s / `PIKBO_INFLIGHT_TTL_MS`) — stale locks free after hard kill.
+- generate/image JOB_IN_FLIGHT returns `retryAfterSec` + Retry-After header.
+- health.rateLimit.inflight + inflightTtlMs for ops; getJob/cancelJob via findJobByRequestOrId.
+- Verified: engine-smoke · typecheck · lint.
+
 ### 2026-07-24 — [grok] Library session jobs when history empty + Create fail tip
 - Library: `SessionJobsPanel` shows process-memory jobs even with empty device history.
 - Empty CTA honesty when session jobs exist vs cold start.
