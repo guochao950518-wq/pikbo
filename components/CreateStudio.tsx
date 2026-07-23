@@ -473,7 +473,7 @@ export function CreateStudio({
   }, [filteredPresets, presetFilter]);
 
   return (
-    <div className="flex h-full min-h-[calc(100vh-3.5rem)] flex-col pb-24 lg:min-h-screen lg:pb-0">
+    <div className="flex h-full min-h-[calc(100vh-3.5rem)] flex-col pb-36 lg:min-h-screen lg:pb-0">
       {/* ── Mode banner: demo vs live impossible to miss (W5) ── */}
       <div
         role="status"
@@ -1360,8 +1360,8 @@ export function CreateStudio({
         </section>
       </div>
 
-      {/* ── Sticky mobile primary CTA ── */}
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-black/90 px-4 py-3 backdrop-blur-md lg:hidden">
+      {/* ── Sticky mobile primary CTA — sits above AppShell bottom tab nav ── */}
+      <div className="fixed inset-x-0 bottom-[4.75rem] z-40 border-t border-white/10 bg-black/90 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-md lg:hidden">
         <button
           type="button"
           onClick={() => {

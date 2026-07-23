@@ -4,6 +4,14 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [claude] world-class Create + home proof wall (branch `agent/claude/world-class-create`)
+- **Create flagship (390 mobile):** stepped Photo → Recipe → Generate → Result; sticky single primary CTA above bottom tab nav; demo/live/refund banner impossible to miss; advanced (model/duration/seed/prompt) collapsed; Text→Video / multi-model shelf off primary surface.
+- **Home:** one ICP H1 + single CTA “Try free · Generate”; proof wall ≤8 unique Lab demos; multi-model theater / product shelf removed; thin Seller Pack entry only.
+- **Seller Pack MVP:** `/supercomputer?pack=seller` freezes Listing Spin + Blind-box Reveal + Social Flash (1:1 / 9:16 / 9:16); Create links into pack; not full Seller OS (T5/atomic credits still TODO for GPT WORLD_CLASS PRD).
+- **Perf:** kept `preload=metadata` + ≤2 concurrent autoplay.
+- **Verified:** eslint changed files, `tsc --noEmit`, `next build` green (71 routes).
+- **No Stripe / no fake multi-model / no extra top-nav.**
+
 ### 2026-07-23 — [grok] MOONSHOT world-class bar · $60k/day reverse plan
 - Boss demand: world's best toy video site, Google traffic explosion, path to **$60k/day** sub revenue.
 - Strategy: `docs/MOONSHOT_WORLD_CLASS.md` — unit-econ reverse, W1–W8 pillars, S0→S4 stages, kill HF shell theater.
