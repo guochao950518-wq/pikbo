@@ -5,6 +5,7 @@ import { GUIDES, getGuide } from "@/lib/guides";
 import { getPreset } from "@/lib/presets";
 import { PresetCard } from "@/components/PresetCard";
 import { site } from "@/lib/site";
+import { SuiteDoorLinks } from "@/components/SuiteDoorLinks";
 
 export function generateStaticParams() {
   return GUIDES.map((g) => ({ slug: g.slug }));
@@ -87,6 +88,10 @@ export default async function GuidePage({
           </span>
           <h1 className="mt-4 text-4xl font-bold leading-tight">{g.title}</h1>
           <p className="mt-3 text-lg text-[var(--fg-muted)]">{g.dek}</p>
+          <SuiteDoorLinks
+            effectSlug={g.relatedEffects[0]}
+            className="mt-5"
+          />
 
           <p className="mt-8 leading-relaxed text-[var(--fg-muted)]">{g.intro}</p>
 
@@ -126,16 +131,22 @@ export default async function GuidePage({
             </p>
             <div className="mt-4 flex flex-wrap justify-center gap-2">
               <Link
-                href="/create"
+                href="/create?try=1&sample=scout"
                 className="btn bg-white px-6 py-2.5 font-semibold text-[var(--bg)] hover:opacity-90"
               >
-                Create a clip free →
+                Try free · 10s →
               </Link>
               <Link
                 href="/modules"
                 className="btn border border-white/40 bg-transparent px-5 py-2.5 font-semibold text-white hover:bg-white/10"
               >
                 Toy Modules
+              </Link>
+              <Link
+                href="/create?mode=seller-pack"
+                className="btn border border-white/40 bg-transparent px-5 py-2.5 font-semibold text-white hover:bg-white/10"
+              >
+                Seller Pack
               </Link>
             </div>
           </div>
