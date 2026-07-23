@@ -33,6 +33,14 @@ export async function PUT(req: Request, { params }: Props) {
     bytes: buf,
   });
   if (!result.ok) {
+    const status =
+      result.code === "IMAGE_TOO_LARGE"
+        ? 413
+        : result.code === "NOT_OWNED"
+          ? 403
+          : result.code === "EXPIRED"
+            ? 410
+            : 400;
     return NextResponse.json(
       {
         ok: false,
@@ -40,9 +48,11 @@ export async function PUT(req: Request, { params }: Props) {
         error: result.error,
         maxBytes: localAssetMaxBytes(),
       },
-      { status: result.code === "IMAGE_TOO_LARGE" ? 413 : 400 }
+      { status }
     );
   }
+  // Never echo multi-MB dataUrl back — client already has the still locally.
+  // Generate reads via getLocalAsset(session) on the server.
   return NextResponse.json({
     ok: true,
     mode: "local-memory",
@@ -51,9 +61,7 @@ export async function PUT(req: Request, { params }: Props) {
     byteLength: result.asset.byteLength,
     contentType: result.asset.contentType,
     expiresAt: result.asset.expiresAt,
-    /** Soft-launch generate still prefers embedding dataUrl in POST body. */
-    dataUrl: result.asset.dataUrl,
-    note: "In-process only · expires ~15m · not multi-node durable",
+    note: "In-process only · session-owned · expires ~15m · not multi-node durable",
   });
 }
 

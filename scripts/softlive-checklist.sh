@@ -45,6 +45,7 @@ check_opt "STRIPE_WEBHOOK_SECRET" "$([[ -n "${STRIPE_WEBHOOK_SECRET:-}" ]] && ec
 check_opt "STRIPE_PRICE_CREATOR" "$([[ -n "${STRIPE_PRICE_CREATOR:-}" ]] && echo 1 || echo 0)"
 check_opt "STRIPE_PRICE_SHOP" "$([[ -n "${STRIPE_PRICE_SHOP:-}" ]] && echo 1 || echo 0)"
 check_opt "NEXT_PUBLIC_PAYMENTS_ENABLED (keep 0 for Mode A)" "$([[ "${NEXT_PUBLIC_PAYMENTS_ENABLED:-0}" == "1" ]] && echo 1 || echo 0)"
+check_opt "VIDEO_PROVIDER_WEBHOOK_SECRET (prod async webhooks)" "$([[ -n "${VIDEO_PROVIDER_WEBHOOK_SECRET:-}" ]] && echo 1 || echo 0)"
 if [[ "${STRIPE_SECRET_KEY:-}" == sk_live_* ]]; then
   echo "WARN STRIPE_SECRET_KEY looks like sk_live — blocked without PAYMENTS_LIVE=1"
 fi
@@ -70,6 +71,9 @@ h=json.load(open("/tmp/pikbo-softlive-health.json"))
 print("mode=", h.get("mode"))
 print("ready=", h.get("ready"))
 print("rateLimit=", h.get("rateLimit"))
+print("assets=", h.get("assets"))
+print("jobs=", h.get("jobs"))
+print("videoWebhook=", h.get("videoWebhook"))
 cl=h.get("softLiveChecklist") or {}
 print("checklist fal=", cl.get("FAL_KEY"), "sessionSecret=", cl.get("SESSION_SECRET"))
 print("entitlements writable=", (h.get("entitlements") or {}).get("writable"))

@@ -940,10 +940,36 @@ assert.match(health, /inflightJobCount|inflightTtlMs/);
 assert.match(health, /localAssetsProbe|assets:/);
 assert.match(health, /generationJobsProbe|jobs:/);
 assert.match(health, /videoWebhook|secretConfigured/);
-assert.match(
-  fs.readFileSync(join(root, "lib/localAssets.ts"), "utf8"),
-  /slideExpiry|localAssetsProbe|Sliding TTL/
+const localAssetsSrc = fs.readFileSync(
+  join(root, "lib/localAssets.ts"),
+  "utf8"
 );
+assert.match(localAssetsSrc, /slideExpiry|localAssetsProbe|Sliding TTL/);
+assert.match(localAssetsSrc, /reserveLocalAssetId/);
+assert.match(localAssetsSrc, /NOT_OWNED/);
+assert.match(
+  fs.readFileSync(join(root, "app/api/assets/upload-url/route.ts"), "utf8"),
+  /reserveLocalAssetId/
+);
+assert.match(
+  fs.readFileSync(
+    join(root, "app/api/assets/[id]/content/route.ts"),
+    "utf8"
+  ),
+  /NOT_OWNED/
+);
+// PUT success body must not re-echo multi-MB dataUrl
+assert.doesNotMatch(
+  fs
+    .readFileSync(join(root, "app/api/assets/[id]/content/route.ts"), "utf8")
+    .slice(
+      fs
+        .readFileSync(join(root, "app/api/assets/[id]/content/route.ts"), "utf8")
+        .indexOf("return NextResponse.json({\n    ok: true")
+    ),
+  /dataUrl:\s*result\.asset\.dataUrl/
+);
+assert.match(gen, /AbortError|Request canceled/);
 assert.match(genJobsStore, /export function generationJobsProbe/);
 assert.match(genJobsStore, /findJobByRequestOrId/);
 // getJob must resolve provider requestId (not only job_*)

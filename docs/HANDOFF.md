@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Asset session-reservation + PUT ownership
+- `reserveLocalAssetId` on upload-url; PUT rejects `NOT_OWNED` / expired reservation.
+- PUT success no longer echoes multi-MB `dataUrl` (server keeps still for generate).
+- AbortError client copy marks refund unconfirmed; softlive-checklist lists assets/jobs/webhook.
+- Verified: engine-smoke · typecheck · lint.
+
 ### 2026-07-24 — [grok] Pricing FAQ JSON-LD + Explore Lab≥4 proof chips
 - `/pricing`: canonical + OG + FAQPage JSON-LD from shared `pricingFaqItems`.
 - Explore cards: **Lab ≥4** / Review pending chips (provisional, not fake UGC).

@@ -18,6 +18,14 @@ const MAX_BYTES = 8_000_000;
 /** Soft-launch still TTL. Active gets slide this window forward. */
 const TTL_MS = 15 * 60 * 1000;
 const assets = new Map<string, LocalAsset>();
+/**
+ * Ids minted by POST /api/assets/upload-url before PUT body arrives.
+ * Prevents another session from claiming a reserved id.
+ */
+const reservations = new Map<
+  string,
+  { sessionId: string; expiresAt: number }
+>();
 
 function nowIso() {
   return new Date().toISOString();
@@ -27,6 +35,9 @@ function trimExpired() {
   const t = Date.now();
   for (const [id, a] of assets) {
     if (Date.parse(a.expiresAt) < t) assets.delete(id);
+  }
+  for (const [id, r] of reservations) {
+    if (r.expiresAt < t) reservations.delete(id);
   }
   if (assets.size > 100) {
     const ordered = [...assets.values()].sort((x, y) =>
@@ -47,6 +58,42 @@ function slideExpiry(asset: LocalAsset): LocalAsset {
   return next;
 }
 
+/**
+ * Reserve an asset id for a session after upload-url mint.
+ * PUT must match the same session (or no reservation for legacy paths).
+ */
+export function reserveLocalAssetId(input: {
+  id: string;
+  sessionId: string;
+}):
+  | { ok: true; expiresAt: string }
+  | { ok: false; code: string; error: string } {
+  trimExpired();
+  const existing = assets.get(input.id);
+  if (existing && existing.sessionId !== input.sessionId) {
+    // Extremely unlikely UUID collision with foreign owner — reject.
+    return {
+      ok: false,
+      code: "CONFLICT",
+      error: "Asset id already owned by another session",
+    };
+  }
+  const prior = reservations.get(input.id);
+  if (prior && prior.sessionId !== input.sessionId && prior.expiresAt > Date.now()) {
+    return {
+      ok: false,
+      code: "CONFLICT",
+      error: "Asset id already reserved by another session",
+    };
+  }
+  const expiresAtMs = Date.now() + TTL_MS;
+  reservations.set(input.id, {
+    sessionId: input.sessionId,
+    expiresAt: expiresAtMs,
+  });
+  return { ok: true, expiresAt: new Date(expiresAtMs).toISOString() };
+}
+
 export function putLocalAsset(input: {
   id: string;
   sessionId: string;
@@ -64,6 +111,37 @@ export function putLocalAsset(input: {
       error: `Max ${MAX_BYTES} bytes`,
     };
   }
+
+  // Ownership: cannot overwrite another session's stored still.
+  const existing = assets.get(input.id);
+  if (existing && existing.sessionId !== input.sessionId) {
+    return {
+      ok: false,
+      code: "NOT_OWNED",
+      error: "Asset belongs to another session",
+    };
+  }
+
+  // Ownership: reservation from upload-url must match (when present).
+  const reserved = reservations.get(input.id);
+  if (reserved) {
+    if (reserved.sessionId !== input.sessionId) {
+      return {
+        ok: false,
+        code: "NOT_OWNED",
+        error: "Asset id reserved for another session",
+      };
+    }
+    if (reserved.expiresAt < Date.now()) {
+      reservations.delete(input.id);
+      return {
+        ok: false,
+        code: "EXPIRED",
+        error: "Upload reservation expired — request a new upload-url",
+      };
+    }
+  }
+
   const ct = input.contentType.startsWith("image/")
     ? input.contentType.slice(0, 64)
     : "application/octet-stream";
@@ -75,10 +153,12 @@ export function putLocalAsset(input: {
     contentType: ct,
     dataUrl,
     byteLength: input.bytes.length,
-    createdAt: nowIso(),
+    createdAt: existing?.createdAt ?? nowIso(),
     expiresAt: new Date(Date.now() + TTL_MS).toISOString(),
   };
   assets.set(asset.id, asset);
+  // Reservation consumed on successful put.
+  reservations.delete(input.id);
   return { ok: true, asset };
 }
 
@@ -110,6 +190,7 @@ export function localAssetsProbe(): {
   mode: "local-memory";
   durable: false;
   count: number;
+  reserved: number;
   maxBytes: number;
   ttlMs: number;
   note: string;
@@ -119,12 +200,14 @@ export function localAssetsProbe(): {
     mode: "local-memory",
     durable: false,
     count: assets.size,
+    reserved: reservations.size,
     maxBytes: MAX_BYTES,
     ttlMs: TTL_MS,
-    note: "Process-memory stills; active getLocalAsset slides TTL. Not multi-node.",
+    note: "Process-memory stills; session-owned put; active get slides TTL. Not multi-node.",
   };
 }
 
 export function __resetLocalAssetsForTests() {
   assets.clear();
+  reservations.clear();
 }

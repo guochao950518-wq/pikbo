@@ -83,7 +83,8 @@
 42. [x] Phase H analytics funnel (upload/project/export) · profile honesty · robots /status
 43. [x] Prod video-webhook secret required · jobs/assets health · Mode A honesty probes
 44. [x] Pricing FAQ JSON-LD + Explore Lab≥4 provisional proof chips
-45. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
+45. [x] Asset id session-reservation + PUT NOT_OWNED · no dataUrl echo · abort copy
+46. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
 
 ### 老板醒来验收
 
@@ -97,9 +98,9 @@
 
 ## Grok 本拍状态（3 行）
 
-- Pricing canonical + FAQPage JSON-LD (shared faq items, no thin schema).  
-- Explore Lab ≥4 / Review pending proof chips · recipe_use on Use recipe.  
-- engine-smoke green · Mode A still needs boss Vercel login + env.
+- upload-url reserves asset id per session; PUT rejects foreign NOT_OWNED / expired.  
+- PUT no longer echoes multi-MB dataUrl; abort → honest refund-unconfirmed copy.  
+- softlive-checklist probes assets/jobs/webhook · Mode A needs boss Vercel login.
 
 ---
 

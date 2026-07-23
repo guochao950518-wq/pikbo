@@ -163,10 +163,19 @@ export async function postGenerate(
     }
     return interpretGenerateResponse(res.status, raw);
   } catch (e) {
+    const aborted =
+      (e instanceof Error && e.name === "AbortError") ||
+      (typeof DOMException !== "undefined" &&
+        e instanceof DOMException &&
+        e.name === "AbortError");
     return {
       ok: false,
       status: 0,
-      error: e instanceof Error ? e.message : "Network error",
+      error: aborted
+        ? "Request canceled — if credits were debited, check balance or retry (refund unconfirmed until server confirms)"
+        : e instanceof Error
+          ? e.message
+          : "Network error",
       fatal: false,
       paywall: false,
     };

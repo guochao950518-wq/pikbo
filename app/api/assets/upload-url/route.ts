@@ -1,16 +1,21 @@
 import { NextResponse } from "next/server";
 import { randomUUID } from "crypto";
 import { ensureSession } from "@/lib/session";
+import {
+  localAssetMaxBytes,
+  localAssetTtlMs,
+  reserveLocalAssetId,
+} from "@/lib/localAssets";
 
 export const runtime = "nodejs";
-
-const MAX_BYTES = 8_000_000;
 
 /**
  * Phase D — local upload contract (no object storage yet).
  * Returns a same-origin PUT target for soft-launch demos. Clients may still
  * post Base64 to /api/generate; this path avoids repeating large payloads when
  * the local content route is used.
+ *
+ * Mints a session-scoped reservation so another cookie cannot PUT the same id.
  */
 export async function POST(req: Request) {
   let contentType = "image/jpeg";
@@ -28,21 +33,44 @@ export async function POST(req: Request) {
     // empty body ok
   }
 
-  if (typeof byteLength === "number" && byteLength > MAX_BYTES) {
+  const maxBytes = localAssetMaxBytes();
+  if (typeof byteLength === "number" && byteLength > maxBytes) {
     return NextResponse.json(
       {
         ok: false,
         code: "IMAGE_TOO_LARGE",
-        error: `Max upload ${MAX_BYTES} bytes`,
-        maxBytes: MAX_BYTES,
+        error: `Max upload ${maxBytes} bytes`,
+        maxBytes,
       },
       { status: 413 }
     );
   }
 
   const session = await ensureSession();
-  const assetId = `asset_${randomUUID().replace(/-/g, "").slice(0, 16)}`;
-  const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+  // Rare: re-mint if the first id collides with a foreign reservation (UUID clash).
+  let assetId = "";
+  let expiresAt = "";
+  for (let i = 0; i < 3; i++) {
+    assetId = `asset_${randomUUID().replace(/-/g, "").slice(0, 16)}`;
+    const reserved = reserveLocalAssetId({
+      id: assetId,
+      sessionId: session.id,
+    });
+    if (reserved.ok) {
+      expiresAt = reserved.expiresAt;
+      break;
+    }
+  }
+  if (!expiresAt) {
+    return NextResponse.json(
+      {
+        ok: false,
+        code: "RESERVE_FAILED",
+        error: "Could not reserve asset id — retry upload",
+      },
+      { status: 503 }
+    );
+  }
 
   return NextResponse.json(
     {
@@ -56,11 +84,12 @@ export async function POST(req: Request) {
         "Content-Type": contentType,
         "X-Pikbo-Session": "cookie",
       },
-      maxBytes: MAX_BYTES,
+      maxBytes,
+      ttlMs: localAssetTtlMs(),
       expiresAt,
       sessionId: session.id,
       note:
-        "Local PUT target for soft-launch. Object storage (S3/Supabase Storage) not wired. Soft-launch generate still accepts data URLs.",
+        "Local PUT target for soft-launch (session-reserved id). Object storage not wired. Soft-launch generate still accepts data URLs.",
       planned: {
         production: "signed PUT to private bucket; never expose permanent raw provider URLs",
       },
