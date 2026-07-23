@@ -246,7 +246,11 @@ export function CreateStudio({
     const id = SAMPLE_TOYS.some((s) => s.id === initialSample)
       ? initialSample
       : "scout";
-    void loadSampleToy(id, true);
+    // Defer so we don't setState synchronously inside the effect body.
+    const t = window.setTimeout(() => {
+      void loadSampleToy(id, true);
+    }, 0);
+    return () => window.clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialSample]);
 
