@@ -200,8 +200,22 @@ export function ProfilePanel() {
       </p>
 
       <div className="flex flex-col gap-2">
+        <Link href="/create" className="btn btn-primary w-full text-sm">
+          Open Generate
+        </Link>
+        <div className="grid grid-cols-2 gap-2">
+          <Link href="/modules" className="btn btn-ghost w-full text-sm">
+            Modules
+          </Link>
+          <Link
+            href="/create?mode=seller-pack"
+            className="btn btn-ghost w-full text-sm"
+          >
+            Seller Pack
+          </Link>
+        </div>
         {!auth.signedIn ? (
-          <Link href="/login" className="btn btn-primary w-full text-sm">
+          <Link href="/login" className="btn btn-ghost w-full text-sm">
             Sign in · cross-device later
           </Link>
         ) : (
@@ -214,11 +228,11 @@ export function ProfilePanel() {
             {signingOut ? "Signing out…" : "Sign out"}
           </button>
         )}
+        <Link href="/library" className="btn btn-ghost w-full text-sm">
+          Open library · {clips} clip{clips === 1 ? "" : "s"}
+        </Link>
         <Link href="/pricing" className="btn btn-ghost w-full text-sm">
           Manage plan
-        </Link>
-        <Link href="/library" className="btn btn-ghost w-full text-sm">
-          Open library
         </Link>
         <Link href="/settings" className="btn btn-ghost w-full text-sm">
           Settings

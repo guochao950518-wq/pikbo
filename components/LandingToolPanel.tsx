@@ -520,7 +520,19 @@ export function LandingToolPanel({
                   href={`/create?effect=${encodeURIComponent(effectSlug)}`}
                   className="btn btn-ghost px-3 py-1.5 text-xs"
                 >
-                  Same photo · full Studio
+                  Full Generate
+                </Link>
+                <Link
+                  href="/modules"
+                  className="btn btn-ghost px-3 py-1.5 text-xs"
+                >
+                  Modules
+                </Link>
+                <Link
+                  href="/create?mode=seller-pack"
+                  className="btn btn-ghost px-3 py-1.5 text-xs"
+                >
+                  Seller Pack
                 </Link>
                 <Link
                   href="/library"
