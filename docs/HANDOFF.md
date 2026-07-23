@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [gpt] world-class product contract + SEO Intent 50
+- `WORLD_CLASS_PIKBO.md` freezes the four ICP paths, three-decision Create flow, Toy Identity assessment, SKU project model, Seller OS packs, state machine, and 12 launch recipes.
+- Active prices remain unchanged; higher-ARPU tiers are research hypotheses gated by provider invoices, weighted credits, and paid pilots.
+- `SEO_INTENT_50.md` maps 50 queries to canonical routes, recipes, internal links, capability gates, and thin-page protections.
+- `SOFT_NAV_AND_PRESETS.md` freezes four primary nav routes, eight homepage proof slugs, route inventory, and the ten-step launch-day checklist.
+- `GO_NO_GO.md` is formally product-complete but stays NO-GO until live/refund evidence and release checks pass.
+
 ### 2026-07-23 — [grok] G6 PARTIAL live path smoke (not full Pass)
 - **1× live Mini OK:** POST `/api/generate` with `scout-still.webp` + `360-spin-showcase` + `ownsRights:true` → `demo:false`, fal `videoUrl`, credits **10→0**.
 - **ownsRights gate OK:** without rights → **400**, credits unchanged (no false debit).

@@ -20,7 +20,8 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | G5 | Plain-language ICP + meta | Codex | **review** | agent/gpt/world-class-copy | Home H1 + buyer meta + seller ROI copy implemented; merge evidence pending |
 | G6 | 3 live toy gens + 1 refund | any | todo | — | **still red — hand test** |
 | G7 | build + prod no devTopup | Claude | **review** | main | topup hard-off prod |
-| P-GO | GO_NO_GO + nav/preset whitelist PRD | GPT | **doing** | agent/gpt/go-no-go-soft | **STILL NEED PASTE TO GPT** |
+| P-GO | GO_NO_GO + nav/preset whitelist PRD | GPT | done | agent/gpt/world-class-prd | Formal pass criteria, exact nav, eight proof slugs, route inventory and day-of checklist |
+| W-PRD | World-class product contract, Seller OS, recipe quality, SEO Intent 50 | GPT | done | agent/gpt/world-class-prd | WORLD_CLASS_PIKBO + SEO_INTENT_50 |
 | P-COPY | Shell honesty copy pass | Codex | todo | agent/gpt/shell-honesty-copy | **STILL NEED PASTE TO CODEX** |
 | W-COPY | World-class seller copy, official-demo truth, ROI and 10 intent pages | Codex | done | agent/gpt/world-class-copy | Lint, typecheck, build and rendered metadata/H1 checks passed |
 | T1 | Multi-agent collab protocol + board | Grok | done | main | COLLAB.md + STATUS + HANDOFF |
