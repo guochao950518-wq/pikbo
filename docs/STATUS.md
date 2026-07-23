@@ -1,6 +1,6 @@
 # Pikbo board — claim before you code
 
-**Last human intent:** NO-GO public launch until shell triage. Dispatch GPT+Codex+Claude NOW. See docs/DISPATCH.md + docs/prd/GO_NO_GO.md.
+**Last human intent:** World-class toy video OS; path to $60k/day. See docs/MOONSHOT_WORLD_CLASS.md + docs/DISPATCH.md. Public still GO-gated.
 
 Update this file in the same PR/commit as your work start/finish.
 
