@@ -12,7 +12,7 @@
 
 | # | 门槛 | 现状 | 谁负责做成绿 |
 |---|------|------|--------------|
-| G1 | 顶栏无空门（Models Soon / 假 Cinema/Batch 不装完整产品） | ❌ 红 | **Claude 实现** · GPT 定「允许露出的导航」 |
+| G1 | 顶栏无空门（Models Soon / 假 Cinema/Batch 不装完整产品） | ⚠ 黄 · Grok 已压主 nav 为 Explore/Create/Lab/Library + More（`237068e`）；等 GPT 白名单 + Claude 再收 | **Claude 实现** · GPT 定「允许露出的导航」 |
 | G2 | 首页主推预设 ≤8，**一预设一真片**，禁止 shared-loop 墙 | ❌ 红 | **Claude** · GPT 定保留哪 8 个 |
 | G3 | Lab/Feed 不暗示真 UGC；文案 Official demos | ❌ 偏红 | **Codex 文案** · Claude 合 |
 | G4 | 所有页脚 `/for/*` 等链接 **0 个 404** | ❌ 红（etsy 已 404） | **Claude** · GPT 列 URL 清单 |
