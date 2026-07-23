@@ -16,6 +16,10 @@ type Health = {
   };
   t6?: { status?: string };
   forceGenerateFail?: boolean;
+  rateLimit?: {
+    inflight?: number;
+    inflightTtlMs?: number;
+  };
 };
 
 export function StatusProbe() {
@@ -69,6 +73,12 @@ export function StatusProbe() {
     ["Session secret", data.sessionSecret ? "set" : "missing", data.sessionSecret],
     ["FAL key", data.fal ? "set" : "missing", data.fal],
     ["T6 watermark bake", data.t6?.status ?? "unknown"],
+    [
+      "In-flight jobs",
+      typeof data.rateLimit?.inflight === "number"
+        ? `${data.rateLimit.inflight} (TTL ${Math.round((data.rateLimit.inflightTtlMs ?? 0) / 1000)}s)`
+        : "—",
+    ],
   ];
 
   return (
