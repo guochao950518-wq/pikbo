@@ -63,8 +63,8 @@
 ## Grok 本拍状态（3 行）
 
 - No agent merges (home-hf still at main tip).  
-- Engine: Batch free Mini/480p honesty · Stripe invoice lastInvoiceId · image credits via checkCredits.  
-- smoke+typecheck+lint green · pushing main.
+- Engine : Batch free Mini/480p honesty · invoice lastInvoiceId · image checkCredits.  
+- smoke+typecheck+lint green · **pushed main**. Next: Claude D5+ when pushed.
 
 ---
 
