@@ -486,7 +486,60 @@ export function BatchStudio({
     setRunning(false);
   }
 
+  /** Phase F: partial failure — re-run only failed/refunded children; successes stay. */
+  async function retryAllFailed() {
+    if (running || !image || !ownsRights) return;
+    const failed = jobs.filter(
+      (job) => job.status === "failed" || job.status === "refunded"
+    );
+    if (failed.length === 0) return;
+    const projectId =
+      runProjectId ??
+      `${sellerPackActive ? "seller-pack" : "batch"}-retry-failed-${Date.now().toString(36)}`;
+    setRunProjectId(projectId);
+    setRunning(true);
+    setError(null);
+    let sharedAssetId: string | null = null;
+    if (image.startsWith("data:image")) {
+      const reg = await registerLocalAsset(image);
+      if (reg?.assetId) sharedAssetId = reg.assetId;
+    }
+    for (let i = 0; i < failed.length; i++) {
+      const target = failed[i];
+      const retrying: Job = {
+        ...target,
+        status: "running",
+        error: undefined,
+        errorCode: undefined,
+        creditState: undefined,
+        retryCount: target.retryCount + 1,
+      };
+      setJobs((previous) =>
+        previous.map((job) => (job.slug === target.slug ? retrying : job))
+      );
+      const outcome = await executeJob(
+        retrying,
+        projectId,
+        null,
+        sharedAssetId
+      );
+      setJobs((previous) =>
+        previous.map((job) =>
+          job.slug === target.slug ? outcome.job : job
+        )
+      );
+      if (!outcome.job.videoUrl) {
+        setError(outcome.job.error ?? `Retry failed · ${target.name}`);
+      }
+      if (i < failed.length - 1) await sleep(400);
+    }
+    setRunning(false);
+  }
+
   const doneCount = jobs.filter((j) => j.status === "succeeded").length;
+  const failedRetryCount = jobs.filter(
+    (job) => job.status === "failed" || job.status === "refunded"
+  ).length;
   const needsAttentionCount = jobs.filter(
     (job) =>
       job.status === "failed" ||
@@ -886,14 +939,30 @@ export function BatchStudio({
                 {needsAttentionCount > 0
                   ? ` · ${needsAttentionCount} need attention`
                   : ""}
+                {failedRetryCount > 0
+                  ? ` · ${failedRetryCount} failed (siblings kept)`
+                  : ""}
               </p>
             ) : null}
           </div>
-          {jobs.length > 0 && (
-            <span className="text-[10px] text-[var(--fg-dim)]">
-              Saved on this device
-            </span>
-          )}
+          <div className="flex flex-wrap items-center gap-2">
+            {failedRetryCount > 0 ? (
+              <button
+                type="button"
+                disabled={running || !image || !ownsRights}
+                onClick={() => void retryAllFailed()}
+                className="rounded-full border border-[var(--mint)]/35 px-3 py-1 text-[10px] font-bold text-[var(--mint)] disabled:opacity-40"
+                title="Re-quote only failed children · successful outputs stay playable"
+              >
+                Retry failed only
+              </button>
+            ) : null}
+            {jobs.length > 0 ? (
+              <span className="text-[10px] text-[var(--fg-dim)]">
+                Saved on this device
+              </span>
+            ) : null}
+          </div>
         </div>
         {jobs.length === 0 && (
           <p className="text-sm text-[var(--fg-dim)]">

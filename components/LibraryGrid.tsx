@@ -34,8 +34,22 @@ type SessionJob = {
   createdAt?: string;
 };
 
+function isCancellableSessionJob(status: string): boolean {
+  return status === "queued" || status === "running";
+}
+
 /** Phase D: process-memory ledger — must show even when device history is empty. */
-function SessionJobsPanel({ jobs }: { jobs: SessionJob[] }) {
+function SessionJobsPanel({
+  jobs,
+  cancellingId,
+  onCancel,
+  onRefresh,
+}: {
+  jobs: SessionJob[];
+  cancellingId: string | null;
+  onCancel: (id: string) => void;
+  onRefresh: () => void;
+}) {
   if (jobs.length === 0) return null;
   return (
     <section className="mb-6 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
@@ -47,14 +61,24 @@ function SessionJobsPanel({ jobs }: { jobs: SessionJob[] }) {
           <p className="mt-1 text-xs text-[var(--fg-muted)]">
             Local ledger from Generate (not multi-node cloud). Device Library
             below is this browser only — empty until a clip is saved here.
+            Cancel marks the ledger only; in-flight fal may still finish.
           </p>
         </div>
-        <Link
-          href="/create"
-          className="text-[11px] font-semibold text-[var(--mint)] hover:underline"
-        >
-          Open Create →
-        </Link>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={onRefresh}
+            className="text-[11px] font-semibold text-[var(--fg-muted)] hover:text-white"
+          >
+            Refresh
+          </button>
+          <Link
+            href="/create"
+            className="text-[11px] font-semibold text-[var(--mint)] hover:underline"
+          >
+            Open Create →
+          </Link>
+        </div>
       </div>
       <ul className="mt-3 space-y-2">
         {jobs.map((j) => (
@@ -83,6 +107,17 @@ function SessionJobsPanel({ jobs }: { jobs: SessionJob[] }) {
               >
                 Retry recipe
               </Link>
+              {isCancellableSessionJob(j.status) ? (
+                <button
+                  type="button"
+                  disabled={cancellingId === j.id}
+                  onClick={() => onCancel(j.id)}
+                  className="text-amber-100/80 hover:text-amber-50 disabled:opacity-50"
+                  title="Marks local ledger canceled — does not kill provider mid-flight"
+                >
+                  {cancellingId === j.id ? "Canceling…" : "Cancel ledger"}
+                </button>
+              ) : null}
               {j.status === "succeeded" && j.downloadAllowed && j.videoUrl ? (
                 <a
                   href={
@@ -116,6 +151,7 @@ export function LibraryGrid() {
   /** Wave A: group device-local clips by remix/sample project key */
   const [groupMode, setGroupMode] = useState<GroupMode>("project");
   const [sessionJobs, setSessionJobs] = useState<SessionJob[]>([]);
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
   const toast = useToast();
 
   useEffect(() => {
@@ -126,20 +162,78 @@ export function LibraryGrid() {
     return () => window.clearTimeout(t);
   }, []);
 
+  async function refreshSessionJobs() {
+    try {
+      const r = await fetch("/api/generations");
+      const body = (await r.json()) as { ok?: boolean; jobs?: SessionJob[] };
+      if (!body?.ok || !Array.isArray(body.jobs)) return;
+      setSessionJobs(body.jobs.slice(0, 12));
+    } catch {
+      /* ignore */
+    }
+  }
+
   // Phase D: process-memory job ledger for this browser session (refresh recovery).
   useEffect(() => {
     let cancelled = false;
-    void fetch("/api/generations")
-      .then((r) => r.json())
-      .then((body: { ok?: boolean; jobs?: SessionJob[] }) => {
-        if (cancelled || !body?.ok || !Array.isArray(body.jobs)) return;
-        setSessionJobs(body.jobs.slice(0, 12));
-      })
-      .catch(() => undefined);
+    const t = window.setTimeout(() => {
+      void fetch("/api/generations")
+        .then((r) => r.json())
+        .then((body: { ok?: boolean; jobs?: SessionJob[] }) => {
+          if (cancelled || !body?.ok || !Array.isArray(body.jobs)) return;
+          setSessionJobs(body.jobs.slice(0, 12));
+        })
+        .catch(() => undefined);
+    }, 0);
     return () => {
       cancelled = true;
+      window.clearTimeout(t);
     };
   }, []);
+
+  // Poll while any job is still open so TIMEOUT/cancel/success surfaces without reload.
+  useEffect(() => {
+    const open = sessionJobs.some((j) => isCancellableSessionJob(j.status));
+    if (!open) return;
+    const t = window.setInterval(() => {
+      void fetch("/api/generations")
+        .then((r) => r.json())
+        .then((body: { ok?: boolean; jobs?: SessionJob[] }) => {
+          if (!body?.ok || !Array.isArray(body.jobs)) return;
+          setSessionJobs(body.jobs.slice(0, 12));
+        })
+        .catch(() => undefined);
+    }, 8000);
+    return () => window.clearInterval(t);
+  }, [sessionJobs]);
+
+  async function cancelSessionJob(id: string) {
+    setCancellingId(id);
+    try {
+      const res = await fetch(`/api/generations/${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      });
+      const body = (await res.json()) as {
+        ok?: boolean;
+        message?: string;
+        note?: string;
+        code?: string;
+      };
+      if (!res.ok || !body.ok) {
+        toast(body.message || body.code || "Could not cancel job");
+      } else {
+        toast(
+          body.note ||
+            "Ledger canceled · in-flight provider may still complete"
+        );
+      }
+      await refreshSessionJobs();
+    } catch {
+      toast("Network error canceling job");
+    } finally {
+      setCancellingId(null);
+    }
+  }
 
   const effectNames = useMemo(() => {
     const map = new Map<string, string>();
@@ -268,7 +362,12 @@ export function LibraryGrid() {
   if (items.length === 0) {
     return (
       <div className="mt-8">
-        <SessionJobsPanel jobs={sessionJobs} />
+        <SessionJobsPanel
+          jobs={sessionJobs}
+          cancellingId={cancellingId}
+          onCancel={(id) => void cancelSessionJob(id)}
+          onRefresh={() => void refreshSessionJobs()}
+        />
         <div className="grid place-items-center rounded-2xl border border-dashed border-[var(--border)] bg-[var(--bg-soft)] py-16 text-center sm:py-20">
           <p className="text-3xl">▢</p>
           <p className="mt-3 text-base font-semibold text-[var(--fg)]">
@@ -325,7 +424,12 @@ export function LibraryGrid() {
 
   return (
     <div className="mt-8">
-      <SessionJobsPanel jobs={sessionJobs} />
+      <SessionJobsPanel
+        jobs={sessionJobs}
+        cancellingId={cancellingId}
+        onCancel={(id) => void cancelSessionJob(id)}
+        onRefresh={() => void refreshSessionJobs()}
+      />
 
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">

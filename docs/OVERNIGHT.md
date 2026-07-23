@@ -78,7 +78,8 @@
 37. [x] ASSET_NOT_FOUND → inline still recovery (Create/Landing/Batch); Library quota save
 38. [x] Library session jobs visible when device history empty · Create fail recovery tip
 39. [x] In-flight lock TTL recovery · JOB_IN_FLIGHT Retry-After · getJob by requestId
-40. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
+40. [x] Library cancel ledger + Seller Pack retry-failed-only · auth callback noindex
+41. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
 
 ### 老板醒来验收
 
@@ -92,9 +93,9 @@
 
 ## Grok 本拍状态（3 行）
 
-- In-flight generate/image locks auto-expire (~200s) so hard-kills cannot wedge sessions.  
-- JOB_IN_FLIGHT returns retryAfterSec + Retry-After; health reports inflight count/TTL.  
-- getJob/cancel resolve provider requestId · engine-smoke green · Mode A needs boss Vercel.
+- Library SessionJobsPanel: Cancel ledger + Refresh + poll open jobs (honest mid-flight note).  
+- Seller Pack/Batch: Retry failed only keeps successful siblings. Landing fail tip parity.  
+- `/auth/callback` PRIVATE_ROBOTS · engine-smoke green · Mode A needs boss Vercel.
 
 ---
 

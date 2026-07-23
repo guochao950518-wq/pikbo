@@ -393,7 +393,31 @@ export function LandingToolPanel({
           (error && error.toLowerCase().includes("credit")) ? (
             <PaywallCard />
           ) : error ? (
-            <p className="text-center text-xs text-[var(--brand)]">{error}</p>
+            <div
+              role="alert"
+              className="rounded-xl border border-[var(--brand)]/35 bg-[var(--brand)]/10 px-3 py-2 text-center"
+            >
+              <p className="text-xs font-semibold text-[var(--brand)]">
+                {error}
+              </p>
+              <p className="mt-1 text-[10px] leading-relaxed text-[var(--fg-dim)]">
+                Next: Retry · try another recipe · Free Lab sample is 0 credits
+                {" · "}
+                <Link
+                  href="/create?try=1&sample=scout"
+                  className="font-semibold text-[var(--mint)] hover:underline"
+                >
+                  open free sample
+                </Link>
+                {" · "}
+                <Link
+                  href={`/create?effect=${effectSlug}`}
+                  className="text-[var(--mint)] hover:underline"
+                >
+                  full studio
+                </Link>
+              </p>
+            </div>
           ) : null}
 
           <p className="text-center text-[10px] text-[var(--fg-dim)]">

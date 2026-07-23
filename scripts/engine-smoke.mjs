@@ -1274,8 +1274,18 @@ assert.match(library, /Session jobs|\/api\/generations/);
 // Empty device history must still mount SessionJobsPanel (Phase D recovery)
 assert.match(library, /SessionJobsPanel|No clips saved on this device yet/);
 assert.match(library, /this server process/);
+assert.match(library, /Cancel ledger|method:\s*[\"']DELETE[\"']/);
 assert.match(createStudio, /try another recipe|open free sample/);
 assert.match(batchStudio, /registerLocalAsset|sharedAssetId/);
+assert.match(batchStudio, /retryAllFailed|Retry failed only/);
+assert.match(
+  fs.readFileSync(join(root, "components/LandingToolPanel.tsx"), "utf8"),
+  /open free sample|try another recipe/
+);
+assert.match(
+  fs.readFileSync(join(root, "app/auth/callback/layout.tsx"), "utf8"),
+  /PRIVATE_ROBOTS|index:\s*false/
+);
 const critPathModeA = fs.readFileSync(
   join(root, "scripts/critical-path.sh"),
   "utf8"

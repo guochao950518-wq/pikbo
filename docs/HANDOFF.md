@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Session job cancel + Seller Pack retry-failed
+- Library SessionJobsPanel: Cancel ledger (DELETE /api/generations/[id]), Refresh, poll open jobs.
+- Batch/Seller Pack: **Retry failed only** — siblings kept; sequential re-quote.
+- Landing fail tip parity with Create; `/auth/callback` layout PRIVATE_ROBOTS.
+- Verified: engine-smoke · typecheck · lint.
+
 ### 2026-07-24 — [grok] In-flight lock TTL + job requestId resolve
 - `rateLimit` inflight Map + TTL (~200s / `PIKBO_INFLIGHT_TTL_MS`) — stale locks free after hard kill.
 - generate/image JOB_IN_FLIGHT returns `retryAfterSec` + Retry-After header.
