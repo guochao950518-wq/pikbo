@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] product polish: job intents + activation checklist
+- Boss paused public launch; Grok research → product depth.
+- Create: JobIntentBar (Etsy / TikTok / reveal / shelf / Seller Pack); ActivationChecklist first-clip steps.
+- Library empty state outcome-first; deep link `?job=etsy-listing`.
+- Synthesis: `docs/research/PRODUCT_POLISH_SYNTHESIS.md`. DISPATCH notes launch pause.
+
 ### 2026-07-24 — [grok] Batch assetId + Mode A critical-path expansion
 - BatchStudio/Seller Pack registers still once via `registerLocalAsset`; children send `assetId` (fallback Base64).
 - `critical-path`: /login /status /api/auth/status /api/generations + HEAD health; health payments/t6 fields.

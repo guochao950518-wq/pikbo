@@ -192,40 +192,36 @@ export function LibraryGrid() {
 
   if (items.length === 0) {
     return (
-      <div className="mt-10 grid place-items-center rounded-2xl border border-dashed border-[var(--border)] bg-[var(--bg-soft)] py-20 text-center">
+      <div className="mt-10 grid place-items-center rounded-2xl border border-dashed border-[var(--border)] bg-[var(--bg-soft)] py-16 text-center sm:py-20">
         <p className="text-3xl">▢</p>
-        <p className="mt-3 text-[var(--fg-muted)]">No saved results on this device yet</p>
-        <p className="mt-2 max-w-sm text-xs text-[var(--fg-dim)]">
-          {PROVENANCE.localLibrary} · this browser only (not cloud-synced).
-          Without provider access, Studio saves a labeled{" "}
-          {PROVENANCE.cachedDemo.toLowerCase()} that does not animate your upload.
+        <p className="mt-3 text-base font-semibold text-[var(--fg)]">
+          Your first listing clip starts on Create
+        </p>
+        <p className="mt-2 max-w-sm text-xs leading-relaxed text-[var(--fg-dim)]">
+          {PROVENANCE.localLibrary} · saved on this device only (not cloud).
+          One photo → pick a job (Etsy spin, TikTok hook, reveal) → generate.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <Link
             href="/create?try=1&sample=scout"
             className="btn btn-primary text-sm"
           >
-            ▶ Free sample now
+            ▶ Free sample · 10 seconds
+          </Link>
+          <Link
+            href="/create?mode=seller-pack"
+            className="btn btn-ghost text-sm"
+          >
+            Seller Pack · 3 outputs
           </Link>
           <Link href="/create" className="btn btn-ghost text-sm">
             Open Studio
           </Link>
-          <Link href="/community" className="btn btn-ghost text-sm">
-            Browse Lab recipes
-          </Link>
-          <Link href="/effects" className="btn btn-ghost text-sm">
-            Browse presets
-          </Link>
-          <Link
-            href="/effects/360-spin-showcase"
-            className="btn btn-ghost text-sm"
-          >
-            360° spin tool
-          </Link>
-          <Link href="/supercomputer" className="btn btn-ghost text-sm">
-            Batch
-          </Link>
         </div>
+        <p className="mt-4 max-w-xs text-[10px] text-[var(--fg-dim)]">
+          Clips appear here after a successful generate. Failed live jobs refund
+          credits.
+        </p>
       </div>
     );
   }

@@ -42,6 +42,7 @@ import { JobIntentBar } from "@/components/JobIntentBar";
 import {
   ActivationChecklist,
   markActivationJob,
+  markActivationShared,
 } from "@/components/ActivationChecklist";
 import { getJobIntent, type JobIntentId } from "@/lib/jobIntents";
 
@@ -119,6 +120,7 @@ export function CreateStudio({
   initialDuration,
   initialChannel,
   initialSample,
+  initialJob,
 }: {
   initialEffect?: string;
   initialModel?: string;
@@ -131,6 +133,8 @@ export function CreateStudio({
   initialChannel?: string;
   /** First-run sample id (orbit|moon|scout|beatbot) — load photo + ready to generate */
   initialSample?: string;
+  /** Job-to-be-done: etsy-listing | tiktok-hook | blind-box-drop | shelf-display */
+  initialJob?: string;
 }) {
   const remix = useMemo(
     () =>
@@ -330,6 +334,18 @@ export function CreateStudio({
     return () => window.clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialSample]);
+
+  // Deep link: ?job=etsy-listing → select recipe + aspect (outcome routing)
+  useEffect(() => {
+    if (!initialJob) return;
+    const job = getJobIntent(initialJob);
+    if (!job || job.href) return;
+    const t = window.setTimeout(() => {
+      applyJobIntent(job.id);
+    }, 0);
+    return () => window.clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialJob]);
 
   useEffect(() => {
     if (status !== "generating") return;
@@ -726,6 +742,7 @@ export function CreateStudio({
     try {
       await navigator.clipboard.writeText(videoUrl);
       setCopied(true);
+      markActivationShared();
       toast("Link copied");
       window.setTimeout(() => setCopied(false), 1500);
     } catch {
@@ -773,6 +790,7 @@ export function CreateStudio({
 
   function shareX() {
     if (!videoUrl) return;
+    markActivationShared();
     const text = encodeURIComponent(
       `Made with ${site.name} — ${preset.name} 🧸`
     );
@@ -1855,6 +1873,7 @@ export function CreateStudio({
                       target="_blank"
                       rel="noreferrer"
                       className="btn btn-primary px-4 py-2 text-xs"
+                      onClick={() => markActivationShared()}
                     >
                       Download · keep it
                     </a>

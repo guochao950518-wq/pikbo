@@ -1243,5 +1243,8 @@ assert.match(modeA, /critical-path|link-check/);
 const pkgJson = fs.readFileSync(join(root, "package.json"), "utf8");
 assert.match(pkgJson, /mode-a-acceptance/);
 
+assert.match(fs.readFileSync(join(root, "lib/jobIntents.ts"), "utf8"), /JOB_INTENTS/);
+assert.match(fs.readFileSync(join(root, "components/JobIntentBar.tsx"), "utf8"), /What are you making/);
+assert.match(createStudio, /JobIntentBar|ActivationChecklist/);
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

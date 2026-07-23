@@ -52,6 +52,8 @@ export default async function CreatePage({
     /** One-click first-run sample: orbit | moon | scout | beatbot */
     sample?: string;
     try?: string;
+    /** Job-to-be-done chip: etsy-listing | tiktok-hook | blind-box-drop | shelf-display */
+    job?: string;
   }>;
 }) {
   const sp = await searchParams;
@@ -110,6 +112,7 @@ export default async function CreatePage({
         initialDuration={sp.duration}
         initialChannel={sp.channel}
         initialSample={firstRunSample}
+        initialJob={sp.job}
       />
       {/* SSR landing copy + internal links for crawlers */}
       <CreateSeoFooter effectSlug={sp.effect} />

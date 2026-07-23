@@ -42,6 +42,9 @@ W1 出片身份稳 → W3 真片证明墙 → W5 信任 → W2 Seller OS → W4 
 
 公开 GO 表（G1–G7）仍有效；**绿了只代表「不丢人公开」= S1，不是日入 6 万。**
 
+**2026-07-24 老板裁定：** 正式公网上线**暂停**。优先产品和功能打磨（转化路径、首跑体验、诚实信任）。Mode A 部署/绑域名等老板再开。  
+产品研究落地见 `docs/research/PRODUCT_POLISH_SYNTHESIS.md`。
+
 ---
 
 ## Higgsfield public-surface parity
