@@ -6,13 +6,21 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 # Agent entrypoint (Grok / GPT / Claude)
 
-You are one of **three coding agents** shipping **Pikbo** together.
+You are one of **three agents** shipping **Pikbo** under a **strict role split**.
 
-1. Read **`docs/DISPATCH.md`** first — only do the section for your agent.
-2. Read **`COLLAB.md`** (branching, commit prefixes, how to pull others’ work).
-3. Read **`docs/STATUS.md`** and claim/update tasks.
-4. Skim **`docs/HANDOFF.md`** for quality patterns to reuse.
-5. Product constraints: **`README.md`**. Boss guide: **`docs/BOSS.md`**.
+1. Read **`docs/ROLES.md`** — your lane (non-negotiable).  
+2. Read **`docs/DISPATCH.md`** — only your current tasks.  
+3. Read **`COLLAB.md`** — branches, commits, how to pull.  
+4. Claim work in **`docs/STATUS.md`**; log wins in **`docs/HANDOFF.md`**.  
+5. Product: **`README.md`**. Boss: **`docs/BOSS.md`**.
+
+| Agent | Lane |
+|-------|------|
+| **Claude** | All code & engineering |
+| **GPT** | PRD, data, API design, business rules |
+| **Grok** | Creative, differentiation, growth, coordination |
+
+**Cross-cutting work:** write a Cross request in DISPATCH **before** coding.
 
 **Canonical remote:** `https://github.com/guochao950518-wq/pikbo`
 
