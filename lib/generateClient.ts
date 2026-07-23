@@ -234,8 +234,31 @@ export function historyFieldsFromSuccess(
   };
 }
 
-export function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+/** Sleep that rejects with AbortError when signal aborts (cancel mid-retry wait). */
+export function sleep(ms: number, signal?: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(
+        typeof DOMException !== "undefined"
+          ? new DOMException("Aborted", "AbortError")
+          : Object.assign(new Error("Aborted"), { name: "AbortError" })
+      );
+      return;
+    }
+    const t = setTimeout(() => {
+      signal?.removeEventListener("abort", onAbort);
+      resolve();
+    }, ms);
+    function onAbort() {
+      clearTimeout(t);
+      reject(
+        typeof DOMException !== "undefined"
+          ? new DOMException("Aborted", "AbortError")
+          : Object.assign(new Error("Aborted"), { name: "AbortError" })
+      );
+    }
+    signal?.addEventListener("abort", onAbort, { once: true });
+  });
 }
 
 async function bearerAuthHeaders(): Promise<Record<string, string>> {
@@ -372,7 +395,26 @@ export async function postGenerateWithRetry(
       result.code === "JOB_IN_FLIGHT"
         ? Math.min(8, Math.max(2, result.retryAfterSec ?? 2))
         : (result.retryAfterSec ?? 8);
-    await sleep(Math.min(60, Math.max(1, waitSec)) * 1000);
+    try {
+      await sleep(Math.min(60, Math.max(1, waitSec)) * 1000, opts?.signal);
+    } catch (e) {
+      const aborted =
+        (e instanceof Error && e.name === "AbortError") ||
+        (typeof DOMException !== "undefined" &&
+          e instanceof DOMException &&
+          e.name === "AbortError");
+      if (aborted) {
+        return {
+          ok: false,
+          status: 0,
+          error:
+            "Request canceled — if credits were debited, check balance or retry (refund unconfirmed until server confirms)",
+          fatal: false,
+          paywall: false,
+        };
+      }
+      throw e;
+    }
     result = await postGenerate(body, { signal: opts?.signal });
   }
 

@@ -970,6 +970,9 @@ assert.doesNotMatch(
   /dataUrl:\s*result\.asset\.dataUrl/
 );
 assert.match(gen, /AbortError|Request canceled/);
+assert.match(gen, /export function sleep/);
+assert.match(createStudio, /cancelInFlightGenerate|Cancel request|AbortController/);
+assert.match(gen, /signal\?: AbortSignal|sleep\([^)]*signal/);
 assert.match(genJobsStore, /export function generationJobsProbe/);
 assert.match(genJobsStore, /findJobByRequestOrId/);
 // getJob must resolve provider requestId (not only job_*)

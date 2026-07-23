@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { loadFavorites, toggleFavorite } from "@/lib/favorites";
 import {
   historyFieldsFromSuccess,
@@ -246,7 +246,24 @@ export function CreateStudio({
    */
   const [lastRequestCreditState, setLastRequestCreditState] =
     useState<RequestCreditState>(null);
+  /** In-flight generate abort — cancel marks refund unconfirmed if network cut mid-debit. */
+  const generateAbortRef = useRef<AbortController | null>(null);
   const toast = useToast();
+
+  useEffect(() => {
+    return () => {
+      generateAbortRef.current?.abort();
+      generateAbortRef.current = null;
+    };
+  }, []);
+
+  function cancelInFlightGenerate() {
+    const ctrl = generateAbortRef.current;
+    if (!ctrl) return;
+    ctrl.abort();
+    generateAbortRef.current = null;
+    toast("Canceled · check balance before retry if live debit may have started");
+  }
 
   const preset = useMemo(
     () => PRESETS.find((p) => p.slug === effect)!,
@@ -557,6 +574,10 @@ export function CreateStudio({
     setShowPaywall(false);
     setElapsed(0);
     setStatus("generating");
+    // Abort any prior in-flight POST before starting a new one.
+    generateAbortRef.current?.abort();
+    const abortCtrl = new AbortController();
+    generateAbortRef.current = abortCtrl;
     document
       .getElementById("create-result")
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -585,8 +606,12 @@ export function CreateStudio({
       {
         maxRetries: 1,
         fallbackImage: useAsset ? fallbackStill : undefined,
+        signal: abortCtrl.signal,
       }
     );
+    if (generateAbortRef.current === abortCtrl) {
+      generateAbortRef.current = null;
+    }
 
     // Dead assetId after process restart/TTL — clear and re-register for next POST.
     if (
@@ -1828,14 +1853,25 @@ export function CreateStudio({
             </span>
           </label>
 
-          <button
-            type="button"
-            onClick={() => void generate()}
-            disabled={!canGenerate}
-            className="btn btn-primary hidden w-full disabled:opacity-50 lg:flex"
-          >
-            {primaryLabel}
-          </button>
+          {status === "generating" ? (
+            <button
+              type="button"
+              onClick={cancelInFlightGenerate}
+              className="btn btn-ghost hidden w-full border border-white/20 lg:flex"
+              title="Aborts this browser request. Live debit may still settle server-side."
+            >
+              Cancel request · {elapsed}s
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => void generate()}
+              disabled={!canGenerate}
+              className="btn btn-primary hidden w-full disabled:opacity-50 lg:flex"
+            >
+              {primaryLabel}
+            </button>
+          )}
 
           {(error ||
             lastRefunded ||
@@ -1932,6 +1968,18 @@ export function CreateStudio({
                     }}
                   />
                 </div>
+                <button
+                  type="button"
+                  onClick={cancelInFlightGenerate}
+                  className="mt-4 rounded-full border border-white/20 px-4 py-1.5 text-[11px] font-bold text-white/80 hover:border-white/40 hover:text-white"
+                  title="Aborts this browser request. Soft-launch may still finish server-side; refund unconfirmed until balance confirms."
+                >
+                  Cancel request
+                </button>
+                <p className="mt-1.5 max-w-xs text-[10px] leading-relaxed text-[var(--fg-dim)]">
+                  Stops waiting in this tab. Live debit/refund may still settle
+                  server-side — check balance before retry.
+                </p>
               </div>
             )}
             {(status === "done" || status === "error") && videoUrl && (
@@ -2363,6 +2411,13 @@ export function CreateStudio({
                 <p className="mt-2 max-w-xs text-xs text-[var(--fg-muted)]">
                   Live jobs take a bit. Cached demos come back faster.
                 </p>
+                <button
+                  type="button"
+                  onClick={cancelInFlightGenerate}
+                  className="mt-4 rounded-full border border-white/20 px-4 py-1.5 text-[11px] font-bold text-white/75"
+                >
+                  Cancel request
+                </button>
               </div>
             )}
             {(status === "idle" || status === "error") && !videoUrl && (
@@ -2478,6 +2533,14 @@ export function CreateStudio({
               Try free
             </button>
           </div>
+        ) : status === "generating" ? (
+          <button
+            type="button"
+            onClick={cancelInFlightGenerate}
+            className="btn btn-ghost w-full border border-white/20 py-3 text-sm text-white/85"
+          >
+            Cancel request · {elapsed}s
+          </button>
         ) : (
           <button
             type="button"
@@ -2489,11 +2552,9 @@ export function CreateStudio({
                 return;
               }
               void generate();
-              if (status === "generating" || canGenerate) {
-                document
-                  .getElementById("create-result")
-                  ?.scrollIntoView({ behavior: "smooth", block: "start" });
-              }
+              document
+                .getElementById("create-result")
+                ?.scrollIntoView({ behavior: "smooth", block: "start" });
             }}
             disabled={busy || !ownsRights || (mode === "i2v" && !image)}
             className="btn btn-primary w-full py-3 text-sm disabled:opacity-50"

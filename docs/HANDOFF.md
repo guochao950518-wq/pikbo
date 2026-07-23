@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Create Cancel request mid-generate (AbortController)
+- Create: Cancel request (desktop + mobile sticky + result spinner) aborts fetch.
+- `sleep(ms, signal)` aborts rate-limit waits; status 0 → refund unconfirmed honesty.
+- Server may still finish soft-launch fal — copy says check balance before retry.
+- Verified: engine-smoke · typecheck · lint.
+
 ### 2026-07-24 — [grok] Asset session-reservation + PUT ownership
 - `reserveLocalAssetId` on upload-url; PUT rejects `NOT_OWNED` / expired reservation.
 - PUT success no longer echoes multi-MB `dataUrl` (server keeps still for generate).
