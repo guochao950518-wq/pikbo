@@ -1,21 +1,52 @@
 import { NextResponse } from "next/server";
+import { ensureSession } from "@/lib/session";
+import { forkRetryJob, toPublicJob } from "@/lib/generationJobs";
 
 export const runtime = "nodejs";
 
 type Props = { params: Promise<{ id: string }> };
 
-/** Phase D — retry a durable job without re-quoting siblings. */
+/**
+ * Phase D local retry handoff.
+ * Forks a queued child job for tracking; does not re-call the provider
+ * (still image is not stored server-side). Soft-launch clients re-submit
+ * POST /api/generate with the same photo + effect. Seller Pack retries
+ * only the failed child — siblings stay playable.
+ */
 export async function POST(_req: Request, { params }: Props) {
   const { id } = await params;
+  const session = await ensureSession();
+  const result = forkRetryJob({ sessionId: session.id, parentId: id });
+  if (!result.ok) {
+    const status = result.code === "NOT_FOUND" ? 404 : 403;
+    return NextResponse.json(
+      {
+        ok: false,
+        code: result.code,
+        id,
+        message: result.message,
+        mode: "local-memory",
+      },
+      { status }
+    );
+  }
+  const { job, parent } = result;
   return NextResponse.json(
     {
-      ok: false,
-      code: "NOT_IMPLEMENTED",
-      phase: "D",
-      id,
+      ok: true,
+      mode: "local-memory",
+      durable: false,
       message:
-        "Durable job retry is not live. Soft-launch: retry from Create / Seller Pack UI (new quote for that child only).",
+        "Retry job queued in process memory. Re-submit POST /api/generate with your owned toy photo and the same effect — this does not re-run fal by itself.",
+      parent: toPublicJob(parent, session.id),
+      job: toPublicJob(job, session.id),
+      next: {
+        generate: "/api/generate",
+        status: `/api/generations/${job.id}`,
+        createUi: `/create?effect=${encodeURIComponent(parent.effect)}`,
+      },
+      note: "Seller Pack: only this child is re-quoted; successful siblings stay available.",
     },
-    { status: 501 }
+    { status: 202 }
   );
 }

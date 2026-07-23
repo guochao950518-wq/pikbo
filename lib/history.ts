@@ -1,5 +1,6 @@
 /** Client-side generation history (Local Library). No server DB / cloud sync. */
 
+import { canDownloadResult, freeLiveDownloadBlockReason } from "@/lib/createTrust";
 import { resultProvenanceLabel } from "@/lib/provenance";
 
 export type HistoryItem = {
@@ -27,6 +28,23 @@ export type HistoryItem = {
   creditStatus?: "0 cached" | "10 used";
   createdAt: string;
 };
+
+/**
+ * Free live raw provider URLs must not be treated as Library deliverables (T6).
+ * Cached demos and paid (no watermark) remain downloadable.
+ */
+export function historyItemDownloadAllowed(
+  item: Pick<HistoryItem, "demo" | "watermark">
+): boolean {
+  return canDownloadResult({
+    demo: Boolean(item.demo),
+    watermark: Boolean(item.watermark),
+  });
+}
+
+export function historyDownloadBlockReason(): string {
+  return freeLiveDownloadBlockReason();
+}
 
 /** Support / export helper — cached vs live without guessing from URL. */
 export function historyProvenance(item: Pick<HistoryItem, "demo">): string {

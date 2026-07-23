@@ -12,5 +12,6 @@ export {
   recordFailedGenerate,
   toPublicJob,
   downloadAllowedForJob,
+  forkRetryJob,
   __resetGenerationJobsForTests,
 } from "@/lib/generationJobs/store";

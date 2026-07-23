@@ -33,6 +33,8 @@ export type GenerationJob = {
   errorCode?: string;
   /** Client-supplied idempotency key (optional). */
   idempotencyKey?: string;
+  /** Prior job this was retried from (local adapter only). */
+  parentJobId?: string;
   createdAt: string;
   updatedAt: string;
 };

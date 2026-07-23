@@ -6,6 +6,8 @@ import {
   clearHistory,
   downloadVideoFile,
   exportHistoryJson,
+  historyDownloadBlockReason,
+  historyItemDownloadAllowed,
   importHistoryJson,
   loadHistory,
   remoteClipMayExpire,
@@ -132,6 +134,20 @@ export function LibraryGrid() {
   }
 
   async function downloadClip(item: HistoryItem) {
+    if (!historyItemDownloadAllowed(item)) {
+      toast(historyDownloadBlockReason());
+      return;
+    }
+    // Prefer controlled download endpoint when we have a server job id.
+    if (item.requestId) {
+      window.open(
+        `/api/downloads/${encodeURIComponent(item.requestId)}`,
+        "_blank",
+        "noopener,noreferrer"
+      );
+      toast("Download via server gate…");
+      return;
+    }
     const name = `pikbo-${item.effect}-${item.id.slice(0, 8)}.mp4`;
     const result = await downloadVideoFile(item.videoUrl, name);
     if (result === "ok") toast("Download started");
@@ -384,31 +400,67 @@ export function LibraryGrid() {
                       : ""}
                     {item.channel ? ` · ${item.channel}` : ""}
                   </p>
-                  {remoteClipMayExpire(item) && (
+                  {remoteClipMayExpire(item) && historyItemDownloadAllowed(item) && (
                     <p className="mt-1 text-[10px] text-amber-600/90">
                       Provider CDN links expire — download soon or re-generate.
                     </p>
                   )}
+                  {!historyItemDownloadAllowed(item) ? (
+                    <p className="mt-1 text-[10px] leading-snug text-amber-700/90 dark:text-amber-100/80">
+                      Free Mini live — raw file download blocked until server
+                      watermark bake (T6). Preview on-player only.
+                    </p>
+                  ) : null}
                   <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
-                    <a
-                      href={item.videoUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-xs font-medium text-[var(--mint)] hover:underline"
-                    >
-                      Open result
-                    </a>
-                    <button
-                      type="button"
-                      onClick={() => void downloadClip(item)}
-                      className="text-xs font-medium text-[var(--mint)] hover:underline"
-                    >
-                      Download
-                    </button>
+                    {historyItemDownloadAllowed(item) ? (
+                      <a
+                        href={
+                          item.requestId
+                            ? `/api/downloads/${encodeURIComponent(item.requestId)}`
+                            : item.videoUrl
+                        }
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-xs font-medium text-[var(--mint)] hover:underline"
+                      >
+                        Open result
+                      </a>
+                    ) : (
+                      <span
+                        className="text-xs font-medium text-[var(--fg-dim)]"
+                        title={historyDownloadBlockReason()}
+                      >
+                        Open raw blocked
+                      </span>
+                    )}
+                    {historyItemDownloadAllowed(item) ? (
+                      <button
+                        type="button"
+                        onClick={() => void downloadClip(item)}
+                        className="text-xs font-medium text-[var(--mint)] hover:underline"
+                      >
+                        Download
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        disabled
+                        title={historyDownloadBlockReason()}
+                        className="cursor-not-allowed text-xs font-medium text-[var(--fg-dim)] opacity-60"
+                      >
+                        Download blocked
+                      </button>
+                    )}
                     <button
                       type="button"
                       className="text-xs text-[var(--fg-muted)] hover:text-[var(--mint)]"
-                      onClick={() => void copyLink(item.videoUrl)}
+                      onClick={() => {
+                        if (!historyItemDownloadAllowed(item)) {
+                          toast(historyDownloadBlockReason());
+                          return;
+                        }
+                        void copyLink(item.videoUrl);
+                      }}
                     >
                       Copy link
                     </button>

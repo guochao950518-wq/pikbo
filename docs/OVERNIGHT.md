@@ -64,7 +64,8 @@
 23. [x] merge Wave A core loop branch · Create version stack + per-version Before/After metadata  
 24. [x] Wave B trust: settlement · Retry/Variant · server echo · Free download gate · Explore focus · CI
 25. [x] Phase D local job ledger · /api/downloads gate · demo critical-path acceptance
-26. 下一拍：T6 bake plan · durable Supabase wire (blocked on keys) · G6 lives · CI workflow scope
+26. [x] Library Free-download honesty · local forkRetry · Create download via /api/downloads
+27. 下一拍：T6 bake (ffmpeg/worker) · G6 lives (budget) · Supabase wire when keys
 
 ### 老板醒来验收
 
@@ -78,9 +79,9 @@
 
 ## Grok 本拍状态（3 行）
 
-- Phase D: process-memory generationJobs ledger + generations/download APIs.  
-- Generate records jobs; Free download 403 via /api/downloads; critical-path demo-default.  
-- engine-smoke/lint/typecheck green · public NO-GO · G6 needs 2 lives · OAuth no workflow scope.
+- Library Free live raw Open/Download/Copy blocked; job download gate used when requestId set.  
+- generations/[id]/retry forks local queued child (not 501); Create download → /api/downloads.  
+- engine-smoke/lint/typecheck green · public NO-GO · G6 still needs 2 lives · no fal spend.
 
 ---
 

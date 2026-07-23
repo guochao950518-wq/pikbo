@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [grok] Library Free-download honesty + local job retry
+- Library blocks Free live raw Open/Download/Copy (T6 parity with Create); uses `/api/downloads/[requestId]` when present.
+- `historyItemDownloadAllowed` shared policy in `lib/history.ts`.
+- `POST /api/generations/[id]/retry` forks local queued child via `forkRetryJob` (202) — not 501; client still re-POSTs generate with photo.
+- Create Download prefers controlled download endpoint when version has requestId.
+- Verified: engine-smoke · lint · typecheck. No fal spend this cycle.
+
 ### 2026-07-23 — [grok] Phase H SEO: no thin index pages / noindex private
 - `lib/seoIndex.ts`: `recipeHasUniqueProof` from DEMO_VIDEOS; concept/private/preview robots.
 - Effects without unique Lab sample → `noindex,follow` + chip; LandingResults no shared-loop fake proof.

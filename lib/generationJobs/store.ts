@@ -52,6 +52,7 @@ export function createJob(input: {
   effect: string;
   status?: GenerationJobStatus;
   idempotencyKey?: string;
+  parentJobId?: string;
 }): GenerationJob {
   if (input.idempotencyKey) {
     const existingId = byIdempotency.get(
@@ -72,6 +73,7 @@ export function createJob(input: {
     watermark: true,
     downloadAllowed: false,
     idempotencyKey: input.idempotencyKey,
+    parentJobId: input.parentJobId,
     createdAt: t,
     updatedAt: t,
   };
@@ -81,6 +83,42 @@ export function createJob(input: {
   }
   trimStore();
   return job;
+}
+
+/**
+ * Soft-launch local retry: fork a new queued job from a prior attempt.
+ * Does not re-run the provider (no stored still). Client must POST /api/generate
+ * with the original image + effect; Seller Pack keeps sibling successes.
+ */
+export function forkRetryJob(input: {
+  sessionId: string;
+  parentId: string;
+}):
+  | { ok: true; job: GenerationJob; parent: GenerationJob }
+  | { ok: false; code: "NOT_FOUND" | "NOT_OWNED"; message: string } {
+  const parent = jobs.get(input.parentId);
+  if (!parent) {
+    return {
+      ok: false,
+      code: "NOT_FOUND",
+      message: "Parent job not in this process ledger",
+    };
+  }
+  if (parent.sessionId !== input.sessionId) {
+    return {
+      ok: false,
+      code: "NOT_OWNED",
+      message: "Job belongs to another session",
+    };
+  }
+  const job = createJob({
+    sessionId: input.sessionId,
+    effect: parent.effect,
+    status: "queued",
+    parentJobId: parent.id,
+    idempotencyKey: `retry:${parent.id}:${Math.floor(Date.now() / 5000)}`,
+  });
+  return { ok: true, job, parent };
 }
 
 export function getJob(id: string): GenerationJob | null {

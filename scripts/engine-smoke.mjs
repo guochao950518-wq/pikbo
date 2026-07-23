@@ -813,7 +813,7 @@ assert.match(
     join(root, "app/api/generations/[id]/retry/route.ts"),
     "utf8"
   ),
-  /NOT_IMPLEMENTED/
+  /forkRetryJob|local-memory/
 );
 
 // ── Phase D local job ledger + download gate ─────────────────────────────
@@ -825,6 +825,8 @@ assert.match(genJobsStore, /recordSucceededGenerate/);
 assert.match(genJobsStore, /recordFailedGenerate/);
 assert.match(genJobsStore, /downloadAllowedForJob/);
 assert.match(genJobsStore, /toPublicJob/);
+assert.match(genJobsStore, /forkRetryJob/);
+assert.match(genJobsStore, /parentJobId/);
 // Pure download gate parity (same rules as createTrust)
 function downloadAllowedForJob(opts) {
   if (opts.status !== "succeeded") return false;
@@ -916,6 +918,21 @@ const libMeta = fs.readFileSync(join(root, "app/library/page.tsx"), "utf8");
 assert.match(libMeta, /index:\s*false/);
 const appsMeta = fs.readFileSync(join(root, "app/apps/page.tsx"), "utf8");
 assert.match(appsMeta, /index:\s*false/);
+
+// Library honesty: Free live must not expose raw download/open
+const historySrcLib = fs.readFileSync(join(root, "lib/history.ts"), "utf8");
+assert.match(historySrcLib, /historyItemDownloadAllowed/);
+assert.match(historySrcLib, /canDownloadResult/);
+assert.match(library, /historyItemDownloadAllowed/);
+assert.match(library, /Download blocked|download blocked/i);
+assert.match(library, /\/api\/downloads\//);
+assert.match(createStudio, /\/api\/downloads\//);
+const retryRoute = fs.readFileSync(
+  join(root, "app/api/generations/[id]/retry/route.ts"),
+  "utf8"
+);
+assert.match(retryRoute, /forkRetryJob/);
+assert.doesNotMatch(retryRoute, /NOT_IMPLEMENTED/);
 
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

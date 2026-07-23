@@ -1780,8 +1780,16 @@ export function CreateStudio({
                 <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
                   {downloadAllowed ? (
                     <a
-                      href={videoUrl}
-                      download={`pikbo-${activeVersion?.effect || effect}.mp4`}
+                      href={
+                        activeVersion?.requestId
+                          ? `/api/downloads/${encodeURIComponent(activeVersion.requestId)}`
+                          : videoUrl || "#"
+                      }
+                      download={
+                        activeVersion?.requestId
+                          ? undefined
+                          : `pikbo-${activeVersion?.effect || effect}.mp4`
+                      }
                       target="_blank"
                       rel="noreferrer"
                       className="btn btn-primary px-4 py-2 text-xs"
