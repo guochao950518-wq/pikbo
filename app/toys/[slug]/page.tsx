@@ -9,6 +9,7 @@ import { LandingHowItWorks } from "@/components/LandingHowItWorks";
 import { LandingResults } from "@/components/LandingResults";
 import { site } from "@/lib/site";
 import { robotsForPrimaryEffect } from "@/lib/seoIndex";
+import { SuiteDoorLinks } from "@/components/SuiteDoorLinks";
 
 export function generateStaticParams() {
   return TOY_TYPES.map((t) => ({ slug: t.slug }));
@@ -80,6 +81,7 @@ export default async function ToyTypePage({
           <p className="mt-4 max-w-2xl text-lg text-[var(--fg-muted)]">
             {t.intro}
           </p>
+          <SuiteDoorLinks effectSlug={primary?.slug} className="mt-5" />
         </div>
       </section>
 

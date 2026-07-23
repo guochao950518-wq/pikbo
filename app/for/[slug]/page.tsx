@@ -14,6 +14,7 @@ import { LandingHowItWorks } from "@/components/LandingHowItWorks";
 import { LandingResults } from "@/components/LandingResults";
 import { site } from "@/lib/site";
 import { robotsForPrimaryEffect } from "@/lib/seoIndex";
+import { SuiteDoorLinks } from "@/components/SuiteDoorLinks";
 
 export function generateStaticParams() {
   const canonical = USE_CASES.map((u) => ({ slug: u.slug }));
@@ -122,6 +123,10 @@ export default async function UseCasePage({
           <p className="mt-4 max-w-2xl text-lg text-[var(--fg-muted)]">
             {uc.intro}
           </p>
+          <SuiteDoorLinks
+            effectSlug={primary?.slug}
+            className="mt-5"
+          />
         </div>
       </section>
 
