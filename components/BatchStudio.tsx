@@ -503,11 +503,13 @@ export function BatchStudio({
             )}
             {j.status === "done" && (
               <div className="mt-1 flex flex-wrap items-center gap-2">
-                {j.demo && (
-                  <span className="text-[10px] font-bold uppercase text-[var(--fg-dim)]">
-                    cached demo
-                  </span>
-                )}
+                <span
+                  className={`text-[10px] font-bold uppercase ${
+                    j.demo ? "text-[var(--fg-dim)]" : "text-[var(--mint)]"
+                  }`}
+                >
+                  {j.demo ? "Cached demo" : "Live generation"}
+                </span>
                 {j.model && (
                   <span className="text-[10px] text-[var(--fg-dim)]">
                     {j.model.split("/").pop()}

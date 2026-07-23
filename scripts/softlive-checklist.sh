@@ -1,29 +1,47 @@
 #!/usr/bin/env bash
 # Soft-live env checklist (boss wake / ops). Presence only — never prints secret values.
+# Soft launch (Sunday, no Stripe): only SESSION_SECRET + FAL_KEY are required.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-ok=0
-bad=0
-check() {
+req_ok=0
+req_bad=0
+opt_ok=0
+opt_miss=0
+
+check_req() {
   local name="$1"
   local present="$2"
   if [[ "$present" == "1" ]]; then
-    echo "OK   $name"
-    ok=$((ok + 1))
+    echo "OK   $name  (required for soft-live)"
+    req_ok=$((req_ok + 1))
   else
-    echo "MISS $name"
-    bad=$((bad + 1))
+    echo "MISS $name  (required for soft-live)"
+    req_bad=$((req_bad + 1))
+  fi
+}
+
+check_opt() {
+  local name="$1"
+  local present="$2"
+  if [[ "$present" == "1" ]]; then
+    echo "OK   $name  (paid only — optional until Stripe)"
+    opt_ok=$((opt_ok + 1))
+  else
+    echo "skip $name  (paid only — optional until Stripe)"
+    opt_miss=$((opt_miss + 1))
   fi
 }
 
 echo "== Pikbo soft-live checklist =="
-check "SESSION_SECRET|CREDITS_SECRET" "$([[ -n "${SESSION_SECRET:-}${CREDITS_SECRET:-}" ]] && echo 1 || echo 0)"
-check "FAL_KEY (live generate)" "$([[ -n "${FAL_KEY:-}" ]] && echo 1 || echo 0)"
-check "STRIPE_SECRET_KEY (paid)" "$([[ -n "${STRIPE_SECRET_KEY:-}" ]] && echo 1 || echo 0)"
-check "STRIPE_WEBHOOK_SECRET" "$([[ -n "${STRIPE_WEBHOOK_SECRET:-}" ]] && echo 1 || echo 0)"
-check "STRIPE_PRICE_CREATOR" "$([[ -n "${STRIPE_PRICE_CREATOR:-}" ]] && echo 1 || echo 0)"
-check "STRIPE_PRICE_SHOP" "$([[ -n "${STRIPE_PRICE_SHOP:-}" ]] && echo 1 || echo 0)"
+echo "Soft launch needs SESSION_SECRET + FAL_KEY only. Stripe is Coming soon."
+echo
+check_req "SESSION_SECRET|CREDITS_SECRET" "$([[ -n "${SESSION_SECRET:-}${CREDITS_SECRET:-}" ]] && echo 1 || echo 0)"
+check_req "FAL_KEY (live generate)" "$([[ -n "${FAL_KEY:-}" ]] && echo 1 || echo 0)"
+check_opt "STRIPE_SECRET_KEY" "$([[ -n "${STRIPE_SECRET_KEY:-}" ]] && echo 1 || echo 0)"
+check_opt "STRIPE_WEBHOOK_SECRET" "$([[ -n "${STRIPE_WEBHOOK_SECRET:-}" ]] && echo 1 || echo 0)"
+check_opt "STRIPE_PRICE_CREATOR" "$([[ -n "${STRIPE_PRICE_CREATOR:-}" ]] && echo 1 || echo 0)"
+check_opt "STRIPE_PRICE_SHOP" "$([[ -n "${STRIPE_PRICE_SHOP:-}" ]] && echo 1 || echo 0)"
 
 if [[ -n "${1:-}" ]]; then
   BASE="${1}"
@@ -44,16 +62,21 @@ print("rateLimit=", h.get("rateLimit"))
 cl=h.get("softLiveChecklist") or {}
 print("checklist fal=", cl.get("FAL_KEY"), "sessionSecret=", cl.get("SESSION_SECRET"))
 print("entitlements writable=", (h.get("entitlements") or {}).get("writable"))
+ready = h.get("ready") or {}
+if ready.get("softLive"):
+    print("softLive ready= true")
+elif ready.get("demo"):
+    print("softLive ready= false (demo-cached only — set FAL_KEY + SESSION_SECRET for live)")
 PY
     fi
   else
     echo "FAIL /api/health HTTP $code"
-    bad=$((bad + 1))
+    req_bad=$((req_bad + 1))
   fi
 fi
 
 echo
-echo "Summary: $ok present · $bad missing/fail"
-echo "See docs/LAUNCH.md for deploy steps."
+echo "Summary: soft-live required $req_ok ok / $req_bad miss · paid-optional $opt_ok present / $opt_miss skip"
+echo "See docs/LAUNCH.md — Sunday soft: SESSION_SECRET + FAL_KEY only."
 # Non-zero only if remote probe failed; local env misses are informational.
 exit 0

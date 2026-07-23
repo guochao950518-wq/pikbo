@@ -52,7 +52,8 @@
 11. [x] merge Claude media-rich home promo · profile/landing meClient · promo honesty  
 12. [x] merge Claude logo + feature cards · Logo useId · confirm idempotent · toy identity lock  
 13. [x] merge Claude E3 preflight/rights · GPT SELLER_PACK+AUTH_CREDITS · server ownsRights  
-14. 下一拍：soft launch checklist · more agent merges  
+14. [x] merge Claude unknown deep-link notice · result provenance (Cached demo / Live generation) · Local Library · softlive Stripe-optional  
+15. 下一拍：more green agent merges · support cache/live in ops notes · boss LAUNCH path
 
 ### 老板醒来验收
 
@@ -66,9 +67,9 @@
 
 ## Grok 本拍状态（3 行）
 
-- Merged Claude E3 preflight+rights + GPT seller/auth PRDs; pushed Sunday soft-launch commit.  
-- Server ownsRights on `10bd1f1`; Create/Landing/Batch gated.  
-- smoke+typecheck+lint green · **pushed main**.
+- Merged Claude unknown deep-link notice (§5.2) + result provenance PRD §6.  
+- Local Library honesty · softlive Stripe-optional · generateClient error codes.  
+- smoke+typecheck+lint+preflight green · **pushed main `58cd3a3`**.
 
 ---
 
