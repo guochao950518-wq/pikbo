@@ -28,10 +28,12 @@ import {
   buildGenerationSpec,
   canDownloadResult,
   freeLiveDownloadBlockReason,
+  internSourceImage,
   preserveRequestSettlementOnVersionRestore,
   requestCreditStateFromFailure,
   requestCreditStateFromSuccess,
   requestSettlementAfterSelectVersion,
+  resolveSpecImage,
   type GenerationSpec,
   type RequestCreditState,
 } from "@/lib/createTrust";
@@ -51,8 +53,8 @@ type ResultVersion = {
   /** What this successful version cost — never "restored" / unconfirmed. */
   creditState: "0 cached" | "10 used";
   createdAt: string;
-  /** Still used for this version — Before/After stays honest when switching Vn */
-  sourceImage: string | null;
+  /** Session source-store key for this version's still (shared Base64). */
+  sourceKey: string;
   requestId?: string;
   provider?: string;
   effect: string;
@@ -205,6 +207,8 @@ export function CreateStudio({
   /** Successful retries/variants remain selectable; a new run never overwrites one. */
   const [versions, setVersions] = useState<ResultVersion[]>([]);
   const [activeVersionId, setActiveVersionId] = useState<string | null>(null);
+  /** Shared still pool — versions hold keys, not duplicated multi-MB Base64. */
+  const [sourceStore, setSourceStore] = useState<Record<string, string>>({});
   /**
    * Wave B: settlement of the *last generate request* — independent of which
    * historical version is selected. Failures must not be overwritten by Vn's
@@ -431,7 +435,10 @@ export function CreateStudio({
     retrySpec?: GenerationSpec;
   }) {
     const retry = opts?.retrySpec;
-    const img = retry?.image ?? opts?.imageOverride ?? image;
+    const img =
+      (retry ? resolveSpecImage(retry, sourceStore) : null) ??
+      opts?.imageOverride ??
+      image;
     const fx = retry?.effect ?? opts?.effectOverride ?? effect;
     const rights = opts?.rightsOverride ?? ownsRights;
     const requestExtra = retry ? retry.extra : extra;
@@ -572,8 +579,12 @@ export function CreateStudio({
       typeof data.requestId === "string" && data.requestId
         ? data.requestId
         : `v-${versions.length + 1}-${serverEffect}-${serverDuration}`;
+    const interned = internSourceImage(sourceStore, img);
+    if (interned.store !== sourceStore) {
+      setSourceStore(interned.store);
+    }
     const spec = buildGenerationSpec({
-      image: img,
+      sourceKey: interned.key,
       effect: serverEffect,
       extra: requestExtra,
       aspectRatio: serverAspect,
@@ -598,7 +609,7 @@ export function CreateStudio({
       resolution: serverRes,
       creditState,
       createdAt: new Date().toISOString(),
-      sourceImage: img,
+      sourceKey: interned.key,
       requestId:
         typeof data.requestId === "string" ? data.requestId : undefined,
       provider: typeof data.provider === "string" ? data.provider : undefined,
@@ -694,7 +705,7 @@ export function CreateStudio({
     setLastRequestCreditState((prev) =>
       requestSettlementAfterSelectVersion(prev)
     );
-    // Do not overwrite the compose upload — Before/After uses version.sourceImage.
+    // Do not overwrite the compose upload — Before/After uses sourceStore key.
     setStatus("done");
     // Keep refund banners visible; only clear soft non-settlement errors.
     if (
@@ -709,7 +720,11 @@ export function CreateStudio({
   const activeVersion =
     versions.find((v) => v.id === activeVersionId) ?? versions[0] ?? null;
   /** Still tied to the active result version (honest A/B when switching Vn). */
-  const compareStill = activeVersion?.sourceImage || image;
+  const compareStill =
+    (activeVersion
+      ? sourceStore[activeVersion.sourceKey] ||
+        resolveSpecImage(activeVersion.spec, sourceStore)
+      : null) || image;
   const downloadAllowed = canDownloadResult({
     demo: Boolean(activeVersion?.demo ?? demo),
     watermark: Boolean(activeVersion?.watermark ?? watermark),

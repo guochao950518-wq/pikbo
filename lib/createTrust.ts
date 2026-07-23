@@ -15,7 +15,16 @@ export type RequestCreditState =
 
 /** Immutable params that produced a successful version (Retry must reuse these). */
 export type GenerationSpec = {
-  image: string;
+  /**
+   * Session source-store key (preferred). Resolves to the still without
+   * duplicating multi-MB Base64 across every version.
+   */
+  sourceKey: string;
+  /**
+   * @deprecated Prefer sourceKey + session source store. Kept optional only so
+   * older in-memory stacks from a long session still typecheck.
+   */
+  image?: string;
   effect: string;
   extra: string;
   aspectRatio: "9:16" | "16:9" | "1:1" | string;
@@ -26,6 +35,40 @@ export type GenerationSpec = {
   /** Server requestId when the live job returned one. */
   requestId?: string;
 };
+
+/** FNV-1a style key for interning large stills in a session Map. */
+export function sourceImageKey(image: string): string {
+  let hash = 2166136261;
+  const sample = image.length > 8192 ? image.slice(0, 4096) + image.slice(-4096) : image;
+  for (let i = 0; i < sample.length; i += 1) {
+    hash ^= sample.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return `src-${image.length.toString(36)}-${(hash >>> 0).toString(36)}`;
+}
+
+/**
+ * Intern a still into a session store so 8 versions of the same photo share
+ * one Base64 string in memory.
+ */
+export function internSourceImage(
+  store: Record<string, string>,
+  image: string
+): { key: string; store: Record<string, string> } {
+  const key = sourceImageKey(image);
+  if (store[key] === image) return { key, store };
+  if (store[key]) return { key, store };
+  return { key, store: { ...store, [key]: image } };
+}
+
+export function resolveSpecImage(
+  spec: GenerationSpec,
+  store: Record<string, string>
+): string | null {
+  if (spec.sourceKey && store[spec.sourceKey]) return store[spec.sourceKey];
+  if (typeof spec.image === "string" && spec.image) return spec.image;
+  return null;
+}
 
 /**
  * Map a failed generate result to the request settlement chip.
@@ -87,7 +130,7 @@ export function freeLiveDownloadBlockReason(): string {
 
 /** Build immutable spec snapshot at success time. */
 export function buildGenerationSpec(input: {
-  image: string;
+  sourceKey: string;
   effect: string;
   extra: string;
   aspectRatio: string;
@@ -98,7 +141,7 @@ export function buildGenerationSpec(input: {
   requestId?: string;
 }): GenerationSpec {
   return {
-    image: input.image,
+    sourceKey: input.sourceKey,
     effect: input.effect,
     extra: input.extra,
     aspectRatio: input.aspectRatio,

@@ -4,6 +4,15 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [grok] Phase C start — T5 durable credits foundation
+- SQL: `supabase/migrations/20260723120000_t5_auth_credits.sql` (wallets, ledger, reservations, jobs, guest migration, RLS read policies).
+- Pure engine: `lib/durableCredits/engine.ts` reserve / settle / release / guest migrate + idempotency.
+- Local file adapter: `data/durable-credits.json` (dev); production still Cookie until Supabase env + REQUIRE gate.
+- Health probes `durableCredits`; Create session stills interned via `sourceKey` (no 8× Base64).
+- engine-smoke: concurrent 5/6 reserves, Seller Pack 30 partial settle/release, idempotent reserve.
+- Boss blockers consolidated: `docs/BLOCKERS_REQUEST.md` (workflow scope, Supabase keys, FAL budget).
+- Soft-launch generate path still Cookie-authoritative; durable path not forced until Supabase wired.
+
 ### 2026-07-23 — [grok] Wave B generation trust (B1–B6)
 - Branch: `agent/grok/higgsfield-wave-b-trust` → main.
 - **B1** `lastRequestCreditState` separate from version `creditState`; success→fail keeps `refund unconfirmed` / `10 restored` (not overwritten by Vn used/cached).

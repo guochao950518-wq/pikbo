@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { probeEntitlementsStore } from "@/lib/entitlements";
+import { probeDurableCreditsStore } from "@/lib/durableCredits";
 import { generateMode } from "@/lib/requestMeta";
 // NextResponse used for GET + HEAD
 
@@ -25,14 +26,17 @@ export async function GET() {
   const degraded = production && !sessionSecret;
 
   const entitlements = await probeEntitlementsStore();
+  const durableCredits = await probeDurableCreditsStore();
   const mode = generateMode();
+  const durableGate =
+    process.env.REQUIRE_DURABLE_CREDITS === "1" && !durableCredits.writable;
 
   /** Demo / soft-live / paid ladders — honest gates for ops */
   const ready = {
     /** Cached Lab + Studio demo path (no provider key; free, no credit burn) */
     demo: true,
     /** Live Mini/full Seedance when FAL_KEY + session secret present */
-    softLive: fal && (sessionSecret || !production),
+    softLive: fal && (sessionSecret || !production) && !durableGate,
     /**
      * Real charges — needs durable entitlements (PRELAUNCH R1).
      * File store unwritable ⇒ paid stays false even if Stripe env is set.
@@ -42,12 +46,15 @@ export async function GET() {
       sessionSecret &&
       stripe &&
       stripeWebhook &&
-      entitlements.writable,
+      entitlements.writable &&
+      durableCredits.writable,
+    /** T5 local adapter or Supabase — not live Stripe */
+    durableCredits: durableCredits.writable && durableCredits.configured,
   };
 
   return NextResponse.json({
-    ok: !degraded,
-    degraded,
+    ok: !degraded && !durableGate,
+    degraded: degraded || durableGate,
     service: "pikbo",
     foundation: "L0-L3",
     time: new Date().toISOString(),
@@ -64,6 +71,7 @@ export async function GET() {
     rateLimit: "session-8rpm + ip-24rpm + inflight-1",
     ready,
     entitlements,
+    durableCredits,
     checks: {
       sessionSecret,
       fal,
@@ -71,6 +79,8 @@ export async function GET() {
       stripeWebhook,
       production,
       entitlementsWritable: entitlements.writable,
+      durableCreditsWritable: durableCredits.writable,
+      requireDurableCredits: process.env.REQUIRE_DURABLE_CREDITS === "1",
     },
     /** Soft-live env checklist (presence only — never echo secrets) */
     softLiveChecklist: {

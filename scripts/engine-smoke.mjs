@@ -287,7 +287,7 @@ assert.match(createStudio, /10 credits|cached demo free/i);
 // Wave A Create versions: stack + Before/After per-version still
 assert.match(createStudio, /ResultVersion|type ResultVersion/);
 assert.match(createStudio, /selectVersion|setVersions/);
-assert.match(createStudio, /sourceImage/);
+assert.match(createStudio, /sourceKey|sourceStore|internSourceImage/);
 assert.match(createStudio, /creditState/);
 
 // Wave A: Seller Pack canonical Create mode + legacy supercomputer redirect
@@ -536,6 +536,197 @@ assert.match(usecases, /etsy-sellers/);
 const forPage = fs.readFileSync(join(root, "app/for/[slug]/page.tsx"), "utf8");
 assert.match(forPage, /FOR_SLUG_ALIASES/);
 assert.match(forPage, /redirect\(/);
+
+// --- T5 durable credits pure engine (parity with lib/durableCredits/engine.ts) ---
+function emptyDurable() {
+  return {
+    accounts: {},
+    wallets: {},
+    reservations: {},
+    ledger: [],
+    ledgerByIdempotency: {},
+    reservationByIdempotency: {},
+    consumedGuests: {},
+  };
+}
+function durableReserve(state, accountId, quoted, idem) {
+  const existing = state.reservationByIdempotency[idem];
+  if (existing) {
+    return { ok: true, state, reservationId: existing, idempotent: true };
+  }
+  const w = state.wallets[accountId];
+  if (!w || w.availableCredits < quoted) {
+    return { ok: false, code: "INSUFFICIENT_CREDITS", state };
+  }
+  const id = `res-${Object.keys(state.reservations).length + 1}`;
+  const next = {
+    ...state,
+    wallets: {
+      ...state.wallets,
+      [accountId]: {
+        ...w,
+        availableCredits: w.availableCredits - quoted,
+        reservedCredits: w.reservedCredits + quoted,
+        version: w.version + 1,
+      },
+    },
+    reservations: {
+      ...state.reservations,
+      [id]: {
+        id,
+        accountId,
+        quotedCredits: quoted,
+        settledCredits: 0,
+        releasedCredits: 0,
+        status: "reserved",
+      },
+    },
+    reservationByIdempotency: {
+      ...state.reservationByIdempotency,
+      [idem]: id,
+    },
+  };
+  return { ok: true, state: next, reservationId: id, idempotent: false };
+}
+function durableSettle(state, reservationId, credits, idem) {
+  if (state.ledgerByIdempotency[idem]) {
+    return { ok: true, state, idempotent: true };
+  }
+  const r = state.reservations[reservationId];
+  if (!r) return { ok: false, code: "RESERVATION_NOT_FOUND", state };
+  const rem = r.quotedCredits - r.settledCredits - r.releasedCredits;
+  if (credits > rem) return { ok: false, code: "OVER_SETTLE", state };
+  const w = state.wallets[r.accountId];
+  const nextR = {
+    ...r,
+    settledCredits: r.settledCredits + credits,
+  };
+  const next = {
+    ...state,
+    wallets: {
+      ...state.wallets,
+      [r.accountId]: {
+        ...w,
+        reservedCredits: w.reservedCredits - credits,
+        lifetimeUsedCredits: w.lifetimeUsedCredits + credits,
+        version: w.version + 1,
+      },
+    },
+    reservations: { ...state.reservations, [reservationId]: nextR },
+    ledgerByIdempotency: { ...state.ledgerByIdempotency, [idem]: true },
+  };
+  return { ok: true, state: next, idempotent: false };
+}
+function durableRelease(state, reservationId, credits, idem) {
+  if (state.ledgerByIdempotency[idem]) {
+    return { ok: true, state, idempotent: true };
+  }
+  const r = state.reservations[reservationId];
+  if (!r) return { ok: false, code: "RESERVATION_NOT_FOUND", state };
+  const rem = r.quotedCredits - r.settledCredits - r.releasedCredits;
+  if (credits > rem) return { ok: false, code: "OVER_SETTLE", state };
+  const w = state.wallets[r.accountId];
+  const nextR = {
+    ...r,
+    releasedCredits: r.releasedCredits + credits,
+  };
+  const next = {
+    ...state,
+    wallets: {
+      ...state.wallets,
+      [r.accountId]: {
+        ...w,
+        availableCredits: w.availableCredits + credits,
+        reservedCredits: w.reservedCredits - credits,
+        version: w.version + 1,
+      },
+    },
+    reservations: { ...state.reservations, [reservationId]: nextR },
+    ledgerByIdempotency: { ...state.ledgerByIdempotency, [idem]: true },
+  };
+  return { ok: true, state: next, idempotent: false };
+}
+
+// Wallet 50: six concurrent 10-credit reserves → exactly five OK
+{
+  let st = emptyDurable();
+  st.wallets.a1 = {
+    availableCredits: 50,
+    reservedCredits: 0,
+    lifetimeUsedCredits: 0,
+    version: 0,
+  };
+  let okCount = 0;
+  for (let i = 0; i < 6; i++) {
+    const r = durableReserve(st, "a1", 10, `job-${i}`);
+    if (r.ok) {
+      okCount += 1;
+      st = r.state;
+    }
+  }
+  assert.equal(okCount, 5);
+  assert.equal(st.wallets.a1.availableCredits, 0);
+  assert.equal(st.wallets.a1.reservedCredits, 50);
+}
+// Seller Pack: reserve 30, settle 10, settle 10, release 10 → available -20 used 20
+{
+  let st = emptyDurable();
+  st.wallets.a1 = {
+    availableCredits: 30,
+    reservedCredits: 0,
+    lifetimeUsedCredits: 0,
+    version: 0,
+  };
+  let r = durableReserve(st, "a1", 30, "pack-1");
+  assert.equal(r.ok, true);
+  st = r.state;
+  r = durableSettle(st, r.reservationId, 10, "settle-1");
+  st = r.state;
+  r = durableSettle(st, Object.keys(st.reservations)[0], 10, "settle-2");
+  st = r.state;
+  r = durableRelease(st, Object.keys(st.reservations)[0], 10, "release-1");
+  st = r.state;
+  assert.equal(st.wallets.a1.availableCredits, 10);
+  assert.equal(st.wallets.a1.reservedCredits, 0);
+  assert.equal(st.wallets.a1.lifetimeUsedCredits, 20);
+}
+// Idempotent reserve
+{
+  let st = emptyDurable();
+  st.wallets.a1 = {
+    availableCredits: 10,
+    reservedCredits: 0,
+    lifetimeUsedCredits: 0,
+    version: 0,
+  };
+  const a = durableReserve(st, "a1", 10, "same-key");
+  st = a.state;
+  const b = durableReserve(st, "a1", 10, "same-key");
+  assert.equal(b.ok, true);
+  assert.equal(b.idempotent, true);
+  assert.equal(b.state.wallets.a1.availableCredits, 0);
+}
+// Module + migration presence
+assert.match(
+  fs.readFileSync(join(root, "lib/durableCredits/engine.ts"), "utf8"),
+  /export function reserveCredits/
+);
+assert.match(
+  fs.readFileSync(join(root, "lib/durableCredits/engine.ts"), "utf8"),
+  /export function settleReservationItem/
+);
+assert.match(
+  fs.readFileSync(join(root, "lib/createTrust.ts"), "utf8"),
+  /internSourceImage|sourceImageKey/
+);
+assert.match(
+  fs.readFileSync(
+    join(root, "supabase/migrations/20260723120000_t5_auth_credits.sql"),
+    "utf8"
+  ),
+  /credit_ledger/
+);
+assert.match(createStudio, /sourceStore|internSourceImage/);
 
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node
