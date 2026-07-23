@@ -12,9 +12,9 @@ export function CreateSeoFooter({ effectSlug }: { effectSlug?: string }) {
   const h1 = preset?.h1 ?? "Designer toy AI video maker";
   const intro =
     preset?.intro ??
-    "Pikbo provides a Seedance-ready workflow for turning an owned figure photo into a listing or social-video recipe — spin, unbox, float, and more.";
+    "Turn one photo of a figure or blind box you own into a listing or social clip — spin, unbox, float, and more.";
   const body = preset?.body ?? [
-    "Upload a photo of a toy you own and pick a preset. When provider access is configured, the free path uses Seedance Mini with an on-player mark; otherwise the Studio returns a labeled demo sample.",
+    "Upload a photo of a toy you own and pick a recipe. Free path: one Mini trial with an on-player mark when live is on; otherwise you get a labeled cached demo that does not animate your upload.",
     "Use clips for Etsy, TikTok Shop, Whatnot, shelf flexes, and drop-day posts — without a camera rig.",
   ];
   const keywords = preset?.keywords ?? [
