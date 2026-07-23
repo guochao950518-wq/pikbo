@@ -91,6 +91,13 @@ export function CreateStudio({
   const [copied, setCopied] = useState(false);
   // PRD soft-launch §3/§5: user must confirm rights before submitting.
   const [ownsRights, setOwnsRights] = useState(false);
+  // PRD soft-launch §5.2: an unknown deep-link slug must not silently pretend
+  // the requested recipe is active.
+  const requestedUnknownEffect =
+    Boolean(initialEffect) && !PRESETS.some((p) => p.slug === initialEffect);
+  const [showUnknownNotice, setShowUnknownNotice] = useState(
+    requestedUnknownEffect
+  );
   const [recent, setRecent] = useState<string[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [compare, setCompare] = useState(true);
@@ -595,6 +602,23 @@ export function CreateStudio({
           {upgradedBanner && (
             <div className="rounded-xl border border-[var(--mint)]/40 bg-[color-mix(in_srgb,var(--mint)_10%,transparent)] px-3 py-2 text-xs">
               Paid allowance active — 720p path, no on-player watermark.
+            </div>
+          )}
+
+          {showUnknownNotice && (
+            <div className="flex items-start justify-between gap-2 rounded-xl border border-amber-400/40 bg-amber-400/[0.08] px-3 py-2 text-xs text-amber-200">
+              <span>
+                The recipe <b>“{initialEffect}”</b> isn’t available — showing{" "}
+                <b>{preset.name}</b> instead. Pick any preset below.
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowUnknownNotice(false)}
+                className="shrink-0 text-amber-200/70 hover:text-amber-100"
+                aria-label="Dismiss notice"
+              >
+                ✕
+              </button>
             </div>
           )}
 
