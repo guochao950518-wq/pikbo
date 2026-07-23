@@ -1836,6 +1836,21 @@ export function CreateStudio({
                   Refund unconfirmed · check your balance before retrying
                 </p>
               ) : null}
+              <p className="mt-1.5 text-[11px] leading-relaxed text-amber-100/65">
+                Next: Retry keeps this still · try another recipe · Free Lab
+                sample is 0 credits
+                {image ? (
+                  <>
+                    {" · "}
+                    <Link
+                      href="/create?try=1&sample=scout"
+                      className="font-semibold text-[var(--mint)] hover:underline"
+                    >
+                      open free sample
+                    </Link>
+                  </>
+                ) : null}
+              </p>
             </div>
           )}
 

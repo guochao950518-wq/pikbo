@@ -1237,6 +1237,10 @@ assert.match(
 );
 assert.match(createStudio, /registerLocalAsset|assetId/);
 assert.match(library, /Session jobs|\/api\/generations/);
+// Empty device history must still mount SessionJobsPanel (Phase D recovery)
+assert.match(library, /SessionJobsPanel|No clips saved on this device yet/);
+assert.match(library, /this server process/);
+assert.match(createStudio, /try another recipe|open free sample/);
 assert.match(batchStudio, /registerLocalAsset|sharedAssetId/);
 const critPathModeA = fs.readFileSync(
   join(root, "scripts/critical-path.sh"),

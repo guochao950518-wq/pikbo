@@ -219,9 +219,16 @@ export default async function ShowcaseProjectPage({ params }: Props) {
           </section>
 
           <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-            <p className="text-[10px] font-black uppercase tracking-wider text-[#c8ff3d]">
-              Quality review
-            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="text-[10px] font-black uppercase tracking-wider text-[#c8ff3d]">
+                Quality review
+              </p>
+              {project.qualityScores ? (
+                <span className="rounded-full border border-amber-200/25 bg-amber-200/[0.08] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-amber-100/85">
+                  Provisional Lab
+                </span>
+              ) : null}
+            </div>
             {project.qualityScores ? (
               <dl className="mt-4 space-y-3">
                 {Object.entries(QUALITY_LABELS).map(([key, label]) => {

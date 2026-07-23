@@ -76,7 +76,8 @@
 35. [x] Retry still freeze: re-upload must not steal version photo (resolveGenerateStill)
 36. [x] Downloads resolve job id **or** provider requestId; GenerationSpec.assetId
 37. [x] ASSET_NOT_FOUND → inline still recovery (Create/Landing/Batch); Library quota save
-38. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
+38. [x] Library session jobs visible when device history empty · Create fail recovery tip
+39. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
 
 ### 老板醒来验收
 
@@ -90,8 +91,8 @@
 
 ## Grok 本拍状态（3 行）
 
-- ASSET_NOT_FOUND auto-recovers with local still (asset TTL / process restart).  
-- Create/Landing/Batch wired; Library saveHistory strips heavy stills on quota.  
+- Library SessionJobsPanel mounts even with empty localStorage history (Phase D recovery).  
+- Create fail banner → Retry / other recipe / free Lab sample. Provisional Lab chip on projects.  
 - engine-smoke + tsc + lint green · Mode A still needs boss Vercel login.
 
 ---

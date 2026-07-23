@@ -34,6 +34,79 @@ type SessionJob = {
   createdAt?: string;
 };
 
+/** Phase D: process-memory ledger — must show even when device history is empty. */
+function SessionJobsPanel({ jobs }: { jobs: SessionJob[] }) {
+  if (jobs.length === 0) return null;
+  return (
+    <section className="mb-6 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+      <div className="flex flex-wrap items-end justify-between gap-2">
+        <div>
+          <p className="text-[10px] font-black uppercase tracking-wider text-[var(--fg-dim)]">
+            Session jobs · this server process
+          </p>
+          <p className="mt-1 text-xs text-[var(--fg-muted)]">
+            Local ledger from Generate (not multi-node cloud). Device Library
+            below is this browser only — empty until a clip is saved here.
+          </p>
+        </div>
+        <Link
+          href="/create"
+          className="text-[11px] font-semibold text-[var(--mint)] hover:underline"
+        >
+          Open Create →
+        </Link>
+      </div>
+      <ul className="mt-3 space-y-2">
+        {jobs.map((j) => (
+          <li
+            key={j.id}
+            className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-xs"
+          >
+            <div className="min-w-0">
+              <p className="truncate font-semibold text-[var(--fg)]">
+                {j.effect}{" "}
+                <span className="font-normal text-[var(--fg-dim)]">
+                  · {j.status}
+                  {j.creditsOutcome ? ` · ${j.creditsOutcome}` : ""}
+                </span>
+              </p>
+              {j.error ? (
+                <p className="mt-0.5 truncate text-[10px] text-amber-100/80">
+                  {j.error}
+                </p>
+              ) : null}
+            </div>
+            <div className="flex shrink-0 flex-wrap gap-2">
+              <Link
+                href={`/create?effect=${encodeURIComponent(j.effect)}`}
+                className="text-[var(--mint)] hover:underline"
+              >
+                Retry recipe
+              </Link>
+              {j.status === "succeeded" && j.downloadAllowed && j.videoUrl ? (
+                <a
+                  href={
+                    j.requestId || j.id
+                      ? `/api/downloads/${encodeURIComponent(j.requestId || j.id)}`
+                      : j.videoUrl
+                  }
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[var(--fg-muted)] hover:text-white"
+                >
+                  Download
+                </a>
+              ) : j.status === "succeeded" && !j.downloadAllowed ? (
+                <span className="text-amber-100/70">Download blocked</span>
+              ) : null}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 export function LibraryGrid() {
   const [items, setItems] = useState<HistoryItem[]>([]);
   const [ready, setReady] = useState(false);
@@ -191,115 +264,68 @@ export function LibraryGrid() {
     );
   }
 
+  // Device history empty: still surface process-memory session jobs (Phase D recovery).
   if (items.length === 0) {
     return (
-      <div className="mt-10 grid place-items-center rounded-2xl border border-dashed border-[var(--border)] bg-[var(--bg-soft)] py-16 text-center sm:py-20">
-        <p className="text-3xl">▢</p>
-        <p className="mt-3 text-base font-semibold text-[var(--fg)]">
-          Your first listing clip starts on Create
-        </p>
-        <p className="mt-2 max-w-sm text-xs leading-relaxed text-[var(--fg-dim)]">
-          {PROVENANCE.localLibrary} · saved on this device only (not cloud).
-          One photo → pick a job (Etsy spin, TikTok hook, reveal) → generate.
-        </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
-          <Link
-            href="/create?try=1&sample=scout"
-            className="btn btn-primary text-sm"
-          >
-            ▶ Free sample · 10 seconds
-          </Link>
-          <Link href="/modules" className="btn btn-ghost text-sm">
-            Toy Modules
-          </Link>
-          <Link
-            href="/create?mode=seller-pack"
-            className="btn btn-ghost text-sm"
-          >
-            Seller Pack · 3 outputs
-          </Link>
-          <Link href="/create" className="btn btn-ghost text-sm">
-            Open Generate
-          </Link>
+      <div className="mt-8">
+        <SessionJobsPanel jobs={sessionJobs} />
+        <div className="grid place-items-center rounded-2xl border border-dashed border-[var(--border)] bg-[var(--bg-soft)] py-16 text-center sm:py-20">
+          <p className="text-3xl">▢</p>
+          <p className="mt-3 text-base font-semibold text-[var(--fg)]">
+            {sessionJobs.length > 0
+              ? "No clips saved on this device yet"
+              : "Your first listing clip starts on Create"}
+          </p>
+          <p className="mt-2 max-w-sm text-xs leading-relaxed text-[var(--fg-dim)]">
+            {sessionJobs.length > 0 ? (
+              <>
+                Session jobs above are this server process only. Successful
+                generates also save under{" "}
+                <span className="font-semibold text-[var(--mint)]">
+                  {PROVENANCE.localLibrary}
+                </span>{" "}
+                when storage allows — not cloud-synced.
+              </>
+            ) : (
+              <>
+                {PROVENANCE.localLibrary} · saved on this device only (not
+                cloud). One photo → pick a job (Etsy spin, TikTok hook, reveal)
+                → generate.
+              </>
+            )}
+          </p>
+          <div className="mt-6 flex flex-wrap justify-center gap-2">
+            <Link
+              href="/create?try=1&sample=scout"
+              className="btn btn-primary text-sm"
+            >
+              ▶ Free sample · 10 seconds
+            </Link>
+            <Link href="/modules" className="btn btn-ghost text-sm">
+              Toy Modules
+            </Link>
+            <Link
+              href="/create?mode=seller-pack"
+              className="btn btn-ghost text-sm"
+            >
+              Seller Pack · 3 outputs
+            </Link>
+            <Link href="/create" className="btn btn-ghost text-sm">
+              Open Generate
+            </Link>
+          </div>
+          <p className="mt-4 max-w-xs text-[10px] text-[var(--fg-dim)]">
+            Clips appear here after a successful generate. Failed live jobs
+            refund credits.
+          </p>
         </div>
-        <p className="mt-4 max-w-xs text-[10px] text-[var(--fg-dim)]">
-          Clips appear here after a successful generate. Failed live jobs refund
-          credits.
-        </p>
       </div>
     );
   }
 
   return (
     <div className="mt-8">
-      {sessionJobs.length > 0 ? (
-        <section className="mb-6 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-          <div className="flex flex-wrap items-end justify-between gap-2">
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-wider text-[var(--fg-dim)]">
-                Session jobs · this server process
-              </p>
-              <p className="mt-1 text-xs text-[var(--fg-muted)]">
-                Local ledger from Generate (not multi-node cloud). Saved Library
-                below is this browser only.
-              </p>
-            </div>
-            <Link
-              href="/create"
-              className="text-[11px] font-semibold text-[var(--mint)] hover:underline"
-            >
-              Open Create →
-            </Link>
-          </div>
-          <ul className="mt-3 space-y-2">
-            {sessionJobs.map((j) => (
-              <li
-                key={j.id}
-                className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-xs"
-              >
-                <div className="min-w-0">
-                  <p className="truncate font-semibold text-[var(--fg)]">
-                    {j.effect}{" "}
-                    <span className="font-normal text-[var(--fg-dim)]">
-                      · {j.status}
-                      {j.creditsOutcome ? ` · ${j.creditsOutcome}` : ""}
-                    </span>
-                  </p>
-                  {j.error ? (
-                    <p className="mt-0.5 truncate text-[10px] text-amber-100/80">
-                      {j.error}
-                    </p>
-                  ) : null}
-                </div>
-                <div className="flex shrink-0 flex-wrap gap-2">
-                  <Link
-                    href={`/create?effect=${encodeURIComponent(j.effect)}`}
-                    className="text-[var(--mint)] hover:underline"
-                  >
-                    Retry recipe
-                  </Link>
-                  {j.status === "succeeded" && j.downloadAllowed && j.videoUrl ? (
-                    <a
-                      href={
-                        j.requestId || j.id
-                          ? `/api/downloads/${encodeURIComponent(j.requestId || j.id)}`
-                          : j.videoUrl
-                      }
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-[var(--fg-muted)] hover:text-white"
-                    >
-                      Download
-                    </a>
-                  ) : j.status === "succeeded" && !j.downloadAllowed ? (
-                    <span className="text-amber-100/70">Download blocked</span>
-                  ) : null}
-                </div>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
+      <SessionJobsPanel jobs={sessionJobs} />
 
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">

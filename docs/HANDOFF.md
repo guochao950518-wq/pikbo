@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Library session jobs when history empty + Create fail tip
+- Library: `SessionJobsPanel` shows process-memory jobs even with empty device history.
+- Empty CTA honesty when session jobs exist vs cold start.
+- Create failure banner: Retry / try another recipe / free Lab sample next steps.
+- Project Quality review: **Provisional Lab** chip (not fake formal scores).
+- Verified: engine-smoke · typecheck · lint.
+
 ### 2026-07-24 — [grok] ASSET_NOT_FOUND recovery + Library quota save
 - `postGenerateWithRetry`: on ASSET_NOT_FOUND + assetId, one re-POST with `fallbackImage`.
 - Create / Landing / Batch pass local still as fallback (Seller Pack mid-queue safe).
