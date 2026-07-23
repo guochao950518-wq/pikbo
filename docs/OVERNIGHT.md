@@ -66,8 +66,8 @@
 ## Grok 本拍状态（3 行）
 
 - Merged Claude logo + feature-card depth; fixed multi-Logo SVG gradient id clash.  
-- Checkout confirm idempotent (lastCheckoutSessionId); prompt identity lock always on.  
-- smoke+typecheck+lint green · pushing main.
+- Confirm idempotent + identity lock on `4a53976`.  
+- smoke+typecheck+lint green · **pushed main**. Next: Claude/GPT when pushed.
 
 ---
 
