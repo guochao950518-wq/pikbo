@@ -23,9 +23,9 @@ Sunday deadline **does not override** Mode B gates.
 | ID | Gate | Pass standard | How to verify | Owner | Status |
 |----|------|---------------|---------------|-------|--------|
 | G1 | No empty-door nav | Primary chrome ≤6 real destinations; no “Models Soon” in main bar; Cinema/Batch/Feed not dressed as full products | Click every primary nav item: each is a finished soft job or clearly Preview | Claude + GPT list | **SOFT PASS** (main: primary+More; GPT whitelist still open) |
-| G2 | Preset density honest | ≤8 homepage hero presets; one unique demo asset per hero preset; no “shared loop” wall as main proof | Count homepage video `src`; no asset >2 uses in hero band | Claude | **SOFT PASS** (`buildHomeShowcaseFeed` ≤8 unique; product-picked 8 slugs pending GPT) |
-| G3 | No fake community | Lab copy = Official demos / samples; no “users are posting” without real UGC | Grep community/explore strings | Codex | **FAIL** (partial Lab showcase strings; Codex copy still open) |
-| G4 | Zero 404 on linked URLs | Every footer/`/for/*`/nav href returns 200 or is removed | Script curl all internal links from home+pricing+create | Claude | **SOFT PASS** (`/for/etsy-sellers` → redirect; re-crawl after deploy) |
+| G2 | Preset density honest | ≤8 homepage hero presets; one unique demo asset per hero preset; no “shared loop” wall as main proof | Count homepage video `src`; no asset >2 uses in hero band | Claude | **SOFT PASS** (home ≤8 unique; Lab wall = unique official demos only; concepts → `/effects`) |
+| G3 | No fake community | Lab copy = Official demos / samples; no “users are posting” without real UGC | Grep community/explore strings | Codex | **SOFT PASS** (world-class-copy + Lab wall de-faked; re-grep after more merges) |
+| G4 | Zero 404 on linked URLs | Every footer/`/for/*`/nav href returns 200 or is removed | `npm run link-check` against preview | Claude | **SOFT PASS** (redirects + `scripts/link-check.sh`; re-crawl after deploy) |
 | G5 | ICP in plain language | First screen: who + job + free trial; no “when live generation is enabled” in meta/hero | Read `/` title, meta, hero | Codex | **FAIL** |
 | G6 | Real toy path | 3 owned-toy lives succeed; 1 forced failure refunds 10 credits; notes saved | Manual log in HANDOFF | Boss/any | **FAIL** (not run) |
 | G7 | Production safe | `npm run build` green; `devTopup` false in production; no payments env | CI + health on preview | Claude | **SOFT PASS** (topup hard-off prod; lint green on merge) |

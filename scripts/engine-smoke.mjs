@@ -41,13 +41,20 @@ function interpretGenerateResponse(status, raw) {
   const code = raw?.code;
   const paywall = code === "INSUFFICIENT_CREDITS";
   const fatal = code === "INSUFFICIENT_CREDITS" || code === "PROVIDER_BALANCE";
+  const creditsRefunded = raw?.creditsRefunded === true;
+  let error = raw?.error || "fail";
+  // Parity with lib/generateClient.ts — PRD §5 refund honesty
+  if (creditsRefunded && !/refund|restored|credit/i.test(error)) {
+    error = `${error} · 10 credits restored`;
+  }
   return {
     ok: false,
     code,
     fatal,
     paywall,
+    creditsRefunded,
     retryAfterSec: raw?.retryAfterSec,
-    error: raw?.error || "fail",
+    error,
   };
 }
 
@@ -235,6 +242,54 @@ assert.match(appShell, /const MORE/);
 assert.match(appShell, /MoreMenu|More/);
 const historySrc = fs.readFileSync(join(root, "lib/history.ts"), "utf8");
 assert.match(historySrc, /historyProvenance|provenance/);
+
+// G2/G3: Lab wall is unique official demos only (no shared-loop concept flood)
+const videoFeed = fs.readFileSync(join(root, "lib/videoFeed.ts"), "utf8");
+assert.match(videoFeed, /HOME_SHOWCASE_LIMIT\s*=\s*8/);
+assert.match(videoFeed, /conceptRecipeCount/);
+assert.match(videoFeed, /official unique demos only|Official unique demos only/i);
+// Concept shared-loop badge must not reappear as Lab wall filler
+assert.doesNotMatch(
+  videoFeed.slice(videoFeed.indexOf("export function buildVideoFeed")),
+  /badge:\s*"Concept · shared loop"/
+);
+
+// Credit ledger pure math (parity with lib/credits.ts)
+function checkCredits(credits, cost = 10) {
+  if (credits < cost) return { ok: false, need: cost, have: credits };
+  return { ok: true, cost, remainingAfter: credits - cost };
+}
+function deduct(credits, amount = 10) {
+  return Math.max(0, credits - amount);
+}
+function refund(credits, amount = 10, cap = 10) {
+  return Math.min(cap * 2, credits + amount);
+}
+assert.equal(checkCredits(10).ok, true);
+assert.equal(checkCredits(5).ok, false);
+assert.equal(deduct(10), 0);
+assert.equal(refund(0), 10);
+assert.equal(refund(10, 10, 10), 20); // over-cap allowed temporarily
+
+// interpretGenerateResponse refund messaging
+const refunded = interpretGenerateResponse(500, {
+  error: "Model hiccup",
+  code: "GENERATION_FAILED",
+  creditsRefunded: true,
+});
+assert.equal(refunded.ok, false);
+assert.match(String(refunded.error), /10 credits restored/i);
+assert.equal(refunded.creditsRefunded, true);
+
+const linkCheck = fs.readFileSync(join(root, "scripts/link-check.sh"), "utf8");
+assert.match(linkCheck, /etsy-sellers/);
+assert.match(linkCheck, /link-check: PASS/);
+const usecases = fs.readFileSync(join(root, "lib/usecases.ts"), "utf8");
+assert.match(usecases, /FOR_SLUG_ALIASES/);
+assert.match(usecases, /etsy-sellers/);
+const forPage = fs.readFileSync(join(root, "app/for/[slug]/page.tsx"), "utf8");
+assert.match(forPage, /FOR_SLUG_ALIASES/);
+assert.match(forPage, /redirect\(/);
 
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

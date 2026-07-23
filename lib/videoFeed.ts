@@ -73,15 +73,17 @@ export function buildHomeShowcaseFeed(
 }
 
 /**
- * Lab / Feed catalog — one card per Lab demo + one concept card per remaining
- * preset. No multi-pass density remounts of the same mp4.
+ * Lab / Feed catalog — **official unique demos only** (G2/G3).
+ * Concept recipes without their own footage live on `/effects`, not a
+ * shared-loop density wall that looks like a full product catalog.
  */
 export function buildVideoFeed(): FeedItem[] {
-  const byPreset = new Map(DEMO_VIDEOS.map((d) => [d.preset, d]));
   const items: FeedItem[] = [];
+  const seenMp4 = new Set<string>();
 
-  // Cached PIKBO Lab demos first (the media shown is the media described)
   for (const d of DEMO_VIDEOS) {
+    if (seenMp4.has(d.mp4)) continue;
+    seenMp4.add(d.mp4);
     const preset = PRESETS.find((p) => p.slug === d.preset);
     items.push({
       id: `demo-${d.id}`,
@@ -97,30 +99,13 @@ export function buildVideoFeed(): FeedItem[] {
     });
   }
 
-  // Remaining recipes once each — labeled concept, not fake UGC density
-  PRESETS.forEach((p, i) => {
-    if (byPreset.has(p.slug)) return;
-    const demo = demoForIndex(i);
-    items.push({
-      id: `preset-${p.slug}`,
-      title: viralName(p.slug, p.name),
-      subtitle: p.tagline,
-      href: createHref(p.slug),
-      detailHref: `/effects/${p.slug}`,
-      badge: "Concept · shared loop",
-      ratio:
-        p.aspectRatio === "1:1"
-          ? "1:1"
-          : p.aspectRatio === "16:9"
-            ? "16:9"
-            : "9:16",
-      demo,
-      kind: "preset",
-      category: p.category,
-    });
-  });
-
   return items;
+}
+
+/** Count of recipes without unique Lab footage (for honest empty/CTA copy). */
+export function conceptRecipeCount(): number {
+  const withFootage = new Set(DEMO_VIDEOS.map((d) => d.preset));
+  return PRESETS.filter((p) => !withFootage.has(p.slug)).length;
 }
 
 export function featuredStrip(): FeedItem[] {

@@ -9,6 +9,7 @@
     "lint": "eslint",
     "preflight": "bash scripts/preflight.sh",
     "critical-path": "bash scripts/critical-path.sh",
+    "link-check": "bash scripts/link-check.sh",
     "engine-smoke": "node scripts/engine-smoke.mjs",
     "softlive-checklist": "bash scripts/softlive-checklist.sh",
     "typecheck": "tsc --noEmit",

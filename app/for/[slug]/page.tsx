@@ -1,7 +1,12 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
-import { USE_CASES, getUseCase } from "@/lib/usecases";
+import {
+  FOR_SLUG_ALIASES,
+  USE_CASES,
+  getUseCase,
+  resolveUseCaseSlug,
+} from "@/lib/usecases";
 import { COMMON_FAQ, getPreset } from "@/lib/presets";
 import { PresetCard } from "@/components/PresetCard";
 import { LandingToolPanel } from "@/components/LandingToolPanel";
@@ -10,7 +15,9 @@ import { LandingResults } from "@/components/LandingResults";
 import { site } from "@/lib/site";
 
 export function generateStaticParams() {
-  return USE_CASES.map((u) => ({ slug: u.slug }));
+  const canonical = USE_CASES.map((u) => ({ slug: u.slug }));
+  const aliases = Object.keys(FOR_SLUG_ALIASES).map((slug) => ({ slug }));
+  return [...canonical, ...aliases];
 }
 
 export async function generateMetadata({
@@ -40,7 +47,12 @@ export default async function UseCasePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const uc = getUseCase(slug);
+  // G4: short roast-era paths must never 404 when dynamic route wins.
+  const aliasTarget = FOR_SLUG_ALIASES[slug];
+  if (aliasTarget) {
+    redirect(`/for/${aliasTarget}`);
+  }
+  const uc = getUseCase(resolveUseCaseSlug(slug));
   if (!uc) notFound();
 
   const primarySlug = uc.recommendedEffects[0];

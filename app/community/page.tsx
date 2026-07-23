@@ -3,6 +3,7 @@ import Link from "next/link";
 import {
   buildVideoFeed,
   communityProjects,
+  conceptRecipeCount,
   suiteRail,
 } from "@/lib/videoFeed";
 import { VideoTile } from "@/components/VideoTile";
@@ -16,11 +17,12 @@ export const metadata: Metadata = {
   alternates: { canonical: "/community" },
 };
 
-/** PIKBO Lab: cached references first, then concept recipes. */
+/** PIKBO Lab: unique official demos only — no shared-loop density wall (G2/G3). */
 export default function CommunityPage() {
   const projects = communityProjects();
   const suite = suiteRail();
   const wall = buildVideoFeed();
+  const concepts = conceptRecipeCount();
 
   return (
     <div className="pb-24">
@@ -45,8 +47,8 @@ export default function CommunityPage() {
           </div>
         </div>
         <p className="mt-1 text-[11px] text-[var(--fg-dim)]">
-          These are Pikbo product demonstrations—not customer posts. Every card
-          is labeled Official example or Concept before it opens Studio.
+          These are Pikbo product demonstrations—not customer posts. Each clip
+          below is an Official example with its own Lab footage.
         </p>
       </div>
 
@@ -55,11 +57,11 @@ export default function CommunityPage() {
           <div>
             <p className="section-label">Pikbo Lab · official examples</p>
             <h2 className="mt-1 text-xl font-bold tracking-tight">
-              Start from a demonstrated look or a clearly marked concept
+              Start from a demonstrated look
             </h2>
             <p className="mt-1 text-xs text-[var(--fg-muted)]">
-              Each effect page explains the intended output and opens Studio
-              with that recipe selected.
+              Each card opens Studio with that recipe. We do not invent a video
+              wall of shared loops for recipes without unique footage.
             </p>
           </div>
         </div>
@@ -81,19 +83,25 @@ export default function CommunityPage() {
       <section className="px-2 py-6 sm:px-4">
         <div className="mb-4 flex flex-wrap items-end justify-between gap-2 px-1">
           <div>
-            <p className="section-label">Recipe wall</p>
+            <p className="section-label">Official Lab clips</p>
             <h2 className="mt-1 text-xl font-bold tracking-tight">
-              Recipes · tap to configure
+              Unique demos · tap to configure
             </h2>
+            <p className="mt-1 max-w-xl text-xs text-[var(--fg-muted)]">
+              {wall.length} unique Lab clips shown.
+              {concepts > 0
+                ? ` ${concepts} more concept recipes (no unique footage yet) live on the full preset list.`
+                : null}
+            </p>
           </div>
           <Link
-            href="/explore"
+            href="/effects"
             className="text-xs font-semibold text-[var(--mint)] hover:underline"
           >
-            Full explore →
+            All presets →
           </Link>
         </div>
-        <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 sm:gap-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7">
+        <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 sm:gap-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {wall.map((item) => (
             <VideoTile key={item.id} item={item} compact />
           ))}

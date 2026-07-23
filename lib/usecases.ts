@@ -253,6 +253,29 @@ export const USE_CASES: UseCase[] = [
   },
 ];
 
+/**
+ * G4: short / roast-era slugs → real use-case pages.
+ * Kept in source so App Router `[slug]` never 404s before next.config redirects.
+ */
+export const FOR_SLUG_ALIASES: Record<string, string> = {
+  "etsy-sellers": "etsy-listing-videos",
+  etsy: "etsy-listing-videos",
+  "tiktok-shop": "tiktok-shop-product-videos",
+  tiktok: "tiktok-shop-product-videos",
+  amazon: "amazon-product-videos",
+  "amazon-sellers": "amazon-product-videos",
+  instagram: "instagram-reels-for-collectors",
+  collectors: "instagram-reels-for-collectors",
+  "blind-box": "blind-box-brand-marketing",
+  whatnot: "whatnot-live-selling",
+  depop: "depop-shop-videos",
+};
+
+/** Resolve alias → canonical slug (or return input). */
+export function resolveUseCaseSlug(slug: string): string {
+  return FOR_SLUG_ALIASES[slug] ?? slug;
+}
+
 export function getUseCase(slug: string): UseCase | undefined {
-  return USE_CASES.find((u) => u.slug === slug);
+  return USE_CASES.find((u) => u.slug === resolveUseCaseSlug(slug));
 }

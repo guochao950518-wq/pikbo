@@ -26,6 +26,8 @@ need "/create"
 need "/effects"
 need "/library"
 need "/pricing"
+need "/community"
+need "/for/etsy-listing-videos"
 need "/api/health"
 need "/api/me"
 

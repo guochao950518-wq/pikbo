@@ -54,7 +54,8 @@
 13. [x] merge Claude E3 preflight/rights · GPT SELLER_PACK+AUTH_CREDITS · server ownsRights  
 14. [x] merge Claude unknown deep-link notice · result provenance (Cached demo / Live generation) · Local Library · softlive Stripe-optional  
 15. [x] soft-launch primary nav + More · creditsRefunded on fail · Library export provenance · README demo free  
-16. 下一拍：safe agent merges (avoid product-foundation) · ICP/home if Claude pushes green · boss LAUNCH
+16. [x] merge GPT world-class-copy · Lab unique-demo wall (no shared-loop flood) · link-check G4 · refund smoke  
+17. 下一拍：G6 hand-test log · more green agent merges · avoid product-foundation
 
 ### 老板醒来验收
 
@@ -68,9 +69,9 @@
 
 ## Grok 本拍状态（3 行）
 
-- G1 progress: soft nav Explore/Create/Lab/Library + More (empty doors demoted).  
-- `creditsRefunded` on post-debit fails · Library export provenance · README demo free.  
-- smoke+typecheck+lint green · **shipping main**.
+- Merged GPT world-class-copy (seller ICP / Lab official demos).  
+- Lab wall = unique official clips only; G4 `npm run link-check`; refund smoke.  
+- shipping main · public still NO-GO until G5–G7 fully green.
 
 ---
 

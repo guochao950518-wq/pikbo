@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+# G4 soft check: known soft-launch inventory must not 404.
+# Usage: bash scripts/link-check.sh [baseUrl]
+set -euo pipefail
+export NO_PROXY="*" no_proxy="*"
+unset ALL_PROXY all_proxy HTTP_PROXY HTTPS_PROXY http_proxy https_proxy 2>/dev/null || true
+
+BASE="${1:-http://127.0.0.1:3000}"
+fail=0
+
+check() {
+  local path="$1"
+  local want="${2:-200}"
+  local code
+  code=$(curl --noproxy '*' -sS -o /dev/null -w "%{http_code}" -m 20 -L "${BASE}${path}" || echo "000")
+  if [[ "$code" != "$want" ]]; then
+    echo "FAIL ${path} → HTTP ${code} (want ${want})"
+    fail=$((fail + 1))
+  else
+    echo "OK   ${path} → ${code}"
+  fi
+}
+
+echo "Pikbo G4 link-check @ ${BASE}"
+
+# Critical path
+for p in / /create /effects /library /pricing /community /explore /api/health /api/me; do
+  check "$p"
+done
+
+# Real use-case SEO pages
+for p in \
+  /for/etsy-listing-videos \
+  /for/tiktok-shop-product-videos \
+  /for/amazon-product-videos \
+  /for/instagram-reels-for-collectors \
+  /for/blind-box-brand-marketing \
+  /for/whatnot-live-selling \
+  /for/depop-shop-videos
+do
+  check "$p"
+done
+
+# Roast short-slugs must land (redirect → 200 with -L)
+for p in \
+  /for/etsy-sellers \
+  /for/etsy \
+  /for/tiktok-shop \
+  /for/tiktok \
+  /for/amazon \
+  /for/amazon-sellers \
+  /for/instagram \
+  /for/collectors \
+  /for/blind-box \
+  /for/whatnot \
+  /for/depop
+do
+  check "$p"
+done
+
+# Legal / soft surfaces
+for p in /privacy /terms /guides /models /cinema /image /supercomputer; do
+  check "$p"
+done
+
+if [[ "$fail" -gt 0 ]]; then
+  echo "link-check: FAIL ($fail)"
+  exit 1
+fi
+echo "link-check: PASS"
