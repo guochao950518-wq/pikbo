@@ -9,6 +9,7 @@ import {
 } from "@/lib/showcaseProjects";
 import { getPreset } from "@/lib/presets";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
+import { ProjectOpenBeacon } from "@/components/ProjectOpenBeacon";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -55,6 +56,7 @@ export default async function ShowcaseProjectPage({ params }: Props) {
 
   return (
     <main className="min-h-screen bg-black px-4 py-8 text-white sm:px-8 sm:py-12">
+      <ProjectOpenBeacon slug={project.slug} recipe={project.recipeSlug} />
       <div className="mx-auto max-w-7xl">
         <nav
           aria-label="Breadcrumb"

@@ -25,6 +25,7 @@ import {
   freeLiveDownloadBlockReason,
 } from "@/lib/createTrust";
 import { deliveryItemsForJob } from "@/lib/deliveryPack";
+import { track } from "@/lib/analytics";
 
 type Status = "idle" | "generating" | "done" | "error";
 
@@ -536,6 +537,18 @@ export function LandingToolPanel({
                     target="_blank"
                     rel="noreferrer"
                     className="btn btn-primary px-3 py-1.5 text-xs"
+                    onClick={() =>
+                      track({
+                        event: "export_click",
+                        path: `/effects/${effectSlug}`,
+                        recipe: effectSlug,
+                        demo: Boolean(demo),
+                        meta: {
+                          via: requestId ? "downloads_api" : "direct",
+                          source: "landing",
+                        },
+                      })
+                    }
                   >
                     Download
                   </a>

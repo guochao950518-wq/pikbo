@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Phase H analytics funnel + profile/robots honesty
+- Wire no-op-safe funnel: `upload_ready`, `project_open` (Explore + ProjectOpenBeacon), `export_click` (Create/Library/Landing).
+- Profile header no longer hardcodes guest-only; robots disallow `/status`.
+- Analytics still no-ops without `NEXT_PUBLIC_ANALYTICS_URL` (never breaks UI).
+- Verified: engine-smoke · typecheck · lint.
+
 ### 2026-07-24 — [grok] Sliding asset TTL + re-register after ASSET recovery
 - `getLocalAsset` slides 15m TTL on every hit (Seller Pack mid-queue stays warm).
 - `postGenerateWithRetry` sets `recoveredFromAssetMiss`; Create/Landing/Batch re-register still.

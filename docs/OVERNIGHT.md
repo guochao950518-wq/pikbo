@@ -80,7 +80,8 @@
 39. [x] In-flight lock TTL recovery · JOB_IN_FLIGHT Retry-After · getJob by requestId
 40. [x] Library cancel ledger + Seller Pack retry-failed-only · auth callback noindex
 41. [x] Sliding asset TTL · health assets probe · re-register after ASSET recovery
-42. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
+42. [x] Phase H analytics funnel (upload/project/export) · profile honesty · robots /status
+43. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
 
 ### 老板醒来验收
 
@@ -94,8 +95,8 @@
 
 ## Grok 本拍状态（3 行）
 
-- getLocalAsset slides 15m TTL on every use (Seller Pack children stay warm).  
-- ASSET recovery sets recoveredFromAssetMiss → client re-registers; health.assets probe.  
+- Funnel analytics: upload_ready · project_open · export_click (no-op without key).  
+- Profile guest copy fixed; robots disallow /status.  
 - engine-smoke + tsc + lint green · Mode A still needs boss Vercel login.
 
 ---

@@ -440,6 +440,12 @@ export function CreateStudio({
     setImage(dataUrl);
     setAssetId(null);
     setError(null);
+    track({
+      event: "upload_ready",
+      path: "/create",
+      recipe: effect,
+      meta: { bytes: dataUrl.length },
+    });
     // Register into process-memory asset store so generate can skip large JSON.
     try {
       const { registerLocalAsset } = await import("@/lib/clientAssets");
@@ -2153,7 +2159,20 @@ export function CreateStudio({
                       target="_blank"
                       rel="noreferrer"
                       className="btn btn-primary px-4 py-2 text-xs"
-                      onClick={() => markActivationShared()}
+                      onClick={() => {
+                        markActivationShared();
+                        track({
+                          event: "export_click",
+                          path: "/create",
+                          recipe: activeVersion?.effect || effect,
+                          demo: Boolean(demo),
+                          meta: {
+                            via: activeVersion?.requestId
+                              ? "downloads_api"
+                              : "direct",
+                          },
+                        });
+                      }}
                     >
                       Download · keep it
                     </a>

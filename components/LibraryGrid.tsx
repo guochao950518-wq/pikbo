@@ -17,6 +17,7 @@ import {
 import { createRemixHref } from "@/lib/remixIntent";
 import { useToast } from "@/components/Toast";
 import { PROVENANCE, resultProvenanceLabel } from "@/lib/provenance";
+import { track } from "@/lib/analytics";
 
 type KindFilter = "all" | "live" | "demo";
 type GroupMode = "flat" | "project";
@@ -335,6 +336,16 @@ export function LibraryGrid() {
       toast(historyDownloadBlockReason());
       return;
     }
+    track({
+      event: "export_click",
+      path: "/library",
+      recipe: item.effect,
+      demo: Boolean(item.demo),
+      meta: {
+        via: item.requestId ? "downloads_api" : "direct",
+        sku: item.sku || null,
+      },
+    });
     // Prefer controlled download endpoint when we have a server job id.
     if (item.requestId) {
       window.open(

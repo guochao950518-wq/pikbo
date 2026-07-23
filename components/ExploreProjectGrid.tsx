@@ -11,6 +11,7 @@ import {
   type ShowcaseCategory,
   type ShowcaseProject,
 } from "@/lib/showcaseProjects";
+import { track } from "@/lib/analytics";
 
 type ExploreCategory = "all" | ShowcaseCategory;
 
@@ -75,6 +76,14 @@ export function ExploreProjectGrid({
                 href={showcaseProjectHref(project)}
                 className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c8ff3d]"
                 aria-label={`Open ${project.title} project details`}
+                onClick={() =>
+                  track({
+                    event: "project_open",
+                    path: "/explore",
+                    recipe: project.recipeSlug,
+                    meta: { slug: project.slug, source: "explore_grid" },
+                  })
+                }
               >
                 <div
                   className={

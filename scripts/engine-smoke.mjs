@@ -1292,6 +1292,29 @@ assert.match(
   fs.readFileSync(join(root, "app/auth/callback/layout.tsx"), "utf8"),
   /PRIVATE_ROBOTS|index:\s*false/
 );
+
+// Phase H analytics funnel + private ops robots
+const analyticsSrc = fs.readFileSync(join(root, "lib/analytics.ts"), "utf8");
+assert.match(analyticsSrc, /export_click|project_open|upload_ready/);
+assert.match(analyticsSrc, /NEXT_PUBLIC_ANALYTICS_URL|sendBeacon/);
+assert.match(createStudio, /upload_ready|export_click/);
+assert.match(library, /export_click/);
+assert.match(
+  fs.readFileSync(join(root, "components/ExploreProjectGrid.tsx"), "utf8"),
+  /project_open/
+);
+assert.match(
+  fs.readFileSync(join(root, "components/ProjectOpenBeacon.tsx"), "utf8"),
+  /project_open/
+);
+assert.match(
+  fs.readFileSync(join(root, "app/robots.ts"), "utf8"),
+  /\/status/
+);
+assert.match(
+  fs.readFileSync(join(root, "app/profile/page.tsx"), "utf8"),
+  /signed-in durable|durable wallet/
+);
 const critPathModeA = fs.readFileSync(
   join(root, "scripts/critical-path.sh"),
   "utf8"

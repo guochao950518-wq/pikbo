@@ -18,8 +18,8 @@ export default function ProfilePage() {
         <span className="chip">Account</span>
         <h1 className="mt-3 text-2xl font-bold">Profile</h1>
         <p className="mt-1 text-sm text-[var(--fg-muted)]">
-          Guest session for now — credits live in a signed cookie on this
-          device.
+          Plan, credits, and session — guest cookie on this device, or
+          signed-in durable wallet when Supabase is configured.
         </p>
         <p className="mt-3 text-xs text-[var(--fg-dim)]">
           {auth.message}{" "}
