@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [gpt] world-class contract final sync
+- Seller Pack is canonical inside Create at `/create?mode=seller-pack`; `/supercomputer?pack=seller` remains a compatibility forward, not a primary product.
+- Desktop and mobile navigation are frozen at five destinations; Generate is the only emphasized CTA.
+- The Launch 12 now matches the boss-approved list, and homepage proof remains exactly eight distinct, traceable recipe assets.
+- Official examples require five 1–5 review dimensions plus input, provider task ID, model, parameters, output, and reviewer notes.
+- `SEO_INTENT_50.md` now has the exact 12 effect / 8 toy / 8 platform / 10 task / 6 problem / 6 role taxonomy; only ten proof-backed Wave 1 pages may ship.
+
 ### 2026-07-23 — [gpt] world-class product contract + SEO Intent 50
 - `WORLD_CLASS_PIKBO.md` freezes the four ICP paths, three-decision Create flow, Toy Identity assessment, SKU project model, Seller OS packs, state machine, and 12 launch recipes.
 - Active prices remain unchanged; higher-ARPU tiers are research hypotheses gated by provider invoices, weighted credits, and paid pilots.

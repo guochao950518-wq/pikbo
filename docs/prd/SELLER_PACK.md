@@ -83,16 +83,25 @@ Missing visible packaging is a quality warning, not a validation error. The prod
 
 ### Canonical route
 
-`/supercomputer?pack=seller`
+`/create?mode=seller-pack`
 
-The existing `/supercomputer?effects=...` custom-batch deep link remains supported. Seller Pack is a named configuration on the existing Batch surface, not a new top-level product.
+Seller Pack is a named mode inside the flagship Create workflow, not a separate
+top-level product.
+
+The legacy `/supercomputer?pack=seller` entry must redirect or forward into
+`/create?mode=seller-pack`. It may preserve a safe analytics `source` value, but
+must discard unrelated effect/model overrides so the pack always loads the
+frozen configuration.
+
+The existing `/supercomputer?effects=...` custom-batch deep link remains
+supported as Custom Batch. It must not be labeled Seller Pack.
 
 ### Product entry points
 
 - Create: `Make a Seller Pack` after a toy photo is selected.
-- Batch: `Seller Pack · 3 outputs`.
+- Create mode selector: `Seller Pack · 3 outputs`.
 - Pricing/Shop: `See the 3-output seller workflow`.
-- Seller-focused SEO pages: open the canonical route with `pack=seller`.
+- Seller-focused SEO pages: open `/create?mode=seller-pack&source={page-id}`.
 
 The direct link must load the exact three presets and their per-output ratios. It must not load the current four-item spin/float/unbox/glam selection.
 
@@ -489,7 +498,9 @@ V1 excludes:
 
 ### Configuration
 
-- [ ] `/supercomputer?pack=seller` loads exactly the three frozen presets.
+- [ ] `/create?mode=seller-pack` loads exactly the three frozen presets.
+- [ ] `/supercomputer?pack=seller` forwards to the Create Seller Pack mode
+      without retaining arbitrary effect/model overrides.
 - [ ] Listing Spin defaults to 1:1; Reveal and Social Flash default to 9:16.
 - [ ] Arbitrary custom effects move the UI to Custom Batch rather than mislabeling it Seller Pack.
 - [ ] Unknown or deleted preset slugs block the pack visibly.

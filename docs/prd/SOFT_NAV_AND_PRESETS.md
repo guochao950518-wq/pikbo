@@ -6,20 +6,23 @@
 
 ## Navigation
 
-Desktop primary navigation contains four destinations:
+Desktop primary navigation contains five destinations:
 
 | Label | Route | Soft-launch job |
 |---|---|---|
 | Explore | `/explore` | Browse labeled recipes and examples |
 | Create | `/create` | Upload → choose recipe → quote/generate |
 | Effects | `/effects` | Find all registered toy recipes |
-| Official Examples | `/community` | Browse Pikbo product demonstrations |
+| Lab | `/community` | Browse official PIKBO product demonstrations |
+| Pricing | `/pricing` | See the current finite 1 / 5 / 15 allowance contract |
 
 Utilities:
 
-- `Pricing` → `/pricing`
-- Primary CTA `Animate my toy` → `/create`
-- `More` may contain Library, Settings, Guides, Image, Cinema, Models, and Batch, but each must say `Local`, `Preview`, or `Coming soon` according to actual capability.
+- Primary CTA `Generate` → `/create`
+- `More` may contain Library and Guides.
+- Models, Cinema, Image, Batch, and Feed are not primary navigation. If a
+  preview route remains reachable, it must say `Preview` or `Coming soon`
+  according to actual capability.
 
 Mobile bottom navigation:
 
@@ -29,7 +32,8 @@ Mobile bottom navigation:
 4. Examples
 5. Pricing
 
-No model marketplace, Cinema, Batch, Feed, or Library appears as a primary peer of Create during soft launch.
+No model marketplace, Cinema, Batch, Feed, or Library appears as a primary peer
+of Create during soft launch.
 
 ## Homepage proof whitelist
 
