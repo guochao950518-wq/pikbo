@@ -173,4 +173,14 @@ Pikbo：**不做假 LEGO 品牌页**，做 **玩具卖家工作流 App 墙**：
 > **不要重建 Higgsfield / Yiha。**  
 > **用我们已有的 Seedance Create，按他们的「货架 + 垂直 App + 一键配方」壳再包一层——一周内用户就会觉得「功能很多」，而且全部合法、可出片。**
 
+---
+
+## 8. 扩展地图（2026-07-24）
+
+老板补充的 OpenArt / Leonardo / Krea / **妙呀** / **Meshy** 等已收入：
+
+→ **`docs/research/COMPETITOR_LANDSCAPE_2026.md`**
+
+要点：结构抄 OS 壳；垂直盯妙呀但不做文生 IP；3D 后置 Meshy 出口；差异化 = 已有 SKU 出片卖货。
+
 *Grok · FAST_FEATURE_PARITY · 2026-07-24*
