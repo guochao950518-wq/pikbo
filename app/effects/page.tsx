@@ -1,31 +1,59 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { PRESETS } from "@/lib/presets";
 import { allCategoryFeeds } from "@/lib/videoFeed";
 import { VideoTile } from "@/components/VideoTile";
+import { GenerateSuiteChrome } from "@/components/GenerateSuiteChrome";
+import { listCreateShelfWorkflows } from "@/lib/workflows";
 
 export const metadata: Metadata = {
-  title: "Toy video presets",
+  title: "Toy video presets · Recipes",
   description:
-    "Every Pikbo effect as a playable video — spin, unbox, dance, cinematic scenes for designer toys.",
+    "Every Pikbo effect as a playable video — spin, unbox, dance, cinematic scenes for designer toys. Remake in Generate.",
   alternates: { canonical: "/effects" },
 };
 
-/** HF viral-presets wall: every card is video */
+/** HF viral-presets wall + suite chrome (toy vertical) */
 export default function EffectsHub() {
   const groups = allCategoryFeeds();
+  const jobBlocks = listCreateShelfWorkflows().filter(
+    (w) => w.id !== "photo-to-clip"
+  );
 
   return (
     <div className="pb-24">
+      <Suspense
+        fallback={
+          <div className="border-b border-white/10 px-4 py-3 text-sm text-white/40">
+            Generate · Recipes
+          </div>
+        }
+      >
+        <GenerateSuiteChrome compact />
+      </Suspense>
+
       <div className="sticky top-0 z-20 border-b border-[var(--border)] bg-[var(--bg)]/90 px-4 py-3 backdrop-blur sm:px-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="section-label">{PRESETS.length} presets</p>
+            <p className="section-label">{PRESETS.length} recipes</p>
             <h1 className="text-lg font-bold tracking-tight sm:text-xl">
               Viral presets · remake in Generate
             </h1>
+            <p className="mt-0.5 text-[11px] text-[var(--fg-dim)]">
+              Full recipe wall · or start from a{" "}
+              <Link href="/modules" className="text-[var(--mint)] hover:underline">
+                Module job
+              </Link>
+            </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href="/modules"
+              className="btn btn-ghost !px-3 !py-2 text-xs"
+            >
+              Modules
+            </Link>
             <Link
               href="/create"
               className="btn btn-primary !px-4 !py-2 text-xs"
@@ -33,14 +61,25 @@ export default function EffectsHub() {
               Generate
             </Link>
             <Link
-              href="/supercomputer"
+              href="/create?mode=seller-pack"
               className="btn btn-ghost !px-3 !py-2 text-xs"
             >
-              Batch
+              Seller Pack
             </Link>
           </div>
         </div>
-        <div className="mt-2 flex gap-2 overflow-x-auto pb-1">
+
+        {/* Job-first chips — suite modules on the recipe wall */}
+        <div className="mt-2.5 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none]">
+          {jobBlocks.map((w) => (
+            <Link
+              key={w.id}
+              href={w.href}
+              className="shrink-0 rounded-full border border-[var(--mint)]/30 bg-[var(--mint)]/[0.07] px-3 py-1 text-[11px] font-semibold text-[var(--mint)] hover:border-[var(--mint)]"
+            >
+              {w.emoji} {w.label}
+            </Link>
+          ))}
           {groups.map(({ category }) => (
             <a
               key={category.id}
@@ -57,7 +96,7 @@ export default function EffectsHub() {
         <section
           key={category.id}
           id={`cat-${category.id}`}
-          className="scroll-mt-28 border-b border-[var(--border)] px-3 py-6 sm:px-5"
+          className="scroll-mt-36 border-b border-[var(--border)] px-3 py-6 sm:px-5"
         >
           <div className="mb-3 px-1">
             <h2 className="text-base font-bold tracking-tight">

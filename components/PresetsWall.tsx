@@ -7,7 +7,7 @@ import { PresetPreviewCard } from "@/components/PresetPreviewCard";
 // are the real available effects, not fabricated community posts.
 export function PresetsWall({
   heading = "Viral presets",
-  subheading = "Tap a preset to open the studio with it loaded.",
+  subheading = "Tap a preset to open Generate with it loaded — or start from a Module job.",
 }: {
   heading?: string;
   subheading?: string;
@@ -20,7 +20,10 @@ export function PresetsWall({
           {heading}
         </h2>
         <p className="mt-2 max-w-xl text-sm text-[var(--fg-muted)]">
-          {subheading}
+          {subheading}{" "}
+          <a href="/modules" className="font-semibold text-[var(--mint)] hover:underline">
+            Toy Modules →
+          </a>
         </p>
       </div>
 

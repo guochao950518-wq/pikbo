@@ -29,6 +29,13 @@ const FLOWS: {
     demoIndex: 2,
   },
   {
+    title: "Toy Modules",
+    blurb: "Job blocks — listing, hook, unbox, shelf. Suite mini-apps.",
+    href: "/modules",
+    badge: "Modules",
+    demoIndex: 1,
+  },
+  {
     title: "Viral recipes",
     blurb: "Spin, unbox, dance, shelf — pick a recipe and remake.",
     href: "/effects",
@@ -44,16 +51,16 @@ const FLOWS: {
   },
   {
     title: "Still image",
-    blurb: "Flux stills for packshots and mood boards.",
+    blurb: "Flux stills for packshots and mood boards · Preview.",
     href: "/image",
-    badge: "Image",
+    badge: "Preview",
     demoIndex: 3,
   },
   {
     title: "Batch agent",
-    blurb: "Queue multiple recipes on one figure.",
+    blurb: "Custom multi-recipe queue · Preview. Prefer Seller Pack for shops.",
     href: "/supercomputer",
-    badge: "Batch",
+    badge: "Preview",
     demoIndex: 0,
   },
   {
