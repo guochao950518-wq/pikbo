@@ -20,6 +20,12 @@ type Health = {
     inflight?: number;
     inflightTtlMs?: number;
   };
+  assets?: {
+    mode?: string;
+    count?: number;
+    ttlMs?: number;
+    note?: string;
+  };
 };
 
 export function StatusProbe() {
@@ -77,6 +83,12 @@ export function StatusProbe() {
       "In-flight jobs",
       typeof data.rateLimit?.inflight === "number"
         ? `${data.rateLimit.inflight} (TTL ${Math.round((data.rateLimit.inflightTtlMs ?? 0) / 1000)}s)`
+        : "—",
+    ],
+    [
+      "Local still assets",
+      typeof data.assets?.count === "number"
+        ? `${data.assets.count} · TTL ${Math.round((data.assets.ttlMs ?? 0) / 60000)}m slide`
         : "—",
     ],
   ];

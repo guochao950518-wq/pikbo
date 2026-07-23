@@ -791,7 +791,9 @@ export function CreateStudio({
     toast(
       data.demo
         ? `${PROVENANCE.cachedDemo} ready`
-        : `${PROVENANCE.liveGeneration} ready · saved to this browser`
+        : result.recoveredFromAssetMiss
+          ? `${PROVENANCE.liveGeneration} ready · photo re-synced after asset miss`
+          : `${PROVENANCE.liveGeneration} ready · saved to this browser`
     );
   }
 
