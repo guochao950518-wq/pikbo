@@ -73,7 +73,9 @@
 32. [x] Phase I payments readiness · live-key block · reservation TTL expire · vercel headers
 33. [x] Batch assetId reuse · Mode A critical-path + mode-a-acceptance script
 34. [x] Suite honesty: Modules JOB/PREVIEW · PRIMARY_NAV · Seller delivery T6 count
-35. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
+35. [x] Retry still freeze: re-upload must not steal version photo (resolveGenerateStill)
+36. [x] Downloads resolve job id **or** provider requestId; GenerationSpec.assetId
+37. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
 
 ### 老板醒来验收
 
@@ -87,9 +89,9 @@
 
 ## Grok 本拍状态（3 行）
 
-- Modules: Job blocks vs Preview shelves; Image/Batch no longer claim LIVE jobs.  
-- PRIMARY_NAV freeze in softLaunch; Seller delivery only counts downloadable clips.  
-- G6 PASS · engine-smoke green · Mode B still needs boss Vercel + domain OK.
+- Retry freezes version still — re-upload no longer steals assetId on Retry.  
+- `/api/downloads` finds job by id **or** provider requestId; spec stores assetId.  
+- engine-smoke + tsc + lint green · Mode A still needs boss Vercel login.
 
 ---
 

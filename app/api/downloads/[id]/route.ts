@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { ensureSession } from "@/lib/session";
-import { getJob } from "@/lib/generationJobs";
+import { findJobByRequestOrId, sweepTimedOutJobs } from "@/lib/generationJobs";
 import { freeLiveDownloadBlockReason } from "@/lib/createTrust";
 
 export const runtime = "nodejs";
@@ -11,11 +11,13 @@ type Props = { params: Promise<{ id: string }> };
  * Phase E gate — controlled download authorization.
  * Free live raw provider URLs are never returned (T6 still blocked for bake).
  * Cached demos and paid (no watermark) may redirect to the known output URL.
+ * Accepts job id or provider requestId (Create/Library may store either).
  */
 export async function GET(_req: Request, { params }: Props) {
   const { id } = await params;
   const session = await ensureSession();
-  const job = getJob(id);
+  sweepTimedOutJobs();
+  const job = findJobByRequestOrId(id);
   if (!job || job.sessionId !== session.id) {
     return NextResponse.json(
       { ok: false, code: "NOT_FOUND", error: "Download not found for this session" },

@@ -21,6 +21,12 @@ export type GenerationSpec = {
    */
   sourceKey: string;
   /**
+   * Phase D local asset id for the still that produced this success.
+   * Retry may use it only when the interned still is missing from memory —
+   * never substitute the composer's *current* asset after a re-upload.
+   */
+  assetId?: string;
+  /**
    * @deprecated Prefer sourceKey + session source store. Kept optional only so
    * older in-memory stacks from a long session still typecheck.
    */
@@ -35,6 +41,57 @@ export type GenerationSpec = {
   /** Server requestId when the live job returned one. */
   requestId?: string;
 };
+
+/**
+ * Decide which still to POST for a generate attempt.
+ * Retry freezes the version's still — never the composer's latest re-upload.
+ *
+ * `image` may still be present in `asset` mode so the client can intern the
+ * still / write Library history without re-downloading the asset.
+ * POST body should send assetId only when mode is asset|retry-asset.
+ */
+export function resolveGenerateStill(input: {
+  retry?: GenerationSpec | null;
+  sourceStore: Record<string, string>;
+  imageOverride?: string | null;
+  /** Current composer still (data URL). */
+  image?: string | null;
+  /** Current composer Phase D asset id. */
+  assetId?: string | null;
+}): {
+  /** Local still for interning / history (may be set even when POSTing assetId). */
+  image?: string;
+  assetId?: string;
+  /** What the generate POST should prefer. */
+  mode: "retry-still" | "retry-asset" | "asset" | "image" | "none";
+} {
+  const retry = input.retry ?? null;
+  if (retry) {
+    const frozen = resolveSpecImage(retry, input.sourceStore);
+    if (frozen) {
+      // Always post the frozen still — never ambient composer assetId.
+      return { image: frozen, mode: "retry-still" };
+    }
+    if (retry.assetId) {
+      return { assetId: retry.assetId, mode: "retry-asset" };
+    }
+    return { mode: "none" };
+  }
+  if (input.imageOverride) {
+    return { image: input.imageOverride, mode: "image" };
+  }
+  if (input.assetId) {
+    return {
+      assetId: input.assetId,
+      image: input.image || undefined,
+      mode: "asset",
+    };
+  }
+  if (input.image) {
+    return { image: input.image, mode: "image" };
+  }
+  return { mode: "none" };
+}
 
 /** FNV-1a style key for interning large stills in a session Map. */
 export function sourceImageKey(image: string): string {
@@ -137,6 +194,7 @@ export function freeLiveDownloadBlockReason(): string {
 /** Build immutable spec snapshot at success time. */
 export function buildGenerationSpec(input: {
   sourceKey: string;
+  assetId?: string;
   effect: string;
   extra: string;
   aspectRatio: string;
@@ -148,6 +206,7 @@ export function buildGenerationSpec(input: {
 }): GenerationSpec {
   return {
     sourceKey: input.sourceKey,
+    assetId: input.assetId,
     effect: input.effect,
     extra: input.extra,
     aspectRatio: input.aspectRatio,

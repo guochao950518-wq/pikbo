@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Retry still freeze + download requestId resolve
+- Bugfix: Create Retry used ambient composer `assetId` after re-upload → wrong photo.
+- `resolveGenerateStill` freezes version still (or frozen assetId only if still missing).
+- `GenerationSpec.assetId` recorded at success; downloads API uses `findJobByRequestOrId`.
+- engine-smoke pure cases: retry-still / retry-asset / fresh asset modes.
+- Verified: engine-smoke · typecheck · lint.
+
 ### 2026-07-24 — [grok] Suite IA: Modules in link-check, footer, pricing, Lab
 - link-check: `/modules` `/apps` `/login` `/status` job deep-links `/flow`.
 - Footer Product: Modules · Seller Pack · Lab · Apps; sitemap includes `/modules`.

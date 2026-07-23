@@ -33,6 +33,7 @@ import {
   requestCreditStateFromFailure,
   requestCreditStateFromSuccess,
   requestSettlementAfterSelectVersion,
+  resolveGenerateStill,
   resolveSpecImage,
   type GenerationSpec,
   type RequestCreditState,
@@ -491,10 +492,17 @@ export function CreateStudio({
     retrySpec?: GenerationSpec;
   }) {
     const retry = opts?.retrySpec;
-    const img =
-      (retry ? resolveSpecImage(retry, sourceStore) : null) ??
-      opts?.imageOverride ??
-      image;
+    // Retry freezes the version still — never the composer's latest re-upload asset.
+    const still = resolveGenerateStill({
+      retry,
+      sourceStore,
+      imageOverride: opts?.imageOverride,
+      image,
+      assetId,
+    });
+    const img = still.image ?? null;
+    const postAssetId = still.assetId ?? undefined;
+    const useAsset = still.mode === "asset" || still.mode === "retry-asset";
     const fx = retry?.effect ?? opts?.effectOverride ?? effect;
     const rights = opts?.rightsOverride ?? ownsRights;
     // Retry freezes prior extra; new runs merge optional Toy Identity into extra.
@@ -514,13 +522,13 @@ export function CreateStudio({
         : seed.trim() === ""
           ? undefined
           : Number(seed);
-    if (!img || !isValidImageDataUrl(img)) {
+    if (!useAsset && (!img || !isValidImageDataUrl(img))) {
       setError(
         "Upload a reference image first (JPEG, PNG, WebP, or GIF · image-to-video)."
       );
       return;
     }
-    if (img.length > 12_000_000) {
+    if (img && img.length > 12_000_000) {
       setError("Image is too large. Use a photo under ~8MB.");
       return;
     }
@@ -546,13 +554,11 @@ export function CreateStudio({
     document
       .getElementById("create-result")
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
-    // Prefer assetId when registered (smaller POST); keep image for sample overrides
-    // and when registration failed.
-    const useAsset = Boolean(assetId) && !opts?.imageOverride;
+    // Prefer assetId when registered (smaller POST); Retry uses frozen still/asset only.
     const result = await postGenerate({
       effect: fx,
-      image: useAsset ? undefined : img,
-      assetId: useAsset && assetId ? assetId : undefined,
+      image: useAsset ? undefined : img ?? undefined,
+      assetId: useAsset && postAssetId ? postAssetId : undefined,
       extra: requestExtra,
       duration: requestDuration,
       aspectRatio: requestAspect,
@@ -646,12 +652,27 @@ export function CreateStudio({
       typeof data.requestId === "string" && data.requestId
         ? data.requestId
         : `v-${versions.length + 1}-${serverEffect}-${serverDuration}`;
-    const interned = internSourceImage(sourceStore, img);
+    // Prefer the still we actually used (retry frozen / override / composer).
+    const stillForStore =
+      (img && isValidImageDataUrl(img) ? img : null) ||
+      (image && isValidImageDataUrl(image) ? image : null) ||
+      "";
+    const interned = stillForStore
+      ? internSourceImage(sourceStore, stillForStore)
+      : { key: retry?.sourceKey || "src-missing", store: sourceStore };
     if (interned.store !== sourceStore) {
       setSourceStore(interned.store);
     }
+    // Freeze the asset that produced this success (retry must not pick a later re-upload).
+    const specAssetId =
+      still.mode === "retry-asset"
+        ? postAssetId
+        : still.mode === "retry-still"
+          ? retry?.assetId
+          : postAssetId || assetId || undefined;
     const spec = buildGenerationSpec({
       sourceKey: interned.key,
+      assetId: specAssetId,
       effect: serverEffect,
       extra: requestExtra,
       aspectRatio: serverAspect,
@@ -710,7 +731,7 @@ export function CreateStudio({
           : remix.intent?.sourceProjectSlug,
         channel: remix.intent?.channel,
         projectId: localProjectId(
-          img,
+          stillForStore || fx,
           opts?.labSampleId
             ? `lab-sample-${opts.labSampleId}`
             : remix.intent?.sourceProjectSlug
@@ -720,7 +741,10 @@ export function CreateStudio({
           : remix.intent?.sourceProjectSlug
             ? `Remix · ${remix.intent.sourceProjectSlug}`
             : identityProjectName(toyIdentity) || "Owned toy project",
-        inputImage: img.length <= 300_000 ? img : undefined,
+        inputImage:
+          stillForStore && stillForStore.length <= 300_000
+            ? stillForStore
+            : undefined,
         sku: toyIdentity.sku || undefined,
       })
     );

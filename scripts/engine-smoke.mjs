@@ -901,6 +901,9 @@ const downloadRoute = fs.readFileSync(
 assert.match(downloadRoute, /DOWNLOAD_BLOCKED/);
 assert.match(downloadRoute, /freeLiveDownloadBlockReason/);
 assert.match(downloadRoute, /downloadAllowed/);
+// Resolve by job id *or* provider requestId (Create/Library may store either)
+assert.match(downloadRoute, /findJobByRequestOrId/);
+assert.match(genJobsStore, /export function findJobByRequestOrId/);
 // Generate must record jobs on success
 assert.match(genRoute, /recordSucceededGenerate/);
 assert.match(genRoute, /recordFailedGenerate|noteFailed/);
@@ -1322,6 +1325,76 @@ assert.match(
   fs.readFileSync(join(root, "app/community/page.tsx"), "utf8"),
   /\/modules/
 );
+
+// Retry must freeze version still — never ambient composer asset after re-upload
+assert.match(createTrust, /export function resolveGenerateStill/);
+assert.match(createTrust, /assetId\?:/);
+assert.match(createStudio, /resolveGenerateStill/);
+assert.match(createStudio, /retry-still|mode === "retry/);
+function resolveSpecImagePure(spec, store) {
+  if (spec.sourceKey && store[spec.sourceKey]) return store[spec.sourceKey];
+  if (typeof spec.image === "string" && spec.image) return spec.image;
+  return null;
+}
+function resolveGenerateStillPure(input) {
+  const retry = input.retry ?? null;
+  if (retry) {
+    const frozen = resolveSpecImagePure(retry, input.sourceStore);
+    if (frozen) return { image: frozen, mode: "retry-still" };
+    if (retry.assetId) return { assetId: retry.assetId, mode: "retry-asset" };
+    return { mode: "none" };
+  }
+  if (input.imageOverride) return { image: input.imageOverride, mode: "image" };
+  if (input.assetId) {
+    return {
+      assetId: input.assetId,
+      image: input.image || undefined,
+      mode: "asset",
+    };
+  }
+  if (input.image) return { image: input.image, mode: "image" };
+  return { mode: "none" };
+}
+{
+  const store = { "src-a": "data:image/png;base64,AAA" };
+  const retry = {
+    sourceKey: "src-a",
+    assetId: "asset_old",
+    effect: "floating-hero",
+    extra: "",
+    aspectRatio: "1:1",
+    duration: 5,
+    resolution: "480p",
+    model: "seedance-mini",
+  };
+  // Composer re-uploaded a new asset — Retry must still post frozen still A
+  const still = resolveGenerateStillPure({
+    retry,
+    sourceStore: store,
+    image: "data:image/png;base64,BBB",
+    assetId: "asset_new",
+  });
+  assert.equal(still.mode, "retry-still");
+  assert.equal(still.image, "data:image/png;base64,AAA");
+  assert.equal(still.assetId, undefined);
+  // Missing still falls back to frozen assetId only (not ambient asset_new)
+  const missing = resolveGenerateStillPure({
+    retry: { ...retry, sourceKey: "src-gone" },
+    sourceStore: store,
+    image: "data:image/png;base64,BBB",
+    assetId: "asset_new",
+  });
+  assert.equal(missing.mode, "retry-asset");
+  assert.equal(missing.assetId, "asset_old");
+  // Fresh compose prefers current assetId for smaller POST
+  const fresh = resolveGenerateStillPure({
+    sourceStore: {},
+    image: "data:image/png;base64,CCC",
+    assetId: "asset_cur",
+  });
+  assert.equal(fresh.mode, "asset");
+  assert.equal(fresh.assetId, "asset_cur");
+}
 
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node
