@@ -1150,5 +1150,25 @@ assert.match(health, /t6Report|t6:/);
 assert.match(health, /jobTimeoutMs/);
 assert.match(createTrust, /PIKBO_T6_FILE_BAKE|T6 blocked/);
 
+// Phase C Supabase Postgres durable adapter
+const sbStore = fs.readFileSync(
+  join(root, "lib/durableCredits/supabaseStore.ts"),
+  "utf8"
+);
+assert.match(sbStore, /probeSupabaseCreditsSchema/);
+assert.match(sbStore, /supabaseEnsurePersonalAccount/);
+assert.match(sbStore, /supabaseReserve/);
+assert.match(sbStore, /supabaseSettle/);
+assert.match(sbStore, /supabaseRelease/);
+assert.match(sbStore, /supabaseMigrateGuest/);
+assert.match(durableIdx, /supabaseEnsurePersonalAccount|prefersSupabaseBackend/);
+assert.match(durableIdx, /probeSupabaseCreditsSchema/);
+const localStore = fs.readFileSync(
+  join(root, "lib/durableCredits/localStore.ts"),
+  "utf8"
+);
+assert.match(localStore, /schemaReady/);
+assert.match(localStore, /probeSupabaseCreditsSchema/);
+
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

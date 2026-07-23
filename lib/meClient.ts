@@ -11,6 +11,7 @@ export type MeDurableWallet = {
   availableCredits: number;
   reservedCredits: number;
   planId: string;
+  backend?: "supabase" | "local-file";
   authority?: "shadow" | "authoritative";
 };
 

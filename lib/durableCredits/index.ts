@@ -2,8 +2,8 @@
  * Durable credits facade (T5 Phase C).
  *
  * Soft-launch still uses Cookie sessions for guest generate.
- * This module provides the durable reserve/settle/release engine + local file
- * adapter and SQL migration so production can switch without a rewrite.
+ * Prefers Supabase Postgres when service role + T5 schema are ready;
+ * otherwise local file adapter (single-node).
  *
  * Production gate: REQUIRE_DURABLE_CREDITS=1 refuses to claim durable ready
  * without a writable store. Live Stripe still stays off until boss approval.
@@ -24,6 +24,10 @@ export {
   saveDurableState,
   probeDurableCreditsStore,
 } from "./localStore";
+export {
+  probeSupabaseCreditsSchema,
+  supabaseCreditsConfigured,
+} from "./supabaseStore";
 
 import {
   createPersonalAccount,
@@ -35,6 +39,27 @@ import {
 } from "./engine";
 import { loadDurableState, saveDurableState } from "./localStore";
 import type { DurableState, ReservationPurpose } from "./types";
+import {
+  probeSupabaseCreditsSchema,
+  supabaseEnsurePersonalAccount,
+  supabaseGetPersonalWallet,
+  supabaseMigrateGuest,
+  supabaseRelease,
+  supabaseReserve,
+  supabaseSettle,
+} from "./supabaseStore";
+
+async function prefersSupabaseBackend(): Promise<boolean> {
+  if (process.env.PIKBO_DURABLE_BACKEND === "local") return false;
+  if (process.env.PIKBO_DURABLE_BACKEND === "supabase") {
+    const p = await probeSupabaseCreditsSchema();
+    return p.schemaReady;
+  }
+  // Auto when T5 tables exist; DURABLE_CREDITS=local still allows shadow via file
+  // when schema is not ready.
+  const p = await probeSupabaseCreditsSchema();
+  return p.schemaReady;
+}
 
 async function withState<T>(
   fn: (state: DurableState) => {
@@ -62,7 +87,18 @@ async function withState<T>(
 }
 
 /** Ensure a personal Free account + wallet exist for a durable user id. */
-export async function ensurePersonalAccount(userId: string, initialAvailable = 10) {
+export async function ensurePersonalAccount(
+  userId: string,
+  initialAvailable = 10
+) {
+  if (await prefersSupabaseBackend()) {
+    const remote = await supabaseEnsurePersonalAccount(
+      userId,
+      initialAvailable
+    );
+    // Guest cookie ids are not auth.users rows — FK fails; fall back to local.
+    if (remote.ok) return remote;
+  }
   return withState((state) => {
     const existing = Object.values(state.accounts).find(
       (a) => a.ownerUserId === userId && a.kind === "personal"
@@ -77,7 +113,6 @@ export async function ensurePersonalAccount(userId: string, initialAvailable = 1
         },
       };
     }
-    // Create empty wallet then grant so the free period is ledger-audited.
     const created = createPersonalAccount(state, {
       userId,
       planId: "free",
@@ -131,6 +166,11 @@ export async function durableReserve(input: {
   quotedCredits: number;
   idempotencyKey: string;
 }) {
+  if (await prefersSupabaseBackend()) {
+    const remote = await supabaseReserve(input);
+    if (remote.ok) return remote;
+    // Local-file account ids won't exist in Postgres — fall back.
+  }
   return withState((state) => {
     const r = reserveCredits(state, input);
     if (!r.ok) {
@@ -146,6 +186,10 @@ export async function durableSettle(input: {
   idempotencyKey: string;
   jobId?: string;
 }) {
+  if (await prefersSupabaseBackend()) {
+    const remote = await supabaseSettle(input);
+    if (remote.ok) return remote;
+  }
   return withState((state) => {
     const r = settleReservationItem(state, input);
     if (!r.ok) {
@@ -162,6 +206,10 @@ export async function durableRelease(input: {
   reason?: string;
   jobId?: string;
 }) {
+  if (await prefersSupabaseBackend()) {
+    const remote = await supabaseRelease(input);
+    if (remote.ok) return remote;
+  }
   return withState((state) => {
     const r = releaseReservationItem(state, input);
     if (!r.ok) {
@@ -178,6 +226,10 @@ export async function durableMigrateGuest(input: {
   cookieCredits: number;
   idempotencyKey: string;
 }) {
+  if (await prefersSupabaseBackend()) {
+    const remote = await supabaseMigrateGuest(input);
+    if (remote.ok) return remote;
+  }
   return withState((state) => {
     const r = migrateGuestCredits(state, input);
     if (!r.ok) {
@@ -200,7 +252,6 @@ export function durableCreditsActive(): boolean {
   ) {
     return true;
   }
-  // Auto-on when Supabase is present so claim + signed-in shadow work.
   const url = (
     process.env.SUPABASE_URL ||
     process.env.NEXT_PUBLIC_SUPABASE_URL ||
@@ -215,7 +266,12 @@ export async function getPersonalWallet(userId: string): Promise<{
   availableCredits: number;
   reservedCredits: number;
   planId: string;
+  backend?: "supabase" | "local-file";
 } | null> {
+  if (await prefersSupabaseBackend()) {
+    const w = await supabaseGetPersonalWallet(userId);
+    return w ? { ...w, backend: "supabase" } : null;
+  }
   const state = await loadDurableState();
   const account = Object.values(state.accounts).find(
     (a) => a.ownerUserId === userId && a.kind === "personal"
@@ -228,5 +284,6 @@ export async function getPersonalWallet(userId: string): Promise<{
     availableCredits: wallet.availableCredits,
     reservedCredits: wallet.reservedCredits,
     planId: account.planId,
+    backend: "local-file",
   };
 }

@@ -44,6 +44,7 @@ export async function GET(req: Request) {
     availableCredits: number;
     reservedCredits: number;
     planId: string;
+    backend?: "supabase" | "local-file";
   } | null = null;
   try {
     durable = await getPersonalWallet(user.id);
@@ -64,6 +65,7 @@ export async function GET(req: Request) {
           availableCredits: durable.availableCredits,
           reservedCredits: durable.reservedCredits,
           planId: durable.planId,
+          backend: durable.backend ?? "local-file",
           /** Display hint — cookie still debit authority for soft-launch live jobs */
           authority: "shadow" as const,
         }

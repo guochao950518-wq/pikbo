@@ -50,16 +50,35 @@ export default function SettingsPage() {
         <span className="chip">Settings</span>
         <h1 className="mt-3 text-2xl font-bold">Settings</h1>
         <p className="mt-1 text-sm text-[var(--fg-muted)]">
-          Device data & session. Cloud accounts come later.
+          Device data & session. Signed-in durable wallets use local file or
+          Supabase Postgres when the T5 migration is applied.
         </p>
 
         <div className="card mt-8 space-y-4 p-6 text-sm">
+          <div className="flex justify-between">
+            <span className="text-[var(--fg-muted)]">Sign-in</span>
+            <span className="font-semibold">
+              {session?.signedIn
+                ? session.auth?.email || "Signed in"
+                : "Guest cookie"}
+            </span>
+          </div>
+          <div className="flex justify-between gap-4">
+            <span className="text-[var(--fg-muted)]">Durable ledger</span>
+            <span className="text-right font-semibold">
+              {session?.durable?.backend
+                ? `${session.durable.backend} · ${session.durable.availableCredits} cr`
+                : session?.durableCreditsActive
+                  ? "shadow ready · no wallet yet"
+                  : "off"}
+            </span>
+          </div>
           <div className="flex justify-between">
             <span className="text-[var(--fg-muted)]">Plan</span>
             <span className="font-semibold">{session?.planName ?? "—"}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[var(--fg-muted)]">Credits</span>
+            <span className="text-[var(--fg-muted)]">Credits (cookie)</span>
             <span className="font-semibold text-[var(--mint)]">
               {session?.credits ?? "—"}
             </span>

@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Supabase Postgres durable adapter + schema probe
+- `lib/durableCredits/supabaseStore.ts`: ensure/get wallet, reserve/settle/release, guest migrate via service role + optimistic version.
+- Auto-use Postgres when T5 tables exist; else local file. Guest FK failures fall back to local.
+- Health probe reports `schemaReady`; Settings shows durable backend; `/api/me` durable.backend.
+- Cookie generate still authoritative. Apply migration to go multi-node. Verified: typecheck · engine-smoke · lint.
+
 ### 2026-07-24 — [grok] Job timeout recovery + T6 honest status
 - `sweepTimedOutJobs`: queued/running past `jobTimeoutMs` (default 10m, `PIKBO_JOB_TIMEOUT_MS`) → failed `TIMEOUT` / refund unconfirmed note.
 - GET `/api/generations` sweeps + reports `timedOutThisSweep`; get/list always sweep.

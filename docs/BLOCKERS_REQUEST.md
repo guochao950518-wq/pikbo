@@ -68,6 +68,6 @@
 ## Next code work without new secrets
 
 1. Mode A polish after Vercel URL exists (deployed link-check evidence).  
-2. Supabase Postgres adapter for wallets when migration is applied.  
+2. ~~Supabase Postgres adapter~~ — code on main (`lib/durableCredits/supabaseStore.ts`); activates when T5 migration is applied.  
 3. T6 file watermark when worker/ffmpeg available.  
 4. Stripe test-mode wiring only after durable Postgres + boss test keys.

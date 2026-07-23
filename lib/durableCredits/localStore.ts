@@ -52,22 +52,51 @@ export async function probeDurableCreditsStore(): Promise<{
   backend: "local-file" | "supabase" | "none";
   required: boolean;
   configured: boolean;
+  schemaReady?: boolean;
   warning?: string;
 }> {
   const required = process.env.REQUIRE_DURABLE_CREDITS === "1";
-  const supabase =
-    Boolean(process.env.SUPABASE_URL) &&
-    Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY);
-  if (supabase) {
+  // Lazy import avoids circular deps with supabase clients at module load.
+  const { probeSupabaseCreditsSchema, supabaseCreditsConfigured } =
+    await import("@/lib/durableCredits/supabaseStore");
+
+  if (supabaseCreditsConfigured()) {
+    const schema = await probeSupabaseCreditsSchema();
+    if (schema.schemaReady) {
+      return {
+        writable: true,
+        path: "supabase:credit_wallets",
+        backend: "supabase",
+        required,
+        configured: true,
+        schemaReady: true,
+      };
+    }
+    // Keys present but migration missing — still report local-file as fallback.
+    const file = storePath();
+    let localWritable = false;
+    try {
+      await fs.mkdir(path.dirname(file), { recursive: true });
+      const probe = `${file}.probe`;
+      await fs.writeFile(probe, String(Date.now()), "utf8");
+      await fs.unlink(probe).catch(() => undefined);
+      localWritable = true;
+    } catch {
+      localWritable = false;
+    }
     return {
-      writable: true,
-      path: "supabase",
-      backend: "supabase",
+      writable: localWritable,
+      path: localWritable ? file : "supabase",
+      backend: localWritable ? "local-file" : "none",
       required,
       configured: true,
-      warning: "Supabase adapter not fully wired — schema migration ready",
+      schemaReady: false,
+      warning:
+        schema.warning ||
+        "Supabase keys present; T5 SQL migration not applied — using local file fallback",
     };
   }
+
   const file = storePath();
   try {
     await fs.mkdir(path.dirname(file), { recursive: true });
@@ -80,6 +109,7 @@ export async function probeDurableCreditsStore(): Promise<{
       backend: "local-file",
       required,
       configured: true,
+      schemaReady: false,
     };
   } catch {
     return {
@@ -88,6 +118,7 @@ export async function probeDurableCreditsStore(): Promise<{
       backend: required ? "none" : "local-file",
       required,
       configured: false,
+      schemaReady: false,
       warning: required
         ? "REQUIRE_DURABLE_CREDITS=1 but store unwritable and Supabase unset"
         : "Local durable store unwritable",
