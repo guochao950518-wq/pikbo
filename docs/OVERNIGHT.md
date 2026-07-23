@@ -49,7 +49,8 @@
 8. [x] prompt template always kept · library fal aging badge · checkout rate limits  
 9. [x] batch free/live honesty · invoice webhook idempotency · image checkCredits parity  
 10. [x] meClient · settings mode honesty · sample stills validate · health HEAD · preflight stills  
-11. 下一拍：Claude 有新 home-hf 就合  
+11. [x] merge Claude media-rich home promo · profile/landing meClient · promo honesty  
+12. 下一拍：Claude 继续 D5+ 就合  
 
 ### 老板醒来验收
 
@@ -63,9 +64,9 @@
 
 ## Grok 本拍状态（3 行）
 
-- No agent merges (home-hf still at main tip).  
-- Engine `6a8b76ff`: meClient + Settings mode · sample MIME · health HEAD · preflight stills.  
-- smoke+typecheck+lint green · **pushed main**. Next: Claude D5+ when pushed.
+- Merged Claude home-hf media-rich promo CTA (0fa0353).  
+- Honesty + Profile/Landing meClient on `62f12ab`.  
+- smoke+typecheck+lint green · **pushed main**. Next: more Claude when pushed.
 
 ---
 

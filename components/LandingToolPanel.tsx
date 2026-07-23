@@ -7,10 +7,10 @@ import {
   postGenerate,
 } from "@/lib/generateClient";
 import { pushHistory } from "@/lib/history";
+import { fetchMe, type MeResponse } from "@/lib/meClient";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
 import { isValidImageDataUrl } from "@/lib/providerError";
 import { SAMPLE_TOYS, sampleToDataUrl } from "@/lib/samples";
-import type { PublicSession } from "@/lib/session";
 import { site } from "@/lib/site";
 import { useToast } from "@/components/Toast";
 import { PaywallCard } from "@/components/PaywallCard";
@@ -39,20 +39,16 @@ export function LandingToolPanel({
   const [error, setError] = useState<string | null>(null);
   const [demo, setDemo] = useState(false);
   const [watermark, setWatermark] = useState(true);
-  const [session, setSession] = useState<PublicSession | null>(null);
+  const [session, setSession] = useState<MeResponse | null>(null);
   const [elapsed, setElapsed] = useState(0);
   const [loadingSample, setLoadingSample] = useState(false);
   const toast = useToast();
 
   const refreshSession = useCallback(async () => {
-    try {
-      const res = await fetch("/api/me");
-      const data = (await res.json()) as PublicSession;
-      setSession(data);
-      setWatermark(data.watermark);
-    } catch {
-      // ignore
-    }
+    const data = await fetchMe();
+    if (!data) return;
+    setSession(data);
+    setWatermark(data.watermark);
   }, []);
 
   useEffect(() => {
@@ -141,7 +137,11 @@ export function LandingToolPanel({
       resolution,
     });
     if (result.ok === false) {
-      if (result.session) setSession(result.session);
+      if (result.session) {
+        setSession((prev) =>
+          prev ? { ...prev, ...result.session } : (result.session as MeResponse)
+        );
+      }
       if (result.paywall) {
         setError("INSUFFICIENT");
       } else {
@@ -152,7 +152,11 @@ export function LandingToolPanel({
       return;
     }
     const data = result.data;
-    if (data.session) setSession(data.session);
+    if (data.session) {
+      setSession((prev) =>
+        prev ? { ...prev, ...data.session } : (data.session as MeResponse)
+      );
+    }
     setVideoUrl(data.videoUrl);
     setDemo(Boolean(data.demo));
     setWatermark(Boolean(data.watermark));

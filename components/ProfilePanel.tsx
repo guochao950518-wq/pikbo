@@ -2,21 +2,20 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import type { PublicSession } from "@/lib/session";
-import { CREDITS_PER_VIDEO } from "@/lib/pricing";
 import { loadHistory } from "@/lib/history";
+import { fetchMe, isDemoMode, type MeResponse } from "@/lib/meClient";
+import { CREDITS_PER_VIDEO } from "@/lib/pricing";
 import { SESSION_EVENT } from "@/lib/sessionEvents";
 
 export function ProfilePanel() {
-  const [session, setSession] = useState<PublicSession | null>(null);
+  const [session, setSession] = useState<MeResponse | null>(null);
   const [clips, setClips] = useState(0);
 
   useEffect(() => {
     function refresh() {
-      fetch("/api/me")
-        .then((r) => r.json())
-        .then((d: PublicSession) => setSession(d))
-        .catch(() => {});
+      void fetchMe().then((d) => {
+        if (d) setSession(d);
+      });
       setClips(loadHistory().length);
     }
     const t = window.setTimeout(refresh, 0);
@@ -26,6 +25,9 @@ export function ProfilePanel() {
       window.removeEventListener(SESSION_EVENT, refresh);
     };
   }, []);
+
+  const perJob = session?.liveJobCredits ?? CREDITS_PER_VIDEO;
+  const demo = isDemoMode(session);
 
   return (
     <div className="card mt-8 space-y-4 p-6">
@@ -42,6 +44,7 @@ export function ProfilePanel() {
           </p>
           <p className="text-xs text-[var(--fg-dim)]">
             Cookie session · multi-device login later
+            {demo ? " · demo-cached mode" : ""}
           </p>
         </div>
       </div>
@@ -55,11 +58,9 @@ export function ProfilePanel() {
         </div>
         <div className="rounded-xl bg-[var(--bg-soft)] py-3">
           <p className="text-lg font-bold">
-            {session
-              ? Math.floor(session.credits / CREDITS_PER_VIDEO)
-              : "—"}
+            {session ? Math.floor(session.credits / perJob) : "—"}
           </p>
-          <p className="text-[10px] text-[var(--fg-dim)]">current jobs</p>
+          <p className="text-[10px] text-[var(--fg-dim)]">live jobs est.</p>
         </div>
         <div className="rounded-xl bg-[var(--bg-soft)] py-3">
           <p className="text-lg font-bold">{clips}</p>
@@ -68,8 +69,9 @@ export function ProfilePanel() {
       </div>
 
       <p className="text-xs text-[var(--fg-muted)]">
-        Free live jobs use Seedance Mini at 480p with an on-player mark. Paid
-        plans use the 720p path and include commercial listings.
+        {demo
+          ? "Server is in demo-cached mode — labeled Lab clips cost 0 credits. Configure FAL_KEY for live Seedance Mini."
+          : "Free live jobs use Seedance Mini at 480p with an on-player mark. Paid plans use the 720p path and include commercial listings."}
       </p>
 
       <div className="flex flex-col gap-2">
@@ -79,8 +81,8 @@ export function ProfilePanel() {
         <Link href="/library" className="btn btn-ghost w-full text-sm">
           Open library
         </Link>
-        <Link href="/create" className="btn btn-ghost w-full text-sm">
-          Generate a clip
+        <Link href="/settings" className="btn btn-ghost w-full text-sm">
+          Settings
         </Link>
       </div>
     </div>

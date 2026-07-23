@@ -144,8 +144,8 @@ function LimePromo({ demo }: { demo: DemoVideo }) {
               <br className="hidden sm:block" /> you already own
             </h2>
             <p className="mt-2 hidden max-w-md text-[13px] font-medium text-black/65 sm:block">
-              One figure photo → a Seedance Mini clip. No card, cached demos
-              labeled, never fake &quot;unlimited&quot;.
+              One figure photo → Seedance Mini 480p when live is on. No card.
+              Cached demos labeled. Never fake &quot;unlimited&quot;.
             </p>
             <Link
               href="/create"
