@@ -77,7 +77,8 @@
 36. [x] Downloads resolve job id **or** provider requestId; GenerationSpec.assetId
 37. [x] ASSET_NOT_FOUND → inline still recovery (Create/Landing/Batch); Library quota save
 38. [x] Library session jobs visible when device history empty · Create fail recovery tip
-39. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
+39. [x] In-flight lock TTL recovery · JOB_IN_FLIGHT Retry-After · getJob by requestId
+40. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
 
 ### 老板醒来验收
 
@@ -91,9 +92,9 @@
 
 ## Grok 本拍状态（3 行）
 
-- Library SessionJobsPanel mounts even with empty localStorage history (Phase D recovery).  
-- Create fail banner → Retry / other recipe / free Lab sample. Provisional Lab chip on projects.  
-- engine-smoke + tsc + lint green · Mode A still needs boss Vercel login.
+- In-flight generate/image locks auto-expire (~200s) so hard-kills cannot wedge sessions.  
+- JOB_IN_FLIGHT returns retryAfterSec + Retry-After; health reports inflight count/TTL.  
+- getJob/cancel resolve provider requestId · engine-smoke green · Mode A needs boss Vercel.
 
 ---
 

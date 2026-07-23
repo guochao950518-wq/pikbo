@@ -174,7 +174,8 @@ export function sweepTimedOutJobs(opts?: {
 
 export function getJob(id: string): GenerationJob | null {
   sweepTimedOutJobs();
-  return jobs.get(id) ?? null;
+  // Accept job id or provider requestId (Create/Library may store either).
+  return findJobByRequestOrId(id);
 }
 
 /**
@@ -193,7 +194,8 @@ export function cancelJob(input: {
       message: string;
       job?: GenerationJob;
     } {
-  const job = jobs.get(input.id);
+  // Resolve job id or provider requestId (getJob sweeps timeouts).
+  const job = getJob(input.id);
   if (!job) {
     return {
       ok: false,

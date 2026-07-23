@@ -15,6 +15,7 @@ import { ensureSession, publicSession, saveSession } from "@/lib/session";
 import { demoClipForEffect } from "@/lib/demoClips";
 import {
   endJob,
+  jobInFlightRetryAfterSec,
   takeGenerateBudget,
   tryBeginJob,
 } from "@/lib/rateLimit";
@@ -165,14 +166,16 @@ export async function POST(req: Request) {
   }
 
   if (!tryBeginJob(session.id)) {
+    const retryAfterSec = jobInFlightRetryAfterSec(session.id);
     return err(
       {
-        error:
-          "A generate is already running for this session — wait for it to finish",
+        error: `A generate is already running for this session — try again in ${retryAfterSec}s`,
         code: "JOB_IN_FLIGHT",
+        retryAfterSec,
         session: publicSession(session),
       },
-      409
+      409,
+      { "Retry-After": String(retryAfterSec) }
     );
   }
 

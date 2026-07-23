@@ -352,8 +352,11 @@ export async function postGenerateWithRetry(
       result.code === "JOB_IN_FLIGHT")
   ) {
     attempt += 1;
+    // Prefer server Retry-After; keep JOB_IN_FLIGHT waits short (active job may finish soon).
     const waitSec =
-      result.code === "JOB_IN_FLIGHT" ? 2 : (result.retryAfterSec ?? 8);
+      result.code === "JOB_IN_FLIGHT"
+        ? Math.min(8, Math.max(2, result.retryAfterSec ?? 2))
+        : (result.retryAfterSec ?? 8);
     await sleep(Math.min(60, Math.max(1, waitSec)) * 1000);
     result = await postGenerate(body, { signal: opts?.signal });
   }

@@ -136,6 +136,33 @@ const rateLimitSrc = fs.readFileSync(join(root, "lib/rateLimit.ts"), "utf8");
 assert.match(rateLimitSrc, /takeGenerateBudget/);
 assert.match(rateLimitSrc, /tryBeginJob/);
 assert.match(rateLimitSrc, /endJob/);
+assert.match(rateLimitSrc, /inflightTtlMs|DEFAULT_INFLIGHT_TTL/);
+assert.match(rateLimitSrc, /jobInFlightRetryAfterSec/);
+assert.match(rateLimitSrc, /inflightJobCount/);
+// Pure inflight TTL recovery (stale lock must free after TTL)
+function tryBeginJobPure(map, sessionId, now, ttl) {
+  const started = map.get(sessionId);
+  if (started !== undefined) {
+    if (now - started < ttl) return false;
+    map.delete(sessionId);
+  }
+  map.set(sessionId, now);
+  return true;
+}
+{
+  const map = new Map();
+  assert.equal(tryBeginJobPure(map, "s1", 1000, 200_000), true);
+  assert.equal(tryBeginJobPure(map, "s1", 2000, 200_000), false); // still held
+  assert.equal(tryBeginJobPure(map, "s1", 1000 + 200_000, 200_000), true); // expired
+}
+assert.match(
+  fs.readFileSync(join(root, "app/api/generate/route.ts"), "utf8"),
+  /jobInFlightRetryAfterSec/
+);
+assert.match(
+  fs.readFileSync(join(root, "app/api/image/route.ts"), "utf8"),
+  /jobInFlightRetryAfterSec/
+);
 
 const me = fs.readFileSync(join(root, "app/api/me/route.ts"), "utf8");
 assert.match(me, /generateMode/);
@@ -914,6 +941,13 @@ assert.match(genRoute, /recordFailedGenerate|noteFailed/);
 // Health acceptance ladder for demo vs soft-live
 assert.match(health, /acceptance/);
 assert.match(health, /demoCached/);
+assert.match(health, /inflightJobCount|inflightTtlMs/);
+assert.match(genJobsStore, /findJobByRequestOrId/);
+// getJob must resolve provider requestId (not only job_*)
+assert.match(
+  fs.readFileSync(join(root, "lib/generationJobs/store.ts"), "utf8"),
+  /export function getJob[\s\S]*findJobByRequestOrId/
+);
 const critPath = fs.readFileSync(
   join(root, "scripts/critical-path.sh"),
   "utf8"

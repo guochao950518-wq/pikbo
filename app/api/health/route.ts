@@ -10,6 +10,7 @@ import { publicAuthStatus } from "@/lib/authConfig";
 import { t6Report } from "@/lib/t6Watermark";
 import { jobTimeoutMs } from "@/lib/generationJobs";
 import { paymentsReadiness } from "@/lib/stripe";
+import { inflightJobCount, inflightTtlMs } from "@/lib/rateLimit";
 // NextResponse used for GET + HEAD
 
 export const runtime = "nodejs";
@@ -109,7 +110,12 @@ export async function GET() {
       cachedDemoCredits: 0,
       liveJobCredits: "flat CREDITS_PER_VIDEO",
     },
-    rateLimit: "session-8rpm + ip-24rpm + inflight-1",
+    rateLimit: {
+      summary: "session-8rpm + ip-24rpm + inflight-1",
+      /** Active generate/image locks on this process (stale locks auto-expire). */
+      inflight: inflightJobCount(),
+      inflightTtlMs: inflightTtlMs(),
+    },
     ready,
     entitlements,
     durableCredits,

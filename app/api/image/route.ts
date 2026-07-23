@@ -8,6 +8,7 @@ import {
 } from "@/lib/providerError";
 import {
   endJob,
+  jobInFlightRetryAfterSec,
   takeGenerateBudget,
   tryBeginJob,
 } from "@/lib/rateLimit";
@@ -60,14 +61,20 @@ export async function POST(req: Request) {
     );
   }
 
-  if (!tryBeginJob(`img:${session.id}`)) {
+  const imgLockKey = `img:${session.id}`;
+  if (!tryBeginJob(imgLockKey)) {
+    const retryAfterSec = jobInFlightRetryAfterSec(imgLockKey);
     return NextResponse.json(
       {
-        error: "An image job is already running — wait for it to finish",
+        error: `An image job is already running — try again in ${retryAfterSec}s`,
         code: "JOB_IN_FLIGHT",
+        retryAfterSec,
         session: publicSession(session),
       },
-      { status: 409 }
+      {
+        status: 409,
+        headers: { "Retry-After": String(retryAfterSec) },
+      }
     );
   }
 
@@ -204,6 +211,6 @@ export async function POST(req: Request) {
       );
     }
   } finally {
-    endJob(`img:${session.id}`);
+    endJob(imgLockKey);
   }
 }
