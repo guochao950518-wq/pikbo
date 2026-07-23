@@ -3,7 +3,11 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { GenerateSuiteChrome } from "@/components/GenerateSuiteChrome";
 import { DEMO_VIDEOS } from "@/lib/demoVideos";
-import { WORKFLOWS } from "@/lib/workflows";
+import {
+  listLiveWorkflows,
+  listPreviewWorkflows,
+  type Workflow,
+} from "@/lib/workflows";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -18,12 +22,109 @@ function posterForEffect(effect?: string): string | null {
   return DEMO_VIDEOS.find((d) => d.preset === effect)?.poster ?? null;
 }
 
+function ModuleCard({
+  w,
+  poster,
+  capability,
+}: {
+  w: Workflow;
+  poster: string | null;
+  capability: "live" | "preview";
+}) {
+  const isLive = capability === "live";
+  return (
+    <Link
+      href={w.href}
+      className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.06] to-transparent transition hover:-translate-y-0.5 hover:border-[var(--mint)]/40"
+    >
+      {poster ? (
+        <div className="relative aspect-[16/10] overflow-hidden bg-black/50">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={poster}
+            alt=""
+            className="h-full w-full object-cover opacity-90 transition duration-300 group-hover:scale-[1.03]"
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+          <span className="absolute left-3 top-3 text-2xl drop-shadow">
+            {w.emoji}
+          </span>
+          <div className="absolute right-3 top-3 flex flex-wrap justify-end gap-1">
+            <span
+              className={`rounded-full px-1.5 py-0.5 text-[9px] font-bold ${
+                isLive
+                  ? "bg-[var(--mint)]/90 text-black"
+                  : "bg-amber-400/90 text-black"
+              }`}
+            >
+              {isLive ? "JOB" : "PREVIEW"}
+            </span>
+            {poster && isLive ? (
+              <span className="rounded-full bg-black/60 px-1.5 py-0.5 text-[9px] font-bold text-white/80 backdrop-blur">
+                Lab proof
+              </span>
+            ) : null}
+            {w.badge && (
+              <span className="rounded-full bg-black/60 px-1.5 py-0.5 text-[9px] font-bold text-white/80 backdrop-blur">
+                {w.badge}
+              </span>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="flex items-start justify-between gap-3 p-5 pb-0">
+          <span className="grid h-12 w-12 place-items-center rounded-2xl bg-[var(--grad-soft)] text-2xl">
+            {w.emoji}
+          </span>
+          <div className="flex flex-wrap justify-end gap-1">
+            <span
+              className={`rounded-full px-1.5 py-0.5 text-[9px] font-bold ${
+                isLive
+                  ? "bg-[var(--mint)]/15 text-[var(--mint)]"
+                  : "bg-amber-400/15 text-amber-100"
+              }`}
+            >
+              {isLive ? "JOB" : "PREVIEW"}
+            </span>
+            {w.badge && (
+              <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[9px] font-bold text-white/50">
+                {w.badge}
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+      <div className="p-5 pt-4">
+        <h3 className="text-lg font-bold group-hover:text-[var(--mint)]">
+          {w.label}
+        </h3>
+        <p className="mt-1.5 text-xs leading-relaxed text-[var(--fg-muted)]">
+          {w.blurb}
+        </p>
+        {w.effect && (
+          <p className="mt-3 text-[10px] text-white/35">
+            Recipe · {w.effect}
+            {w.aspectRatio ? ` · ${w.aspectRatio}` : ""}
+            {poster ? " · Lab proof still (not your upload)" : ""}
+          </p>
+        )}
+        <p className="mt-3 text-[11px] font-bold text-[var(--mint)]">
+          {isLive ? "Launch module →" : "Open preview →"}
+        </p>
+      </div>
+    </Link>
+  );
+}
+
 /**
  * Yiha /lego pattern for the toy vertical:
  * dense modular workflow wall with Lab proof posters → deep link Generate.
+ * Preview shelves (Image / Batch) are tagged honestly — not LIVE Seedance jobs.
  */
 export default function ModulesPage() {
-  const live = WORKFLOWS.filter((w) => w.live);
+  const live = listLiveWorkflows();
+  const preview = listPreviewWorkflows();
 
   return (
     <div className="min-h-[calc(100vh-3.5rem)]">
@@ -66,85 +167,46 @@ export default function ModulesPage() {
           <section className="mt-12">
             <div className="mb-4 flex items-end justify-between gap-3">
               <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--mint)]">
-                Live blocks · {live.length}
+                Job blocks · {live.length}
               </h2>
               <p className="text-[11px] text-[var(--fg-dim)]">
-                One photo in · one job out
+                One photo in · Seedance path · Lab poster ≠ your upload
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {live.map((w) => {
-                const poster = posterForEffect(w.effect);
-                return (
-                  <Link
-                    key={w.id}
-                    href={w.href}
-                    className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.06] to-transparent transition hover:-translate-y-0.5 hover:border-[var(--mint)]/40"
-                  >
-                    {poster ? (
-                      <div className="relative aspect-[16/10] overflow-hidden bg-black/50">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={poster}
-                          alt=""
-                          className="h-full w-full object-cover opacity-90 transition duration-300 group-hover:scale-[1.03]"
-                          loading="lazy"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-                        <span className="absolute left-3 top-3 text-2xl drop-shadow">
-                          {w.emoji}
-                        </span>
-                        <div className="absolute right-3 top-3 flex flex-wrap justify-end gap-1">
-                          <span className="rounded-full bg-[var(--mint)]/90 px-1.5 py-0.5 text-[9px] font-bold text-black">
-                            LIVE
-                          </span>
-                          {w.badge && (
-                            <span className="rounded-full bg-black/60 px-1.5 py-0.5 text-[9px] font-bold text-white/80 backdrop-blur">
-                              {w.badge}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex items-start justify-between gap-3 p-5 pb-0">
-                        <span className="grid h-12 w-12 place-items-center rounded-2xl bg-[var(--grad-soft)] text-2xl">
-                          {w.emoji}
-                        </span>
-                        <div className="flex flex-wrap justify-end gap-1">
-                          <span className="rounded-full bg-[var(--mint)]/15 px-1.5 py-0.5 text-[9px] font-bold text-[var(--mint)]">
-                            LIVE
-                          </span>
-                          {w.badge && (
-                            <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[9px] font-bold text-white/50">
-                              {w.badge}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                    <div className="p-5 pt-4">
-                      <h3 className="text-lg font-bold group-hover:text-[var(--mint)]">
-                        {w.label}
-                      </h3>
-                      <p className="mt-1.5 text-xs leading-relaxed text-[var(--fg-muted)]">
-                        {w.blurb}
-                      </p>
-                      {w.effect && (
-                        <p className="mt-3 text-[10px] text-white/35">
-                          Recipe · {w.effect}
-                          {w.aspectRatio ? ` · ${w.aspectRatio}` : ""}
-                          {poster ? " · Lab proof" : ""}
-                        </p>
-                      )}
-                      <p className="mt-3 text-[11px] font-bold text-[var(--mint)]">
-                        Launch module →
-                      </p>
-                    </div>
-                  </Link>
-                );
-              })}
+              {live.map((w) => (
+                <ModuleCard
+                  key={w.id}
+                  w={w}
+                  poster={posterForEffect(w.effect)}
+                  capability="live"
+                />
+              ))}
             </div>
           </section>
+
+          {preview.length > 0 ? (
+            <section className="mt-12">
+              <div className="mb-4 flex items-end justify-between gap-3">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-amber-100/80">
+                  Preview shelves · {preview.length}
+                </h2>
+                <p className="text-[11px] text-[var(--fg-dim)]">
+                  Reachable · not soft-launch primary jobs
+                </p>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {preview.map((w) => (
+                  <ModuleCard
+                    key={w.id}
+                    w={w}
+                    poster={posterForEffect(w.effect)}
+                    capability="preview"
+                  />
+                ))}
+              </div>
+            </section>
+          ) : null}
 
           <section className="mt-14 rounded-2xl border border-white/10 bg-black/30 p-6 sm:p-8">
             <h2 className="text-sm font-bold text-white">How modules work</h2>
@@ -163,7 +225,7 @@ export default function ModulesPage() {
                 {
                   n: "3",
                   t: "Generate & deliver",
-                  d: "Review, download, or same-photo next job for another channel.",
+                  d: "Review on-player; Free Mini live raw download stays blocked until T6 file bake. Paid/clean file or Library on this device.",
                 },
               ].map((s) => (
                 <li

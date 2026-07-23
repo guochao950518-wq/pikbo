@@ -12,20 +12,24 @@ import { Footer } from "@/components/Footer";
 import { LanguageProvider, useI18n } from "@/components/LanguageProvider";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { cn } from "@/lib/utils";
+import { PRIMARY_NAV } from "@/lib/softLaunch";
 
 /**
- * Soft-launch nav (docs/prd/SOFT_NAV_AND_PRESETS.md):
- * primary Explore · Create · Effects · Official Examples (+ Pricing + Generate).
- * More destinations are reachable with Local/Preview tags — not empty-door peers.
+ * Soft-launch suite nav — hrefs frozen in lib/softLaunch PRIMARY_NAV.
+ * More destinations carry Local/Preview tags — not empty-door peers.
  */
-/** Suite nav: Explore · Generate · Modules · Presets · Lab (HF/Yiha IA, toy vertical). */
-const PRIMARY = [
-  { href: "/", key: "nav.explore" },
-  { href: "/create", key: "nav.create" },
-  { href: "/modules", key: "nav.modules" },
-  { href: "/effects", key: "nav.presets" },
-  { href: "/community", key: "nav.lab" },
+const PRIMARY_KEYS = [
+  "nav.explore",
+  "nav.create",
+  "nav.modules",
+  "nav.presets",
+  "nav.lab",
 ] as const;
+
+const PRIMARY = PRIMARY_NAV.map((item, i) => ({
+  href: item.href,
+  key: PRIMARY_KEYS[i],
+}));
 
 /** Soft-nav: More entries carry honest capability tags (Local / Preview). */
 const MORE = [

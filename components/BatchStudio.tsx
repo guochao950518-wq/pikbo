@@ -927,14 +927,28 @@ export function BatchStudio({
             </span>
           </div>
         )}
-        {/* Delivery pack — value only when clips leave the device */}
+        {/* Delivery pack — only for downloadable children (T6 Free raw blocked) */}
         {sellerPackActive && doneCount > 0 && (
           <div className="rounded-xl border border-[var(--mint)]/25 bg-[var(--mint)]/[0.06] px-3 py-2.5">
             <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--mint)]">
-              Delivery pack · {doneCount}/3 ready
+              Delivery pack ·{" "}
+              {
+                jobs.filter(
+                  (j) =>
+                    j.status === "succeeded" &&
+                    canDownloadResult({
+                      demo: Boolean(j.demo),
+                      watermark: Boolean(j.watermark),
+                    })
+                ).length
+              }
+              /{doneCount} downloadable
             </p>
             <ul className="mt-1.5 space-y-1 text-[11px] text-[var(--fg-muted)]">
-              <li>○ Download each succeeded clip (or open Library)</li>
+              <li>
+                ○ Export CSV/Manifest only includes downloadable clips · Free
+                Mini live raw stays blocked until T6 file bake
+              </li>
               <li>○ Listing Spin → shop gallery (1:1) · verify sculpt</li>
               <li>○ Blind-box Reveal → drop / restock story (9:16)</li>
               <li>○ Social Flash → TikTok / Reels first second (9:16)</li>

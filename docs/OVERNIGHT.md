@@ -72,7 +72,8 @@
 31. [x] Job timeout sweep · T6 health status (blocked honest)
 32. [x] Phase I payments readiness · live-key block · reservation TTL expire · vercel headers
 33. [x] Batch assetId reuse · Mode A critical-path + mode-a-acceptance script
-34. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
+34. [x] Suite honesty: Modules JOB/PREVIEW · PRIMARY_NAV · Seller delivery T6 count
+35. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
 
 ### 老板醒来验收
 
@@ -86,8 +87,8 @@
 
 ## Grok 本拍状态（3 行）
 
-- Seller Pack/batch: register still once, children use assetId (smaller POSTs).  
-- critical-path + `npm run mode-a-acceptance` for private preview gates.  
+- Modules: Job blocks vs Preview shelves; Image/Batch no longer claim LIVE jobs.  
+- PRIMARY_NAV freeze in softLaunch; Seller delivery only counts downloadable clips.  
 - G6 PASS · engine-smoke green · Mode B still needs boss Vercel + domain OK.
 
 ---

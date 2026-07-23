@@ -1277,5 +1277,29 @@ assert.match(createStudio, /WorkflowShelf/);
 assert.match(historySrcLib, /sku\?:/);
 assert.match(library, /i\.sku|sku/);
 
+
+// Suite honesty: PRIMARY_NAV freeze + Modules preview vs job
+const softLaunchSrc = fs.readFileSync(join(root, "lib/softLaunch.ts"), "utf8");
+assert.match(softLaunchSrc, /PRIMARY_NAV/);
+assert.match(softLaunchSrc, /\/modules/);
+assert.match(
+  fs.readFileSync(join(root, "components/AppShell.tsx"), "utf8"),
+  /PRIMARY_NAV/
+);
+const workflowsSrc = fs.readFileSync(join(root, "lib/workflows.ts"), "utf8");
+assert.match(workflowsSrc, /listPreviewWorkflows/);
+assert.match(workflowsSrc, /listLiveWorkflows/);
+// Image + Batch must not claim live Seedance jobs
+assert.match(workflowsSrc, /id:\s*"still-studio"[\s\S]*?live:\s*false/);
+assert.match(workflowsSrc, /id:\s*"batch-agent"[\s\S]*?live:\s*false/);
+const modulesPage = fs.readFileSync(join(root, "app/modules/page.tsx"), "utf8");
+assert.match(modulesPage, /listPreviewWorkflows|PREVIEW|Job blocks/);
+assert.match(modulesPage, /T6|file bake|Lab proof still/);
+assert.match(batchStudio, /downloadable|T6 file bake/);
+assert.match(
+  fs.readFileSync(join(root, "scripts/critical-path.sh"), "utf8"),
+  /\/modules/
+);
+
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

@@ -1,7 +1,22 @@
 /**
- * Soft-launch freezes from docs/prd/SOFT_NAV_AND_PRESETS.md.
- * Code imports this so G2 homepage proof cannot drift from the product contract.
+ * Soft-launch freezes from docs/prd/SOFT_NAV_AND_PRESETS.md (+ suite Modules).
+ * Code imports this so G1/G2 cannot drift from the product contract.
  */
+
+/**
+ * Desktop primary destinations (suite IA).
+ * Explore is `/` (home wall); Modules is the modular job wall (Yiha/lego pattern).
+ * Pricing remains a header utility, not a primary peer of Create.
+ */
+export const PRIMARY_NAV = [
+  { href: "/", label: "Explore" },
+  { href: "/create", label: "Generate" },
+  { href: "/modules", label: "Modules" },
+  { href: "/effects", label: "Presets" },
+  { href: "/community", label: "Lab" },
+] as const;
+
+export const PRIMARY_NAV_HREFS = PRIMARY_NAV.map((item) => item.href);
 
 /** At most these eight registered recipes may appear on the homepage proof wall. */
 export const HOME_PROOF_SLUGS = [

@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Suite honesty: Modules JOB/PREVIEW + PRIMARY_NAV freeze
+- Workflows: Image/Batch → `live:false` Preview (not Seedance job blocks).
+- Modules: Job blocks vs Preview shelves; Lab proof still labeled; T6 note on deliver step.
+- `PRIMARY_NAV` in softLaunch drives AppShell; critical-path includes `/modules`.
+- Seller Pack delivery counts only downloadable children (T6 Free raw).
+- Verified: engine-smoke · typecheck · lint.
+
 ### 2026-07-24 — [grok] Landing assetId + delivery honesty + Library SKU
 - LandingToolPanel: registerLocalAsset + generate with assetId (parity with Create).
 - Delivery checklist respects Free download block (T6); Library filters by Toy Identity SKU.

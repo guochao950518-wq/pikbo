@@ -139,7 +139,9 @@ export const WORKFLOWS: Workflow[] = [
     blurb: "Product boards before motion (Flux when live)",
     href: "/image",
     channel: "studio",
-    live: true,
+    /** Soft-nav: Image is Preview — not a live Seedance job block */
+    live: false,
+    badge: "Preview",
     category: "image",
   },
   {
@@ -149,13 +151,21 @@ export const WORKFLOWS: Workflow[] = [
     blurb: "Queue multi-clip runs for the shop",
     href: "/supercomputer",
     channel: "batch",
-    live: true,
+    /** Soft-nav: Batch is Preview; Seller Pack is the live multi-clip path */
+    live: false,
+    badge: "Preview",
     category: "studio",
   },
 ];
 
+/** Live = deep-links into Create / Seller Pack / Effects (real soft-launch jobs). */
 export function listLiveWorkflows(): Workflow[] {
   return WORKFLOWS.filter((w) => w.live);
+}
+
+/** Preview shelves (Image / Batch) — honest capability tag, not empty doors. */
+export function listPreviewWorkflows(): Workflow[] {
+  return WORKFLOWS.filter((w) => !w.live);
 }
 
 export function getWorkflow(id: string): Workflow | undefined {
