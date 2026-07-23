@@ -6,13 +6,16 @@ export const runtime = "nodejs";
 
 /**
  * Local / soft-debug only: refill free trial credits.
- * Enabled when NODE_ENV=development OR PIKBO_DEV_TOPUP=1.
- * Never rely on this in production traffic without the env flag.
+ * Allowed only when NODE_ENV=development, or when PIKBO_DEV_TOPUP=1
+ * outside Vercel/production hosts. Never on production traffic.
  */
 export async function POST() {
+  const isProdHost =
+    process.env.VERCEL_ENV === "production" ||
+    process.env.NODE_ENV === "production";
   const allowed =
     process.env.NODE_ENV === "development" ||
-    process.env.PIKBO_DEV_TOPUP === "1";
+    (!isProdHost && process.env.PIKBO_DEV_TOPUP === "1");
 
   if (!allowed) {
     return NextResponse.json(

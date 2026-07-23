@@ -1,11 +1,34 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import type { DemoVideo } from "@/lib/demoVideos";
 import type { CommunityProject, FeedItem } from "@/lib/videoFeed";
-import { CATEGORIES } from "@/lib/presets";
 import { useI18n } from "@/components/LanguageProvider";
+
+/** Soft concurrent autoplay budget — pause extras when many tiles enter view. */
+const playingVideos = new Set<HTMLVideoElement>();
+const MAX_PLAYING = 2;
+
+function claimPlay(v: HTMLVideoElement) {
+  if (playingVideos.has(v)) return;
+  if (playingVideos.size >= MAX_PLAYING) {
+    const oldest = playingVideos.values().next().value;
+    if (oldest && oldest !== v) {
+      oldest.pause();
+      playingVideos.delete(oldest);
+    }
+  }
+  playingVideos.add(v);
+  v.muted = true;
+  v.playsInline = true;
+  void v.play().catch(() => undefined);
+}
+
+function releasePlay(v: HTMLVideoElement) {
+  playingVideos.delete(v);
+  v.pause();
+}
 
 function useAutoPlay(eager = false) {
   const ref = useRef<HTMLVideoElement>(null);
@@ -13,18 +36,14 @@ function useAutoPlay(eager = false) {
     const v = ref.current;
     if (!v) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const kick = () => {
-      v.muted = true;
-      v.playsInline = true;
-      void v.play().catch(() => undefined);
-    };
+    const kick = () => claimPlay(v);
     if (eager) kick();
     const io = new IntersectionObserver(
       ([e]) => {
         if (e.isIntersecting) kick();
-        else v.pause();
+        else releasePlay(v);
       },
-      { rootMargin: "200px 0px", threshold: 0.05 }
+      { rootMargin: "80px 0px", threshold: 0.2 }
     );
     io.observe(v);
     const onGesture = () => kick();
@@ -32,6 +51,7 @@ function useAutoPlay(eager = false) {
     window.addEventListener("click", onGesture, { once: true });
     return () => {
       io.disconnect();
+      releasePlay(v);
       window.removeEventListener("touchstart", onGesture);
       window.removeEventListener("click", onGesture);
     };
@@ -57,8 +77,7 @@ function Clip({
       muted
       loop
       playsInline
-      autoPlay
-      preload={eager ? "auto" : "metadata"}
+      preload="metadata"
     >
       <source src={demo.webm} type="video/webm" />
       <source src={demo.mp4} type="video/mp4" />
@@ -117,7 +136,7 @@ function FeatureRow({ demos }: { demos: DemoVideo[] }) {
             >
               <Clip
                 demo={demos[i % demos.length]}
-                eager
+                eager={i === 0}
                 className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
               />
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
@@ -174,7 +193,6 @@ function LimePromo({ demo }: { demo: DemoVideo }) {
           <div className="relative aspect-video w-full shrink-0 overflow-hidden rounded-[16px] shadow-[0_20px_50px_-20px_rgba(0,0,0,0.5)] ring-1 ring-black/15 sm:aspect-[4/3] sm:w-[280px] lg:w-[340px]">
             <Clip
               demo={demo}
-              eager
               className="absolute inset-0 h-full w-full object-cover"
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 to-transparent" />
@@ -259,7 +277,7 @@ function ModelGrid() {
     { icon: "box", titleKey: "home.feat.blindbox.title", subKey: "home.feat.blindbox.sub", badgeKey: "badge.viral", href: "/create?effect=blind-box-unboxing" },
     { icon: "spin", titleKey: "home.feat.spin.title", subKey: "home.feat.spin.sub", badgeKey: "badge.seller", href: "/create?effect=360-spin-showcase" },
     { icon: "wand", titleKey: "home.feat.dance.title", subKey: "home.feat.dance.sub", badgeKey: "badge.viral", href: "/create?effect=make-figure-dance" },
-    { icon: "clap", titleKey: "home.feat.cinema.title", subKey: "home.feat.cinema.sub", badgeKey: "badge.scene", href: "/cinema" },
+    { icon: "clap", titleKey: "home.feat.cinema.title", subKey: "home.feat.cinema.sub", badgeKey: "badge.scene", href: "/create?effect=miniature-scene" },
   ];
   return (
     <section className="grid grid-cols-1 gap-3 px-3 py-4 sm:px-5 lg:grid-cols-[minmax(0,340px)_1fr] lg:gap-4">
@@ -320,50 +338,26 @@ function ModelGrid() {
   );
 }
 
-/* ---- 4. Dense autoplaying viral video wall ---- */
+/* ---- 4. Honest showcase wall — ≤8 unique Lab demos (G2) ---- */
 function ViralGrid({ items }: { items: FeedItem[] }) {
   const { t } = useI18n();
-  const [filter, setFilter] = useState("all");
-  const chips = useMemo(
-    () => [
-      { id: "all", label: t("home.viral.all") },
-      ...CATEGORIES.map((c) => ({ id: c.id, label: c.label.toUpperCase() })),
-    ],
-    [t]
-  );
-  const wall = useMemo(
-    () => (filter === "all" ? items : items.filter((i) => i.category === filter)),
-    [filter, items]
-  );
-
   return (
     <section className="px-2 py-6 sm:px-3">
-      <div className="mb-3 flex items-end justify-between px-2">
-        <h2 className="font-display text-[22px] font-bold uppercase tracking-tight text-white sm:text-[26px]">
-          {t("home.viral.title")}
-        </h2>
+      <div className="mb-3 flex flex-wrap items-end justify-between gap-2 px-2">
+        <div>
+          <h2 className="font-display text-[22px] font-bold uppercase tracking-tight text-white sm:text-[26px]">
+            {t("home.lab.title")}
+          </h2>
+          <p className="mt-1 text-[12px] text-white/45">
+            {t("home.lab.sub")}
+          </p>
+        </div>
         <Link href="/effects" className="text-[12px] font-semibold text-[#c8ff3d]">
-          {t("cta.viewAll")}
+          {t("cta.allEffects")}
         </Link>
       </div>
-      <div className="mb-3 flex gap-2 overflow-x-auto px-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {chips.map((c) => (
-          <button
-            key={c.id}
-            type="button"
-            onClick={() => setFilter(c.id)}
-            className={`shrink-0 rounded-full border px-3 py-1.5 text-[10px] font-bold tracking-wide ${
-              filter === c.id
-                ? "border-[#c8ff3d] bg-[#c8ff3d] text-black"
-                : "border-white/10 text-white/50"
-            }`}
-          >
-            {c.label}
-          </button>
-        ))}
-      </div>
-      <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7">
-        {wall.map((item) => (
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:gap-3">
+        {items.map((item, i) => (
           <Link
             key={item.id}
             href={item.href}
@@ -371,9 +365,15 @@ function ViralGrid({ items }: { items: FeedItem[] }) {
           >
             <Clip
               demo={item.demo}
+              eager={i < 2}
               className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.06]"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-transparent" />
+            {item.badge && (
+              <span className="absolute left-2 top-2 rounded-full bg-black/70 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-[#c8ff3d] ring-1 ring-white/10">
+                {item.badge}
+              </span>
+            )}
             <p className="absolute inset-x-0 bottom-0 p-2 text-[11px] font-bold uppercase leading-tight tracking-wide text-white transition-colors group-hover:text-[#c8ff3d] sm:text-xs">
               {item.title}
             </p>
