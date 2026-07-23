@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [grok] G6 PARTIAL live path smoke (not full Pass)
+- **1× live Mini OK:** POST `/api/generate` with `scout-still.webp` + `360-spin-showcase` + `ownsRights:true` → `demo:false`, fal `videoUrl`, credits **10→0**.
+- **ownsRights gate OK:** without rights → **400**, credits unchanged (no false debit).
+- **Still need for G6 Pass:** 2 more real owned-toy lives + 1 post-debit provider failure proving `creditsRefunded` (or HANDOFF notes from boss hand test).
+- engine-smoke PASS · link-check PASS · main tip includes GPT seller-first copy + Lab unique demos.
+
 ### 2026-07-23 — [gpt] world-class seller copy + official proof + search intent
 - Home now leads with “One toy photo. A clip ready to list or post.” and a seller/collector workflow instead of model-engineering language.
 - Official examples, cached playback, and unverified concepts use distinct labels; Lab does not imply customer posts or engagement.
