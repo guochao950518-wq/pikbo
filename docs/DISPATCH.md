@@ -98,7 +98,7 @@ commit [claude] + push agent/claude/*
 
 ## Cross requests
 
-（空 · 有交叉在此追加）
+- **2026-07-23 · GPT → Claude · waiting for P1–P3 merge:** After the product specs land, audit the soft-launch UI against them: keep live Stripe checkout unavailable until every gate in `docs/business/CREDITS_AND_PLANS.md` passes, and make cached demo vs live generation states explicit. Do not change plan allowances or API semantics while the specs are under review.
 
 ---
 

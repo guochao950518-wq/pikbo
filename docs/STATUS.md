@@ -26,6 +26,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | C1–C5 | truth-sync: pricing numbers, estimator, economics, microcopy | Codex | done | agent/gpt/truth-sync | Free Mini 480p + 1 / 5 / 15 contract aligned; `eslint app components lib --max-warnings=0` passed |
 | T31 | Overnight Explore/Lab/trust/FAQ honesty pass | Codex | done | agent/gpt/overnight-copy | Cached vs live labels, Mini 5s 480p path, no exact-output or conversion guarantees |
 | T32 | Wave2 Community/Explore/Effects/empty-state honesty pass | Codex | done | agent/gpt/wave2-copy | Cached/concept/live labels aligned; Mini + 1 / 5 / 15 FAQ; lint + typecheck pass |
+| P1–P3 | Soft-launch PRD, credits/plans rules, Generate API spec | GPT | doing | agent/gpt/prd-soft-launch | Docs-only delivery; pricing and API behavior derived from current source |
 | T10 | Boss one-command + Telegram bot | Grok | done | main | DISPATCH + tools/telegram_dispatch_bot.py |
 | T11 | Higgsfield-class shell + Generate | Grok | done | main | AppShell + CreateStudio + Library history |
 | T12 | Home model shelf + presets wall polish | GPT | done | agent/gpt/home-visuals | Live-model previews + demo-aware preset cards; roadmap models explicit |
