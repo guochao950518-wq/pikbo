@@ -5,7 +5,8 @@ set -euo pipefail
 export NO_PROXY="*" no_proxy="*"
 unset ALL_PROXY all_proxy HTTP_PROXY HTTPS_PROXY http_proxy https_proxy 2>/dev/null || true
 
-BASE="${1:-http://127.0.0.1:3000}"
+# Prefer CLI arg, then BASE_URL env (CI), then local dev default.
+BASE="${1:-${BASE_URL:-http://127.0.0.1:3000}}"
 fail=0
 
 check() {
