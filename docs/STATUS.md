@@ -24,7 +24,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | W-PRD | World-class product contract, Seller OS, recipe quality, SEO Intent 50 | GPT | done | agent/gpt/world-class-prd | Create canonical Seller Pack, exact 12/8 recipes, five-score proof gate, structured 50-intent map |
 | H-PARITY | Higgsfield complete public-surface inventory and parity contract | GPT | done | agent/gpt/higgsfield-parity-spec | 17 top-level + project/preset/assets surfaces mapped; no copied content or fake doors |
 | H-WAVE-A | Core video parity: Home, Explore, Create, Effects, Project, Assets, Seller Pack | Grok | review | agent/grok/higgsfield-wave-a | Core loop complete: canonical proof registry, Inside Project, Explore filters/playback, Create versions, local Library groups, Seller Pack child states; lint/typecheck/build/link-check/critical-path and 390/768/1440 browser checks pass |
-| H-WAVE-B | Generation settlement truth, version retry, watermark gate, accessibility and CI | Grok | todo | agent/grok/higgsfield-wave-b-trust | Boss reassigned 2026-07-23. Fix P0 trust defects before new surfaces; exact contract in DISPATCH. T6 stays blocked unless the downloaded file itself is watermarked |
+| H-WAVE-B | Generation settlement truth, version retry, watermark gate, accessibility and CI | Grok | review | agent/grok/higgsfield-wave-b-trust | B1–B6 implemented: last-request settlement, Retry/Variant + GenerationSpec, server effect/costCredits echo, Free raw download blocked, Explore focusable=false, CI workflow. engine-smoke/lint/typecheck/build green. T6 still blocked (download disabled ≠ baked watermark) |
 | P-COPY | Shell honesty copy pass | Codex | done | main @ `32c634c` | Superseded and completed by the world-class seller copy pass |
 | W-COPY | World-class seller copy, official-demo truth, ROI and 10 intent pages | Codex | done | agent/gpt/world-class-copy | Lint, typecheck, build and rendered metadata/H1 checks passed |
 | P6 | Home retention + official project + Remix→Create contract | GPT | done | agent/gpt/retention-remix | HF/Yiha evidence translated into frozen product flow, data contract, events and responsive acceptance |
@@ -61,8 +61,8 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | T8 | Batch generate for Shop plan | — | todo | — | After auth/credits DB |
 | T9 | Effect preset expansion (studio + SEO landing) | Claude | done | agent/claude/seo-presets | +3 effects |
 | T11 | Guides: informational long-tail content | Claude | done | agent/claude/guides | 3 how-to/tips/ideas articles at /guides; Article+FAQ JSON-LD; cross-linked to effects |
-| T23 | CI build + conflict-marker gate | Grok | doing | main | `.github/workflows/ci.yml` |
-| T24 | Generate honesty: demo vs live + regen/refund copy | Grok | doing | main | CreateStudio result strip |
+| T23 | CI build + conflict-marker gate | Grok | review | main | Workflow template `docs/ci/github-actions-ci.yml` (engine-smoke · lint · typecheck · build). OAuth token lacks `workflow` scope so cannot push under `.github/workflows/` yet — boss: copy + push with workflow scope |
+| T24 | Generate honesty: demo vs live + regen/refund copy | Grok | review | main | Wave B: lastRequestCreditState, Retry/Variant, Free download gate, server costCredits/effect echo |
 | T25 | Homepage truth labels + overclaim sweep | GPT | done | agent/gpt/claude-copy-audit | PR #6; cached/shared previews and provider-gated paths labeled |
 | T26 | Unit economics doc + free-tier recommendation | GPT | done | agent/gpt/convert-truth | Superseded by C1–C5: implemented Free Mini 5s trial; current 1 / 5 / 15 allowances |
 | T27 | Preset/SEO copy wave 2 (toy seller language) | Claude | todo | agent/claude/copy-seo-v2 | DISPATCH L1–L2 |

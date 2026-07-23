@@ -37,6 +37,8 @@ export function AutoPlayVideo({
   style,
   eager,
   desktopPlayMode = "viewport",
+  /** When false, video is not a keyboard focus target (e.g. nested inside a Link). */
+  focusable = true,
 }: {
   poster: string;
   webm?: string;
@@ -47,6 +49,11 @@ export function AutoPlayVideo({
   eager?: boolean;
   /** Explore uses deliberate hover/focus on desktop and viewport play on touch. */
   desktopPlayMode?: "viewport" | "interaction";
+  /**
+   * Wave B: Link cards must keep a single focus target. Set false when the
+   * video is decorative inside an anchor; hover play still works via mouse.
+   */
+  focusable?: boolean;
 }) {
   const ref = useRef<HTMLVideoElement>(null);
 
@@ -100,9 +107,11 @@ export function AutoPlayVideo({
       loop
       playsInline
       preload="metadata"
-      tabIndex={desktopPlayMode === "interaction" ? 0 : undefined}
+      tabIndex={
+        focusable && desktopPlayMode === "interaction" ? 0 : undefined
+      }
       aria-label={
-        desktopPlayMode === "interaction"
+        focusable && desktopPlayMode === "interaction"
           ? "Focus to preview video"
           : undefined
       }

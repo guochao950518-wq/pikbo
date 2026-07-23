@@ -808,14 +808,23 @@ export function BatchStudio({
                 >
                   Effect page →
                 </Link>
-                <a
-                  href={j.videoUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-[10px] text-[var(--mint)] hover:underline"
-                >
-                  Download / open
-                </a>
+                {j.demo || !j.watermark ? (
+                  <a
+                    href={j.videoUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[10px] text-[var(--mint)] hover:underline"
+                  >
+                    Download / open
+                  </a>
+                ) : (
+                  <span
+                    className="text-[10px] text-amber-100/80"
+                    title="Free Mini live clips cannot download the raw provider file until server watermark bake ships."
+                  >
+                    Download blocked · Free raw
+                  </span>
+                )}
               </div>
             )}
             {(j.status === "failed" || j.status === "refunded") && (
