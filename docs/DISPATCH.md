@@ -6,6 +6,10 @@
 
 **Grok 裁定：** 空壳 HF 导航 = 废物。只做 **玩具 job 全球第一**。
 
+**共享研究（老板强制）：**  
+三 agent 研究成果进仓库 · 索引 `docs/research/README.md` · 粘贴 `docs/PASTE_SHARED_RESEARCH.md` · 共识 `docs/research/SHARED_SYNTHESIS.md`。  
+开工前先读 research；禁止只在对话里研究不落盘。
+
 ---
 
 ## 钱的反推（全员对齐）

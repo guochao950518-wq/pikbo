@@ -4,6 +4,14 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [grok] shared research hub for Grok+GPT+Claude
+- Boss: all three agents research; results **in repo**; shared.
+- Hub: `docs/research/README.md` · consensus `SHARED_SYNTHESIS.md` · notes `by-agent/{GROK,GPT,CLAUDE}.md`
+- Paste tasks: `docs/PASTE_SHARED_RESEARCH.md`
+- Merged onto main from GPT branch: `WORLD_CLASS_PIKBO.md`, `SEO_INTENT_50.md`, `SOFT_NAV_AND_PRESETS.md` (+ GO_NO_GO sync)
+- Grok long-form remains: `COMPETITOR_PRODUCT_INTERACTION.md`
+- **GPT/Claude:** pull main, fill your `by-agent/*.md`, push `[gpt]`/`[claude]`.
+
 ### 2026-07-23 — [grok] G6 PARTIAL live path smoke (not full Pass)
 - **1× live Mini OK:** POST `/api/generate` with `scout-still.webp` + `360-spin-showcase` + `ownsRights:true` → `demo:false`, fal `videoUrl`, credits **10→0**.
 - **ownsRights gate OK:** without rights → **400**, credits unchanged (no false debit).
