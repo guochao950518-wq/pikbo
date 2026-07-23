@@ -13,7 +13,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | ID | Task | Owner | Status | Branch | Notes |
 |---|---|---|---|---|---|
 | GO | Public pikbo.ai Mode B | boss+all | **blocked** | — | G6, proof provenance, LCP and final deployed checks remain; public NO-GO |
-| G1 | Nav whitelist / kill empty doors | Claude | **review** | main + agent/gpt/world-class-prd | SOFT PASS; exact product whitelist is in PR #21 |
+| G1 | Nav whitelist / kill empty doors | Claude | **review** | main + agent/gpt/world-class-prd | SOFT PASS; five-label desktop and five-label mobile whitelist frozen |
 | G2 | ≤8 hero presets, unique demos | Claude | **review** | main + agent/gpt/world-class-prd | SOFT PASS; exact eight proof slugs are in PR #21 |
 | G3 | Official demos copy (no fake UGC) | Codex | **done** | main @ `32c634c` | Official example / cached / concept language merged |
 | G4 | Zero 404 on linked URLs | Claude | **done** | main @ `5d25fb3` | Redirect aliases and link-check passed |
@@ -21,7 +21,9 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | G6 | 3 live toy gens + 1 refund | boss+any | doing | main @ `a652ee3` | 1 live Mini passed; 2 more live jobs + 1 post-debit refund proof remain |
 | G7 | build + prod no devTopup | Claude | **review** | main | topup hard-off prod |
 | P-GO | GO_NO_GO + nav/preset whitelist PRD | GPT | done | agent/gpt/world-class-prd | Formal pass criteria, exact nav, eight proof slugs, route inventory and day-of checklist |
-| W-PRD | World-class product contract, Seller OS, recipe quality, SEO Intent 50 | GPT | done | agent/gpt/world-class-prd | WORLD_CLASS_PIKBO + SEO_INTENT_50 |
+| W-PRD | World-class product contract, Seller OS, recipe quality, SEO Intent 50 | GPT | done | agent/gpt/world-class-prd | Create canonical Seller Pack, exact 12/8 recipes, five-score proof gate, structured 50-intent map |
+| H-PARITY | Higgsfield complete public-surface inventory and parity contract | GPT | done | agent/gpt/higgsfield-parity-spec | 17 top-level + project/preset/assets surfaces mapped; no copied content or fake doors |
+| H-WAVE-A | Core video parity: Home, Explore, Create, Effects, Project, Assets, Seller Pack | Claude | todo | agent/claude/higgsfield-wave-a | Implement `HIGGSFIELD_PUBLIC_PARITY.md` Wave A before suite expansion |
 | P-COPY | Shell honesty copy pass | Codex | done | main @ `32c634c` | Superseded and completed by the world-class seller copy pass |
 | W-COPY | World-class seller copy, official-demo truth, ROI and 10 intent pages | Codex | done | agent/gpt/world-class-copy | Lint, typecheck, build and rendered metadata/H1 checks passed |
 | P6 | Home retention + official project + Remix→Create contract | GPT | done | agent/gpt/retention-remix | HF/Yiha evidence translated into frozen product flow, data contract, events and responsive acceptance |

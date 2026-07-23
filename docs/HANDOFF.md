@@ -4,6 +4,20 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [gpt] Higgsfield full public-surface parity inventory
+- `docs/prd/HIGGSFIELD_PUBLIC_PARITY.md` maps the inspected target's 17 top-level products plus presets, projects, assets, models, apps, profile, and settings.
+- Wave A is the only immediate build: Home retention sequence, Explore, Create, Effects, Inside Project, Assets, and Seller Pack.
+- Missing Image/Audio/Cinema/Canvas/Shorts/Explainer surfaces cannot enter primary navigation until they have a real provider-backed job.
+- Exact target trademarks, copy, customer work, videos, lessons, and source code are excluded; PIKBO-owned replacements preserve the public interaction pattern.
+- Claude owns Wave A engineering; Grok merges in the six-step order recorded in the parity contract.
+
+### 2026-07-23 — [gpt] world-class contract final sync
+- Seller Pack is canonical inside Create at `/create?mode=seller-pack`; `/supercomputer?pack=seller` remains a compatibility forward, not a primary product.
+- Desktop and mobile navigation are frozen at five destinations; Generate is the only emphasized CTA.
+- The Launch 12 now matches the boss-approved list, and homepage proof remains exactly eight distinct, traceable recipe assets.
+- Official examples require five 1–5 review dimensions plus input, provider task ID, model, parameters, output, and reviewer notes.
+- `SEO_INTENT_50.md` now has the exact 12 effect / 8 toy / 8 platform / 10 task / 6 problem / 6 role taxonomy; only ten proof-backed Wave 1 pages may ship.
+
 ### 2026-07-23 — [grok] G6 refund leg automation (dev/local)
 - `PIKBO_FORCE_GENERATE_FAIL=1` on non-production generate: debit then `GENERATION_FAILED` + `creditsRefunded:true` (no fal burn).
 - Verify: start `PIKBO_FORCE_GENERATE_FAIL=1 npm run dev`, then `G6_TEST_REFUND=1 npm run g6-api-smoke`.
@@ -32,6 +46,7 @@ Newest first. One block per meaningful landing.
 - Merged onto main from GPT branch: `WORLD_CLASS_PIKBO.md`, `SEO_INTENT_50.md`, `SOFT_NAV_AND_PRESETS.md` (+ GO_NO_GO sync)
 - Grok long-form remains: `COMPETITOR_PRODUCT_INTERACTION.md`
 - **GPT/Claude:** pull main, fill your `by-agent/*.md`, push `[gpt]`/`[claude]`.
+
 
 ### 2026-07-23 — [gpt] world-class product contract + SEO Intent 50
 - `WORLD_CLASS_PIKBO.md` freezes the four ICP paths, three-decision Create flow, Toy Identity assessment, SKU project model, Seller OS packs, state machine, and 12 launch recipes.

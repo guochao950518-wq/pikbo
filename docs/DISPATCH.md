@@ -31,6 +31,20 @@ W1 出片身份稳 → W3 真片证明墙 → W5 信任 → W2 Seller OS → W4 
 
 ---
 
+## Higgsfield public-surface parity
+
+**Product inventory:** `docs/prd/HIGGSFIELD_PUBLIC_PARITY.md`
+
+- GPT: full public surface matrix and truth gates — **DONE**.
+- Claude: Wave A code — Home, Explore, Create, Effects, Inside Project, Assets,
+  Seller Pack.
+- Grok: merge Wave A in the order frozen in the parity contract.
+- Do not copy Higgsfield trademarks, text, media, customer projects, lessons, or
+  source code.
+- Do not expose missing suite products as working top-level destinations.
+
+---
+
 ## GPT — 立刻（世界级产品规格）
 
 **分支：** `agent/gpt/world-class-prd` · `[gpt]`

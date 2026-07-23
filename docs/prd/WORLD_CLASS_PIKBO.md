@@ -94,11 +94,17 @@ The primary action is either `Generate 1 clip · 10 credits`, `Generate 3 clips 
 
 Results appear beside the source assets:
 
+- Input thumbnail and output player/error state.
 - A/B comparison between input and each version.
 - Provenance: official cached example or live generation.
+- Actual model, ratio, duration, and resolution returned by the server.
+- Watermark state and credit result (`0 cached`, `10 used`, `10 restored`, or
+  `refund unconfirmed`).
 - Identity Score and review warnings.
 - Download, retry, make variant, approve, and open project.
 - Successful siblings remain available when one pack item fails.
+
+Cached mode must state that the uploaded image was not processed.
 
 ### Mobile acceptance
 
@@ -268,6 +274,18 @@ A recipe is `live` only when it has a validated input specification, prompt, out
 - No example reuses the same output under a different recipe name.
 - Prompt, negative constraints, channel, and limitations are stored.
 
+Every official example is scored from 1–5 for:
+
+1. Identity.
+2. Motion.
+3. Artifact control.
+4. Composition.
+5. Commercial usability.
+
+All five dimensions must score at least 4/5. Any dimension below 3 is an
+automatic rejection. The official record stores the owned input image,
+provider task ID, model, submitted parameters, final output, and reviewer notes.
+
 ### Launch 12
 
 | Slug | Buyer job | Required input | Default | Primary channel | Quality focus |
@@ -283,7 +301,7 @@ A recipe is `live` only when it has a validated input specification, prompt, out
 | `mystery-box-reveal` | Giveaway/drop | Front; packaging optional | 5s · 9:16 | Social | Product reveal fidelity |
 | `stop-motion-style` | Handmade brand look | Front | 5s · 1:1 | Etsy/Reels | Controlled temporal motion |
 | `assemble-reveal` | Product construction | Front; detail optional | 5s · 9:16 | Launch | Part count and final identity |
-| `neon-city-night` | Stylized campaign | Front | 5s · 9:16 | Social/ad | Color contamination, readability |
+| `collection-shelf-pan` | Collection showcase | Front; shelf context recommended | 5s · 16:9 | Social/product page | Multiple-subject identity and camera continuity |
 
 Other recipes stay `concept` until they meet the same bar.
 
