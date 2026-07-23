@@ -75,6 +75,9 @@
 
 ## 6. 可用的「审站 / 数据」API（你要的 API）
 
+> **完整清单 + curl + 流水线：** [`docs/SITE_AUDIT_APIS.md`](./SITE_AUDIT_APIS.md)  
+> **真相：** 哥飞/Namya 等大神 **没有**「专家审站 API」；他们用的是下面这些公开接口。
+
 ### A. 网站体检（公网 URL 上线后立刻用）
 
 | API / 工具 | 用途 | 链接 |
@@ -83,8 +86,13 @@
 | **PageSpeed 网页版** | 不用写代码，贴 URL 分析 | https://pagespeed.web.dev/ |
 | **Lighthouse（本地）** | `npx lighthouse https://pikbo.ai --view` | Chrome DevTools |
 | **Google Search Console** | 索引、搜索词（哥飞后半程） | https://search.google.com/search-console |
+| **Ahrefs Webmaster Tools** | 哥飞最爱：自有站 Site Audit 170+ | https://ahrefs.com/webmaster-tools |
+| **DataForSEO On-Page** | 程序化全站 SEO 审计 API | https://dataforseo.com/apis/on-page-api |
+| **GTmetrix API** | 性能瀑布 + Lighthouse | https://gtmetrix.com/api/docs/2.0/ |
 
-公网未上时：**PSI 扫不了 localhost**，先本地手测 + soft 后扫。
+脚本：`scripts/audit-pagespeed.sh`（需 `PSI_API_KEY` + 公网 URL）
+
+公网未上时：**PSI 扫不了 localhost**；可用本地 Lighthouse（见 SITE_AUDIT_APIS）。
 
 ### B. 产品出片相关 API（已用 / 可选）
 
