@@ -89,6 +89,8 @@ export function CreateStudio({
   const [presetFilter, setPresetFilter] = useState("");
   const [elapsed, setElapsed] = useState(0);
   const [copied, setCopied] = useState(false);
+  // PRD soft-launch §3/§5: user must confirm rights before submitting.
+  const [ownsRights, setOwnsRights] = useState(false);
   const [recent, setRecent] = useState<string[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [compare, setCompare] = useState(true);
@@ -845,10 +847,26 @@ export function CreateStudio({
             </p>
           </div>
 
+          <label className="mb-2 flex cursor-pointer items-start gap-2 rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] px-3 py-2 text-[11px] leading-snug text-[var(--fg-muted)]">
+            <input
+              type="checkbox"
+              checked={ownsRights}
+              onChange={(e) => setOwnsRights(e.target.checked)}
+              className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-[var(--mint)]"
+            />
+            <span>
+              I own this photo and have the right to animate and publish this
+              toy or character. Pikbo grants no rights to third-party brands,
+              characters, or likenesses.
+            </span>
+          </label>
+
           <button
             type="button"
             onClick={generate}
-            disabled={busy || mode === "t2v" || (mode === "i2v" && !image)}
+            disabled={
+              busy || mode === "t2v" || (mode === "i2v" && !image) || !ownsRights
+            }
             className="btn btn-primary w-full disabled:opacity-50"
           >
             {busy
