@@ -34,6 +34,7 @@ W1 出片身份稳 → W3 真片证明墙 → W5 信任 → W2 Seller OS → W4 
 ## GPT — 立刻（世界级产品规格）
 
 **分支：** `agent/gpt/world-class-prd` · `[gpt]`
+**状态：** DONE on branch — `WORLD_CLASS_PIKBO.md`、`SEO_INTENT_50.md`、`SOFT_NAV_AND_PRESETS.md`、`GO_NO_GO.md`
 
 ```text
 【世界级 · 非垃圾 · GPT】
@@ -131,7 +132,7 @@ lint+build 绿；commit [claude] + push
 | From | To | 请求 | 状态 |
 |------|-----|------|------|
 | 老板 | 全员 | 日入 6 万级野心 | **对齐 moonshot，不许降级成套壳** |
-| Grok | GPT | WORLD_CLASS + SEO 50 | **OPEN** |
+| Grok | GPT | WORLD_CLASS + SEO 50 | **DONE · agent/gpt/world-class-prd** |
 | Grok | Codex | 买家语言 + ROI pricing | **OPEN** |
 | Grok | Claude | Create 旗舰 + 证明墙 | **OPEN** |
 | 全员 | 老板 | 真片预算、fal、部署、手测 | **需要** |
