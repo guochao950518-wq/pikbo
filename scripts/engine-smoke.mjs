@@ -175,5 +175,20 @@ assert.match(samples, /requiredSampleStillPaths/);
 const health = fs.readFileSync(join(root, "app/api/health/route.ts"), "utf8");
 assert.match(health, /export async function HEAD/);
 
+const logo = fs.readFileSync(join(root, "components/Logo.tsx"), "utf8");
+assert.match(logo, /useId/);
+assert.match(logo, /pikbo-sheen-/);
+
+const confirm = fs.readFileSync(
+  join(root, "app/api/checkout/confirm/route.ts"),
+  "utf8"
+);
+assert.match(confirm, /lastCheckoutSessionId/);
+assert.match(confirm, /idempotent/);
+
+const pbFull = fs.readFileSync(join(root, "lib/promptBuild.ts"), "utf8");
+assert.match(pbFull, /TOY_IDENTITY_LOCK/);
+assert.match(pbFull, /withIdentityLock|Keep the exact same toy/i);
+
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

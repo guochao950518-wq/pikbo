@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { upsertEntitlement } from "@/lib/entitlements";
+import { getEntitlement, upsertEntitlement } from "@/lib/entitlements";
 import { type PlanId } from "@/lib/pricing";
 import { takeToken } from "@/lib/rateLimit";
 import { clientIp } from "@/lib/requestMeta";
@@ -21,6 +21,7 @@ export const runtime = "nodejs";
 /**
  * Called after Stripe Checkout redirects back with ?session_id=cs_...
  * Verifies the Checkout Session with Stripe and upgrades the browser cookie.
+ * Idempotent on the same cs_ id (no double credit reset on refresh).
  */
 export async function POST(req: Request) {
   let body: { session_id?: string } = {};
@@ -63,6 +64,29 @@ export async function POST(req: Request) {
   }
 
   try {
+    // Fast path: same browser already confirmed this Checkout Session.
+    const existing = await getEntitlement(sessionGate.id);
+    if (
+      existing?.lastCheckoutSessionId === checkoutId &&
+      existing.status === "active" &&
+      existing.plan !== "free"
+    ) {
+      let session = await ensureSession();
+      if (session.plan === "free" || session.plan !== existing.plan) {
+        session = setPlan(session, existing.plan, { resetCredits: false });
+        if (typeof existing.credits === "number") {
+          session = { ...session, credits: existing.credits };
+        }
+        await saveSession(session);
+      }
+      return NextResponse.json({
+        ok: true,
+        plan: existing.plan,
+        session: publicSession(session),
+        idempotent: true,
+      });
+    }
+
     const cs = await stripeGet(
       `/checkout/sessions/${encodeURIComponent(checkoutId)}`
     );
@@ -94,13 +118,9 @@ export async function POST(req: Request) {
     }
 
     const customer =
-      typeof cs.customer === "string"
-        ? cs.customer
-        : undefined;
+      typeof cs.customer === "string" ? cs.customer : undefined;
     const subscription =
-      typeof cs.subscription === "string"
-        ? cs.subscription
-        : undefined;
+      typeof cs.subscription === "string" ? cs.subscription : undefined;
 
     let session = await ensureSession();
     // Prefer Stripe metadata session; if cookie differs, still upgrade this browser
@@ -115,6 +135,7 @@ export async function POST(req: Request) {
         periodKey,
         stripeCustomerId: customer,
         stripeSubscriptionId: subscription,
+        lastCheckoutSessionId: checkoutId,
         status: "active",
         updatedAt: new Date().toISOString(),
       });
@@ -129,6 +150,7 @@ export async function POST(req: Request) {
       periodKey,
       stripeCustomerId: customer,
       stripeSubscriptionId: subscription,
+      lastCheckoutSessionId: checkoutId,
       status: "active",
       updatedAt: new Date().toISOString(),
     });

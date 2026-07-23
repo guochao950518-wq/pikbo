@@ -60,7 +60,7 @@
 ## 5. Prompt 工程方向（给 Claude 落地）
 
 - 所有 preset `promptTemplate` 保留 **玩具身份锁定**（不改脸成真人）  
-- 用户 extra **附加**不覆盖模板（已有 engine 倾向，需产品写成规则）  
+- 用户 extra **附加**不覆盖模板 — **已落地** `lib/promptBuild.ts`（cap 400 + identity lock 兜底）  
 - 卖家类预设加：listing / 白底 / 360 商品语言  
 - 藏家类：shelf / unbox / display case 情绪  
 

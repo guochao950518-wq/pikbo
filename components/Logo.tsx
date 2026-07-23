@@ -1,8 +1,11 @@
+import { useId } from "react";
 import { site } from "@/lib/site";
 
 /**
  * Pikbo brand mark — a lime squircle "play" chip (video-first product)
  * paired with the display wordmark. One source of truth across header/footer.
+ *
+ * Gradient ids are useId()-scoped so multiple Logos on one page do not collide.
  */
 export function Logo({
   size = 30,
@@ -15,6 +18,9 @@ export function Logo({
   className?: string;
   wordClassName?: string;
 }) {
+  const rawId = useId().replace(/:/g, "");
+  const sheenId = `pikbo-sheen-${rawId}`;
+
   return (
     <span className={`flex items-center gap-2.5 ${className}`}>
       <svg
@@ -32,7 +38,7 @@ export function Logo({
           width="30"
           height="30"
           rx="9.5"
-          fill="url(#pikbo-sheen)"
+          fill={`url(#${sheenId})`}
         />
         {/* play glyph with softened corners = video, but bespoke */}
         <path
@@ -40,7 +46,7 @@ export function Logo({
           fill="#04140a"
         />
         <defs>
-          <linearGradient id="pikbo-sheen" x1="0" y1="0" x2="0" y2="32">
+          <linearGradient id={sheenId} x1="0" y1="0" x2="0" y2="32">
             <stop offset="0" stopColor="#ffffff" stopOpacity="0.28" />
             <stop offset="0.5" stopColor="#ffffff" stopOpacity="0" />
           </linearGradient>

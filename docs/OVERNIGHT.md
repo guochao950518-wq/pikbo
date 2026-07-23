@@ -50,7 +50,8 @@
 9. [x] batch free/live honesty · invoice webhook idempotency · image checkCredits parity  
 10. [x] meClient · settings mode honesty · sample stills validate · health HEAD · preflight stills  
 11. [x] merge Claude media-rich home promo · profile/landing meClient · promo honesty  
-12. 下一拍：Claude 继续 D5+ 就合  
+12. [x] merge Claude logo + feature cards · Logo useId · confirm idempotent · toy identity lock  
+13. 下一拍：Claude/GPT 新推就合  
 
 ### 老板醒来验收
 
@@ -64,9 +65,9 @@
 
 ## Grok 本拍状态（3 行）
 
-- Merged Claude home-hf media-rich promo CTA (0fa0353).  
-- Honesty + Profile/Landing meClient on `62f12ab`.  
-- smoke+typecheck+lint green · **pushed main**. Next: more Claude when pushed.
+- Merged Claude logo + feature-card depth; fixed multi-Logo SVG gradient id clash.  
+- Checkout confirm idempotent (lastCheckoutSessionId); prompt identity lock always on.  
+- smoke+typecheck+lint green · pushing main.
 
 ---
 

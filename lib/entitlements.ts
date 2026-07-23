@@ -21,6 +21,8 @@ export type Entitlement = {
   stripeSubscriptionId?: string;
   /** Last processed Stripe invoice id — webhook idempotency for invoice.paid */
   lastInvoiceId?: string;
+  /** Last confirmed Checkout Session id — confirm route idempotency */
+  lastCheckoutSessionId?: string;
   status: "active" | "canceled" | "past_due";
   updatedAt: string;
 };
