@@ -31,8 +31,11 @@ export default function ModelsPage() {
           <Link href="/create" className="btn btn-primary text-sm">
             Generate with Seedance →
           </Link>
+          <Link href="/modules" className="btn btn-ghost text-sm">
+            Toy Modules
+          </Link>
           <Link href="/image" className="btn btn-ghost text-sm">
-            Flux stills
+            Flux stills · Preview
           </Link>
           <Link href="/pricing" className="btn btn-ghost text-sm">
             Pricing

@@ -54,19 +54,31 @@ export default function CinemaPage() {
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--lime)]">
-              Cinema Studio
+              Cinema · Preview composer
             </p>
             <h1 className="mt-1 text-3xl font-bold">Director board</h1>
             <p className="mt-2 max-w-xl text-sm text-[var(--fg-muted)]">
-              Pick lens & camera moves for your figure, then render with
-              Seedance — pro film-studio flow, toy-native subject.
+              Lens & camera language for your figure — then open Generate with
+              Seedance. Not a full HF Cinema rebuild; toy-native prompt board
+              only.
             </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Link href="/modules" className="btn btn-ghost !px-3 !py-1.5 text-xs">
+                Modules (jobs first)
+              </Link>
+              <Link
+                href="/create?mode=seller-pack"
+                className="btn btn-ghost !px-3 !py-1.5 text-xs"
+              >
+                Seller Pack
+              </Link>
+            </div>
           </div>
           <Link
             href={href}
             className="btn btn-primary px-5 py-2.5 text-sm"
           >
-            Render my figure →
+            Open Generate →
           </Link>
         </div>
 

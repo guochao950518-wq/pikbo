@@ -53,6 +53,20 @@ export default function SettingsPage() {
           Device data & session. Signed-in durable wallets use local file or
           Supabase Postgres when the T5 migration is applied.
         </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Link href="/create" className="btn btn-primary !px-3 !py-1.5 text-xs">
+            Generate
+          </Link>
+          <Link href="/modules" className="btn btn-ghost !px-3 !py-1.5 text-xs">
+            Modules
+          </Link>
+          <Link href="/library" className="btn btn-ghost !px-3 !py-1.5 text-xs">
+            Library · {libCount}
+          </Link>
+          <Link href="/status" className="btn btn-ghost !px-3 !py-1.5 text-xs">
+            System status
+          </Link>
+        </div>
 
         <div className="card mt-8 space-y-4 p-6 text-sm">
           <div className="flex justify-between">
