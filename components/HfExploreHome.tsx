@@ -127,28 +127,42 @@ function FeatureRow({ demos }: { demos: DemoVideo[] }) {
   );
 }
 
-/* ---- 2. Big lime promo banner (HF signature) ---- */
-function LimePromo() {
+/* ---- 2. Compact media-rich promo CTA (refined, not a flat slab) ---- */
+function LimePromo({ demo }: { demo: DemoVideo }) {
   return (
     <section className="px-3 py-3 sm:px-5 sm:py-4">
-      <div className="relative overflow-hidden rounded-[20px] bg-gradient-to-r from-[#a6e22e] via-[#c8ff3d] to-[#9be870] px-5 py-6 sm:px-10 sm:py-10">
-        <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center sm:gap-5">
-          <div>
-            <h2 className="font-display text-[26px] font-black uppercase leading-[0.98] tracking-tight text-black sm:text-5xl">
-              1 Mini trial
-              <span className="block">animate a toy you own</span>
+      <div className="relative overflow-hidden rounded-[22px] bg-[radial-gradient(120%_140%_at_0%_0%,#dcff72_0%,#c8ff3d_45%,#9fe23a_100%)] p-4 sm:p-5">
+        <div className="flex flex-col items-stretch gap-4 sm:flex-row sm:items-center sm:gap-6">
+          {/* text side */}
+          <div className="flex-1 sm:pl-3">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-black px-3 py-1 text-[11px] font-black uppercase tracking-wider text-[#c8ff3d]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#c8ff3d]" />
+              1 Mini trial · free
+            </span>
+            <h2 className="font-display mt-3 text-[28px] font-black uppercase leading-[0.95] tracking-tight text-black sm:text-[40px]">
+              Animate a toy
+              <br className="hidden sm:block" /> you already own
             </h2>
-            <p className="mt-2 hidden max-w-xl text-sm font-medium text-black/70 sm:block">
-              One figure photo → Seedance Mini 480p when live is on. No card.
-              Cached demos labeled. Never fake &quot;unlimited&quot;.
+            <p className="mt-2 hidden max-w-md text-[13px] font-medium text-black/65 sm:block">
+              One figure photo → a Seedance Mini clip. No card, cached demos
+              labeled, never fake &quot;unlimited&quot;.
             </p>
+            <Link
+              href="/create"
+              className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-black px-6 py-3 text-sm font-black text-[#c8ff3d] transition-transform hover:-translate-y-0.5"
+            >
+              Try Mini free →
+            </Link>
           </div>
-          <Link
-            href="/create"
-            className="shrink-0 rounded-full bg-black px-6 py-3 text-sm font-black text-[#c8ff3d] transition-transform hover:-translate-y-0.5 sm:px-7 sm:py-3.5"
-          >
-            Try Mini →
-          </Link>
+          {/* media side */}
+          <div className="relative aspect-video w-full shrink-0 overflow-hidden rounded-[16px] shadow-[0_20px_50px_-20px_rgba(0,0,0,0.5)] ring-1 ring-black/15 sm:aspect-[4/3] sm:w-[280px] lg:w-[340px]">
+            <Clip
+              demo={demo}
+              eager
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 to-transparent" />
+          </div>
         </div>
       </div>
     </section>
@@ -350,7 +364,7 @@ export function HfExploreHome({
   return (
     <div className="min-h-screen bg-black pb-24 text-white">
       <FeatureRow demos={demos} />
-      <LimePromo />
+      <LimePromo demo={demos[3 % demos.length]} />
       <ModelGrid />
       <ViralGrid items={feed} />
     </div>
