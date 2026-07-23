@@ -36,6 +36,7 @@ const MORE = [
   { href: "/explore", key: "nav.feed", tag: "Preview" },
   { href: "/tools", key: "nav.tools", tag: null },
   { href: "/guides", key: "nav.guides", tag: null },
+  { href: "/login", key: "nav.signin", tag: "Preview" },
   { href: "/profile", key: "nav.profile", tag: "Local" },
 ] as const;
 

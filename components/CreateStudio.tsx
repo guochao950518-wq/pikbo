@@ -796,7 +796,9 @@ export function CreateStudio({
     ownsRights,
   ]);
 
+  const [showAllRecipes, setShowAllRecipes] = useState(false);
   const featuredPresets = useMemo(() => {
+    // Phase F: eight launch recipes first (HOME_PROOF + seller staples).
     const heroes = [
       "360-spin-showcase",
       "blind-box-unboxing",
@@ -805,7 +807,7 @@ export function CreateStudio({
       "floating-hero",
       "display-case-glam",
       "miniature-scene",
-      "power-aura",
+      "mystery-box-reveal",
     ];
     const ordered = heroes
       .map((slug) => PRESETS.find((p) => p.slug === slug))
@@ -813,8 +815,10 @@ export function CreateStudio({
     const rest = filteredPresets.filter(
       (p) => !heroes.includes(p.slug)
     );
-    return presetFilter.trim() ? filteredPresets : [...ordered, ...rest];
-  }, [filteredPresets, presetFilter]);
+    if (presetFilter.trim()) return filteredPresets;
+    if (showAllRecipes) return [...ordered, ...rest];
+    return ordered;
+  }, [filteredPresets, presetFilter, showAllRecipes]);
 
   return (
     <div className="flex h-full min-h-[calc(100vh-3.5rem)] flex-col pb-36 lg:min-h-screen lg:pb-0">
@@ -1033,6 +1037,17 @@ export function CreateStudio({
             ))}
             {featuredPresets.length === 0 && (
               <p className="px-1 text-xs text-[var(--fg-dim)]">No presets match</p>
+            )}
+            {!presetFilter.trim() && (
+              <button
+                type="button"
+                onClick={() => setShowAllRecipes((v) => !v)}
+                className="mt-1 w-full rounded-lg border border-[var(--border)] px-2 py-1.5 text-[11px] font-semibold text-[var(--fg-muted)] hover:border-[var(--mint)]/40 hover:text-[var(--mint)]"
+              >
+                {showAllRecipes
+                  ? "Show launch recipes only"
+                  : "More recipes · full catalog"}
+              </button>
             )}
           </div>
           <Link

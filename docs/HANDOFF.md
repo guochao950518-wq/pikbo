@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [grok] continuous: fonts offline, Create launch-8, analytics stub
+- Removed next/font/google (CI/offline builds no longer need fonts.googleapis.com).
+- Create shows 8 launch recipes first + “More recipes” expand.
+- Optional `lib/analytics.ts` no-op without NEXT_PUBLIC_ANALYTICS_URL.
+- robots disallow `/login`; More menu → Sign in; CI template adds prod link-check.
+- G6 harness notes: `scripts/g6-harness.md`.
+
 ### 2026-07-23 — [grok] Auth shell + durable shadow + Phase D stubs
 - `/login` honest gate: no fake form when Supabase keys missing; form shell when configured.
 - `GET /api/auth/status` public readiness (no secrets).

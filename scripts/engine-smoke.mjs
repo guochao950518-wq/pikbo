@@ -747,5 +747,20 @@ assert.match(
 );
 assert.match(genRoute, /shadowReserveForGuest|shadowSettle|shadowRelease/);
 
+// Offline fonts + analytics no-op + Create launch list
+assert.doesNotMatch(
+  fs.readFileSync(join(root, "app/layout.tsx"), "utf8"),
+  /from ["']next\/font\/google["']/
+);
+assert.match(
+  fs.readFileSync(join(root, "lib/analytics.ts"), "utf8"),
+  /export function track/
+);
+assert.match(createStudio, /showAllRecipes|More recipes/);
+assert.match(
+  fs.readFileSync(join(root, "app/robots.ts"), "utf8"),
+  /\/login/
+);
+
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

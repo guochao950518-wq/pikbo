@@ -1,23 +1,13 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Bricolage_Grotesque } from "next/font/google";
 import "./globals.css";
 import { site } from "@/lib/site";
 import { AppShell } from "@/components/AppShell";
 
-const sans = Space_Grotesk({
-  variable: "--font-sans",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-// Editorial display face for headings — premium, characterful, toy-brand-friendly.
-const display = Bricolage_Grotesque({
-  variable: "--font-display",
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["600", "700", "800"],
-});
-
+/**
+ * Network-independent fonts (Phase B).
+ * next/font/google was removed so CI/offline builds never hang on fonts.googleapis.com.
+ * Stack is system + generic display; premium webfonts can return later as local files.
+ */
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
@@ -53,8 +43,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${sans.variable} ${display.variable} h-full`}>
-      <body className="min-h-full bg-[var(--bg)] text-[var(--fg)] antialiased">
+    <html lang="en" className="h-full">
+      <body className="min-h-full bg-[var(--bg)] font-sans text-[var(--fg)] antialiased">
         <AppShell>{children}</AppShell>
       </body>
     </html>
