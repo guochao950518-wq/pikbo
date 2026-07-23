@@ -63,7 +63,8 @@
 22. [x] Wave A: seller-pack Create mode · Library project groups · Explore cat filter · showcase registry  
 23. [x] merge Wave A core loop branch · Create version stack + per-version Before/After metadata  
 24. [x] Wave B trust: settlement · Retry/Variant · server echo · Free download gate · Explore focus · CI
-25. 下一拍：G6 lives · confirm CI green on GitHub · avoid product-foundation
+25. [x] Phase D local job ledger · /api/downloads gate · demo critical-path acceptance
+26. 下一拍：T6 bake plan · durable Supabase wire (blocked on keys) · G6 lives · CI workflow scope
 
 ### 老板醒来验收
 
@@ -77,9 +78,9 @@
 
 ## Grok 本拍状态（3 行）
 
-- Wave B trust on main: last-request settlement, Retry vs Make variant, Free raw download blocked.  
-- Generate echoes effect/costCredits; Explore single focus; CI template in `docs/ci/` (OAuth no workflow scope).  
-- engine-smoke/lint/typecheck/build green · public still NO-GO · G6 needs 2 more lives.
+- Phase D: process-memory generationJobs ledger + generations/download APIs.  
+- Generate records jobs; Free download 403 via /api/downloads; critical-path demo-default.  
+- engine-smoke/lint/typecheck green · public NO-GO · G6 needs 2 lives · OAuth no workflow scope.
 
 ---
 

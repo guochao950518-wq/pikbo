@@ -34,6 +34,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | T3 | Keyword + preset expansion (long-tail SEO) | Claude | done | agent/claude/seo-keywords | +use-cases + toy-types |
 | T4 | Stripe webhook (renew/cancel plan) | Grok | done | agent/grok/ship-billing-launch | webhook + confirm + entitlements |
 | T5 | Supabase auth + durable credits | Grok | doing | agent/grok/final-takeover | SQL migration + pure engine + local adapter + smoke tests landed; Supabase Auth UI/wire blocked on keys (see BLOCKERS_REQUEST) |
+| T-PHASE-D | Local async job ledger + controlled download API | Grok | review | main | process-memory generations + /api/downloads gate; durable queue still Supabase |
 | T6 | Server-side free watermark (ffmpeg) | Grok | todo | agent/grok/final-takeover | Raw Free download must remain disabled until file derivative is verified |
 | T7 | Private Vercel RC + later domain pikbo.ai | Grok | blocked | agent/grok/final-takeover | Prepare private preview; Vercel login and public DNS require boss authorization |
 | FP0 | First-principles nav + Mini truth + doctrine | Grok | done | main | AppShell primary/more; docs/FIRST_PRINCIPLES.md |

@@ -4,11 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
-### 2026-07-23 — [grok] continuous: local generation job ledger + controlled download
-- In-process `lib/generationJobs` records sync generate success/fail for session poll.
-- `GET /api/generations` lists jobs; `GET /api/generations/[id]` returns owned job.
-- `GET /api/downloads/[id]` redirects only when downloadAllowed (blocks Free live raw).
-- Not multi-node durable — Supabase still required for production jobs.
+### 2026-07-23 — [grok] Phase D local job ledger + download gate + demo critical-path
+- In-process `lib/generationJobs` records sync generate success/fail (idempotency + ownership).
+- `GET/POST /api/generations` + `GET /api/generations/[id]` return real local jobs (no longer 501).
+- `GET /api/downloads/[id]` → 403 Free live raw (`DOWNLOAD_BLOCKED`); demo/paid redirect.
+- Health `acceptance.demoCached|softLive|paid`; critical-path defaults demo (strict: `REQUIRE_SOFT_LIVE=1`).
+- Verified: engine-smoke · lint · typecheck. Not multi-node durable — Supabase still required. T6 bake blocked.
 
 ### 2026-07-23 — [grok] continuous: Seller Pack export + Library honesty + retry stub
 - `lib/sellerPackExport.ts`: CSV/manifest only for succeeded+downloadable children; no fake ZIP.
