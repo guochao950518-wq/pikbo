@@ -3,10 +3,11 @@ import Link from "next/link";
 import { MODELS } from "@/lib/catalog";
 
 export const metadata: Metadata = {
-  title: "Models",
+  title: "Models · Preview",
   description:
     "AI model integrations in PIKBO — configured paths are separated from roadmap models and cached previews are labeled.",
   alternates: { canonical: "/models" },
+  robots: { index: false, follow: false },
 };
 
 export default function ModelsPage() {

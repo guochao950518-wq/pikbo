@@ -3,10 +3,11 @@ import Link from "next/link";
 import { APPS } from "@/lib/catalog";
 
 export const metadata: Metadata = {
-  title: "Apps",
+  title: "Apps · Preview",
   description:
     "Pikbo apps for toy video — configured workspaces are separated from roadmap tools, and provider-dependent output is labeled.",
   alternates: { canonical: "/apps" },
+  robots: { index: false, follow: false },
 };
 
 const CATS = [

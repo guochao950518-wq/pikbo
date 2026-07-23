@@ -9,8 +9,10 @@ import { LandingHowItWorks } from "@/components/LandingHowItWorks";
 import { LandingResults } from "@/components/LandingResults";
 import { site } from "@/lib/site";
 import { viralName } from "@/lib/viralNames";
+import { recipeHasUniqueProof, robotsForRecipe } from "@/lib/seoIndex";
 
-// Pre-render every effect page at build time -> static, fast, indexable.
+// Pre-render every effect page at build time. Concept recipes without unique
+// Lab proof are noindex (Phase H) but still reachable for Create deep-links.
 export function generateStaticParams() {
   return PRESETS.map((p) => ({ slug: p.slug }));
 }
@@ -28,6 +30,7 @@ export async function generateMetadata({
     description: preset.seoDescription,
     keywords: preset.keywords,
     alternates: { canonical: `/effects/${preset.slug}` },
+    robots: robotsForRecipe(preset.slug),
     openGraph: {
       title: preset.seoTitle,
       description: preset.seoDescription,
@@ -160,6 +163,15 @@ export default async function EffectPage({
             <span className="rounded-full border border-[var(--mint)]/30 bg-[var(--mint)]/10 px-2.5 py-0.5 text-[10px] font-bold tracking-wide text-[var(--mint)]">
               {viralName(preset.slug, preset.name)}
             </span>
+            {!recipeHasUniqueProof(preset.slug) ? (
+              <span className="rounded-full border border-white/15 bg-white/[0.04] px-2.5 py-0.5 text-[10px] font-bold tracking-wide text-[var(--fg-dim)]">
+                Concept · no unique Lab sample
+              </span>
+            ) : (
+              <span className="rounded-full border border-[var(--mint)]/20 bg-[var(--mint)]/[0.06] px-2.5 py-0.5 text-[10px] font-bold tracking-wide text-[var(--mint)]">
+                Official example · cached
+              </span>
+            )}
           </div>
           <h1 className="mt-4 max-w-3xl text-4xl font-bold leading-tight sm:text-5xl">
             {preset.h1}

@@ -18,9 +18,10 @@ export async function generateMetadata({
     };
   }
   return {
-    title: "Batch agent",
+    title: "Batch agent · Preview",
     description:
       "Run multiple toy video presets from one photo — Pikbo batch generate for shops.",
+    robots: { index: false, follow: false },
   };
 }
 

@@ -3,10 +3,11 @@ import Link from "next/link";
 import { DEMO_VIDEOS } from "@/lib/demoVideos";
 
 export const metadata: Metadata = {
-  title: "Create flow",
+  title: "Create flow · Preview",
   description:
     "Pick how you want to create: image-to-video, listing packs, image stills, batch, or browse recipes — Pikbo creation hub.",
   alternates: { canonical: "/flow" },
+  robots: { index: false, follow: false },
 };
 
 /**

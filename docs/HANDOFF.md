@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [grok] Phase H SEO: no thin index pages / noindex private
+- `lib/seoIndex.ts`: `recipeHasUniqueProof` from DEMO_VIDEOS; concept/private/preview robots.
+- Effects without unique Lab sample → `noindex,follow` + chip; LandingResults no shared-loop fake proof.
+- Tools/for/toys noindex when primary recipe lacks unique proof; sitemap omits those + preview doors.
+- robots disallow cinema/image/apps/models/flow/supercomputer/generate; apps/models/flow/batch noindex.
+- Verified: engine-smoke · typecheck. Next: Phase F Create mobile polish or retry local job.
+
 ### 2026-07-23 — [grok] Phase D local job ledger + download gate + demo critical-path
 - In-process `lib/generationJobs` records sync generate success/fail (idempotency + ownership).
 - `GET/POST /api/generations` + `GET /api/generations/[id]` return real local jobs (no longer 501).

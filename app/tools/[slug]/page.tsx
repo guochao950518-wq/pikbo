@@ -8,6 +8,7 @@ import { LandingToolPanel } from "@/components/LandingToolPanel";
 import { LandingHowItWorks } from "@/components/LandingHowItWorks";
 import { LandingResults } from "@/components/LandingResults";
 import { site } from "@/lib/site";
+import { robotsForPrimaryEffect } from "@/lib/seoIndex";
 
 export function generateStaticParams() {
   return TOOLS.map((t) => ({ slug: t.slug }));
@@ -25,6 +26,7 @@ export async function generateMetadata({
     title: { absolute: t.seoTitle },
     description: t.seoDescription,
     alternates: { canonical: `/tools/${t.slug}` },
+    robots: robotsForPrimaryEffect(t.primaryEffect),
     openGraph: {
       title: t.seoTitle,
       description: t.seoDescription,

@@ -14,7 +14,10 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const app = APPS.find((a) => a.id === slug);
-  return { title: app?.name ?? "App" };
+  return {
+    title: app?.name ?? "App",
+    robots: { index: false, follow: false },
+  };
 }
 
 export default async function StubAppPage({ params }: Props) {

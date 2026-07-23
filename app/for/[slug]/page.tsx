@@ -13,6 +13,7 @@ import { LandingToolPanel } from "@/components/LandingToolPanel";
 import { LandingHowItWorks } from "@/components/LandingHowItWorks";
 import { LandingResults } from "@/components/LandingResults";
 import { site } from "@/lib/site";
+import { robotsForPrimaryEffect } from "@/lib/seoIndex";
 
 export function generateStaticParams() {
   const canonical = USE_CASES.map((u) => ({ slug: u.slug }));
@@ -28,11 +29,13 @@ export async function generateMetadata({
   const { slug } = await params;
   const uc = getUseCase(slug);
   if (!uc) return {};
+  const primary = uc.recommendedEffects[0];
   return {
     title: { absolute: uc.seoTitle },
     description: uc.seoDescription,
     keywords: uc.keywords,
     alternates: { canonical: `/for/${uc.slug}` },
+    robots: robotsForPrimaryEffect(primary),
     openGraph: {
       title: uc.seoTitle,
       description: uc.seoDescription,

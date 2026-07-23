@@ -888,5 +888,34 @@ const critPath = fs.readFileSync(
 assert.match(critPath, /REQUIRE_SOFT_LIVE/);
 assert.match(critPath, /demo-cached gate|ready\.demo/);
 
+// Phase H — SEO proof gate (no thin indexable concept pages)
+const seoIndex = fs.readFileSync(join(root, "lib/seoIndex.ts"), "utf8");
+assert.match(seoIndex, /recipeHasUniqueProof/);
+assert.match(seoIndex, /proofBackedRecipeSlugs/);
+assert.match(seoIndex, /CONCEPT_ROBOTS|PRIVATE_ROBOTS|PREVIEW_ROBOTS/);
+const effectMeta = fs.readFileSync(
+  join(root, "app/effects/[slug]/page.tsx"),
+  "utf8"
+);
+assert.match(effectMeta, /robotsForRecipe/);
+assert.match(effectMeta, /Concept · no unique Lab sample/);
+const landingResults = fs.readFileSync(
+  join(root, "components/LandingResults.tsx"),
+  "utf8"
+);
+assert.match(landingResults, /no unique Lab sample/);
+assert.match(landingResults, /recipeHasUniqueProof/);
+const sitemapSrc = fs.readFileSync(join(root, "app/sitemap.ts"), "utf8");
+assert.match(sitemapSrc, /proofBackedRecipeSlugs|recipeHasUniqueProof/);
+assert.doesNotMatch(sitemapSrc, /\/cinema|\/supercomputer|\/models/);
+const robotsSrc = fs.readFileSync(join(root, "app/robots.ts"), "utf8");
+assert.match(robotsSrc, /\/cinema/);
+assert.match(robotsSrc, /\/library/);
+assert.match(robotsSrc, /\/image/);
+const libMeta = fs.readFileSync(join(root, "app/library/page.tsx"), "utf8");
+assert.match(libMeta, /index:\s*false/);
+const appsMeta = fs.readFileSync(join(root, "app/apps/page.tsx"), "utf8");
+assert.match(appsMeta, /index:\s*false/);
+
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

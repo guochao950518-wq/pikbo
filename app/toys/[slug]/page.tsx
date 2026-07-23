@@ -8,6 +8,7 @@ import { LandingToolPanel } from "@/components/LandingToolPanel";
 import { LandingHowItWorks } from "@/components/LandingHowItWorks";
 import { LandingResults } from "@/components/LandingResults";
 import { site } from "@/lib/site";
+import { robotsForPrimaryEffect } from "@/lib/seoIndex";
 
 export function generateStaticParams() {
   return TOY_TYPES.map((t) => ({ slug: t.slug }));
@@ -21,10 +22,12 @@ export async function generateMetadata({
   const { slug } = await params;
   const t = getToyType(slug);
   if (!t) return {};
+  const primary = t.recommendedEffects[0];
   return {
     title: { absolute: t.seoTitle },
     description: t.seoDescription,
     alternates: { canonical: `/toys/${t.slug}` },
+    robots: robotsForPrimaryEffect(primary),
     openGraph: {
       title: t.seoTitle,
       description: t.seoDescription,

@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { DEMO_VIDEOS } from "@/lib/demoVideos";
+import { recipeHasUniqueProof } from "@/lib/seoIndex";
 
-/** 哥飞 V2 — 结果展示块：精选 demo（SSR，爬虫可见文字） */
+/** 哥飞 V2 — 结果展示块：only unique matching demos (SSR，爬虫可见文字) */
 export function LandingResults({
   effectSlug,
   title = "Example results",
@@ -11,25 +13,56 @@ export function LandingResults({
   const matched = effectSlug
     ? DEMO_VIDEOS.filter((d) => d.preset === effectSlug)
     : [];
+  const hasUnique = effectSlug ? recipeHasUniqueProof(effectSlug) : matched.length > 0;
+
+  // Phase H: never present unrelated shared loops as proof for this recipe.
+  if (effectSlug && !hasUnique) {
+    return (
+      <section className="container-x py-12">
+        <h2 className="text-2xl font-bold">{title}</h2>
+        <div className="mt-4 max-w-2xl rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-4">
+          <p className="text-[10px] font-black uppercase tracking-wide text-[var(--fg-dim)]">
+            Concept recipe · no unique Lab sample yet
+          </p>
+          <p className="mt-2 text-sm leading-relaxed text-[var(--fg-muted)]">
+            This page is a working Create deep-link with honest limits. It is not
+            indexed as proof until a distinct owned input/output sample is
+            registered. Browse official cached examples for motion reference.
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2 text-sm">
+            <Link href="/community" className="text-[var(--mint)] hover:underline">
+              Official examples →
+            </Link>
+            <Link
+              href={`/create?effect=${encodeURIComponent(effectSlug)}`}
+              className="text-[var(--fg-muted)] hover:text-white"
+            >
+              Open in Generate
+            </Link>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   const demos =
     matched.length > 0
       ? matched
-      : DEMO_VIDEOS.slice(0, 3);
+      : // Hub-style call without a recipe: show a small official set only.
+        DEMO_VIDEOS.slice(0, 3);
 
   return (
     <section className="container-x py-12">
       <h2 className="text-2xl font-bold">{title}</h2>
       <p className="mt-2 max-w-2xl text-sm text-[var(--fg-muted)]">
-        Official cached references for motion and framing. When this preset has no
-        verified matching sample, the shared clips below are references — not
-        outputs of this exact recipe or your upload.
+        Official cached references for motion and framing
+        {effectSlug
+          ? " matched to this recipe"
+          : ""}. Cached playback never processes a visitor upload.
       </p>
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {demos.map((d) => (
-          <article
-            key={d.id}
-            className="card overflow-hidden p-0"
-          >
+          <article key={d.id} className="card overflow-hidden p-0">
             <div className="aspect-video bg-black/50">
               <video
                 poster={d.poster}
