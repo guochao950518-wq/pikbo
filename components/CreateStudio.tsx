@@ -847,6 +847,41 @@ export function CreateStudio({
             </p>
           </div>
 
+          {/* PRD soft-launch §5: consolidated preflight before the final action */}
+          <div className="mb-2 rounded-xl border border-[var(--border)] bg-[var(--bg-soft)] p-3 text-xs">
+            <p className="mb-1.5 text-[10px] font-black uppercase tracking-wider text-[var(--fg-dim)]">
+              Before you generate
+            </p>
+            {demoMode ? (
+              <p className="flex items-start gap-1.5 text-[var(--fg-muted)]">
+                <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--fg-dim)]" />
+                <span>
+                  <b className="text-[var(--fg)]">Cached demo</b> — does not use
+                  your upload · costs 0 credits
+                </span>
+              </p>
+            ) : (
+              <div className="space-y-1 text-[var(--fg-muted)]">
+                <p className="flex items-start gap-1.5">
+                  <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--mint)]" />
+                  <span>
+                    <b className="text-[var(--fg)]">
+                      Live {isFree ? "Mini trial" : "generation"}
+                    </b>{" "}
+                    — uses your photo · {isFree ? "Seedance Mini · " : ""}
+                    {effectiveDuration}s · {isFree ? "480p" : resolution} ·{" "}
+                    {aspectRatio}
+                  </span>
+                </p>
+                <p className="pl-3 text-[var(--fg-dim)]">
+                  Costs {CREDITS_PER_VIDEO} credits
+                  {creditsLeft !== null ? ` · ${creditsLeft} left` : ""} ·
+                  processed by fal.ai / Seedance · failed jobs refund credits
+                </p>
+              </div>
+            )}
+          </div>
+
           <label className="mb-2 flex cursor-pointer items-start gap-2 rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] px-3 py-2 text-[11px] leading-snug text-[var(--fg-muted)]">
             <input
               type="checkbox"
