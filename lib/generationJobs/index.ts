@@ -16,5 +16,7 @@ export {
   cancelJob,
   findJobByRequestOrId,
   applyProviderWebhookEvent,
+  sweepTimedOutJobs,
+  jobTimeoutMs,
   __resetGenerationJobsForTests,
 } from "@/lib/generationJobs/store";

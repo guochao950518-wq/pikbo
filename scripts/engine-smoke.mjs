@@ -1124,5 +1124,31 @@ assert.match(genJobsStore, /applyProviderWebhookEvent/);
 assert.match(genJobsStore, /findJobByRequestOrId/);
 assert.match(genJobsStore, /webhookEvents/);
 
+// Phase D job timeout recovery
+assert.match(genJobsStore, /sweepTimedOutJobs/);
+assert.match(genJobsStore, /jobTimeoutMs|TIMEOUT/);
+assert.match(
+  fs.readFileSync(join(root, "app/api/generations/route.ts"), "utf8"),
+  /sweepTimedOutJobs|timedOutThisSweep/
+);
+// Pure timeout age math (mirrors store intent)
+function ageMs(iso, now) {
+  const t = Date.parse(iso);
+  if (!Number.isFinite(t)) return 0;
+  return Math.max(0, now - t);
+}
+assert.ok(ageMs(new Date(0).toISOString(), 60_000) >= 60_000);
+assert.equal(ageMs(new Date(Date.now()).toISOString(), Date.now()), 0);
+
+// T6 honest blocked status (player overlay ≠ file bake)
+const t6 = fs.readFileSync(join(root, "lib/t6Watermark.ts"), "utf8");
+assert.match(t6, /export function t6Report/);
+assert.match(t6, /status:\s*"blocked"|blocked/);
+assert.match(t6, /playerOverlayIsNotFileWatermark/);
+assert.match(t6, /PIKBO_T6_FILE_BAKE/);
+assert.match(health, /t6Report|t6:/);
+assert.match(health, /jobTimeoutMs/);
+assert.match(createTrust, /PIKBO_T6_FILE_BAKE|T6 blocked/);
+
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

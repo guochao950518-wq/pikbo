@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 import { ensureSession, publicSession } from "@/lib/session";
 import {
   createJob,
+  jobTimeoutMs,
   listJobsForSession,
+  sweepTimedOutJobs,
   toPublicJob,
 } from "@/lib/generationJobs";
 
@@ -12,9 +14,11 @@ export const runtime = "nodejs";
  * Phase D — list recent jobs for this session (local memory adapter).
  * Durable async queue still requires Supabase; soft-launch sync path is
  * POST /api/generate, which records jobs into this ledger.
+ * GET also sweeps timed-out queued/running jobs (timeout recovery).
  */
 export async function GET() {
   const session = await ensureSession();
+  const timedOut = sweepTimedOutJobs();
   const jobs = listJobsForSession(session.id, 30).map((j) =>
     toPublicJob(j, session.id)
   );
@@ -23,8 +27,11 @@ export async function GET() {
     mode: "local-memory",
     adapter: "process-memory",
     durable: false,
+    jobTimeoutMs: jobTimeoutMs(),
+    timedOutThisSweep: timedOut.filter((j) => j.sessionId === session.id)
+      .length,
     note:
-      "In-process ledger for soft-launch recovery. Not multi-node durable. Use POST /api/generate for work.",
+      "In-process ledger for soft-launch recovery. Not multi-node durable. Use POST /api/generate for work. Queued/running jobs past jobTimeoutMs fail with TIMEOUT.",
     compatibility: {
       syncGenerate: "/api/generate",
       jobStatus: "/api/generations/[id]",

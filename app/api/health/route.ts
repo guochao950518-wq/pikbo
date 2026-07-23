@@ -4,6 +4,8 @@ import { probeDurableCreditsStore } from "@/lib/durableCredits";
 import { generateMode } from "@/lib/requestMeta";
 import { probeSupabase } from "@/lib/supabase/server";
 import { publicAuthStatus } from "@/lib/authConfig";
+import { t6Report } from "@/lib/t6Watermark";
+import { jobTimeoutMs } from "@/lib/generationJobs";
 // NextResponse used for GET + HEAD
 
 export const runtime = "nodejs";
@@ -68,6 +70,10 @@ export async function GET() {
       softLive: ready.softLive === true,
       paid: ready.paid === true,
     },
+    /** T6 file watermark bake — blocked until operator proves pipeline */
+    t6: t6Report(),
+    /** Phase D local job timeout (ms) for queued/running sweep */
+    jobTimeoutMs: jobTimeoutMs(),
     service: "pikbo",
     foundation: "L0-L3",
     time: new Date().toISOString(),

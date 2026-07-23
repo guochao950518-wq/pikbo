@@ -12,6 +12,17 @@ import type {
 } from "@/lib/generationJobs/types";
 
 const MAX_JOBS = 200;
+/**
+ * Phase D timeout recovery — soft-launch sync generate usually finishes in
+ * <3m; async/orphan jobs stuck queued|running beyond this become failed.
+ * Override with PIKBO_JOB_TIMEOUT_MS (min 30s).
+ */
+export function jobTimeoutMs(): number {
+  const raw = Number(process.env.PIKBO_JOB_TIMEOUT_MS || 0);
+  if (Number.isFinite(raw) && raw >= 30_000) return Math.floor(raw);
+  return 10 * 60_000; // 10 minutes
+}
+
 const jobs = new Map<string, GenerationJob>();
 /** idempotencyKey → job id (session-scoped via key prefix) */
 const byIdempotency = new Map<string, string>();
@@ -23,6 +34,12 @@ const webhookEvents = new Map<
 
 function nowIso(): string {
   return new Date().toISOString();
+}
+
+function ageMs(iso: string, now = Date.now()): number {
+  const t = Date.parse(iso);
+  if (!Number.isFinite(t)) return 0;
+  return Math.max(0, now - t);
 }
 
 function newId(): string {
@@ -126,7 +143,37 @@ export function forkRetryJob(input: {
   return { ok: true, job, parent };
 }
 
+/**
+ * Mark queued/running jobs past timeout as failed (timeout recovery).
+ * Does not invent refunds — soft-launch cookie path already settled inline
+ * for sync generate; async orphans get honest failed + TIMEOUT code.
+ */
+export function sweepTimedOutJobs(opts?: {
+  nowMs?: number;
+  timeoutMs?: number;
+}): GenerationJob[] {
+  const now = opts?.nowMs ?? Date.now();
+  const limit = opts?.timeoutMs ?? jobTimeoutMs();
+  const timedOut: GenerationJob[] = [];
+  for (const job of jobs.values()) {
+    if (job.status !== "queued" && job.status !== "running") continue;
+    // Prefer updatedAt so re-touched running jobs get a full window.
+    const stamp = job.updatedAt || job.createdAt;
+    if (ageMs(stamp, now) < limit) continue;
+    const next = updateJob(job.id, {
+      status: "failed",
+      error:
+        "Job timed out waiting for provider/result — if credits were debited, check balance or retry; ambiguous timeouts stay unconfirmed on the client",
+      errorCode: "TIMEOUT",
+      creditsOutcome: "refund unconfirmed",
+    });
+    if (next) timedOut.push(next);
+  }
+  return timedOut;
+}
+
 export function getJob(id: string): GenerationJob | null {
+  sweepTimedOutJobs();
   return jobs.get(id) ?? null;
 }
 
@@ -191,6 +238,7 @@ export function listJobsForSession(
   sessionId: string,
   limit = 20
 ): GenerationJob[] {
+  sweepTimedOutJobs();
   return [...jobs.values()]
     .filter((j) => j.sessionId === sessionId)
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt))

@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Job timeout recovery + T6 honest status
+- `sweepTimedOutJobs`: queued/running past `jobTimeoutMs` (default 10m, `PIKBO_JOB_TIMEOUT_MS`) → failed `TIMEOUT` / refund unconfirmed note.
+- GET `/api/generations` sweeps + reports `timedOutThisSweep`; get/list always sweep.
+- `lib/t6Watermark.ts` + health `t6` report: **blocked** until `PIKBO_T6_FILE_BAKE=1` (operator-proven bake only). Free download still gated.
+- Verified: engine-smoke · lint · typecheck. No ffmpeg claim.
+
 ### 2026-07-24 — [grok] Phase D video-provider webhook + blockers refresh
 - `POST /api/webhooks/video-provider`: idempotent by `eventId`; maps requestId→job; optional `VIDEO_PROVIDER_WEBHOOK_SECRET`.
 - Terminal jobs not overwritten; duplicate events return `duplicate:true`.

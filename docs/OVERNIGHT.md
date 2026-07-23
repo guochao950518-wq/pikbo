@@ -68,7 +68,9 @@
 27. [x] Landing Free-download honesty · HOME_PROOF quality ≥4 gate (provisional Lab scores)
 28. [x] Signed-in durable shadow reserve on generate · /api/me auth+wallet · badge displayCredits
 29. [x] Seller Pack shadow reserve 30 · settle/release 10 per child · BatchStudio wired
-30. 下一拍：T6 bake · G6 lives (budget) · REQUIRE_DURABLE_CREDITS when Postgres ready
+30. [x] G6 PASS (3 lives + refund) · Mode A runbook · video-provider webhook
+31. [x] Job timeout sweep · T6 health status (blocked honest)
+32. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
 
 ### 老板醒来验收
 
@@ -76,15 +78,15 @@
 - [ ] `/create` 能出片或诚实 demo  
 - [ ] 首页视频墙像 App  
 - [ ] 定价 1 / 5 / 15 + Mini  
-- [ ] `docs/LAUNCH.md` 仍是公网下一步  
+- [ ] Mode A Vercel preview (not public DNS yet)  
 
 ---
 
 ## Grok 本拍状态（3 行）
 
-- Seller Pack durable shadow: reserve 30, settle/release 10 per child via API + BatchStudio.  
-- Cookie generate still authoritative; DURABLE_OFF continues cookie-only path.  
-- engine-smoke/lint/typecheck green · public NO-GO · G6 needs 2 lives · no fal spend.
+- Job timeout recovery: queued/running → TIMEOUT after jobTimeoutMs; generations GET sweeps.  
+- T6 health report blocked (no fake file-bake); Free download stays gated.  
+- G6 PASS · engine-smoke green · public Mode B still needs boss Vercel + domain OK.
 
 ---
 

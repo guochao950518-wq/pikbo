@@ -114,18 +114,24 @@ export function requestSettlementAfterSelectVersion(
  * Free live results expose a provider raw URL until server watermark bake exists.
  * Download must not treat that URL as a deliverable.
  * Cached demos may still offer open/download (not the user's live output).
+ * When PIKBO_T6_FILE_BAKE=1 (operator-proven bake), free live may download.
  */
 export function canDownloadResult(opts: {
   demo: boolean;
   watermark: boolean;
 }): boolean {
   if (opts.demo) return true;
-  if (opts.watermark) return false;
+  if (opts.watermark) {
+    // Lazy import avoided — keep createTrust free of heavy deps.
+    // T6 ready only when operator sets PIKBO_T6_FILE_BAKE=1.
+    if (process.env.PIKBO_T6_FILE_BAKE === "1") return true;
+    return false;
+  }
   return true;
 }
 
 export function freeLiveDownloadBlockReason(): string {
-  return "Free Mini live clips cannot download the raw provider file yet — player mark is not a file watermark. Upgrade for a clean file, or keep the on-player preview.";
+  return "Free Mini live clips cannot download the raw provider file yet — player mark is not a file watermark (T6 blocked). Upgrade for a clean file, or keep the on-player preview.";
 }
 
 /** Build immutable spec snapshot at success time. */
