@@ -12,17 +12,17 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 
 | ID | Task | Owner | Status | Branch | Notes |
 |---|---|---|---|---|---|
-| GO | Public pikbo.ai Mode B | boss+all | **blocked** | — | G3/G5/G6 still red; public NO-GO |
-| G1 | Nav whitelist / kill empty doors | Claude | **review** | main (shell-triage) | SOFT PASS; GPT formal whitelist open |
-| G2 | ≤8 hero presets, unique demos | Claude | **review** | main | SOFT PASS unique≤8; GPT pick exact 8 |
-| G3 | Official demos copy (no fake UGC) | Codex | **review** | agent/gpt/world-class-copy | Official example / cached / concept language unified; merge evidence pending |
-| G4 | Zero 404 on linked URLs | Claude | **review** | main | redirects in next.config |
-| G5 | Plain-language ICP + meta | Codex | **review** | agent/gpt/world-class-copy | Home H1 + buyer meta + seller ROI copy implemented; merge evidence pending |
-| G6 | 3 live toy gens + 1 refund | any | todo | — | **still red — hand test** |
+| GO | Public pikbo.ai Mode B | boss+all | **blocked** | — | G6, proof provenance, LCP and final deployed checks remain; public NO-GO |
+| G1 | Nav whitelist / kill empty doors | Claude | **review** | main + agent/gpt/world-class-prd | SOFT PASS; exact product whitelist is in PR #21 |
+| G2 | ≤8 hero presets, unique demos | Claude | **review** | main + agent/gpt/world-class-prd | SOFT PASS; exact eight proof slugs are in PR #21 |
+| G3 | Official demos copy (no fake UGC) | Codex | **done** | main @ `32c634c` | Official example / cached / concept language merged |
+| G4 | Zero 404 on linked URLs | Claude | **done** | main @ `5d25fb3` | Redirect aliases and link-check passed |
+| G5 | Plain-language ICP + meta | Codex | **done** | main @ `32c634c` | Seller-first H1, buyer metadata and honest ROI copy merged |
+| G6 | 3 live toy gens + 1 refund | boss+any | doing | main @ `a652ee3` | 1 live Mini passed; 2 more live jobs + 1 post-debit refund proof remain |
 | G7 | build + prod no devTopup | Claude | **review** | main | topup hard-off prod |
 | P-GO | GO_NO_GO + nav/preset whitelist PRD | GPT | done | agent/gpt/world-class-prd | Formal pass criteria, exact nav, eight proof slugs, route inventory and day-of checklist |
 | W-PRD | World-class product contract, Seller OS, recipe quality, SEO Intent 50 | GPT | done | agent/gpt/world-class-prd | WORLD_CLASS_PIKBO + SEO_INTENT_50 |
-| P-COPY | Shell honesty copy pass | Codex | todo | agent/gpt/shell-honesty-copy | **STILL NEED PASTE TO CODEX** |
+| P-COPY | Shell honesty copy pass | Codex | done | main @ `32c634c` | Superseded and completed by the world-class seller copy pass |
 | W-COPY | World-class seller copy, official-demo truth, ROI and 10 intent pages | Codex | done | agent/gpt/world-class-copy | Lint, typecheck, build and rendered metadata/H1 checks passed |
 | T1 | Multi-agent collab protocol + board | Grok | done | main | COLLAB.md + STATUS + HANDOFF |
 | T2 | Real fal sample clips / homepage demos | GPT | done | agent/gpt/homepage-demos | 6 original encoded demos; cached/no FAL cost; verified fal renders can replace assets later |
