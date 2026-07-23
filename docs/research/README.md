@@ -64,6 +64,7 @@
 | [`docs/FEATURE_MAP.md`](../FEATURE_MAP.md) | 工程对照 | 功能 parity 表 |
 | [`docs/GAP_AUDIT.md`](../GAP_AUDIT.md) | 差距审计 | 历史 gap |
 | [`docs/prd/WORLD_CLASS_PIKBO.md`](../prd/WORLD_CLASS_PIKBO.md) | **GPT** | 世界级产品合同 |
+| [`docs/prd/RETENTION_REMIX_LOOP.md`](../prd/RETENTION_REMIX_LOOP.md) | **GPT** | 首页停留、项目详情、Remix→Create 闭环与验收 |
 | [`docs/prd/SEO_INTENT_50.md`](../prd/SEO_INTENT_50.md) | **GPT** | 50 搜索意图 |
 | [`docs/prd/SOFT_NAV_AND_PRESETS.md`](../prd/SOFT_NAV_AND_PRESETS.md) | **GPT** | 导航/8 预设白名单 |
 | [`docs/prd/GO_NO_GO.md`](../prd/GO_NO_GO.md) | 共同 | 上线门禁 |
@@ -92,3 +93,4 @@
 | 日期 | 谁 | 事 |
 |------|-----|-----|
 | 2026-07-23 | Grok | 建 hub；登记已有研究；合入 GPT WORLD_CLASS / SEO_50 / NAV 白名单 |
+| 2026-07-23 | GPT | 实测 HF / Yiha 首页与 Create；冻结 PIKBO retention + Remix 产品合同 |

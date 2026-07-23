@@ -37,6 +37,12 @@ Collectors are the acquisition edge. Sellers and shops are the revenue core. Fea
 
 Create has one canonical flow. Model selection and low-level parameters are advanced controls, not navigation.
 
+The discovery-to-Create handoff, home retention sequence, official project
+detail, and validated RemixIntent are frozen separately in
+[`RETENTION_REMIX_LOOP.md`](./RETENTION_REMIX_LOOP.md). Home and Explore must
+preserve recipe context into this flow; they must not behave as decorative
+media galleries.
+
 ### Step 1 — Add the product
 
 The user chooses exactly one entry:

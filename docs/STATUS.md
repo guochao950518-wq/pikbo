@@ -23,6 +23,7 @@ Legend: `todo` · `doing` · `review` · `done` · `blocked`
 | P-GO | GO_NO_GO + nav/preset whitelist PRD | GPT | **doing** | agent/gpt/go-no-go-soft | **STILL NEED PASTE TO GPT** |
 | P-COPY | Shell honesty copy pass | Codex | todo | agent/gpt/shell-honesty-copy | **STILL NEED PASTE TO CODEX** |
 | W-COPY | World-class seller copy, official-demo truth, ROI and 10 intent pages | Codex | done | agent/gpt/world-class-copy | Lint, typecheck, build and rendered metadata/H1 checks passed |
+| P6 | Home retention + official project + Remix→Create contract | GPT | done | agent/gpt/retention-remix | HF/Yiha evidence translated into frozen product flow, data contract, events and responsive acceptance |
 | T1 | Multi-agent collab protocol + board | Grok | done | main | COLLAB.md + STATUS + HANDOFF |
 | T2 | Real fal sample clips / homepage demos | GPT | done | agent/gpt/homepage-demos | 6 original encoded demos; cached/no FAL cost; verified fal renders can replace assets later |
 | T3 | Keyword + preset expansion (long-tail SEO) | Claude | done | agent/claude/seo-keywords | +use-cases + toy-types |
