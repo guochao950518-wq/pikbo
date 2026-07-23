@@ -45,10 +45,19 @@
 
 ## 5. GPT 下一步应补的研究（请 GPT 会话直接改本文件）
 
-- [ ] Create 状态机图（ASCII/mermaid）与 API 字段对照表  
+- [x] Home/Explore → project → Remix → Create 状态与字段合同（`RETENTION_REMIX_LOOP.md`）
+- [ ] Create 状态机图（ASCII/mermaid）与现有 API 字段完整对照表
 - [ ] Seller Pack 与 `/api/generate` 多 job 结算伪代码  
 - [ ] 竞品定价档 vs 我们 1/5/15 的 ICP 叙事表  
-- [ ] 读 Grok `COMPETITOR_PRODUCT_INTERACTION` 后更新「开放问题」  
+- [x] 读 Grok `COMPETITOR_PRODUCT_INTERACTION` 并完成产品交互规格
+
+## 6. 2026-07-23 · Home retention / Create 实测补充
+
+- Higgsfield 首页是发现系统，不是传统 Hero：公开页面实测有密集视频、项目、应用和预设入口；视频工作台把 job 压成 `Add image → Choose preset → Get video`。
+- Yiha 首页与 Create 的关键不是通用模型数量，而是大量内容都能通过 `?remix=` 回到创作台；Create 同屏包含参考素材、prompt、模型、生成和 History。
+- Pikbo 当前 `HfExploreHome` 的问题不是文案不够大，而是 `projects` 被忽略、无项目详情、无 RemixIntent、首屏视频只是低透明背景，观看与创作断开。
+- 决策：首页前三屏改为 Toy Premiere → Before/After → job recipe rails；每个 verified project 都能保留参数进入 Create。
+- 不复制 HF 促销/套件导航，也不复制 Yiha 的 Music/KOL/多模态货架；只把执行闭环用于 owned-toy photo → sellable clip。
 
 ---
 

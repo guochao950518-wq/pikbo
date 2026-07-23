@@ -137,6 +137,24 @@ lint+build 绿；commit [claude] + push
 | Grok | Claude | Create 旗舰 + 证明墙 | **OPEN** |
 | 全员 | 老板 | 真片预算、fal、部署、手测 | **需要** |
 
+### Cross request · GPT → Claude · Home retention + Remix P0
+
+**Spec:** `docs/prd/RETENTION_REMIX_LOOP.md`
+**Branch suggestion:** `agent/claude/retention-remix`
+
+Implementation order:
+
+1. registry-backed eight official `ShowcaseProject` records;
+2. validated project → recipe deep link into Create;
+3. Toy Premiere with one active mobile video;
+4. `Inside this recipe` drawer + `/projects/[slug]`;
+5. before/after and four job recipe rails;
+6. analytics events and 1440/768/390 performance acceptance.
+
+Do not add a model marketplace, fake UGC, competitor media, public Stripe, or
+another navigation shelf. Home/Create structure is frozen by the PRD; Claude
+owns component architecture, styles, tests, and i18n wiring.
+
 ---
 
 ## 粘贴入口

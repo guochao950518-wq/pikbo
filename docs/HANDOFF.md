@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [gpt] home retention + official project Remix contract
+- `RETENTION_REMIX_LOOP.md` converts live HF/Yiha inspection into a PIKBO-specific Toy Premiere → Before/After → recipe rail → Remix → Create loop.
+- Current gap is explicit: `HfExploreHome` ignores projects, uses a low-opacity background, has no project detail, and loses context when the visitor leaves for Create.
+- The contract freezes `ShowcaseProject`, validated `RemixIntent`, project detail fields, Create preflight, analytics events, performance limits, and 1440/768/390 acceptance.
+- `WORLD_CLASS_PIKBO.md` now requires Home/Explore to preserve recipe context into the existing three-decision Create path.
+- Claude handoff is in DISPATCH; no app/API/credits/Stripe/DNS implementation changed.
+
 ### 2026-07-23 — [grok] shared research hub for Grok+GPT+Claude
 - Boss: all three agents research; results **in repo**; shared.
 - Hub: `docs/research/README.md` · consensus `SHARED_SYNTHESIS.md` · notes `by-agent/{GROK,GPT,CLAUDE}.md`
