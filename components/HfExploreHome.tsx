@@ -66,6 +66,19 @@ function Clip({
   );
 }
 
+/* ---- 0. Compact ICP one-liner — who · problem · result (no heavy hero) ---- */
+function IcpHeader() {
+  const { t } = useI18n();
+  return (
+    <section className="px-3 pb-1 pt-4 sm:px-5">
+      <p className="eyebrow">{t("home.icp.eyebrow")}</p>
+      <h1 className="font-display mt-1.5 max-w-3xl text-[19px] font-bold leading-tight tracking-tight text-white sm:text-[24px]">
+        {t("home.icp.title")}
+      </h1>
+    </section>
+  );
+}
+
 /* ---- 1. Top feature row — big landscape media cards, TITLE BELOW (HF pattern) ---- */
 function FeatureRow({ demos }: { demos: DemoVideo[] }) {
   const { t } = useI18n();
@@ -383,6 +396,7 @@ export function HfExploreHome({
   void projects;
   return (
     <div className="min-h-screen bg-black pb-24 text-white">
+      <IcpHeader />
       <FeatureRow demos={demos} />
       <LimePromo demo={demos[3 % demos.length]} />
       <ModelGrid />

@@ -51,6 +51,8 @@ const en: Dict = {
   "home.hero2.blurb": "The reveal loop, built for Reels",
   "home.hero3.title": "360° listing spin",
   "home.hero3.blurb": "Marketplace packshot from one photo",
+  "home.icp.eyebrow": "AI video · designer toys",
+  "home.icp.title": "Turn a photo of a toy you own into a share-ready clip",
   "home.promo.chip": "1 Mini trial · free",
   "home.promo.title": "Animate a toy you already own",
   "home.promo.sub":
@@ -104,6 +106,8 @@ const zh: Dict = {
   "home.hero2.blurb": "为 Reels 打造的开箱循环",
   "home.hero3.title": "360° 商品旋转",
   "home.hero3.blurb": "一张照片生成商品图",
+  "home.icp.eyebrow": "AI 视频 · 潮玩手办",
+  "home.icp.title": "把你手上的玩具照片，变成能直接发的短视频",
   "home.promo.chip": "1 次 Mini 试用 · 免费",
   "home.promo.title": "让你手上的玩具动起来",
   "home.promo.sub":
@@ -157,6 +161,8 @@ const ja: Dict = {
   "home.hero2.blurb": "Reels向けの開封ループ",
   "home.hero3.title": "360° 商品スピン",
   "home.hero3.blurb": "写真1枚で商品ショット",
+  "home.icp.eyebrow": "AI動画 · デザイナートイ",
+  "home.icp.title": "手持ちのトイの写真を、そのまま投稿できる動画に",
   "home.promo.chip": "Miniお試し1回 · 無料",
   "home.promo.title": "手持ちのトイを動かそう",
   "home.promo.sub":
@@ -210,6 +216,8 @@ const es: Dict = {
   "home.hero2.blurb": "El bucle de revelación, para Reels",
   "home.hero3.title": "Giro 360° para listados",
   "home.hero3.blurb": "Foto de producto desde una imagen",
+  "home.icp.eyebrow": "Video IA · juguetes de diseñador",
+  "home.icp.title": "Convierte la foto de un juguete tuyo en un clip listo para compartir",
   "home.promo.chip": "1 prueba Mini · gratis",
   "home.promo.title": "Anima un juguete que ya tienes",
   "home.promo.sub":
