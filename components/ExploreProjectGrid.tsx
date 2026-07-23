@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { AutoPlayVideo } from "@/components/AutoPlayVideo";
 import {
   SHOWCASE_CATEGORIES,
+  passesHomeProofQuality,
   showcaseProjectHref,
   showcaseProvenanceLabel,
   showcaseRecipeHref,
@@ -107,9 +108,26 @@ export function ExploreProjectGrid({
                     className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.025]"
                   />
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/15 to-transparent" />
-                  <span className="absolute left-2 top-2 rounded-full border border-white/10 bg-black/65 px-2 py-1 text-[9px] font-black uppercase tracking-wide text-[#c8ff3d] backdrop-blur">
-                    {showcaseProvenanceLabel(project.provenance)}
-                  </span>
+                  <div className="absolute left-2 top-2 flex flex-wrap gap-1">
+                    <span className="rounded-full border border-white/10 bg-black/65 px-2 py-1 text-[9px] font-black uppercase tracking-wide text-[#c8ff3d] backdrop-blur">
+                      {showcaseProvenanceLabel(project.provenance)}
+                    </span>
+                    {passesHomeProofQuality(project.qualityScores) ? (
+                      <span
+                        className="rounded-full border border-amber-200/25 bg-black/65 px-2 py-1 text-[9px] font-black uppercase tracking-wide text-amber-100/90 backdrop-blur"
+                        title="Provisional Lab self-check · all scores ≥4/5 · not external human QA"
+                      >
+                        Lab ≥4
+                      </span>
+                    ) : (
+                      <span
+                        className="rounded-full border border-white/15 bg-black/65 px-2 py-1 text-[9px] font-black uppercase tracking-wide text-white/55 backdrop-blur"
+                        title="Formal five-score review pending — not top-rated"
+                      >
+                        Review pending
+                      </span>
+                    )}
+                  </div>
                   <div className="absolute inset-x-0 bottom-0 p-3">
                     <p className="text-[9px] font-black uppercase tracking-[0.14em] text-white/45">
                       {project.character} · {project.aspectRatio}
@@ -133,6 +151,14 @@ export function ExploreProjectGrid({
                 <Link
                   href={showcaseRecipeHref(project)}
                   className="shrink-0 text-[10px] font-black text-[#c8ff3d] hover:underline"
+                  onClick={() =>
+                    track({
+                      event: "recipe_use",
+                      path: "/explore",
+                      recipe: project.recipeSlug,
+                      meta: { slug: project.slug, source: "explore_use_recipe" },
+                    })
+                  }
                 >
                   Use recipe
                 </Link>

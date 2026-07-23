@@ -68,6 +68,9 @@ export default async function ExplorePage({
           <span>Cached playback · 0 credits</span>
           <span>Live runs · current 10-credit contract</span>
           <span>Mobile · one playing clip maximum</span>
+          <span title="Provisional Lab self-check · not external human QA">
+            Lab ≥4 · provisional proof gate
+          </span>
         </div>
       </header>
 

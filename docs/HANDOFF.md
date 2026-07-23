@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Pricing FAQ JSON-LD + Explore Lab≥4 proof chips
+- `/pricing`: canonical + OG + FAQPage JSON-LD from shared `pricingFaqItems`.
+- Explore cards: **Lab ≥4** / Review pending chips (provisional, not fake UGC).
+- Use recipe tracks `recipe_use`; Explore header notes provisional proof gate.
+- Verified: engine-smoke · typecheck · lint.
+
 ### 2026-07-24 — [grok] Prod video-webhook secret + jobs health probe
 - `/api/webhooks/video-provider`: production refuses unsigned POSTs (`WEBHOOK_NOT_CONFIGURED`).
 - health.jobs via `generationJobsProbe`; health.videoWebhook.secretConfigured (presence only).

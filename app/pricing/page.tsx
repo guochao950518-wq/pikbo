@@ -21,7 +21,39 @@ import {
 export const metadata: Metadata = {
   title: "Pricing for Toy Sellers and Collectors",
   description: `Compare finite-credit ${site.name} plans for turning owned toy photos into listing, launch, and social videos. Live billing remains closed during validation.`,
+  alternates: { canonical: "/pricing" },
+  openGraph: {
+    title: `Pricing · ${site.name}`,
+    description: `Finite Free / Creator / Shop credits for toy listing and social clips. Live billing stays off during validation.`,
+    url: `${site.url}/pricing`,
+  },
 };
+
+/** Shared FAQ body + FAQPage JSON-LD (Phase H — no thin structured data). */
+function pricingFaqItems(): { q: string; a: string }[] {
+  return [
+    {
+      q: "What does the current credit number mean?",
+      a: `The current foundation charges ${CREDITS_PER_VIDEO} credits per eligible generation. Model-, resolution-, and duration-aware weights are next. Failed live generations are refunded.`,
+    },
+    {
+      q: "Can I test this with one real product photo?",
+      a: `Yes. Browse cached official ${site.name} examples, then open Studio with a photo of a toy you own. With provider access configured, Free includes one 5-second 480p Mini live trial; otherwise Studio returns a clearly labeled cached demo that does not animate your upload.`,
+    },
+    {
+      q: "Can I use clips commercially?",
+      a: "Creator and Shop are intended to include commercial use for reviewed listings and ads made from toy photos you own. Live billing is not open yet, and generated angles or product details must be checked before publishing.",
+    },
+    {
+      q: "Is any plan unlimited?",
+      a: "No. Video models have a real per-generation cost, so every plan shows a finite credit allowance.",
+    },
+    {
+      q: "Can the credit rate change?",
+      a: "Yes. Provider cost changes with model, output size, and duration. PIKBO will only change public weights when the same quote is enforced by the server and verified against provider billing.",
+    },
+  ];
+}
 
 export default async function PricingPage({
   searchParams,
@@ -34,9 +66,23 @@ export default async function PricingPage({
     : params.copy;
   const copyVariant: PricingCopyVariant =
     requestedCopy === "cost" ? "cost-control" : "outcome";
+  const faq = pricingFaqItems();
+  const faqLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
 
   return (
     <div className="pb-24">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
+      />
       <PricingHeroCopy variant={copyVariant} />
 
       <div className="container-x py-12 sm:py-16">
@@ -149,38 +195,17 @@ export default async function PricingPage({
             Pricing questions, answered plainly
           </h2>
           <div className="mt-6 space-y-3">
-            {[
-              [
-                "What does the current credit number mean?",
-                `The current foundation charges ${CREDITS_PER_VIDEO} credits per eligible generation. Model-, resolution-, and duration-aware weights are next. Failed live generations are refunded.`,
-              ],
-              [
-                "Can I test this with one real product photo?",
-                `Yes. Browse cached official ${site.name} examples, then open Studio with a photo of a toy you own. With provider access configured, Free includes one 5-second 480p Mini live trial; otherwise Studio returns a clearly labeled cached demo that does not animate your upload.`,
-              ],
-              [
-                "Can I use clips commercially?",
-                "Creator and Shop are intended to include commercial use for reviewed listings and ads made from toy photos you own. Live billing is not open yet, and generated angles or product details must be checked before publishing.",
-              ],
-              [
-                "Is any plan unlimited?",
-                "No. Video models have a real per-generation cost, so every plan shows a finite credit allowance.",
-              ],
-              [
-                "Can the credit rate change?",
-                "Yes. Provider cost changes with model, output size, and duration. PIKBO will only change public weights when the same quote is enforced by the server and verified against provider billing.",
-              ],
-            ].map(([question, answer]) => (
-              <Card key={question} className="overflow-hidden">
+            {faq.map((item) => (
+              <Card key={item.q} className="overflow-hidden">
                 <details className="group">
                   <summary className="cursor-pointer list-none p-5 font-semibold text-[var(--fg)] marker:content-none">
-                    {question}
+                    {item.q}
                     <span className="float-right text-[var(--mint)] transition group-open:rotate-45">
                       ＋
                     </span>
                   </summary>
                   <CardContent className="border-t border-[var(--border)] pt-4 text-sm leading-6 text-[var(--fg-muted)]">
-                    {answer}
+                    {item.a}
                   </CardContent>
                 </details>
               </Card>

@@ -1312,6 +1312,15 @@ assert.match(
   fs.readFileSync(join(root, "app/profile/page.tsx"), "utf8"),
   /signed-in durable|durable wallet/
 );
+
+// Pricing FAQ JSON-LD + Explore proof labels
+const pricingPage = fs.readFileSync(join(root, "app/pricing/page.tsx"), "utf8");
+assert.match(pricingPage, /canonical:\s*[\"']\/pricing[\"']/);
+assert.match(pricingPage, /FAQPage|application\/ld\+json/);
+assert.match(pricingPage, /pricingFaqItems/);
+// exploreGrid already loaded earlier in this script
+assert.match(exploreGrid, /passesHomeProofQuality|Lab ≥4|Lab >=4/);
+assert.match(exploreGrid, /recipe_use/);
 const critPathModeA = fs.readFileSync(
   join(root, "scripts/critical-path.sh"),
   "utf8"

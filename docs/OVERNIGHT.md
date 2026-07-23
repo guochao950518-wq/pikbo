@@ -82,7 +82,8 @@
 41. [x] Sliding asset TTL · health assets probe · re-register after ASSET recovery
 42. [x] Phase H analytics funnel (upload/project/export) · profile honesty · robots /status
 43. [x] Prod video-webhook secret required · jobs/assets health · Mode A honesty probes
-44. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
+44. [x] Pricing FAQ JSON-LD + Explore Lab≥4 provisional proof chips
+45. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
 
 ### 老板醒来验收
 
@@ -96,8 +97,8 @@
 
 ## Grok 本拍状态（3 行）
 
-- Production refuses unsigned video-provider webhooks (Stripe parity · WEBHOOK_NOT_CONFIGURED).  
-- health.jobs + videoWebhook probes; StatusProbe + mode-a-acceptance expanded.  
+- Pricing canonical + FAQPage JSON-LD (shared faq items, no thin schema).  
+- Explore Lab ≥4 / Review pending proof chips · recipe_use on Use recipe.  
 - engine-smoke green · Mode A still needs boss Vercel login + env.
 
 ---
