@@ -28,7 +28,14 @@ See also `docs/GAP_AUDIT.md` for the latest gap analysis.
 | Batch agent | ✓ | `/supercomputer` | workspace; provider-gated |
 | Cmd+K palette | ✓ | global | live |
 | Auth multi-device | ✓ | — | todo Supabase |
-| Multi-model Kling/Veo live | ✓ | catalog only | later |
+| Multi-model Kling/Veo live | ✓ | catalog only | later (honest only) |
+| Flow creation hub | ✓ | `/flow` | live |
+| Remix deep links | ✓ | `/create?effect&source…` | live |
+| Official project detail | ✓ | `/projects/[slug]` | live |
+| SEO tool landings | ✓ | `/tools/*` | live |
+| First-run sample try | ✓ | `/create?try=1` | live |
+
+**Legal:** `docs/LEGAL_PARITY_PLAN.md` — pattern parity only, no brand/media theft.
 
 ## Provider-backed engines
 - Video: ByteDance **Seedance 2.0** + Fast (fal)

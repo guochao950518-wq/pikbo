@@ -27,23 +27,28 @@ const PRIMARY = [
 
 /** Soft-nav: More entries carry honest capability tags (Local / Preview). */
 const MORE = [
+  { href: "/flow", key: "nav.flow", tag: null },
   { href: "/library", key: "nav.library", tag: "Local" },
   { href: "/image", key: "nav.image", tag: "Preview" },
   { href: "/supercomputer", key: "nav.batch", tag: "Preview" },
   { href: "/cinema", key: "nav.cinema", tag: "Preview" },
   { href: "/models", key: "nav.models", tag: "Preview" },
   { href: "/explore", key: "nav.feed", tag: "Preview" },
+  { href: "/tools", key: "nav.tools", tag: null },
   { href: "/guides", key: "nav.guides", tag: null },
   { href: "/profile", key: "nav.profile", tag: "Local" },
 ] as const;
 
-/** Mobile critical path — same destinations, Generate is the primary action */
+/**
+ * Mobile chrome ≈ suite pattern: Home · Lab · Generate · Library · Profile
+ * (HF-class bottom bar; Generate is center primary.)
+ */
 const MOBILE = [
   { href: "/", key: "nav.home", icon: "⌂" },
-  { href: "/effects", key: "nav.presets", icon: "◈" },
-  { href: "/create", key: "cta.generate", icon: "✦", primary: true as const },
   { href: "/community", key: "nav.lab", icon: "◉" },
-  { href: "/pricing", key: "cta.pricing", icon: "◎" },
+  { href: "/create", key: "cta.generate", icon: "✦", primary: true as const },
+  { href: "/library", key: "nav.library", icon: "▢" },
+  { href: "/profile", key: "nav.profile", icon: "○" },
 ];
 
 function active(path: string, href: string) {

@@ -354,6 +354,47 @@ export function HfExploreHome({
         </div>
       </section>
 
+      {/* HF Flow–class creation matrix strip */}
+      <section className="border-b border-white/10 px-3 py-8 sm:px-5">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[#c8ff3d]">
+                Creation flow
+              </p>
+              <h2 className="font-display text-xl font-bold uppercase tracking-tight sm:text-2xl">
+                Every way to make a clip
+              </h2>
+            </div>
+            <Link
+              href="/flow"
+              className="text-[12px] font-semibold text-[#c8ff3d] hover:underline"
+            >
+              Open full Flow →
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+            {[
+              { href: "/create?try=1", label: "Try free", sub: "Sample ready" },
+              { href: "/effects", label: "Presets", sub: "Viral recipes" },
+              { href: "/supercomputer?pack=seller", label: "Seller Pack", sub: "3 outputs" },
+              { href: "/image", label: "Stills", sub: "Flux" },
+              { href: "/community", label: "Lab", sub: "Examples" },
+              { href: "/models", label: "Models", sub: "Honest shelf" },
+            ].map((c) => (
+              <Link
+                key={c.href}
+                href={c.href}
+                className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-3 transition hover:border-[#c8ff3d]/40 hover:bg-[#c8ff3d]/5"
+              >
+                <p className="text-sm font-bold text-white">{c.label}</p>
+                <p className="text-[11px] text-white/40">{c.sub}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Lower: Seller Pack + CTA */}
       <section className="px-3 pb-6 sm:px-5">
         <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-4 rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.06] to-transparent p-5 sm:flex-row sm:items-center sm:p-6">
