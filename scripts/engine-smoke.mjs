@@ -739,7 +739,7 @@ assert.match(
 );
 assert.match(
   fs.readFileSync(join(root, "app/api/generations/route.ts"), "utf8"),
-  /NOT_IMPLEMENTED/
+  /local-memory|listJobsForSession/
 );
 assert.match(
   fs.readFileSync(join(root, "lib/durableCredits/shadow.ts"), "utf8"),
