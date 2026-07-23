@@ -4,6 +4,15 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [claude] shell triage G1–G4/G7 soft (branch `agent/claude/shell-triage`)
+- **G1 nav:** Primary = Explore · Create · Effects · Lab + Pricing/Generate CTAs. Models/Cinema/Batch/Feed/Image/Library under **More**. Mobile = Home · Effects · Generate · Lab · Pricing.
+- **G2 density:** Homepage uses `buildHomeShowcaseFeed()` — max **8 unique** Lab demos; removed multi-pass shared-loop wall. Lab/Feed `buildVideoFeed()` no longer density-triplicates presets.
+- **G4 404s:** `next.config.ts` permanent redirects for short/wrong `/for/*` slugs (e.g. `/for/etsy-sellers` → `/for/etsy-listing-videos`). Footer already uses real USE_CASES slugs.
+- **Perf soft:** video `preload="metadata"` (no tile `preload=auto`); ≤2 concurrent autoplays in `AutoPlayVideo` + home `Clip`.
+- **G7 topup:** `/api/dev/topup` forbidden on production (`NODE_ENV`/`VERCEL_ENV`); health `devTopup` matches.
+- **Verified:** eslint changed files, `tsc --noEmit`, `next build` green (71 routes).
+- **Remaining for GPT whitelist:** exact 8 preset slug list (`docs/prd/SOFT_NAV_AND_PRESETS.md`), formal G1/G2 Pass in GO_NO_GO; Codex honesty copy G3/G5; hand test G6.
+
 ### 2026-07-23 — [grok] NO-GO public launch · emergency dispatch GPT/Codex/Claude
 - **Ruling:** Public `pikbo.ai` is **NO-GO** until G1–G7 green. Not a Stripe issue — empty nav, shared demo wall, footer 404s, unrun hand tests.
 - Evidence: `docs/BRUTAL_EXPERT_ROAST_2026-07-23.md` · Gate: `docs/prd/GO_NO_GO.md` · Board: `docs/DISPATCH.md`

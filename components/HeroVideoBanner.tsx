@@ -48,7 +48,7 @@ export function HeroVideoBanner() {
         loop
         playsInline
         autoPlay={!reducedMotion}
-        preload="auto"
+        preload="metadata"
       >
         <source src={demo.webm} type="video/webm" />
         <source src={demo.mp4} type="video/mp4" />

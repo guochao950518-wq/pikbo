@@ -95,7 +95,9 @@ export async function GET() {
     },
     devTopup:
       process.env.NODE_ENV === "development" ||
-      process.env.PIKBO_DEV_TOPUP === "1",
+      (process.env.VERCEL_ENV !== "production" &&
+        process.env.NODE_ENV !== "production" &&
+        process.env.PIKBO_DEV_TOPUP === "1"),
     video: {
       free:
         process.env.FAL_MODEL_FREE ||

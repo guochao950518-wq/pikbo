@@ -6,6 +6,66 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
   },
+  async redirects() {
+    // G4: broken short slugs / roast evidence → real /for/* pages (200)
+    return [
+      {
+        source: "/for/etsy-sellers",
+        destination: "/for/etsy-listing-videos",
+        permanent: true,
+      },
+      {
+        source: "/for/etsy",
+        destination: "/for/etsy-listing-videos",
+        permanent: true,
+      },
+      {
+        source: "/for/tiktok-shop",
+        destination: "/for/tiktok-shop-product-videos",
+        permanent: true,
+      },
+      {
+        source: "/for/tiktok",
+        destination: "/for/tiktok-shop-product-videos",
+        permanent: true,
+      },
+      {
+        source: "/for/amazon",
+        destination: "/for/amazon-product-videos",
+        permanent: true,
+      },
+      {
+        source: "/for/amazon-sellers",
+        destination: "/for/amazon-product-videos",
+        permanent: true,
+      },
+      {
+        source: "/for/instagram",
+        destination: "/for/instagram-reels-for-collectors",
+        permanent: true,
+      },
+      {
+        source: "/for/collectors",
+        destination: "/for/instagram-reels-for-collectors",
+        permanent: true,
+      },
+      {
+        source: "/for/blind-box",
+        destination: "/for/blind-box-brand-marketing",
+        permanent: true,
+      },
+      {
+        source: "/for/whatnot",
+        destination: "/for/whatnot-live-selling",
+        permanent: true,
+      },
+      {
+        source: "/for/depop",
+        destination: "/for/depop-shop-videos",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {
