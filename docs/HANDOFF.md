@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [gpt] Wave A engineering reassigned to Grok
+- Boss reassigned implementation because Claude is unavailable until Monday.
+- Grok branch: `agent/grok/higgsfield-wave-a`; exact takeover block is in `docs/DISPATCH.md`.
+- Order is fixed: ShowcaseProject → project detail → Home rail → Explore filters → Create versions → Library grouping → Seller Pack compatibility.
+- Existing fal/API and Supabase product contracts remain authoritative; no second persistence layer or fake suite doors.
+- Stripe, public DNS, copied Higgsfield content, and missing Audio/Canvas/MCP shells remain out of Wave A.
+
 ### 2026-07-23 — [gpt] Higgsfield full public-surface parity inventory
 - `docs/prd/HIGGSFIELD_PUBLIC_PARITY.md` maps the inspected target's 17 top-level products plus presets, projects, assets, models, apps, profile, and settings.
 - Wave A is the only immediate build: Home retention sequence, Explore, Create, Effects, Inside Project, Assets, and Seller Pack.
