@@ -209,6 +209,9 @@ export function LibraryGrid() {
           >
             ▶ Free sample · 10 seconds
           </Link>
+          <Link href="/modules" className="btn btn-ghost text-sm">
+            Toy Modules
+          </Link>
           <Link
             href="/create?mode=seller-pack"
             className="btn btn-ghost text-sm"
@@ -216,7 +219,7 @@ export function LibraryGrid() {
             Seller Pack · 3 outputs
           </Link>
           <Link href="/create" className="btn btn-ghost text-sm">
-            Open Studio
+            Open Generate
           </Link>
         </div>
         <p className="mt-4 max-w-xs text-[10px] text-[var(--fg-dim)]">

@@ -44,6 +44,12 @@ export default async function ExplorePage({
           </div>
           <div className="flex flex-wrap gap-2">
             <Link
+              href="/modules"
+              className="rounded-full border border-[#c8ff3d]/40 bg-[#c8ff3d]/10 px-5 py-2.5 text-xs font-black text-[#c8ff3d]"
+            >
+              Modules
+            </Link>
+            <Link
               href="/create"
               className="rounded-full bg-[#c8ff3d] px-5 py-2.5 text-xs font-black text-black"
             >
