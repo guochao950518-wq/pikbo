@@ -474,7 +474,27 @@ export function CreateStudio({
             ? "This allowance is used up. Compare finite plans to continue."
             : "Something went wrong")
       );
-      setStatus("error");
+      // Keep prior versions visible after a failed attempt; leave error banner on.
+      if (versions.length > 0) {
+        const keep =
+          versions.find((v) => v.id === activeVersionId) ?? versions[0];
+        if (keep) {
+          setActiveVersionId(keep.id);
+          setVideoUrl(keep.videoUrl);
+          setDemo(keep.demo);
+          setWatermark(keep.watermark);
+          setUsedModel(keep.model);
+          setResultDuration(keep.duration);
+          setResultAspect(keep.aspectRatio);
+          setResultResolution(keep.resolution);
+          setLastCreditState(keep.creditState);
+          setStatus("done");
+        } else {
+          setStatus("error");
+        }
+      } else {
+        setStatus("error");
+      }
       void refreshSession();
       return;
     }
@@ -499,11 +519,12 @@ export function CreateStudio({
       typeof data.resolution === "string" ? data.resolution : resolvedRes
     );
     const usedPreset = PRESETS.find((p) => p.slug === fx) ?? preset;
+    const versionId =
+      typeof data.requestId === "string" && data.requestId
+        ? data.requestId
+        : `v-${versions.length + 1}-${fx}-${resultDuration ?? effectiveDuration}`;
     const version: ResultVersion = {
-      id:
-        typeof data.requestId === "string" && data.requestId
-          ? data.requestId
-          : `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      id: versionId,
       videoUrl: data.videoUrl,
       demo: Boolean(data.demo),
       watermark: Boolean(data.watermark),
@@ -586,18 +607,14 @@ export function CreateStudio({
     setResultAspect(version.aspectRatio);
     setResultResolution(version.resolution);
     setLastCreditState(version.creditState);
-    // Restore the still that produced this version for honest Before/After.
-    if (version.sourceImage) {
-      setImage(version.sourceImage);
-    }
-    if (version.effect) {
-      setEffect(version.effect);
-    }
+    // Do not overwrite the compose upload — Before/After uses version.sourceImage.
     setStatus("done");
+    setError(null);
   }
 
   const activeVersion =
     versions.find((v) => v.id === activeVersionId) ?? versions[0] ?? null;
+  /** Still tied to the active result version (honest A/B when switching Vn). */
   const compareStill = activeVersion?.sourceImage || image;
 
   function shareX() {
@@ -1505,7 +1522,7 @@ export function CreateStudio({
                     {compare ? "Video only" : "Photo ↔ video"}
                   </button>
                 </div>
-                {versions.length > 1 ? (
+                {versions.length > 0 ? (
                   <div className="mb-3 flex items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                     <span className="shrink-0 text-[10px] font-black uppercase tracking-wide text-[var(--fg-dim)]">
                       Versions
@@ -1520,6 +1537,7 @@ export function CreateStudio({
                             ? "border-[var(--mint)] bg-[var(--mint)]/10 text-[var(--mint)]"
                             : "border-[var(--border)] text-[var(--fg-muted)]"
                         }`}
+                        title={`${version.effectName || version.effect} · ${version.creditState}`}
                       >
                         V{versions.length - index} · {version.creditState}
                       </button>
@@ -1544,9 +1562,10 @@ export function CreateStudio({
                     </div>
                     <div className="relative">
                       <p className="mb-1 text-center text-[10px] font-bold uppercase text-[var(--fg-dim)]">
-                        After
+                        After · server output
                       </p>
                       <video
+                        key={videoUrl}
                         src={videoUrl}
                         controls
                         autoPlay
@@ -1568,6 +1587,7 @@ export function CreateStudio({
                 ) : (
                   <div className="relative">
                     <video
+                      key={videoUrl}
                       src={videoUrl}
                       controls
                       autoPlay
@@ -1593,7 +1613,7 @@ export function CreateStudio({
                   <p className="mt-1 text-[12px] leading-relaxed text-[var(--fg-muted)]">
                     {demo
                       ? "This is a free labeled demo — it shows the recipe style. Live mode uses your real toy photo."
-                      : "Save it, post it, or make another. This is what Pikbo is for: one photo → a clip you can actually use."}
+                      : "Save it, post it, or make another version. Retry appends a new version — prior clips stay switchable."}
                   </p>
                 </div>
                 <p className="mx-auto mt-2 max-w-md text-center text-[11px] leading-relaxed text-[var(--fg-dim)]">
@@ -1604,7 +1624,7 @@ export function CreateStudio({
                 <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
                   <a
                     href={videoUrl}
-                    download={`pikbo-${effect}.mp4`}
+                    download={`pikbo-${activeVersion?.effect || effect}.mp4`}
                     target="_blank"
                     rel="noreferrer"
                     className="btn btn-primary px-4 py-2 text-xs"
@@ -1666,28 +1686,80 @@ export function CreateStudio({
                     Seller Pack
                   </Link>
                 </div>
+
+                {/* Wave A: server-returned metadata for the active version */}
+                <dl className="mx-auto mt-4 grid max-w-lg grid-cols-2 gap-x-4 gap-y-1.5 rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-[11px] sm:grid-cols-3">
+                  <div>
+                    <dt className="text-[var(--fg-dim)]">Recipe</dt>
+                    <dd className="font-semibold text-[var(--fg)]">
+                      {activeVersion?.effectName || preset.name}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-[var(--fg-dim)]">Model</dt>
+                    <dd className="font-semibold text-[var(--fg)]">
+                      {(
+                        usedModel ||
+                        MODELS.find((m) => m.id === modelId)?.label ||
+                        "—"
+                      )
+                        .toString()
+                        .split("/")
+                        .pop()}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-[var(--fg-dim)]">Duration</dt>
+                    <dd className="font-semibold text-[var(--fg)]">
+                      {resultDuration ?? effectiveDuration}s
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-[var(--fg-dim)]">Aspect</dt>
+                    <dd className="font-semibold text-[var(--fg)]">
+                      {resultAspect ?? aspectRatio}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-[var(--fg-dim)]">Resolution</dt>
+                    <dd className="font-semibold text-[var(--fg)]">
+                      {resultResolution ?? (isFree ? "480p" : resolution)}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-[var(--fg-dim)]">Credits</dt>
+                    <dd className="font-semibold text-[var(--fg)]">
+                      {lastCreditState || (demo ? "0 cached" : "10 used")}
+                    </dd>
+                  </div>
+                  {activeVersion?.provider ? (
+                    <div>
+                      <dt className="text-[var(--fg-dim)]">Provider</dt>
+                      <dd className="font-semibold text-[var(--fg)]">
+                        {activeVersion.provider}
+                      </dd>
+                    </div>
+                  ) : null}
+                  {activeVersion?.requestId ? (
+                    <div className="col-span-2 sm:col-span-3">
+                      <dt className="text-[var(--fg-dim)]">Task ID</dt>
+                      <dd className="truncate font-mono text-[10px] text-[var(--fg-muted)]">
+                        {activeVersion.requestId}
+                      </dd>
+                    </div>
+                  ) : null}
+                </dl>
                 <p className="mt-2 text-center text-[10px] text-[var(--fg-dim)]">
-                  {(usedModel || MODELS.find((m) => m.id === modelId)?.label || "—")
-                    .toString()
-                    .split("/")
-                    .pop()}{" "}
-                  · {resultDuration ?? effectiveDuration}s ·{" "}
-                  {resultAspect ?? aspectRatio} ·{" "}
-                  {resultResolution ?? (isFree ? "480p" : resolution)}
-                  {activeVersion?.provider
-                    ? ` · ${activeVersion.provider}`
-                    : ""}
-                  {activeVersion?.requestId
-                    ? ` · id ${activeVersion.requestId.slice(0, 8)}`
+                  Metadata is what the server returned for this version — not a
+                  client-side guess.
+                  {versions.length > 1
+                    ? ` · ${versions.length} versions in this session`
                     : ""}
                 </p>
                 <p className="mt-1 text-center text-[10px] text-[var(--fg-dim)]">
                   {demo
                     ? `${PROVENANCE.cachedDemo} only — not from your upload · not cloud-backed`
                     : localLibraryNote()}
-                  {versions.length > 1
-                    ? ` · ${versions.length} versions in this session`
-                    : ""}
                 </p>
               </div>
             )}

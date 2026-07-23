@@ -10,6 +10,12 @@ Newest first. One block per meaningful landing.
 - Cap 8 session versions; creditState 0 cached / 10 used / 10 restored on fail.
 
 
+### 2026-07-23 — [grok] Create version compare + server metadata polish
+- Create session stack now stores source still / recipe / requestId / provider per version.
+- Photo↔video compare uses the active version’s still (not the current compose upload).
+- Result panel shows a server-metadata grid (recipe, model, duration, aspect, resolution, credits, task id).
+- Failed regenerate keeps prior versions visible; stack capped at 8. Wave A code on main.
+
 ### 2026-07-23 — [grok] Higgsfield Wave A core loop ready for review
 - Implementation SHA: `2e4a0a8` on `agent/grok/higgsfield-wave-a`.
 - Scope: one canonical ShowcaseProject registry now drives Home, Explore, Inside Project, and recipe deep links; unknown project slugs return 404.
