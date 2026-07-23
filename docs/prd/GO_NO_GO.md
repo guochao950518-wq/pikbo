@@ -23,7 +23,7 @@ Sunday deadline **does not override** Mode B gates.
 | ID | Gate | Pass standard | How to verify | Owner | Status |
 |----|------|---------------|---------------|-------|--------|
 | G1 | No empty-door nav | Primary chrome uses the four labels/routes frozen in `SOFT_NAV_AND_PRESETS`; previews live under More | Click every primary and utility destination | Claude | **SOFT PASS** (implementation on main; final deployed crawl pending) |
-| G2 | Preset density honest | Homepage uses only the eight whitelisted slugs; one unique approved asset per card; no shared-loop proof | Count homepage proof video URLs and compare with whitelist | Claude | **SOFT PASS** (home ≤8 unique; final provenance review remains) |
+| G2 | Preset density honest | Homepage uses only the eight whitelisted slugs; one unique approved asset per card; no shared-loop proof | Count homepage proof video URLs and compare with whitelist | Claude | **SOFT PASS** (`lib/softLaunch.ts` HOME_PROOF_SLUGS enforced in `buildHomeShowcaseFeed`) |
 | G3 | No fake community | Page name and cards state Official examples/cached; no claimed users, engagement, or customer output | Grep community/explore strings and inspect cards | Codex | **SOFT PASS** (world-class copy and unique Lab wall on main) |
 | G4 | Zero 404 on linked URLs | Every footer/`/for/*`/nav href returns 200 or is removed | `npm run link-check` against preview | Claude | **SOFT PASS** (redirects + `scripts/link-check.sh`; re-crawl after deploy) |
 | G5 | ICP in plain language | First screen states owned toy photo → listing/post clip, names target users, and exposes one trial action | Read `/` title, description, H1, supporting copy, and CTA | Codex | **SOFT PASS** (seller-first hero/meta on main; deployed re-check pending) |

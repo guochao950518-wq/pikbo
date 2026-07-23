@@ -4,6 +4,20 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [grok] GPT research marked COMPLETE · shared hub
+- GPT交付已在 main（含未推 origin 的 merge）：`WORLD_CLASS_PIKBO` · `SEO_INTENT_50` · `SOFT_NAV_AND_PRESETS` · **`RETENTION_REMIX_LOOP`**
+- Notes: `docs/research/by-agent/GPT.md` → status ✅
+- Consensus: `SHARED_SYNTHESIS` 增加 remake 闭环为 P0 抄项
+- **Claude next:** implement `RETENTION_REMIX_LOOP.md`；填 `by-agent/CLAUDE.md` 实现矩阵
+- Grok: push main to origin so all agents see GPT research
+
+### 2026-07-23 — [gpt] home retention + official project Remix contract
+- `RETENTION_REMIX_LOOP.md` converts live HF/Yiha inspection into a PIKBO-specific Toy Premiere → Before/After → recipe rail → Remix → Create loop.
+- Current gap is explicit: `HfExploreHome` ignores projects, uses a low-opacity background, has no project detail, and loses context when the visitor leaves for Create.
+- The contract freezes `ShowcaseProject`, validated `RemixIntent`, project detail fields, Create preflight, analytics events, performance limits, and 1440/768/390 acceptance.
+- `WORLD_CLASS_PIKBO.md` now requires Home/Explore to preserve recipe context into the existing three-decision Create path.
+- Claude handoff is in DISPATCH; no app/API/credits/Stripe/DNS implementation changed.
+
 ### 2026-07-23 — [grok] shared research hub for Grok+GPT+Claude
 - Boss: all three agents research; results **in repo**; shared.
 - Hub: `docs/research/README.md` · consensus `SHARED_SYNTHESIS.md` · notes `by-agent/{GROK,GPT,CLAUDE}.md`
@@ -11,6 +25,13 @@ Newest first. One block per meaningful landing.
 - Merged onto main from GPT branch: `WORLD_CLASS_PIKBO.md`, `SEO_INTENT_50.md`, `SOFT_NAV_AND_PRESETS.md` (+ GO_NO_GO sync)
 - Grok long-form remains: `COMPETITOR_PRODUCT_INTERACTION.md`
 - **GPT/Claude:** pull main, fill your `by-agent/*.md`, push `[gpt]`/`[claude]`.
+
+### 2026-07-23 — [gpt] world-class product contract + SEO Intent 50
+- `WORLD_CLASS_PIKBO.md` freezes the four ICP paths, three-decision Create flow, Toy Identity assessment, SKU project model, Seller OS packs, state machine, and 12 launch recipes.
+- Active prices remain unchanged; higher-ARPU tiers are research hypotheses gated by provider invoices, weighted credits, and paid pilots.
+- `SEO_INTENT_50.md` maps 50 queries to canonical routes, recipes, internal links, capability gates, and thin-page protections.
+- `SOFT_NAV_AND_PRESETS.md` freezes four primary nav routes, eight homepage proof slugs, route inventory, and the ten-step launch-day checklist.
+- `GO_NO_GO.md` is formally product-complete but stays NO-GO until live/refund evidence and release checks pass.
 
 ### 2026-07-23 — [grok] G6 PARTIAL live path smoke (not full Pass)
 - **1× live Mini OK:** POST `/api/generate` with `scout-still.webp` + `360-spin-showcase` + `ownsRights:true` → `demo:false`, fal `videoUrl`, credits **10→0**.

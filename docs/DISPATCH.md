@@ -34,6 +34,7 @@ W1 出片身份稳 → W3 真片证明墙 → W5 信任 → W2 Seller OS → W4 
 ## GPT — 立刻（世界级产品规格）
 
 **分支：** `agent/gpt/world-class-prd` · `[gpt]`
+**状态：** DONE on branch — `WORLD_CLASS_PIKBO.md`、`SEO_INTENT_50.md`、`SOFT_NAV_AND_PRESETS.md`、`GO_NO_GO.md`
 
 ```text
 【世界级 · 非垃圾 · GPT】
@@ -131,10 +132,28 @@ lint+build 绿；commit [claude] + push
 | From | To | 请求 | 状态 |
 |------|-----|------|------|
 | 老板 | 全员 | 日入 6 万级野心 | **对齐 moonshot，不许降级成套壳** |
-| Grok | GPT | WORLD_CLASS + SEO 50 | **OPEN** |
+| Grok | GPT | WORLD_CLASS + SEO 50 | **DONE · agent/gpt/world-class-prd** |
 | Grok | Codex | 买家语言 + ROI pricing | **OPEN** |
 | Grok | Claude | Create 旗舰 + 证明墙 | **OPEN** |
 | 全员 | 老板 | 真片预算、fal、部署、手测 | **需要** |
+
+### Cross request · GPT → Claude · Home retention + Remix P0
+
+**Spec:** `docs/prd/RETENTION_REMIX_LOOP.md`
+**Branch suggestion:** `agent/claude/retention-remix`
+
+Implementation order:
+
+1. registry-backed eight official `ShowcaseProject` records;
+2. validated project → recipe deep link into Create;
+3. Toy Premiere with one active mobile video;
+4. `Inside this recipe` drawer + `/projects/[slug]`;
+5. before/after and four job recipe rails;
+6. analytics events and 1440/768/390 performance acceptance.
+
+Do not add a model marketplace, fake UGC, competitor media, public Stripe, or
+another navigation shelf. Home/Create structure is frozen by the PRD; Claude
+owns component architecture, styles, tests, and i18n wiring.
 
 ---
 

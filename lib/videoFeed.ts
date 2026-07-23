@@ -3,6 +3,12 @@ import { PRESETS, CATEGORIES, type CategoryId } from "@/lib/presets";
 import { APPS } from "@/lib/catalog";
 import { MODELS } from "@/lib/catalog";
 import { viralName } from "@/lib/viralNames";
+import {
+  HOME_PROOF_BADGE,
+  HOME_PROOF_LIMIT,
+  HOME_PROOF_SLUGS,
+  isHomeProofSlug,
+} from "@/lib/softLaunch";
 
 export type FeedItem = {
   id: string;
@@ -37,21 +43,25 @@ function createHref(presetSlug: string) {
   return `/create?effect=${encodeURIComponent(presetSlug)}`;
 }
 
-/** Soft-launch homepage showcase cap (G2). GPT may replace with an exact slug whitelist. */
-export const HOME_SHOWCASE_LIMIT = 8;
+/** Soft-launch homepage showcase cap (G2) — frozen by SOFT_NAV_AND_PRESETS. */
+export const HOME_SHOWCASE_LIMIT = HOME_PROOF_LIMIT;
 
 /**
- * Homepage main proof wall — at most 8 cards, each with its own Lab demo asset.
- * No shared-loop density fills. Prefer sparse real cards over fake walls.
+ * Homepage main proof wall — only the product-whitelisted 8 slugs, each with a
+ * unique Lab demo asset. No shared-loop density fills.
  */
 export function buildHomeShowcaseFeed(
   limit = HOME_SHOWCASE_LIMIT
 ): FeedItem[] {
+  const byPreset = new Map(DEMO_VIDEOS.map((d) => [d.preset, d]));
   const seenMp4 = new Set<string>();
   const items: FeedItem[] = [];
 
-  for (const d of DEMO_VIDEOS) {
+  for (const slug of HOME_PROOF_SLUGS) {
     if (items.length >= limit) break;
+    if (!isHomeProofSlug(slug)) continue;
+    const d = byPreset.get(slug);
+    if (!d) continue; // recipe without approved footage stays off the wall
     if (seenMp4.has(d.mp4)) continue;
     seenMp4.add(d.mp4);
     const preset = PRESETS.find((p) => p.slug === d.preset);
@@ -61,7 +71,7 @@ export function buildHomeShowcaseFeed(
       subtitle: d.character,
       href: createHref(d.preset),
       detailHref: `/effects/${d.preset}`,
-      badge: "Official example · cached",
+      badge: HOME_PROOF_BADGE,
       ratio: d.ratio,
       demo: d,
       kind: "demo",

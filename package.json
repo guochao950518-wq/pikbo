@@ -10,6 +10,7 @@
     "preflight": "bash scripts/preflight.sh",
     "critical-path": "bash scripts/critical-path.sh",
     "link-check": "bash scripts/link-check.sh",
+    "g6-api-smoke": "node scripts/g6-api-smoke.mjs",
     "engine-smoke": "node scripts/engine-smoke.mjs",
     "softlive-checklist": "bash scripts/softlive-checklist.sh",
     "typecheck": "tsc --noEmit",

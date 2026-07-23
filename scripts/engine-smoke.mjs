@@ -243,11 +243,28 @@ assert.match(appShell, /MoreMenu|More/);
 const historySrc = fs.readFileSync(join(root, "lib/history.ts"), "utf8");
 assert.match(historySrc, /historyProvenance|provenance/);
 
-// G2/G3: Lab wall is unique official demos only (no shared-loop concept flood)
+// G2: homepage proof whitelist frozen in softLaunch + used by videoFeed
+const softLaunch = fs.readFileSync(join(root, "lib/softLaunch.ts"), "utf8");
+assert.match(softLaunch, /HOME_PROOF_SLUGS/);
+assert.match(softLaunch, /floating-hero/);
+assert.match(softLaunch, /mystery-box-reveal/);
+assert.match(softLaunch, /display-case-glam/);
 const videoFeed = fs.readFileSync(join(root, "lib/videoFeed.ts"), "utf8");
-assert.match(videoFeed, /HOME_SHOWCASE_LIMIT\s*=\s*8/);
+assert.match(videoFeed, /HOME_PROOF_SLUGS|HOME_SHOWCASE_LIMIT/);
+assert.match(videoFeed, /isHomeProofSlug|HOME_PROOF_SLUGS/);
 assert.match(videoFeed, /conceptRecipeCount/);
 assert.match(videoFeed, /official unique demos only|Official unique demos only/i);
+// Claude viral presets (SEO mesh) must remain registered
+const presetsSrc = fs.readFileSync(join(root, "lib/presets.ts"), "utf8");
+for (const slug of [
+  "melt-and-reform",
+  "bullet-time-orbit",
+  "desk-adventure",
+  "confetti-drop-reveal",
+  "snow-globe-world",
+]) {
+  assert.match(presetsSrc, new RegExp(`slug:\\s*"${slug}"`));
+}
 // Concept shared-loop badge must not reappear as Lab wall filler
 assert.doesNotMatch(
   videoFeed.slice(videoFeed.indexOf("export function buildVideoFeed")),
