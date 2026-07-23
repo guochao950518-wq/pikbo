@@ -4,6 +4,14 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [grok] Supabase keys detected · magic-link wiring
+- Boss filled local `.env.local` (URL + publishable + service_role; values not logged).
+- Added `@supabase/supabase-js`, `lib/supabase/*` clients, `POST /api/auth/magic-link`, `/auth/callback`.
+- Login form sends OTP email when Supabase Email provider is enabled.
+- Guest cookie path unchanged until durable wallet migration ships.
+
+---
+
 ### 2026-07-23 — [grok] Landing Free-download honesty + home proof quality gate
 - LandingToolPanel: Free live Download blocked; prefers `/api/downloads/[requestId]`.
 - Showcase: `passesHomeProofQuality` (≥4 all dimensions); provisional Lab scores + reviewerNotes on registry.

@@ -12,6 +12,7 @@ export default function robots(): MetadataRoute.Robots {
         "/settings",
         "/library",
         "/login",
+        "/auth/",
         "/checkout",
         // Preview / device-local studios (Phase H — not soft-launch primary)
         "/cinema",
