@@ -35,18 +35,26 @@ export default async function CreatePage({
     model?: string;
     mode?: string;
     prompt?: string;
+    source?: string;
+    ratio?: string;
+    duration?: string;
+    channel?: string;
   }>;
 }) {
   const sp = await searchParams;
 
   return (
     <>
-      {/* V2 tool core */}
+      {/* V2 tool core — remix deep link: effect/source/ratio/duration/channel */}
       <CreateStudio
         initialEffect={sp.effect}
         initialModel={sp.model}
         initialMode={sp.mode === "t2v" ? "t2v" : "i2v"}
         initialPrompt={sp.prompt}
+        initialSource={sp.source}
+        initialRatio={sp.ratio}
+        initialDuration={sp.duration}
+        initialChannel={sp.channel}
       />
       {/* SSR landing copy + internal links for crawlers */}
       <CreateSeoFooter effectSlug={sp.effect} />

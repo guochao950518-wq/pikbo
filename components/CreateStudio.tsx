@@ -23,6 +23,7 @@ import {
   PROVENANCE,
   resultProvenanceLabel,
 } from "@/lib/provenance";
+import { parseRemixSearchParams } from "@/lib/remixIntent";
 
 type Status = "idle" | "uploading" | "generating" | "done" | "error";
 type Mode = "i2v" | "t2v";
@@ -56,14 +57,36 @@ export function CreateStudio({
   initialModel,
   initialMode,
   initialPrompt,
+  initialSource,
+  initialRatio,
+  initialDuration,
+  initialChannel,
 }: {
   initialEffect?: string;
   initialModel?: string;
   initialMode?: Mode;
   initialPrompt?: string;
+  /** Official Lab project id (remix attribution) — RETENTION_REMIX_LOOP */
+  initialSource?: string;
+  initialRatio?: string;
+  initialDuration?: string;
+  initialChannel?: string;
 }) {
+  const remix = useMemo(
+    () =>
+      parseRemixSearchParams({
+        effect: initialEffect,
+        source: initialSource,
+        ratio: initialRatio,
+        duration: initialDuration,
+        channel: initialChannel,
+      }),
+    [initialEffect, initialSource, initialRatio, initialDuration, initialChannel]
+  );
+
   const bootPreset =
-    PRESETS.find((p) => p.slug === initialEffect) ?? PRESETS[0];
+    PRESETS.find((p) => p.slug === (remix.intent?.recipeSlug || initialEffect)) ??
+    PRESETS[0];
   // Soft launch is photo → video only (no Text→Video / multi-model theater).
   const mode: Mode = "i2v";
   void initialMode;
@@ -76,14 +99,24 @@ export function CreateStudio({
   const [effect, setEffect] = useState(bootPreset.slug);
   const [image, setImage] = useState<string | null>(null);
   const [extra, setExtra] = useState(initialPrompt ?? "");
-  const [duration, setDuration] = useState<5 | 10>(
-    bootPreset.duration === 10 ? 10 : 5
-  );
-  const [aspectRatio, setAspectRatio] = useState<"9:16" | "16:9" | "1:1">(
-    bootPreset.aspectRatio === "16:9" || bootPreset.aspectRatio === "1:1"
+  const [duration, setDuration] = useState<5 | 10>(() => {
+    if (remix.intent?.durationSeconds === 10 || remix.intent?.durationSeconds === 5) {
+      return remix.intent.durationSeconds;
+    }
+    return bootPreset.duration === 10 ? 10 : 5;
+  });
+  const [aspectRatio, setAspectRatio] = useState<"9:16" | "16:9" | "1:1">(() => {
+    if (
+      remix.intent?.aspectRatio === "16:9" ||
+      remix.intent?.aspectRatio === "1:1" ||
+      remix.intent?.aspectRatio === "9:16"
+    ) {
+      return remix.intent.aspectRatio;
+    }
+    return bootPreset.aspectRatio === "16:9" || bootPreset.aspectRatio === "1:1"
       ? bootPreset.aspectRatio
-      : "9:16"
-  );
+      : "9:16";
+  });
   const [status, setStatus] = useState<Status>("idle");
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -528,6 +561,53 @@ export function CreateStudio({
           </div>
         </div>
       </div>
+
+      {/* ── Remix context (from Home / project deep link) ── */}
+      {(remix.sourceLabel || remix.notices.length > 0 || remix.intent) && (
+        <div className="border-b border-[var(--mint)]/20 bg-[var(--mint)]/[0.06] px-4 py-3">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3">
+            {remix.sourcePoster && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={remix.sourcePoster}
+                alt=""
+                className="h-14 w-10 shrink-0 rounded-md object-cover ring-1 ring-white/15"
+              />
+            )}
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-black uppercase tracking-wider text-[var(--mint)]">
+                Remix this recipe · replace the toy
+              </p>
+              <p className="text-sm font-semibold text-[var(--fg)]">
+                {remix.sourceLabel || preset.name}
+                {remix.intent?.channel ? (
+                  <span className="ml-2 text-[11px] font-normal text-[var(--fg-muted)]">
+                    · {remix.intent.channel} · {remix.intent.aspectRatio} ·{" "}
+                    {remix.intent.durationSeconds}s
+                  </span>
+                ) : null}
+              </p>
+              <p className="text-[11px] text-[var(--fg-muted)]">
+                Upload a photo of a toy you own. The example does not become
+                your output until live generation runs on your image.
+              </p>
+              {remix.notices.map((n) => (
+                <p key={n} className="text-[11px] text-amber-200/90">
+                  {n}
+                </p>
+              ))}
+            </div>
+            {initialSource && (
+              <Link
+                href={`/projects/${encodeURIComponent(initialSource)}`}
+                className="text-[11px] font-semibold text-[var(--mint)] hover:underline"
+              >
+                Inside recipe →
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* ── Mobile path steps (390px craft) ── */}
       <div className="border-b border-[var(--border)] px-4 py-2 lg:hidden">

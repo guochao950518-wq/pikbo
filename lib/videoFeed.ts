@@ -9,6 +9,7 @@ import {
   HOME_PROOF_SLUGS,
   isHomeProofSlug,
 } from "@/lib/softLaunch";
+import { createRemixHref } from "@/lib/remixIntent";
 
 export type FeedItem = {
   id: string;
@@ -17,11 +18,14 @@ export type FeedItem = {
   href: string;
   /** SEO / detail page when href is generate */
   detailHref?: string;
+  /** Project inspect page (official Lab) */
+  projectHref?: string;
   badge?: string;
   ratio: "9:16" | "1:1" | "16:9" | "video";
   demo: DemoVideo;
   kind: "demo" | "preset" | "app" | "model";
   category?: CategoryId;
+  recipeSlug?: string;
 };
 
 export type CommunityProject = {
@@ -39,8 +43,8 @@ function demoForIndex(i: number): DemoVideo {
   return DEMO_VIDEOS[i % DEMO_VIDEOS.length];
 }
 
-function createHref(presetSlug: string) {
-  return `/create?effect=${encodeURIComponent(presetSlug)}`;
+function createHref(presetSlug: string, sourceId?: string) {
+  return createRemixHref(presetSlug, sourceId);
 }
 
 /** Soft-launch homepage showcase cap (G2) — frozen by SOFT_NAV_AND_PRESETS. */
@@ -69,13 +73,15 @@ export function buildHomeShowcaseFeed(
       id: `home-${d.id}`,
       title: viralName(d.preset, d.title),
       subtitle: d.character,
-      href: createHref(d.preset),
+      href: createHref(d.preset, d.id),
       detailHref: `/effects/${d.preset}`,
+      projectHref: `/projects/${d.id}`,
       badge: HOME_PROOF_BADGE,
       ratio: d.ratio,
       demo: d,
       kind: "demo",
       category: preset?.category,
+      recipeSlug: d.preset,
     });
   }
 
@@ -99,13 +105,15 @@ export function buildVideoFeed(): FeedItem[] {
       id: `demo-${d.id}`,
       title: viralName(d.preset, d.title),
       subtitle: d.character,
-      href: createHref(d.preset),
+      href: createHref(d.preset, d.id),
       detailHref: `/effects/${d.preset}`,
+      projectHref: `/projects/${d.id}`,
       badge: "Official example · cached",
       ratio: d.ratio,
       demo: d,
       kind: "demo",
       category: preset?.category,
+      recipeSlug: d.preset,
     });
   }
 
@@ -123,12 +131,14 @@ export function featuredStrip(): FeedItem[] {
     id: `feat-${d.id}`,
     title: viralName(d.preset, d.title),
     subtitle: d.result,
-    href: createHref(d.preset),
+    href: createHref(d.preset, d.id),
     detailHref: `/effects/${d.preset}`,
+    projectHref: `/projects/${d.id}`,
     badge: "Official example · cached",
     ratio: d.ratio,
     demo: d,
     kind: "demo" as const,
+    recipeSlug: d.preset,
   }));
 }
 
@@ -139,8 +149,8 @@ export function communityProjects(): CommunityProject[] {
     id: `proj-${d.id}`,
     title: `${d.character} · ${viralName(d.preset, d.title)}`,
     look: d.eyebrow,
-    remakeHref: createHref(d.preset),
-    detailHref: `/effects/${d.preset}`,
+    remakeHref: createHref(d.preset, d.id),
+    detailHref: `/projects/${d.id}`,
     visibility: "Official example" as const,
     author: {
       name: "Pikbo Lab",
@@ -149,6 +159,22 @@ export function communityProjects(): CommunityProject[] {
     },
     demo: d,
   }));
+}
+
+/** Resolve official Lab project by demo id (for /projects/[slug]). */
+export function getOfficialProject(slug: string) {
+  const d = DEMO_VIDEOS.find((x) => x.id === slug);
+  if (!d) return null;
+  return {
+    slug: d.id,
+    title: `${d.character} · ${viralName(d.preset, d.title)}`,
+    recipeSlug: d.preset,
+    demo: d,
+    remakeHref: createHref(d.preset, d.id),
+    effectsHref: `/effects/${d.preset}`,
+    result: d.result,
+    eyebrow: d.eyebrow,
+  };
 }
 
 /** Wide HF-style app / model promo rail */
