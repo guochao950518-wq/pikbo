@@ -39,12 +39,14 @@ import {
 } from "@/lib/createTrust";
 import { track } from "@/lib/analytics";
 import { JobIntentBar } from "@/components/JobIntentBar";
+import { WorkflowShelf } from "@/components/WorkflowShelf";
 import {
   ActivationChecklist,
   markActivationJob,
   markActivationShared,
 } from "@/components/ActivationChecklist";
 import { getJobIntent, type JobIntentId } from "@/lib/jobIntents";
+import type { Workflow } from "@/lib/workflows";
 
 type Status = "idle" | "uploading" | "generating" | "done" | "error";
 type Mode = "i2v" | "t2v";
@@ -891,11 +893,46 @@ export function CreateStudio({
     toast(`${job.label} · recipe ready`);
   }
 
+  /** Yiha/lego mini-app pick: prefill Create without full remount when possible */
+  function applyWorkflow(w: Workflow) {
+    if (w.href.includes("mode=seller-pack")) {
+      window.location.href = w.href;
+      return;
+    }
+    if (w.jobId) {
+      const job = getJobIntent(w.jobId);
+      if (job?.href) {
+        window.location.href = job.href;
+        return;
+      }
+      if (job) {
+        applyJobIntent(job.id);
+        return;
+      }
+    }
+    if (w.effect) {
+      selectEffect(w.effect);
+      if (w.aspectRatio) setAspectRatio(w.aspectRatio);
+      markActivationJob();
+      track({
+        event: "recipe_use",
+        path: "/create",
+        recipe: w.effect,
+        meta: { workflow: w.id },
+      });
+      toast(`${w.label} · recipe ready`);
+    }
+  }
+
   return (
     <div className="flex h-full min-h-[calc(100vh-3.5rem)] flex-col pb-36 lg:min-h-screen lg:pb-0">
       <ActivationChecklist
         hasImage={Boolean(image)}
         hasGenerated={status === "done" || versions.length > 0}
+      />
+      <WorkflowShelf
+        activeId={jobIntentId}
+        onPick={applyWorkflow}
       />
       <JobIntentBar activeId={jobIntentId} onPick={applyJobIntent} />
       {/* ── Mode banner: demo vs live impossible to miss (W5) ── */}

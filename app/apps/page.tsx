@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { WORKFLOWS } from "@/lib/workflows";
 import { APPS } from "@/lib/catalog";
 
 export const metadata: Metadata = {
-  title: "Apps · Preview",
+  title: "Apps & Workflows · Toy video mini-apps",
   description:
-    "Pikbo apps for toy video — configured workspaces are separated from roadmap tools, and provider-dependent output is labeled.",
+    "Pikbo toy-native workflows — listing spin, TikTok hook, blind-box drop, Seller Pack. Same Create engine, job-first mini-apps (Yiha/lego-style shelf, legal IA only).",
   alternates: { canonical: "/apps" },
-  robots: { index: false, follow: false },
 };
 
 const CATS = [
@@ -18,30 +18,39 @@ const CATS = [
 ];
 
 export default function AppsPage() {
-  const live = APPS.filter((a) => a.live);
+  const liveWorkflows = WORKFLOWS.filter((w) => w.live);
+  const coveredHrefs = new Set(liveWorkflows.map((w) => w.href));
+  const coveredNames = new Set(
+    liveWorkflows.map((w) => w.label.toLowerCase())
+  );
+  const extraLive = APPS.filter(
+    (a) =>
+      a.live &&
+      !coveredHrefs.has(a.href) &&
+      !coveredNames.has(a.name.toLowerCase())
+  );
   const soon = APPS.filter((a) => !a.live);
 
   return (
     <div className="px-4 py-10 sm:px-8">
       <div className="mx-auto max-w-6xl">
-        <span className="chip">🧸 Suite · toy-native</span>
-        <h1 className="mt-3 text-3xl font-bold">Apps</h1>
+        <span className="chip">🧸 Suite · toy workflows</span>
+        <h1 className="mt-3 text-3xl font-bold">Apps & workflows</h1>
         <p className="mt-2 max-w-2xl text-sm text-[var(--fg-muted)]">
-          Toy-native workspaces in one app grid.{" "}
-          <strong className="text-[var(--mint)]">CONFIGURED</strong> opens an
-          implemented workspace; provider-dependent output still needs its key ·{" "}
-          <strong className="text-[var(--fg-dim)]">SOON</strong> is catalog only
-          (not sold as live).
+          Vertical mini-apps for one photo of a toy you own — listing, social,
+          drop, and batch. Same Seedance Create engine; each card is a prefilled
+          job (not a fake multi-model zoo). Pattern parity with suite shelves;
+          all media and copy are Pikbo-owned.
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           <Link href="/create" className="btn btn-primary text-sm">
-            Photo → Clip
+            Open Generate
           </Link>
-          <Link href="/image" className="btn btn-ghost text-sm">
-            Still studio
+          <Link href="/create?mode=seller-pack" className="btn btn-ghost text-sm">
+            Seller Pack
           </Link>
-          <Link href="/supercomputer" className="btn btn-ghost text-sm">
-            Batch
+          <Link href="/effects" className="btn btn-ghost text-sm">
+            Recipe wall
           </Link>
           <Link href="/pricing" className="btn btn-ghost text-sm">
             Pricing
@@ -49,11 +58,14 @@ export default function AppsPage() {
         </div>
 
         <section className="mt-10">
-          <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-[var(--mint)]">
-            Configured · {live.length}
+          <h2 className="mb-1 text-xs font-bold uppercase tracking-wider text-[var(--mint)]">
+            Live workflows · {liveWorkflows.length}
           </h2>
+          <p className="mb-4 text-[11px] text-[var(--fg-dim)]">
+            One tap opens Create with recipe + aspect (or batch mode) ready.
+          </p>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {live.map((app) => (
+            {liveWorkflows.map((app) => (
               <Link
                 key={app.id}
                 href={app.href}
@@ -65,23 +77,62 @@ export default function AppsPage() {
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <h3 className="font-semibold group-hover:text-[var(--mint)]">
-                      {app.name}
+                      {app.label}
                     </h3>
                     <span className="rounded-full bg-[var(--mint)]/15 px-1.5 py-0.5 text-[9px] font-bold text-[var(--mint)]">
-                      CONFIGURED
+                      LIVE
                     </span>
+                    {app.badge && (
+                      <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[9px] font-bold text-white/55">
+                        {app.badge}
+                      </span>
+                    )}
                   </div>
                   <p className="mt-1 text-xs text-[var(--fg-muted)]">
                     {app.blurb}
                   </p>
                   <p className="mt-2 text-[10px] font-semibold text-[var(--mint)]">
-                    Open →
+                    Launch →
                   </p>
                 </div>
               </Link>
             ))}
           </div>
         </section>
+
+        {extraLive.length > 0 && (
+          <section className="mt-10">
+            <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-[var(--mint)]">
+              More configured · {extraLive.length}
+            </h2>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {extraLive.map((app) => (
+                <Link
+                  key={app.id}
+                  href={app.href}
+                  className="card group flex gap-3 p-4 transition-transform hover:-translate-y-0.5"
+                >
+                  <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-[var(--grad-soft)] text-2xl">
+                    {app.emoji}
+                  </span>
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="font-semibold group-hover:text-[var(--mint)]">
+                        {app.name}
+                      </h3>
+                      <span className="rounded-full bg-[var(--mint)]/15 px-1.5 py-0.5 text-[9px] font-bold text-[var(--mint)]">
+                        CONFIGURED
+                      </span>
+                    </div>
+                    <p className="mt-1 text-xs text-[var(--fg-muted)]">
+                      {app.blurb}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {CATS.map((cat) => {
           const items = soon.filter((a) => a.category === cat.id);

@@ -25,6 +25,7 @@
 
 ## Follow-ups (code)
 
-- Wire job intent into URL `?job=etsy-listing` for landing deep links  
+- Wire job intent into URL `?job=etsy-listing` for landing deep links ✅  
+- **Workflow mini-apps** (Yiha `/lego` pattern): `lib/workflows.ts` + `WorkflowShelf` on Create + `/apps` ✅ — see `FAST_FEATURE_PARITY.md`  
 - Seller Pack post-success “post pack” checklist  
 - Optional short in-result tip: “Failed jobs refund · try another recipe”
