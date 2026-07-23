@@ -65,6 +65,7 @@ export function BatchStudio({
   const [duration, setDuration] = useState<5 | 10>(5);
   const [catFilter, setCatFilter] = useState<CategoryId | "all">("all");
   const [me, setMe] = useState<MeResponse | null>(null);
+  const [ownsRights, setOwnsRights] = useState(false);
 
   useEffect(() => {
     const t = window.setTimeout(() => {
@@ -139,6 +140,10 @@ export function BatchStudio({
       setError("Pick at least one preset.");
       return;
     }
+    if (!ownsRights) {
+      setError("Confirm you own this photo before running the batch.");
+      return;
+    }
 
     setError(null);
     setRunning(true);
@@ -160,6 +165,7 @@ export function BatchStudio({
           aspectRatio,
           model: effectiveModel,
           resolution: effectiveResolution,
+          ownsRights: true,
         },
         { maxRetries: 2 }
       );
@@ -406,9 +412,22 @@ export function BatchStudio({
           )}
         </div>
 
+        <label className="flex cursor-pointer items-start gap-2 rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] px-3 py-2 text-[11px] leading-snug text-[var(--fg-muted)]">
+          <input
+            type="checkbox"
+            checked={ownsRights}
+            onChange={(e) => setOwnsRights(e.target.checked)}
+            className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-[var(--mint)]"
+          />
+          <span>
+            I own this photo and have the right to animate and publish this toy
+            for every preset in the batch.
+          </span>
+        </label>
+
         <button
           type="button"
-          disabled={running || !image || selected.length === 0}
+          disabled={running || !image || selected.length === 0 || !ownsRights}
           onClick={() => void runBatch()}
           className="btn btn-primary w-full disabled:opacity-50"
         >

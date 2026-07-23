@@ -16,6 +16,11 @@ export type GenerateRequestBody = {
   model?: ModelPreference | string;
   resolution?: SeedanceResolution | string;
   seed?: number;
+  /**
+   * Soft-launch PRD §3/§5 — client must confirm ownership before submit.
+   * Server rejects live jobs without this flag (demo path also requires it).
+   */
+  ownsRights?: boolean;
 };
 
 export type GenerateSuccess = {
@@ -48,7 +53,8 @@ export type GenerateErrorBody = {
     | "PROVIDER_BALANCE"
     | "PROVIDER_RATE_LIMIT"
     | "RATE_LIMITED"
-    | "JOB_IN_FLIGHT";
+    | "JOB_IN_FLIGHT"
+    | "RIGHTS_REQUIRED";
   need?: number;
   have?: number;
   model?: string;

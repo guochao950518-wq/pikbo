@@ -42,6 +42,7 @@ export function LandingToolPanel({
   const [session, setSession] = useState<MeResponse | null>(null);
   const [elapsed, setElapsed] = useState(0);
   const [loadingSample, setLoadingSample] = useState(false);
+  const [ownsRights, setOwnsRights] = useState(false);
   const toast = useToast();
 
   const refreshSession = useCallback(async () => {
@@ -122,6 +123,10 @@ export function LandingToolPanel({
       setError("Upload a toy photo first (JPEG, PNG, WebP, or GIF).");
       return;
     }
+    if (!ownsRights) {
+      setError("Confirm you own this photo before generating.");
+      return;
+    }
     // Server enforces live credits; demo-cached path is free when no provider.
     const freeTier = session?.plan === "free" || session?.watermark;
     const resolution = freeTier ? "480p" : "720p";
@@ -135,6 +140,7 @@ export function LandingToolPanel({
       duration,
       aspectRatio,
       resolution,
+      ownsRights: true,
     });
     if (result.ok === false) {
       if (result.session) {
@@ -308,9 +314,22 @@ export function LandingToolPanel({
             )}
           </div>
 
+          <label className="flex cursor-pointer items-start gap-2 rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] px-3 py-2 text-[11px] leading-snug text-[var(--fg-muted)]">
+            <input
+              type="checkbox"
+              checked={ownsRights}
+              onChange={(e) => setOwnsRights(e.target.checked)}
+              className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-[var(--mint)]"
+            />
+            <span>
+              I own this photo and have the right to animate and publish this
+              toy. Pikbo grants no rights to third-party brands or characters.
+            </span>
+          </label>
+
           <button
             type="button"
-            disabled={busy || !image}
+            disabled={busy || !image || !ownsRights}
             onClick={() => void generate()}
             className="btn btn-primary w-full disabled:opacity-50"
           >

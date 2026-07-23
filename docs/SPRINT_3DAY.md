@@ -1,9 +1,12 @@
 # 2～3 天打磨冲刺（Soft 上线前）
 
-**老板决定：** 不立刻公网，再打磨 2～3 天。  
-**截止：** 自 2026-07-23 起约 72 小时内，达到 **可 soft 上 pikbo.ai**（仍不正式收钱）。  
+**老板决定：** 再打磨几天，**最晚周日 soft 上线**；**Stripe 未开 → 不收钱上线**。  
+**硬截止：** **2026-07-26 周日** 前 pikbo.ai 可访问（Vercel + 域名 + SESSION_SECRET + FAL_KEY）。  
 **验收圣经：** `docs/prd/SOFT_LAUNCH.md` 第 6～9 节  
+**上线手册：** `docs/LAUNCH.md`（无 Stripe 小节）  
 **分工：** `docs/ROLES.md` — Claude 写代码 · GPT 补规格 · Grok 增长/协调  
+
+**Stripe 状态：** 未就绪 = **正常**。付费 CTA = Coming soon，不阻塞周日。
 
 ---
 

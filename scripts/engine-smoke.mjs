@@ -190,5 +190,11 @@ const pbFull = fs.readFileSync(join(root, "lib/promptBuild.ts"), "utf8");
 assert.match(pbFull, /TOY_IDENTITY_LOCK/);
 assert.match(pbFull, /withIdentityLock|Keep the exact same toy/i);
 
+const contracts = fs.readFileSync(join(root, "lib/contracts.ts"), "utf8");
+assert.match(contracts, /ownsRights/);
+assert.match(contracts, /RIGHTS_REQUIRED/);
+assert.match(genRoute, /RIGHTS_REQUIRED/);
+assert.match(genRoute, /ownsRights !== true/);
+
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

@@ -287,6 +287,10 @@ export function CreateStudio({
       setError("Image is too large. Use a photo under ~8MB.");
       return;
     }
+    if (!ownsRights) {
+      setError("Confirm you own this photo before generating.");
+      return;
+    }
     // Do not hard-block on client credits: demo-cached mode (no FAL_KEY) is free.
     // Live path enforces credits server-side and returns 402 / paywall.
 
@@ -305,6 +309,7 @@ export function CreateStudio({
       aspectRatio,
       model: modelId,
       resolution: resolvedRes,
+      ownsRights: true,
       seed:
         typeof seedNum === "number" && Number.isFinite(seedNum)
           ? seedNum

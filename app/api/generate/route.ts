@@ -59,11 +59,23 @@ export async function POST(req: Request) {
     model: modelPref,
     resolution: resPref,
     seed,
+    ownsRights,
   } = body;
 
   const preset = effect ? getPreset(effect) : undefined;
   if (!preset) {
     return err({ error: "Unknown effect", code: "UNKNOWN_EFFECT" }, 400);
+  }
+  // Soft-launch PRD §3/§5 — server-enforced rights attestation (not UI-only).
+  if (ownsRights !== true) {
+    return err(
+      {
+        error:
+          "Confirm you own this photo and have the right to animate it before generating",
+        code: "RIGHTS_REQUIRED",
+      },
+      400
+    );
   }
   if (!image || !isValidImageDataUrl(image)) {
     return err(
