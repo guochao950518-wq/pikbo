@@ -38,12 +38,18 @@ export default function AppsPage() {
         <h1 className="mt-3 text-3xl font-bold">Apps & workflows</h1>
         <p className="mt-2 max-w-2xl text-sm text-[var(--fg-muted)]">
           Vertical mini-apps for one photo of a toy you own — listing, social,
-          drop, and batch. Same Seedance Create engine; each card is a prefilled
-          job (not a fake multi-model zoo). Pattern parity with suite shelves;
-          all media and copy are Pikbo-owned.
+          drop, and batch. Same Seedance Generate engine; each card is a prefilled
+          job (not a fake multi-model zoo). Canonical modular wall:{" "}
+          <Link href="/modules" className="text-[var(--mint)] hover:underline">
+            /modules
+          </Link>
+          .
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
-          <Link href="/create" className="btn btn-primary text-sm">
+          <Link href="/modules" className="btn btn-primary text-sm">
+            Toy Modules
+          </Link>
+          <Link href="/create" className="btn btn-ghost text-sm">
             Open Generate
           </Link>
           <Link href="/create?mode=seller-pack" className="btn btn-ghost text-sm">
@@ -51,9 +57,6 @@ export default function AppsPage() {
           </Link>
           <Link href="/effects" className="btn btn-ghost text-sm">
             Recipe wall
-          </Link>
-          <Link href="/pricing" className="btn btn-ghost text-sm">
-            Pricing
           </Link>
         </div>
 

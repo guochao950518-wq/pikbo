@@ -40,6 +40,7 @@ import {
 import { track } from "@/lib/analytics";
 import { JobIntentBar } from "@/components/JobIntentBar";
 import { WorkflowShelf } from "@/components/WorkflowShelf";
+import { GenerateSuiteChrome } from "@/components/GenerateSuiteChrome";
 import {
   ActivationChecklist,
   markActivationJob,
@@ -720,6 +721,7 @@ export function CreateStudio({
             ? `Remix · ${remix.intent.sourceProjectSlug}`
             : identityProjectName(toyIdentity) || "Owned toy project",
         inputImage: img.length <= 300_000 ? img : undefined,
+        sku: toyIdentity.sku || undefined,
       })
     );
     emitSessionRefresh();
@@ -982,10 +984,13 @@ export function CreateStudio({
 
   return (
     <div className="flex h-full min-h-[calc(100vh-3.5rem)] flex-col pb-36 lg:min-h-screen lg:pb-0">
+      {/* HF Generate–class suite chrome · toy vertical */}
+      <GenerateSuiteChrome compact />
       <ActivationChecklist
         hasImage={Boolean(image)}
         hasGenerated={status === "done" || versions.length > 0}
       />
+      {/* Yiha/lego-class module shelf inside the workbench */}
       <WorkflowShelf
         activeId={jobIntentId}
         onPick={applyWorkflow}
@@ -1992,7 +1997,10 @@ export function CreateStudio({
                     {toyIdentity.sku ? ` · ${toyIdentity.sku}` : ""}
                   </p>
                   <ul className="mt-1.5 space-y-1 text-[11px] text-white/65">
-                    {deliveryItemsForJob(jobIntentId, { demo }).map((item) => (
+                    {deliveryItemsForJob(jobIntentId, {
+                      demo,
+                      downloadAllowed,
+                    }).map((item) => (
                       <li key={item.id} className="flex gap-2">
                         <span className="text-[var(--mint)]" aria-hidden>
                           ○

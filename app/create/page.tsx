@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { CreateStudio } from "@/components/CreateStudio";
 import { CreateSeoFooter } from "@/components/CreateSeoFooter";
 import { BatchStudio } from "@/components/BatchStudio";
@@ -30,9 +31,9 @@ export async function generateMetadata({
     };
   }
   return {
-    title: "Generate",
+    title: "Generate · Toy Studio",
     description:
-      "Upload a photo of a toy you own, choose a listing, reveal, or social-video recipe, and generate a short clip to review and export.",
+      "Pikbo Generate — designer-toy workbench. Upload a photo you own, pick a listing, reveal, or social module, and export a short clip.",
     alternates: { canonical: "/create" },
   };
 }
@@ -102,18 +103,26 @@ export default async function CreatePage({
   return (
     <>
       {/* V2 tool core — remix deep link: effect/source/ratio/duration/channel */}
-      <CreateStudio
-        initialEffect={sp.effect}
-        initialModel={sp.model}
-        initialMode={sp.mode === "t2v" ? "t2v" : "i2v"}
-        initialPrompt={sp.prompt}
-        initialSource={sp.source}
-        initialRatio={sp.ratio}
-        initialDuration={sp.duration}
-        initialChannel={sp.channel}
-        initialSample={firstRunSample}
-        initialJob={sp.job}
-      />
+      <Suspense
+        fallback={
+          <div className="flex min-h-[50vh] items-center justify-center text-sm text-white/40">
+            Loading Generate…
+          </div>
+        }
+      >
+        <CreateStudio
+          initialEffect={sp.effect}
+          initialModel={sp.model}
+          initialMode={sp.mode === "t2v" ? "t2v" : "i2v"}
+          initialPrompt={sp.prompt}
+          initialSource={sp.source}
+          initialRatio={sp.ratio}
+          initialDuration={sp.duration}
+          initialChannel={sp.channel}
+          initialSample={firstRunSample}
+          initialJob={sp.job}
+        />
+      </Suspense>
       {/* SSR landing copy + internal links for crawlers */}
       <CreateSeoFooter effectSlug={sp.effect} />
     </>

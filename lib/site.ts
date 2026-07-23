@@ -2,9 +2,12 @@ export const site = {
   name: "Pikbo",
   domain: "pikbo.ai",
   url: "https://pikbo.ai",
-  tagline: "One toy photo. A video ready to list or post.",
+  /** Suite positioning: toy-vertical Generate + modular workflows (HF/Yiha pattern, legal IA only). */
+  tagline: "Toy creative suite — one photo to listing & social video.",
   description:
-    "Turn a photo of a toy you own into a short product video for listings, drops, and social posts. Choose a toy-specific recipe, review the result, and export when it is ready.",
+    "Pikbo is the designer-toy creative suite: a Generate workbench and modular workflows that turn a photo of a toy you own into short videos for listings, drops, and social posts.",
   keyword: "AI toy video generator",
   twitter: "@pikbo_ai",
+  /** Product one-liner for UI chrome */
+  suiteLine: "Generate · Modules · toy-native",
 } as const;

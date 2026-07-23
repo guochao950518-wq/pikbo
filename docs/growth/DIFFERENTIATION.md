@@ -9,8 +9,9 @@
 
 ## 1. 定位一句话
 
-> **Pikbo = 给手办/盲盒/潮玩卖家与藏家的：一图出片工作台。**  
-> 不是第二个 Higgsfield / OpenArt；不是妙呀式「从零造 IP」；是 **已有 SKU 的短视频运营水管**。
+> **Pikbo = 潮玩版 Higgsfield Generate + Yiha Lego。**  
+> Generate 工作台（`/create`）+ Modules 积木工作流（`/modules`）；  
+> 不是通用多模型 OS，不是妙呀式从零造 IP；是 **已有 SKU 的短视频运营套件**。
 
 ---
 

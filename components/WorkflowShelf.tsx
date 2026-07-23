@@ -34,19 +34,19 @@ export function WorkflowShelf({
         <div className="flex flex-wrap items-end justify-between gap-2">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--mint)]/90">
-              Workflows · mini-apps
+              Modules · toy blocks
             </p>
             {!compact && (
               <p className="mt-0.5 text-[11px] text-white/45">
-                One photo · pick a job · same engine as Generate — not a model zoo
+                Modular jobs (suite mini-apps pattern) · one photo · Seedance engine
               </p>
             )}
           </div>
           <Link
-            href="/apps"
+            href="/modules"
             className="text-[10px] font-semibold text-[var(--mint)] hover:underline"
           >
-            All apps →
+            All modules →
           </Link>
         </div>
         <div className="mt-2 flex gap-2 overflow-x-auto pb-0.5 [scrollbar-width:none]">

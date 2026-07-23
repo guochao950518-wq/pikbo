@@ -18,15 +18,18 @@ import { cn } from "@/lib/utils";
  * primary Explore · Create · Effects · Official Examples (+ Pricing + Generate).
  * More destinations are reachable with Local/Preview tags — not empty-door peers.
  */
+/** Suite nav: Explore · Generate · Modules · Presets · Lab (HF/Yiha IA, toy vertical). */
 const PRIMARY = [
   { href: "/", key: "nav.explore" },
   { href: "/create", key: "nav.create" },
+  { href: "/modules", key: "nav.modules" },
   { href: "/effects", key: "nav.presets" },
   { href: "/community", key: "nav.lab" },
 ] as const;
 
 /** Soft-nav: More entries carry honest capability tags (Local / Preview). */
 const MORE = [
+  { href: "/apps", key: "nav.apps", tag: null },
   { href: "/flow", key: "nav.flow", tag: null },
   { href: "/library", key: "nav.library", tag: "Local" },
   { href: "/image", key: "nav.image", tag: "Preview" },
