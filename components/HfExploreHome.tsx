@@ -157,7 +157,7 @@ export function HfExploreHome({
 
         <div className="relative mx-auto flex min-h-[min(860px,calc(100svh-3.5rem))] max-w-6xl flex-col justify-end px-4 pb-8 pt-16 sm:px-6 sm:pb-12">
           <p className="text-[10px] font-bold uppercase tracking-wider text-white/50">
-            One toy photo. A clip ready to list or post.
+            Feel it first — then you&apos;ll know what it&apos;s for
           </p>
           <span className="mt-3 inline-flex w-fit items-center rounded-full border border-white/15 bg-black/55 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#c8ff3d]">
             {item.badge ?? "Official example"}
@@ -166,24 +166,32 @@ export function HfExploreHome({
             {item.title}
           </h1>
           <p className="mt-2 max-w-md text-sm text-white/70">
-            {item.demo.result ||
-              preset?.tagline ||
-              "Watch the recipe. Replace the toy. Generate your version."}
+            Watch this clip. In one free try you can make something like it from
+            a single toy photo — for TikTok, Etsy, or your shelf.
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
             <Link
-              href={item.href}
+              href="/create?try=1&sample=scout"
               className="inline-flex items-center justify-center rounded-full bg-[#c8ff3d] px-6 py-3 text-sm font-black text-black shadow-[0_0_40px_-8px_rgba(200,255,61,0.5)] transition hover:-translate-y-0.5"
+            >
+              Try free in 10 seconds
+            </Link>
+            <Link
+              href={item.href}
+              className="inline-flex items-center justify-center rounded-full border border-white/25 bg-black/40 px-5 py-3 text-sm font-bold text-white backdrop-blur transition hover:border-[#c8ff3d]/50"
             >
               Use this recipe
             </Link>
             <Link
               href={item.projectHref || item.detailHref || "/effects"}
-              className="inline-flex items-center justify-center rounded-full border border-white/25 bg-black/40 px-5 py-3 text-sm font-bold text-white backdrop-blur transition hover:border-[#c8ff3d]/50"
+              className="inline-flex items-center justify-center rounded-full border border-white/15 px-4 py-3 text-sm font-semibold text-white/70 hover:text-white"
             >
-              See input &amp; settings
+              What&apos;s inside?
             </Link>
           </div>
+          <p className="mt-3 text-[11px] text-white/45">
+            No card needed · sample photo ready · green Generate button does the rest
+          </p>
 
           {/* Progress rail */}
           <div className="mt-8 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none]">

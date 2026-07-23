@@ -61,6 +61,7 @@ export function CreateStudio({
   initialRatio,
   initialDuration,
   initialChannel,
+  initialSample,
 }: {
   initialEffect?: string;
   initialModel?: string;
@@ -71,6 +72,8 @@ export function CreateStudio({
   initialRatio?: string;
   initialDuration?: string;
   initialChannel?: string;
+  /** First-run sample id (orbit|moon|scout|beatbot) — load photo + ready to generate */
+  initialSample?: string;
 }) {
   const remix = useMemo(
     () =>
@@ -150,6 +153,7 @@ export function CreateStudio({
   const [showAdvanced, setShowAdvanced] = useState(false);
   /** Last failed live job restored credits (PRD §5 / W5 trust). */
   const [lastRefunded, setLastRefunded] = useState(false);
+  const [sampleLoading, setSampleLoading] = useState(false);
   const toast = useToast();
 
   const preset = useMemo(
@@ -187,6 +191,24 @@ export function CreateStudio({
     }
   }
 
+  /** One-tap joy path: sample photo + matching recipe + rights checked. */
+  async function loadSampleToy(sampleId: string) {
+    const s = SAMPLE_TOYS.find((x) => x.id === sampleId) ?? SAMPLE_TOYS[0];
+    setSampleLoading(true);
+    setError(null);
+    try {
+      const data = await sampleToDataUrl(s.path);
+      setImage(data);
+      selectEffect(s.effect);
+      setOwnsRights(true);
+      toast("Sample ready — tap the green Generate button");
+    } catch {
+      setError("Could not load sample photo — try another or upload your own");
+    } finally {
+      setSampleLoading(false);
+    }
+  }
+
   useEffect(() => {
     const t = window.setTimeout(() => {
       setFavorites(loadFavorites());
@@ -208,6 +230,16 @@ export function CreateStudio({
     }, 0);
     return () => window.clearTimeout(t);
   }, []);
+
+  // First-run: ?sample=scout or ?try=1
+  useEffect(() => {
+    if (!initialSample) return;
+    const id = SAMPLE_TOYS.some((s) => s.id === initialSample)
+      ? initialSample
+      : "scout";
+    void loadSampleToy(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialSample]);
 
   useEffect(() => {
     if (status !== "generating") return;
@@ -817,31 +849,40 @@ export function CreateStudio({
               />
             </label>
             {!image && (
-              <div className="mt-2">
-                <p className="mb-1 text-[10px] font-semibold text-[var(--fg-dim)]">
-                  Or try a sample still
+              <div className="mt-3 rounded-2xl border border-[var(--mint)]/25 bg-[var(--mint)]/[0.06] p-3">
+                <p className="text-sm font-bold text-[var(--fg)]">
+                  No photo? Try free in one tap
                 </p>
-                <div className="flex flex-wrap gap-2">
+                <p className="mt-0.5 text-[11px] text-[var(--fg-muted)]">
+                  Pick a sample toy below — we fill the recipe for you. Then hit
+                  the green Generate button. Takes about 10 seconds to start.
+                </p>
+                <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
                   {SAMPLE_TOYS.map((s) => (
                     <button
                       key={s.id}
                       type="button"
-                      className="rounded-lg border border-[var(--border)] px-2 py-1 text-[10px] hover:border-[var(--brand)]"
-                      onClick={async () => {
-                        try {
-                          setError(null);
-                          const data = await sampleToDataUrl(s.path);
-                          setImage(data);
-                          selectEffect(s.effect);
-                        } catch {
-                          setError("Could not load sample photo");
-                        }
-                      }}
+                      disabled={sampleLoading}
+                      className="group overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--bg)] text-left transition hover:border-[var(--mint)] disabled:opacity-50"
+                      onClick={() => void loadSampleToy(s.id)}
                     >
-                      {s.label}
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={s.path}
+                        alt={s.label}
+                        className="aspect-square w-full object-cover transition group-hover:scale-[1.03]"
+                      />
+                      <span className="block px-2 py-1.5 text-[11px] font-bold">
+                        {s.label}
+                      </span>
                     </button>
                   ))}
                 </div>
+                {sampleLoading && (
+                  <p className="mt-2 text-[11px] text-[var(--mint)]">
+                    Loading sample…
+                  </p>
+                )}
               </div>
             )}
           </div>
@@ -1343,10 +1384,20 @@ export function CreateStudio({
                     )}
                   </div>
                 )}
+                <div className="mx-auto mt-3 max-w-md rounded-2xl border border-[var(--mint)]/30 bg-[var(--mint)]/[0.07] px-4 py-3 text-center">
+                  <p className="text-sm font-black text-[var(--fg)]">
+                    {demo ? "Preview ready ✨" : "Your clip is ready ✨"}
+                  </p>
+                  <p className="mt-1 text-[12px] leading-relaxed text-[var(--fg-muted)]">
+                    {demo
+                      ? "This is a free labeled demo — it shows the recipe style. Live mode uses your real toy photo."
+                      : "Save it, post it, or make another. This is what Pikbo is for: one photo → a clip you can actually use."}
+                  </p>
+                </div>
                 <p className="mx-auto mt-2 max-w-md text-center text-[11px] leading-relaxed text-[var(--fg-dim)]">
                   {demo
-                    ? `${PROVENANCE.cachedDemo} — does not animate your upload. Live Mini needs FAL_KEY configured.`
-                    : `${PROVENANCE.liveGeneration} — AI motion varies each run. Failed jobs refund credits.`}
+                    ? `${PROVENANCE.cachedDemo} — does not animate your upload.`
+                    : `${PROVENANCE.liveGeneration} — each run can look a bit different. Failed jobs refund credits.`}
                 </p>
                 <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
                   <a
@@ -1356,7 +1407,7 @@ export function CreateStudio({
                     rel="noreferrer"
                     className="btn btn-primary px-4 py-2 text-xs"
                   >
-                    Download
+                    Download · keep it
                   </a>
                   <button
                     type="button"

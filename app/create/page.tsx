@@ -39,9 +39,15 @@ export default async function CreatePage({
     ratio?: string;
     duration?: string;
     channel?: string;
+    /** One-click first-run sample: orbit | moon | scout | beatbot */
+    sample?: string;
+    try?: string;
   }>;
 }) {
   const sp = await searchParams;
+  const firstRunSample =
+    sp.sample ||
+    (sp.try === "1" || sp.try === "true" ? "scout" : undefined);
 
   return (
     <>
@@ -55,6 +61,7 @@ export default async function CreatePage({
         initialRatio={sp.ratio}
         initialDuration={sp.duration}
         initialChannel={sp.channel}
+        initialSample={firstRunSample}
       />
       {/* SSR landing copy + internal links for crawlers */}
       <CreateSeoFooter effectSlug={sp.effect} />
