@@ -277,6 +277,12 @@ const libraryGrid = fs.readFileSync(
 );
 assert.match(libraryGrid, /Remix again|createRemixHref/);
 
+// One-tap Lab sample honesty (not "free" when live)
+assert.match(createStudio, /loadSampleToy/);
+assert.match(createStudio, /labSampleId|lab-sample-/);
+assert.match(createStudio, /Official Lab|official Lab/);
+assert.match(createStudio, /10 credits|cached demo free/i);
+
 // G2: homepage proof whitelist frozen in softLaunch + used by videoFeed
 const softLaunch = fs.readFileSync(join(root, "lib/softLaunch.ts"), "utf8");
 assert.match(softLaunch, /HOME_PROOF_SLUGS/);

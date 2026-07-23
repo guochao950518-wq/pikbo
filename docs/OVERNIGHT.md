@@ -59,7 +59,8 @@
 18. [x] cherry-pick Claude /tools SEO cluster (18) · sitemap+index+footer · link-check sample · G7 topup smoke  
 19. [x] G6 force-fail refund hook (non-prod) · remix history source/channel · i18n ES fix · remake link-check  
 20. [x] projects SSG+sitemap · Library Remix again · health forceGenerateFail flag · image force-fail parity  
-21. 下一拍：2 more live G6 toys when fal budget allows · avoid product-foundation
+21. [x] one-tap Lab sample honesty (cached free vs Mini 10cr) · lab-sample Library provenance  
+22. 下一拍：2 more live G6 toys when fal budget allows · avoid product-foundation
 
 ### 老板醒来验收
 
@@ -73,9 +74,9 @@
 
 ## Grok 本拍状态（3 行）
 
-- Projects: `generateStaticParams` + sitemap `/projects/*` for remake loop SEO.  
-- Library Remix again + Source; health exposes forceGenerateFail; image force-fail parity.  
-- smoke green · shipping main · public still NO-GO · G6 lives still partial.
+- One-tap sample: honest cached-free vs live Mini 10cr; Lab still provenance.  
+- Library tags `lab-sample-*` when sample path used; home CTA copy de-overclaim.  
+- push main · public still NO-GO · G6 lives still partial.
 
 ---
 

@@ -191,7 +191,7 @@ export function CreateStudio({
     }
   }
 
-  /** One-tap joy path: sample photo + matching recipe + rights checked. */
+  /** One-tap joy path: official Lab still + matching recipe. Rights = Lab sample. */
   async function loadSampleToy(sampleId: string, autoGenerate = false) {
     const s = SAMPLE_TOYS.find((x) => x.id === sampleId) ?? SAMPLE_TOYS[0];
     setSampleLoading(true);
@@ -200,16 +200,22 @@ export function CreateStudio({
       const data = await sampleToDataUrl(s.path);
       setImage(data);
       selectEffect(s.effect);
+      // Official Pikbo Lab stills — product-owned samples, not a visitor upload.
       setOwnsRights(true);
       if (autoGenerate) {
-        toast("Generating your free sample…");
+        toast(
+          demoMode
+            ? "Generating official Lab sample · cached demo free…"
+            : "Generating official Lab sample · live Mini uses 10 credits…"
+        );
         await generate({
           imageOverride: data,
           effectOverride: s.effect,
           rightsOverride: true,
+          labSampleId: s.id,
         });
       } else {
-        toast("Sample ready — tap the green Generate button");
+        toast("Official Lab still ready — tap Generate when you want the clip");
       }
     } catch {
       setError("Could not load sample photo — try another or upload your own");
@@ -358,6 +364,8 @@ export function CreateStudio({
     imageOverride?: string;
     effectOverride?: string;
     rightsOverride?: boolean;
+    /** Official Lab sample id — stored as Library sourceProject for support */
+    labSampleId?: string;
   }) {
     const img = opts?.imageOverride ?? image;
     const fx = opts?.effectOverride ?? effect;
@@ -452,7 +460,9 @@ export function CreateStudio({
         fallbackDuration: effectiveDuration,
         fallbackAspect: aspectRatio,
         fallbackResolution: resolvedRes,
-        sourceProject: remix.intent?.sourceProjectSlug,
+        sourceProject: opts?.labSampleId
+          ? `lab-sample-${opts.labSampleId}`
+          : remix.intent?.sourceProjectSlug,
         channel: remix.intent?.channel,
       })
     );
@@ -874,11 +884,12 @@ export function CreateStudio({
             {!image && (
               <div className="mt-3 rounded-2xl border border-[var(--mint)]/25 bg-[var(--mint)]/[0.06] p-3">
                 <p className="text-sm font-bold text-[var(--fg)]">
-                  No photo? Try free in one tap
+                  No photo? Try an official Lab sample
                 </p>
                 <p className="mt-0.5 text-[11px] text-[var(--fg-muted)]">
-                  Pick a sample toy below — we fill the recipe for you. Then hit
-                  the green Generate button. Takes about 10 seconds to start.
+                  Official Pikbo stills (not a customer upload). Cached demos
+                  cost 0 credits; live Mini uses 10 when the provider is on.
+                  One tap loads the recipe and starts generate.
                 </p>
                 <button
                   type="button"
@@ -888,7 +899,9 @@ export function CreateStudio({
                 >
                   {sampleLoading || busy
                     ? "Working…"
-                    : "▶  One tap · free sample now"}
+                    : demoMode
+                      ? "▶  One tap · free cached sample"
+                      : "▶  One tap · Mini sample (10 credits)"}
                 </button>
                 <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
                   {SAMPLE_TOYS.map((s) => (
@@ -1552,7 +1565,9 @@ export function CreateStudio({
                 <p className="mt-1.5 max-w-xs text-xs text-[var(--fg-muted)]">
                   {image
                     ? "Hit the green Generate button — one primary action."
-                    : "No photo? One-tap free sample below."}
+                    : demoMode
+                      ? "No photo? One-tap official Lab sample (cached · free)."
+                      : "No photo? One-tap official Lab sample (live Mini · 10 credits)."}
                 </p>
                 {!image && (
                   <button
@@ -1561,7 +1576,9 @@ export function CreateStudio({
                     onClick={() => void loadSampleToy("scout", true)}
                     className="btn btn-primary mt-5 px-6 py-2.5 text-sm disabled:opacity-50"
                   >
-                    ▶ Free sample now
+                    {demoMode
+                      ? "▶ Lab sample · free"
+                      : "▶ Lab sample · Mini trial"}
                   </button>
                 )}
                 <span className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-[var(--mint)]/25 bg-black/40 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--mint)]">

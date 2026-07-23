@@ -190,7 +190,7 @@ export function HfExploreHome({
             </Link>
           </div>
           <p className="mt-3 text-[11px] text-white/45">
-            No card needed · sample photo ready · green Generate button does the rest
+            Official Lab still · cached demos free · live Mini uses 10 credits
           </p>
 
           {/* Progress rail */}
