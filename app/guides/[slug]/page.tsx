@@ -124,12 +124,20 @@ export default async function GuidePage({
             <p className="text-lg font-semibold text-white">
               Try it with a toy you own
             </p>
-            <Link
-              href="/create"
-              className="btn mt-4 bg-white px-6 py-2.5 font-semibold text-[var(--bg)] hover:opacity-90"
-            >
-              Create a clip free →
-            </Link>
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              <Link
+                href="/create"
+                className="btn bg-white px-6 py-2.5 font-semibold text-[var(--bg)] hover:opacity-90"
+              >
+                Create a clip free →
+              </Link>
+              <Link
+                href="/modules"
+                className="btn border border-white/40 bg-transparent px-5 py-2.5 font-semibold text-white hover:bg-white/10"
+              >
+                Toy Modules
+              </Link>
+            </div>
           </div>
         </div>
       </article>

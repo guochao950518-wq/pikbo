@@ -1396,5 +1396,27 @@ function resolveGenerateStillPure(input) {
   assert.equal(fresh.assetId, "asset_cur");
 }
 
+// Mobile bottom nav freeze: Modules peer of Generate (not Lab)
+assert.match(softLaunchSrc, /MOBILE_NAV/);
+assert.match(softLaunchSrc, /MOBILE_NAV[\s\S]*href:\s*["']\/modules["']/);
+const appShellSrc = fs.readFileSync(
+  join(root, "components/AppShell.tsx"),
+  "utf8"
+);
+assert.match(appShellSrc, /MOBILE_NAV/);
+assert.match(appShellSrc, /nav\.modules/);
+assert.match(
+  fs.readFileSync(join(root, "app/tools/page.tsx"), "utf8"),
+  /\/modules/
+);
+assert.match(
+  fs.readFileSync(join(root, "app/guides/page.tsx"), "utf8"),
+  /\/modules/
+);
+assert.match(
+  fs.readFileSync(join(root, "app/guides/[slug]/page.tsx"), "utf8"),
+  /\/modules/
+);
+
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

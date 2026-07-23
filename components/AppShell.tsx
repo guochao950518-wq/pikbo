@@ -12,7 +12,7 @@ import { Footer } from "@/components/Footer";
 import { LanguageProvider, useI18n } from "@/components/LanguageProvider";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { cn } from "@/lib/utils";
-import { PRIMARY_NAV } from "@/lib/softLaunch";
+import { MOBILE_NAV, PRIMARY_NAV } from "@/lib/softLaunch";
 
 /**
  * Soft-launch suite nav — hrefs frozen in lib/softLaunch PRIMARY_NAV.
@@ -41,6 +41,7 @@ const MORE = [
   { href: "/cinema", key: "nav.cinema", tag: "Preview" },
   { href: "/models", key: "nav.models", tag: "Preview" },
   { href: "/explore", key: "nav.feed", tag: "Preview" },
+  { href: "/community", key: "nav.lab", tag: null },
   { href: "/tools", key: "nav.tools", tag: null },
   { href: "/guides", key: "nav.guides", tag: null },
   { href: "/login", key: "nav.signin", tag: "Preview" },
@@ -48,16 +49,24 @@ const MORE = [
 ] as const;
 
 /**
- * Mobile chrome ≈ suite pattern: Home · Lab · Generate · Library · Profile
- * (HF-class bottom bar; Generate is center primary.)
+ * Mobile bottom bar — hrefs frozen in MOBILE_NAV (Generate center primary).
+ * Lab remains desktop PRIMARY + More (not a bottom-tab peer of Modules).
  */
-const MOBILE = [
-  { href: "/", key: "nav.home", icon: "⌂" },
-  { href: "/community", key: "nav.lab", icon: "◉" },
-  { href: "/create", key: "cta.generate", icon: "✦", primary: true as const },
-  { href: "/library", key: "nav.library", icon: "▢" },
-  { href: "/profile", key: "nav.profile", icon: "○" },
-];
+const MOBILE_KEYS = [
+  "nav.home",
+  "nav.modules",
+  "cta.generate",
+  "nav.library",
+  "nav.profile",
+] as const;
+const MOBILE_ICONS = ["⌂", "▦", "✦", "▢", "○"] as const;
+
+const MOBILE = MOBILE_NAV.map((item, i) => ({
+  href: item.href,
+  key: MOBILE_KEYS[i],
+  icon: MOBILE_ICONS[i],
+  primary: "primary" in item && item.primary === true,
+}));
 
 function active(path: string, href: string) {
   if (href === "/") return path === "/";

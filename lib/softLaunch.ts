@@ -18,6 +18,20 @@ export const PRIMARY_NAV = [
 
 export const PRIMARY_NAV_HREFS = PRIMARY_NAV.map((item) => item.href);
 
+/**
+ * Mobile bottom bar (5 slots). Modules is the job wall peer of Generate;
+ * Lab stays desktop PRIMARY_NAV + footer, not a bottom-tab peer.
+ */
+export const MOBILE_NAV = [
+  { href: "/", label: "Home" },
+  { href: "/modules", label: "Modules" },
+  { href: "/create", label: "Generate", primary: true as const },
+  { href: "/library", label: "Library" },
+  { href: "/profile", label: "Profile" },
+] as const;
+
+export const MOBILE_NAV_HREFS = MOBILE_NAV.map((item) => item.href);
+
 /** At most these eight registered recipes may appear on the homepage proof wall. */
 export const HOME_PROOF_SLUGS = [
   "floating-hero",

@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Mobile Modules tab + Guides/Tools suite doors
+- `MOBILE_NAV` freeze in softLaunch; bottom bar Home · Modules · Generate · Library · Profile.
+- Lab remains desktop PRIMARY + More/footer (not bottom-tab peer).
+- Guides hub + Tools hub + guide article CTA → Modules / Seller Pack / Generate.
+- Create mobile sticky polish already on main (Try free + recipe line).
+- Verified: typecheck · engine-smoke · lint.
+
 ### 2026-07-24 — [grok] Retry still freeze + download requestId resolve
 - Bugfix: Create Retry used ambient composer `assetId` after re-upload → wrong photo.
 - `resolveGenerateStill` freezes version still (or frozen assetId only if still missing).

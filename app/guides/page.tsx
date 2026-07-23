@@ -23,6 +23,21 @@ export default function GuidesHub() {
         </p>
       </div>
 
+      <div className="mt-6 flex flex-wrap gap-2">
+        <Link href="/create" className="btn btn-primary text-sm">
+          Open Generate
+        </Link>
+        <Link href="/modules" className="btn btn-ghost text-sm">
+          Toy Modules
+        </Link>
+        <Link href="/create?mode=seller-pack" className="btn btn-ghost text-sm">
+          Seller Pack
+        </Link>
+        <Link href="/effects" className="btn btn-ghost text-sm">
+          Presets
+        </Link>
+      </div>
+
       <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {GUIDES.map((g) => (
           <Link

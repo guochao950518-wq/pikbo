@@ -62,10 +62,22 @@ export default function ToolsIndexPage() {
         </p>
         <div className="mt-4 flex flex-wrap justify-center gap-2">
           <Link href="/create" className="btn btn-primary text-sm">
-            Open Studio
+            Open Generate
+          </Link>
+          <Link href="/modules" className="btn btn-ghost text-sm">
+            Toy Modules
+          </Link>
+          <Link
+            href="/create?mode=seller-pack"
+            className="btn btn-ghost text-sm"
+          >
+            Seller Pack
           </Link>
           <Link href="/effects" className="btn btn-ghost text-sm">
             All presets
+          </Link>
+          <Link href="/community" className="btn btn-ghost text-sm">
+            Lab examples
           </Link>
         </div>
       </div>
