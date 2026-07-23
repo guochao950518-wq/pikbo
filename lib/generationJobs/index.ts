@@ -13,5 +13,6 @@ export {
   toPublicJob,
   downloadAllowedForJob,
   forkRetryJob,
+  cancelJob,
   __resetGenerationJobsForTests,
 } from "@/lib/generationJobs/store";

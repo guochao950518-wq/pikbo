@@ -106,7 +106,8 @@ export function AutoPlayVideo({
       muted
       loop
       playsInline
-      preload="metadata"
+      // Phase G: non-hero stays poster-only until interaction/viewport claim.
+      preload={eager ? "metadata" : "none"}
       tabIndex={
         focusable && desktopPlayMode === "interaction" ? 0 : undefined
       }

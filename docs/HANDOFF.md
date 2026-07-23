@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-23 — [grok] Phase G perf + proof notes + D cancel/upload local
+- Home/AutoPlay: non-hero `preload=none`; hero metadata; rail `fetchPriority` on first poster.
+- Project page surfaces `reviewerNotes` under quality review.
+- Login: Google OAuth button when `SUPABASE_AUTH_GOOGLE=1` (else honest gate copy).
+- `DELETE /api/generations/[id]` cancels queued/running local jobs; upload-url + PUT content local asset path (in-process, 15m).
+- Verified: typecheck · engine-smoke · lint.
+
 ### 2026-07-23 — [grok] Signed-in durable shadow on generate + /api/me
 - Generate prefers Bearer Supabase user for shadow reserve/settle; guest fallback.
 - Durable auto-on when Supabase URL present; cookie still authoritative for live debit.

@@ -92,7 +92,8 @@ function Clip({
       muted
       loop
       playsInline
-      preload="metadata"
+      // Phase G: hero gets metadata; non-hero poster-only until near viewport play.
+      preload={eager ? "metadata" : "none"}
     >
       <source src={demo.webm} type="video/webm" />
       <source src={demo.mp4} type="video/mp4" />
@@ -232,6 +233,10 @@ export function HfExploreHome({
                   src={s.demo.poster}
                   alt=""
                   className="h-full w-full object-cover"
+                  loading={i === 0 ? "eager" : "lazy"}
+                  decoding="async"
+                  // First rail thumb helps LCP when hero poster is the same asset
+                  fetchPriority={i === 0 ? "high" : "low"}
                 />
               </button>
             ))}

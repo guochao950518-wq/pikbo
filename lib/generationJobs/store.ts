@@ -125,6 +125,63 @@ export function getJob(id: string): GenerationJob | null {
   return jobs.get(id) ?? null;
 }
 
+/**
+ * Cancel a queued/running local job. Terminal states are left unchanged.
+ * Soft-launch sync generate cannot interrupt fal mid-flight; this marks the
+ * ledger honestly for clients that abandon a poll.
+ */
+export function cancelJob(input: {
+  sessionId: string;
+  id: string;
+}):
+  | { ok: true; job: GenerationJob }
+  | {
+      ok: false;
+      code: "NOT_FOUND" | "NOT_OWNED" | "NOT_CANCELABLE";
+      message: string;
+      job?: GenerationJob;
+    } {
+  const job = jobs.get(input.id);
+  if (!job) {
+    return {
+      ok: false,
+      code: "NOT_FOUND",
+      message: "Job not in this process ledger",
+    };
+  }
+  if (job.sessionId !== input.sessionId) {
+    return {
+      ok: false,
+      code: "NOT_OWNED",
+      message: "Job belongs to another session",
+    };
+  }
+  if (job.status === "canceled") {
+    return { ok: true, job };
+  }
+  if (job.status === "succeeded" || job.status === "failed") {
+    return {
+      ok: false,
+      code: "NOT_CANCELABLE",
+      message: `Job already ${job.status}`,
+      job,
+    };
+  }
+  const next = updateJob(job.id, {
+    status: "canceled",
+    error: "Canceled by client",
+    errorCode: "CANCELED",
+  });
+  if (!next) {
+    return {
+      ok: false,
+      code: "NOT_FOUND",
+      message: "Job disappeared during cancel",
+    };
+  }
+  return { ok: true, job: next };
+}
+
 export function listJobsForSession(
   sessionId: string,
   limit = 20

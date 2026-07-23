@@ -262,6 +262,17 @@ export default async function ShowcaseProjectPage({ params }: Props) {
               </div>
             )}
 
+            {project.reviewerNotes ? (
+              <div className="mt-4 rounded-xl border border-white/10 bg-black/30 px-3 py-3">
+                <p className="text-[10px] font-black uppercase tracking-wider text-white/40">
+                  Reviewer notes
+                </p>
+                <p className="mt-1.5 text-xs leading-relaxed text-white/55">
+                  {project.reviewerNotes}
+                </p>
+              </div>
+            ) : null}
+
             <div className="mt-6 grid gap-2">
               <Link
                 href={showcaseRecipeHref(project)}

@@ -776,6 +776,13 @@ assert.match(
     join(root, "app/api/assets/upload-url/route.ts"),
     "utf8"
   ),
+  /uploadUrl|local-memory/
+);
+assert.doesNotMatch(
+  fs.readFileSync(
+    join(root, "app/api/assets/upload-url/route.ts"),
+    "utf8"
+  ),
   /NOT_IMPLEMENTED/
 );
 assert.match(
@@ -1034,6 +1041,41 @@ const creditsBadge = fs.readFileSync(
   "utf8"
 );
 assert.match(creditsBadge, /displayCredits/);
+
+// Phase G performance + proof notes + D cancel/local upload
+const hfHome = fs.readFileSync(
+  join(root, "components/HfExploreHome.tsx"),
+  "utf8"
+);
+assert.match(hfHome, /preload=\{eager \? "metadata" : "none"\}/);
+assert.match(hfHome, /fetchPriority/);
+const autoPlaySrc = fs.readFileSync(
+  join(root, "components/AutoPlayVideo.tsx"),
+  "utf8"
+);
+assert.match(autoPlaySrc, /preload=\{eager \? "metadata" : "none"\}/);
+const projectPage = fs.readFileSync(
+  join(root, "app/projects/[slug]/page.tsx"),
+  "utf8"
+);
+assert.match(projectPage, /reviewerNotes/);
+const loginForm = fs.readFileSync(
+  join(root, "components/LoginForm.tsx"),
+  "utf8"
+);
+assert.match(loginForm, /signInWithOAuth|Continue with Google/);
+assert.match(loginForm, /SUPABASE_AUTH_GOOGLE/);
+assert.match(genJobIdRoute, /cancelJob/);
+assert.match(genJobIdRoute, /export async function DELETE/);
+const assetContent = fs.readFileSync(
+  join(root, "app/api/assets/[id]/content/route.ts"),
+  "utf8"
+);
+assert.match(assetContent, /putLocalAsset/);
+assert.match(
+  fs.readFileSync(join(root, "lib/localAssets.ts"), "utf8"),
+  /putLocalAsset/
+);
 
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node
