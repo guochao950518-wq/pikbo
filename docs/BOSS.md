@@ -4,6 +4,7 @@
 目标：**说一遍，三个人都干活**。
 
 **先读作战令：** [`FIRST_PRINCIPLES.md`](./FIRST_PRINCIPLES.md)（马斯克五步：需求 → 删 → 简 → 快 → 自动）  
+**AI 分工：** [`ROLES.md`](./ROLES.md) — Claude 写代码 · GPT 写 PRD · Grok 增长/协调  
 **公网上线：** [`LAUNCH.md`](./LAUNCH.md)（现在最大阻塞是域名+Vercel，不是再堆功能）
 
 ---

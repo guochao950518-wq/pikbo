@@ -1,93 +1,108 @@
-# DISPATCH — 协调令 · 禁止偷懒
+# DISPATCH — 新分工生效（老板定）
 
-**From Grok（协调官）· 老板命令：持续干活，不许停**  
-**第一性原理：** 图→片、诚实成本、公网可及。删虚荣 → 简 → 快 → 最后自动。
-
----
-
-## 刚合流（已进 main）
-
-| Claude home-hf | media-rich home promo CTA (merged) |
-| Grok engine | profile/landing meClient + promo honesty |
-
-
-| 谁 | 内容 |
-|----|------|
-| Claude home-hf | 纯黑+lime、视频墙 denser、community 4-col、create stage |
-| Codex wave2 | Lab labels · Mini trial · TrustStrip honesty |
-| Grok engine | PROVIDER_* codes · MIME guard · health.ready · library import |
-| Grok engine | generateClient shared · Batch 429 retry · Landing parity · engine-smoke |
-| Grok engine | cached demo = 0 credits · entitlements probe · health.ready.paid gated |
-| Grok engine | softLive: IP rate limit + inflight lock + me.mode + checklist |
-| Grok engine | promptBuild + library aging + checkout RL |
-| Grok engine | batch free-tier honesty + invoice idempotency |
-| Grok engine | meClient / settings mode / sample stills / health HEAD |
+**生效：** 立刻  
+**权威角色表：** `docs/ROLES.md`  
+**协作规则：** `COLLAB.md`  
+**原则：** 第一性原理（图→片、诚实成本、公网可及）+ 交叉先沟通  
 
 ---
 
-## 下一波 · 立刻执行（做完再停）
+## 当前角色
 
-### Claude 设计 · D5+
+| Agent | 职责 |
+|-------|------|
+| **Claude** | **全部代码与工程实现**（前后端、架构、重构、质量） |
+| **GPT** | **产品规划与结构化**（PRD、数据、业务、API 设计、商业规则） |
+| **Grok** | **创意 / 差异化 / 增长** + 协调合流优先级 + 老板同步 |
 
-路径：`/Users/x/claude/pikbo-claude-ui` · 分支：`agent/claude/home-hf`
+---
 
-1. **D5** 首页/顶栏 HF 密度继续（390 首屏视频优先）  
-2. **D6** 卡片 hover / 播放态 polish  
-3. **D7** 每 30 分钟 `push origin agent/claude/home-hf`
+## 现在立刻干
 
-```text
-【Grok 协调令 · 禁止偷懒】
-老板要求持续生产。上一波设计已 merge main。
+### GPT（先出结构，Claude 才能写）
 
-cd /Users/x/claude/pikbo-claude-ui
-git fetch origin && git checkout agent/claude/home-hf
-git merge origin/main
-git push origin agent/claude/home-hf
+| ID | 交付 | 路径建议 | 状态 |
+|----|------|----------|------|
+| P1 | **Soft-launch PRD**（免费试玩 + Create 主路径 + 诚实限制） | `docs/prd/SOFT_LAUNCH.md` | **todo** |
+| P2 | **订阅与积分商业规则**（1/5/15、何时可真收费、失败退款） | `docs/business/CREDITS_AND_PLANS.md` | todo |
+| P3 | **Generate API 规格**（与现 `lib/contracts.ts` 对齐或升级草案） | `docs/api/GENERATE.md` | todo |
+| P4 | **T5 账号/持久积分数据模型**（表结构 + 状态机） | `docs/prd/AUTH_CREDITS.md` | todo |
 
-连续做：
-1) /community 做成和首页一样密的视频墙
-2) /create 工作区黑+lime、大预览，不改 app/api
-3) /effects 预设墙 denser + hover 一致
-每块：git commit -m "[claude] …" && git push origin agent/claude/home-hf
+**禁止：** 大改 `app/**` 业务代码；规格未定时不要让 Claude 猜商业规则。
 
-禁止：checkout main 当工作区；用 /Users/x/claude/pikbo 改 UI；改 API。
-读 docs/AGENT_WORKTREES.md。开始写代码，不要只汇报。
+### Claude（有规格就实现；无规格先修/稳）
+
+| ID | 交付 | 状态 |
+|----|------|------|
+| E1 | 读 `docs/ROLES.md` + pull main；认领工程任务 | **todo** |
+| E2 | 在 P1 落地前：修 build/tsc、已知 bug、可维护性重构 | todo |
+| E3 | P1 就绪后：实现 soft-launch 缺口（按 PRD） | blocked on P1 |
+| E4 | 设计/UI 实现并入工程职责（不再只交「审美旁路」） | ongoing |
+
+**禁止：** 自定定价/无限量；大功能无 PRD 就开干。
+
+### Grok（创意 + 协调）
+
+| ID | 交付 | 状态 |
+|----|------|------|
+| G1 | 潮玩差异化 / 增长一页纸（本轮） | **doing** |
+| G2 | 合流优先级：只合 Claude 工程 PR + GPT 文档 PR | ongoing |
+| G3 | 不抢写业务代码；prompt/玩法建议写入 `docs/growth/` | ongoing |
+
+---
+
+## 交叉请求（模板）
+
+```md
+### Cross request · YYYY-MM-DD
+- From: Grok | GPT | Claude
+- To: …
+- Need: …
+- Block: …
 ```
 
 ---
 
-### Codex 文案 · wave2
-
-路径：`/Users/x/claude/pikbo` · 分支：`agent/gpt/wave2-copy`
-
-1. community/explore 假 UGC / 旧数字清扫  
-2. effects FAQ 与 Mini + 1/5/15 一致  
-3. TrustStrip / Onboarding / 空态 demo vs live  
-4. push PR
+## 复制给 GPT 的开工口令
 
 ```text
-【Grok 协调令 · 禁止偷懒】
-老板要求持续生产。overnight-copy 已 merge。
+【老板新分工 · 严格遵守 docs/ROLES.md】
+你是 GPT：只做产品规划与结构化，不主力写业务代码。
 
-cd /Users/x/claude/pikbo
-git fetch && git checkout main && git pull origin main
-git checkout -B agent/gpt/wave2-copy
+git fetch && git checkout main && git pull
+git checkout -B agent/gpt/prd-soft-launch
 
-只做文案：
-1) community/explore 假承诺与旧数字
-2) effects SEO FAQ 与 Mini free / 1·5·15
-3) TrustStrip/Onboarding/空态 demo vs live
+立刻交付：
+1) docs/prd/SOFT_LAUNCH.md — soft 上线范围、主路径、非目标、验收清单
+2) docs/business/CREDITS_AND_PLANS.md — 与 lib/pricing.ts 一致的商业规则 + 何时可开 Stripe
+3) docs/api/GENERATE.md — 请求/响应/错误码（对齐现 contracts，可标升级项）
 
-禁止：app/api、session/credits 逻辑、大改视觉。
-npm run lint
-git commit -am "[gpt] wave2 honesty pass"
-git push -u origin agent/gpt/wave2-copy
-
-读 docs/DISPATCH.md。开始写代码，不要闲聊。
+commit 前缀 [gpt]，push，更新 docs/STATUS.md。
+交叉需求先写 DISPATCH。不要大改 app/api 实现。
 ```
 
 ---
 
-### Grok
+## 复制给 Claude 的开工口令
 
-合流 + 引擎 + typecheck；45 分钟定时冲刺；不抢 UI。
+```text
+【老板新分工 · 严格遵守 docs/ROLES.md】
+你是 Claude：主力全部代码编写与工程实现。
+
+git fetch && git checkout main && git pull
+工作目录优先：/Users/x/claude/pikbo（main 或 agent/claude/*）
+
+立刻：
+1) 读 docs/ROLES.md + docs/DISPATCH.md
+2) 在 GPT 的 PRD 未齐前：typecheck/lint 绿、修明显 bug、整理可维护性（小步 [claude] commit）
+3) GPT push PRD 后：按 docs/prd/* 实现，不要自己发明商业规则
+
+禁止：无规格改积分/订阅语义；抢 GPT 写 PRD。
+有交叉：先在 DISPATCH 留言再动手。
+```
+
+---
+
+## 仓库
+
+https://github.com/guochao950518-wq/pikbo · 分支 `main`

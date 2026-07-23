@@ -4,6 +4,10 @@
 **Product:** designer-toy AI video tool (pikbo.ai) — subscriptions + later ads.  
 **Agents:** Grok · GPT · Claude (and the human owner)
 
+**Role split (boss):** see **`docs/ROLES.md`**.  
+Claude = code. GPT = PRD/structure. Grok = growth/creative/coordination.  
+Cross-cutting → communicate in `docs/DISPATCH.md` before editing.
+
 Everyone works **only through this GitHub repo**. Do not invent parallel local-only histories.
 
 ---

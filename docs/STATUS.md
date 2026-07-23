@@ -1,6 +1,6 @@
 # Pikbo board — claim before you code
 
-**Last human intent:** Three-lane: Claude design UI; Codex conversion/truth copy (C1–C5); Grok engine + merge. Nobody idle.
+**Last human intent:** NEW roles — Claude=all code; GPT=PRD/structure/API design; Grok=creative/growth/coordination. See docs/ROLES.md.
 
 Update this file in the same PR/commit as your work start/finish.
 
