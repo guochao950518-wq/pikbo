@@ -75,40 +75,42 @@ export default async function CreatePage({
         </Suspense>
         <div className="px-4 py-8 sm:px-8">
           <div className="mx-auto max-w-6xl">
-            <span className="chip">Seller Pack · product studio</span>
-            <h1 className="mt-3 text-3xl font-bold">
-              Upload → pack → deliver
+            <span className="chip">Seller Pack · 3 videos</span>
+            <h1 className="mt-3 font-display text-3xl font-black uppercase tracking-tight">
+              One photo → three short videos
             </h1>
-            <p className="mt-2 max-w-2xl text-sm text-[var(--fg-muted)]">
-              Higgsfield Product-studio pattern for toys: one owned photo becomes
-              Listing Spin (1:1), Blind-box Reveal (9:16), and Social Flash
-              (9:16). Cached demos free and labeled. Live charges per successful
-              child; confirmed failures restore credits. Results stay on this
-              device until cloud Library ships.
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[var(--fg-muted)]">
+              Product-studio for toys: Listing Spin (1:1), Blind-box Reveal
+              (9:16), Social Flash (9:16) — all <b className="text-white/80">video</b>.
+              Lab demos free and labeled. Live charges per successful child;
+              failures restore credits when confirmed.
             </p>
-            <p className="mt-2 text-xs text-[var(--fg-dim)]">
-              Single careful shot?{" "}
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Link
+                href="/create?try=1&sample=scout"
+                className="rounded-full bg-[#c8ff3d] px-4 py-2 text-xs font-black text-black"
+              >
+                Try free video first
+              </Link>
               <Link
                 href="/create"
-                className="text-[var(--brand)] hover:underline"
+                className="rounded-full border border-white/20 px-4 py-2 text-xs font-bold text-white/80"
               >
-                Open single Generate
+                Single Generate
               </Link>
-              {" · "}
               <Link
                 href="/modules"
-                className="text-[var(--mint)] hover:underline"
+                className="rounded-full border border-white/15 px-4 py-2 text-xs font-bold text-white/55"
               >
-                All modules
+                Modules
               </Link>
-              {" · "}
               <Link
-                href="/supercomputer"
-                className="text-[var(--fg-muted)] hover:underline"
+                href="/for/etsy-listing-videos"
+                className="rounded-full border border-white/15 px-4 py-2 text-xs font-bold text-white/55"
               >
-                Custom batch
+                Etsy use case
               </Link>
-            </p>
+            </div>
             <div className="mt-6">
               <BatchStudio pack="seller" />
             </div>
