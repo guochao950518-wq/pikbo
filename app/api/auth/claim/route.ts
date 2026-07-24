@@ -9,6 +9,8 @@ import {
   guestSessionIdHash,
 } from "@/lib/supabase/user";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { takeToken } from "@/lib/rateLimit";
+import { clientIp } from "@/lib/requestMeta";
 
 export const runtime = "nodejs";
 
@@ -42,6 +44,27 @@ export async function POST(req: Request) {
         error: "Valid Supabase session required",
       },
       { status: 401 }
+    );
+  }
+
+  // Soft rate limit claim spam (idempotent but still hits durable store).
+  const claimRl = takeToken(
+    `claim:${user.id}:${clientIp(req)}`,
+    12,
+    60_000
+  );
+  if (!claimRl.ok) {
+    return NextResponse.json(
+      {
+        ok: false,
+        code: "RATE_LIMITED",
+        error: `Too many claim attempts — try again in ${claimRl.retryAfterSec}s`,
+        retryAfterSec: claimRl.retryAfterSec,
+      },
+      {
+        status: 429,
+        headers: { "Retry-After": String(claimRl.retryAfterSec) },
+      }
     );
   }
 

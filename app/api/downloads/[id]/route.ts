@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { ensureSession } from "@/lib/session";
 import { findJobByRequestOrId, sweepTimedOutJobs } from "@/lib/generationJobs";
-import { freeLiveDownloadBlockReason } from "@/lib/createTrust";
+import {
+  freeLiveDownloadBlockReason,
+  isSafeDeliverableUrl,
+} from "@/lib/createTrust";
 
 export const runtime = "nodejs";
 
@@ -46,6 +49,17 @@ export async function GET(_req: Request, { params }: Props) {
         demo: job.demo,
       },
       { status: 403 }
+    );
+  }
+  // Only redirect to relative /demos paths or http(s) provider URLs.
+  if (!isSafeDeliverableUrl(job.videoUrl)) {
+    return NextResponse.json(
+      {
+        ok: false,
+        code: "UNSAFE_URL",
+        error: "Deliverable URL is not a safe redirect target",
+      },
+      { status: 422 }
     );
   }
   // Redirect to the allowed URL (demo assets or paid deliverable).

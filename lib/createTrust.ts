@@ -191,6 +191,29 @@ export function freeLiveDownloadBlockReason(): string {
   return "Free Mini live clips cannot download the raw provider file yet — player mark is not a file watermark (T6 blocked). Upgrade for a clean file, or keep the on-player preview.";
 }
 
+/**
+ * Safe redirect targets for /api/downloads — relative same-origin paths or http(s).
+ * Rejects javascript:/data:/protocol-relative //open-redirect tricks.
+ */
+export function isSafeDeliverableUrl(url: string): boolean {
+  if (!url || typeof url !== "string") return false;
+  const t = url.trim();
+  if (!t || t.length > 2000) return false;
+  // Same-origin demo / static paths only (no //evil.com protocol-relative).
+  if (t.startsWith("/") && !t.startsWith("//")) {
+    return !t.includes("\\") && !/^\/\//.test(t);
+  }
+  try {
+    const u = new URL(t);
+    if (u.protocol !== "https:" && u.protocol !== "http:") return false;
+    // Block credentials-in-url oddities and empty hosts.
+    if (!u.hostname || u.username || u.password) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /** Build immutable spec snapshot at success time. */
 export function buildGenerationSpec(input: {
   sourceKey: string;

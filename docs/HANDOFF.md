@@ -4,6 +4,11 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Auth rate limits + safe download redirects
+- Magic-link: per-email 3/min + per-IP 8/min with Retry-After; generic success (no email echo).
+- Claim POST: 12/min per user+IP. Downloads: `isSafeDeliverableUrl` (http(s) or /path only).
+- Verified: engine-smoke · typecheck · lint.
+
 ### 2026-07-24 — [grok] ProjectCard AutoPlay budget + Apps/Community ItemList
 - ProjectCard uses shared AutoPlayVideo (mobile ≤1 concurrent · preload none · focusable=false).
 - Apps + Community hubs: ItemList JSON-LD for live/official URLs only (no SOON/fake UGC).

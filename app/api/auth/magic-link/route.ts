@@ -2,12 +2,15 @@ import { NextResponse } from "next/server";
 import { getSupabaseAnonServer } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { site } from "@/lib/site";
+import { takeToken } from "@/lib/rateLimit";
+import { clientIp } from "@/lib/requestMeta";
 
 export const runtime = "nodejs";
 
 /**
  * Send email magic link via Supabase Auth.
  * Requires SUPABASE_URL + anon key. Redirects to /auth/callback.
+ * Soft rate limits: per-email 3/min · per-IP 8/min (abuse / SMTP burn).
  */
 export async function POST(req: Request) {
   if (!isSupabaseConfigured()) {
@@ -36,6 +39,39 @@ export async function POST(req: Request) {
     return NextResponse.json(
       { ok: false, code: "INVALID_EMAIL", error: "Enter a valid email" },
       { status: 400 }
+    );
+  }
+
+  const emailKey = email.toLowerCase().slice(0, 128);
+  const ip = clientIp(req);
+  const emailRl = takeToken(`magic:${emailKey}`, 3, 60_000);
+  if (!emailRl.ok) {
+    return NextResponse.json(
+      {
+        ok: false,
+        code: "RATE_LIMITED",
+        error: `Too many magic-link requests for this email — try again in ${emailRl.retryAfterSec}s`,
+        retryAfterSec: emailRl.retryAfterSec,
+      },
+      {
+        status: 429,
+        headers: { "Retry-After": String(emailRl.retryAfterSec) },
+      }
+    );
+  }
+  const ipRl = takeToken(`magicip:${ip || "unknown"}`, 8, 60_000);
+  if (!ipRl.ok) {
+    return NextResponse.json(
+      {
+        ok: false,
+        code: "RATE_LIMITED",
+        error: `Too many magic-link requests from this network — try again in ${ipRl.retryAfterSec}s`,
+        retryAfterSec: ipRl.retryAfterSec,
+      },
+      {
+        status: 429,
+        headers: { "Retry-After": String(ipRl.retryAfterSec) },
+      }
     );
   }
 
@@ -80,9 +116,9 @@ export async function POST(req: Request) {
     );
   }
 
+  // Honest generic success — do not imply the address is registered/unregistered.
   return NextResponse.json({
     ok: true,
     message: `If the address is valid, a magic link is on the way. Check spam too. (${site.name})`,
-    email,
   });
 }

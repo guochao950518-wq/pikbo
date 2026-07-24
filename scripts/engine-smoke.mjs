@@ -1146,6 +1146,45 @@ const authClaim = fs.readFileSync(
 assert.match(authClaim, /durableMigrateGuest/);
 assert.match(authClaim, /ensurePersonalAccount/);
 assert.match(authClaim, /getAuthUserFromRequest/);
+assert.match(authClaim, /RATE_LIMITED|takeToken/);
+const magicLink = fs.readFileSync(
+  join(root, "app/api/auth/magic-link/route.ts"),
+  "utf8"
+);
+assert.match(magicLink, /takeToken/);
+assert.match(magicLink, /RATE_LIMITED/);
+assert.match(magicLink, /If the address is valid/);
+// Success body must not require leaking email field
+assert.doesNotMatch(
+  magicLink.slice(magicLink.lastIndexOf("return NextResponse.json({\n    ok: true")),
+  /^\s*email,/m
+);
+// Download redirect safety
+assert.match(createTrust, /export function isSafeDeliverableUrl/);
+assert.match(
+  fs.readFileSync(join(root, "app/api/downloads/[id]/route.ts"), "utf8"),
+  /isSafeDeliverableUrl|UNSAFE_URL/
+);
+// Pure safe-url checks
+function isSafeDeliverableUrlPure(url) {
+  if (!url || typeof url !== "string") return false;
+  const t = url.trim();
+  if (!t || t.length > 2000) return false;
+  if (t.startsWith("/") && !t.startsWith("//")) return !t.includes("\\");
+  try {
+    const u = new URL(t);
+    if (u.protocol !== "https:" && u.protocol !== "http:") return false;
+    if (!u.hostname || u.username || u.password) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+assert.equal(isSafeDeliverableUrlPure("/demos/orbit-dance.mp4"), true);
+assert.equal(isSafeDeliverableUrlPure("https://fal.media/files/x.mp4"), true);
+assert.equal(isSafeDeliverableUrlPure("javascript:alert(1)"), false);
+assert.equal(isSafeDeliverableUrlPure("//evil.com/x"), false);
+assert.equal(isSafeDeliverableUrlPure("data:text/html,hi"), false);
 const authUser = fs.readFileSync(join(root, "lib/supabase/user.ts"), "utf8");
 assert.match(authUser, /guestSessionIdHash/);
 assert.match(authUser, /getUser/);
