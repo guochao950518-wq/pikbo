@@ -106,7 +106,11 @@ export function interpretGenerateResponse(
                     ? "Provider returned an unsafe video URL — credits restored when the debit was confirmed. Retry generate."
                     : code === "PROVIDER_RATE_LIMIT"
                       ? `Provider rate limited — try again in ${retryAfterSec ?? "a few"}s`
-                      : "Generation failed");
+                      : code === "PROVIDER_TIMEOUT"
+                        ? `Provider timed out — try again in ${retryAfterSec ?? "a few"}s`
+                        : code === "CONTENT_POLICY"
+                          ? "Provider rejected the still or prompt under content policy — try a clearer product photo"
+                          : "Generation failed");
 
   // PRD §5: recoverable failures must say whether the 10 credits were restored.
   if (

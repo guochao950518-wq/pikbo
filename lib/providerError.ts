@@ -55,6 +55,35 @@ export function providerErrorMessage(
   return fallback;
 }
 
+/**
+ * Map classified provider fail → API code + HTTP status (+ optional Retry-After).
+ * Shared by /api/generate and /api/image so codes never drift.
+ */
+export function providerFailHttp(kind: ProviderFailKind): {
+  code:
+    | "PROVIDER_BALANCE"
+    | "PROVIDER_RATE_LIMIT"
+    | "PROVIDER_TIMEOUT"
+    | "CONTENT_POLICY"
+    | "GENERATION_FAILED";
+  status: number;
+  retryAfterSec?: number;
+} {
+  if (kind === "balance") {
+    return { code: "PROVIDER_BALANCE", status: 402 };
+  }
+  if (kind === "rate") {
+    return { code: "PROVIDER_RATE_LIMIT", status: 429, retryAfterSec: 8 };
+  }
+  if (kind === "timeout") {
+    return { code: "PROVIDER_TIMEOUT", status: 504, retryAfterSec: 5 };
+  }
+  if (kind === "content") {
+    return { code: "CONTENT_POLICY", status: 422 };
+  }
+  return { code: "GENERATION_FAILED", status: 500 };
+}
+
 /** data:image/*;base64,... only — rejects non-image or missing payload. */
 export function isValidImageDataUrl(image: string): boolean {
   if (!image || image.length < 32) return false;

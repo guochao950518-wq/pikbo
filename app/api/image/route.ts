@@ -5,6 +5,7 @@ import { IMAGE_MODEL } from "@/lib/models";
 import {
   classifyProviderError,
   providerErrorMessage,
+  providerFailHttp,
 } from "@/lib/providerError";
 import {
   endJob,
@@ -214,24 +215,22 @@ export async function POST(req: Request) {
       const fallback =
         err instanceof Error ? err.message : "Image generation failed";
       const msg = providerErrorMessage(kind, fallback);
-      const code =
-        kind === "balance"
-          ? "PROVIDER_BALANCE"
-          : kind === "rate"
-            ? "PROVIDER_RATE_LIMIT"
-            : "GENERATION_FAILED";
-      const status = kind === "balance" ? 402 : kind === "rate" ? 429 : 500;
+      const http = providerFailHttp(kind);
       return NextResponse.json(
         {
           error: msg,
-          code,
+          code: http.code,
           session: publicSession(session),
           creditsRefunded: true,
-          ...(kind === "rate" ? { retryAfterSec: 8 } : {}),
+          ...(http.retryAfterSec != null
+            ? { retryAfterSec: http.retryAfterSec }
+            : {}),
         },
         {
-          status,
-          ...(kind === "rate" ? { headers: { "Retry-After": "8" } } : {}),
+          status: http.status,
+          ...(http.retryAfterSec != null
+            ? { headers: { "Retry-After": String(http.retryAfterSec) } }
+            : {}),
         }
       );
     }

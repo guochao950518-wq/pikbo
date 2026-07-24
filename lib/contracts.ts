@@ -68,6 +68,8 @@ export type GenerateErrorBody = {
     | "GENERATION_FAILED"
     | "PROVIDER_BALANCE"
     | "PROVIDER_RATE_LIMIT"
+    | "PROVIDER_TIMEOUT"
+    | "CONTENT_POLICY"
     | "RATE_LIMITED"
     | "JOB_IN_FLIGHT"
     | "RIGHTS_REQUIRED"

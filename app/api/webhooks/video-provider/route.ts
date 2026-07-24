@@ -127,9 +127,11 @@ export async function POST(req: Request) {
     const statusCode =
       result.code === "JOB_NOT_FOUND"
         ? 404
-        : result.code === "INVALID_PAYLOAD" || result.code === "MISSING_VIDEO"
-          ? 400
-          : 500;
+        : result.code === "UNSAFE_URL"
+          ? 422
+          : result.code === "INVALID_PAYLOAD" || result.code === "MISSING_VIDEO"
+            ? 400
+            : 500;
     return NextResponse.json(
       {
         ok: false,

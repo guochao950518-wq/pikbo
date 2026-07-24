@@ -78,6 +78,7 @@ export default function ImageStudioPage() {
           (data.error || "Image generation failed") +
             (data.code === "RATE_LIMITED" ||
             data.code === "PROVIDER_RATE_LIMIT" ||
+            data.code === "PROVIDER_TIMEOUT" ||
             data.code === "JOB_IN_FLIGHT"
               ? wait
               : "") +

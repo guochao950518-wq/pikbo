@@ -24,6 +24,7 @@ import {
   classifyProviderError,
   isValidImageDataUrl,
   providerErrorMessage,
+  providerFailHttp,
 } from "@/lib/providerError";
 import { isSafeDeliverableUrl } from "@/lib/createTrust";
 import { buildGeneratePrompt } from "@/lib/promptBuild";
@@ -361,13 +362,14 @@ export async function POST(req: Request) {
         return err(failBody, 502);
       }
       // Refuse non-http(s) / non-relative deliverables (open-redirect / injection).
+      // Code must be UNSAFE_URL (image + client + downloads parity — not MODEL_EMPTY).
       if (!isSafeDeliverableUrl(videoUrl)) {
         session = refundCredits(session, check.cost);
         await saveSession(session);
         await shadowRelease(shadow, "unsafe_url");
         const failBody: GenerateErrorBody = {
           error: "Model returned an unsafe video URL — credits restored",
-          code: "MODEL_EMPTY",
+          code: "UNSAFE_URL",
           model,
           session: publicSession(session),
           creditsRefunded: true,
@@ -429,27 +431,24 @@ export async function POST(req: Request) {
       const fallback =
         e instanceof Error ? e.message : "Generation failed";
       const msg = providerErrorMessage(kind, fallback);
-      const code =
-        kind === "balance"
-          ? "PROVIDER_BALANCE"
-          : kind === "rate"
-            ? "PROVIDER_RATE_LIMIT"
-            : "GENERATION_FAILED";
-      const status =
-        kind === "balance" ? 402 : kind === "rate" ? 429 : kind === "timeout" ? 504 : 500;
+      const http = providerFailHttp(kind);
       const failBody: GenerateErrorBody = {
         error: msg,
-        code,
+        code: http.code,
         model,
         session: publicSession(session),
         creditsRefunded: true,
-        ...(kind === "rate" ? { retryAfterSec: 8 } : {}),
+        ...(http.retryAfterSec != null
+          ? { retryAfterSec: http.retryAfterSec }
+          : {}),
       };
       noteFailed(session.id, preset.slug, failBody);
       return err(
         failBody,
-        status,
-        kind === "rate" ? { "Retry-After": "8" } : undefined
+        http.status,
+        http.retryAfterSec != null
+          ? { "Retry-After": String(http.retryAfterSec) }
+          : undefined
       );
     }
   } finally {

@@ -133,8 +133,17 @@ const deductIdx = genRoute.indexOf("deductCredits(session");
 assert.ok(demoIdx > 0 && deductIdx > demoIdx, "demo path must run before credit deduct");
 assert.match(genRoute, /Cached demos stay free|free cached Lab/i);
 assert.match(genRoute, /isSafeDeliverableUrl/);
+// Live unsafe videoUrl must surface UNSAFE_URL (not MODEL_EMPTY) for client honesty.
+assert.match(
+  genRoute,
+  /isSafeDeliverableUrl\(videoUrl\)[\s\S]{0,400}code:\s*"UNSAFE_URL"/
+);
 assert.match(genRoute, /Retry-After/);
+assert.match(genRoute, /providerFailHttp/);
 assert.match(pe, /timeout|content/);
+assert.match(pe, /export function providerFailHttp/);
+assert.match(pe, /PROVIDER_TIMEOUT/);
+assert.match(pe, /CONTENT_POLICY/);
 
 const imgRoute = fs.readFileSync(join(root, "app/api/image/route.ts"), "utf8");
 const imgDemo = imgRoute.indexOf("if (!process.env.FAL_KEY)");
@@ -1030,9 +1039,14 @@ const imageRoute = fs.readFileSync(
 );
 assert.match(imageRoute, /isSafeDeliverableUrl/);
 assert.match(imageRoute, /UNSAFE_URL/);
+assert.match(imageRoute, /providerFailHttp/);
 assert.match(
   fs.readFileSync(join(root, "app/image/page.tsx"), "utf8"),
   /UNSAFE_URL|creditsRefunded/
+);
+assert.match(
+  fs.readFileSync(join(root, "app/image/page.tsx"), "utf8"),
+  /PROVIDER_TIMEOUT/
 );
 assert.match(createStudio, /useCallback[\s\S]*adoptImage|adoptImage = useCallback/);
 assert.match(genJobsStore, /export function generationJobsProbe/);
@@ -1324,6 +1338,38 @@ assert.match(genJobsStore, /applyProviderWebhookEvent/);
 assert.match(genJobsStore, /findJobByRequestOrId/);
 assert.match(genJobsStore, /webhookEvents/);
 assert.match(genJobsStore, /UNSAFE_URL|isSafeDeliverableUrl/);
+// Webhook must not map UNSAFE_URL to 500 — client/ops need 422.
+assert.match(
+  fs.readFileSync(join(root, "app/api/webhooks/video-provider/route.ts"), "utf8"),
+  /UNSAFE_URL[\s\S]{0,80}422/
+);
+// Contract + client must know timeout/content codes
+assert.match(
+  fs.readFileSync(join(root, "lib/contracts.ts"), "utf8"),
+  /PROVIDER_TIMEOUT/
+);
+assert.match(
+  fs.readFileSync(join(root, "lib/contracts.ts"), "utf8"),
+  /CONTENT_POLICY/
+);
+assert.match(gen, /PROVIDER_TIMEOUT/);
+assert.match(gen, /CONTENT_POLICY/);
+
+// Pure providerFailHttp parity
+function providerFailHttpPure(kind) {
+  if (kind === "balance") return { code: "PROVIDER_BALANCE", status: 402 };
+  if (kind === "rate")
+    return { code: "PROVIDER_RATE_LIMIT", status: 429, retryAfterSec: 8 };
+  if (kind === "timeout")
+    return { code: "PROVIDER_TIMEOUT", status: 504, retryAfterSec: 5 };
+  if (kind === "content") return { code: "CONTENT_POLICY", status: 422 };
+  return { code: "GENERATION_FAILED", status: 500 };
+}
+assert.equal(providerFailHttpPure("timeout").code, "PROVIDER_TIMEOUT");
+assert.equal(providerFailHttpPure("timeout").status, 504);
+assert.equal(providerFailHttpPure("content").code, "CONTENT_POLICY");
+assert.equal(providerFailHttpPure("content").status, 422);
+assert.equal(providerFailHttpPure("rate").retryAfterSec, 8);
 
 // Phase D job timeout recovery
 assert.match(genJobsStore, /sweepTimedOutJobs/);
