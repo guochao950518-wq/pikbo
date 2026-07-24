@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import {
   displayCredits,
   fetchMe,
+  freeTrialExhausted,
   isDemoMode,
   type MeResponse,
 } from "@/lib/meClient";
@@ -48,10 +49,15 @@ export function CreditsBadge({ compact }: { compact?: boolean }) {
 
   const credits = displayCredits(session);
   const perJob = session.liveJobCredits ?? CREDITS_PER_VIDEO;
-  const clips = Math.floor(credits / perJob);
+  const clips =
+    typeof session.freeTrial?.clipsLeft === "number"
+      ? session.freeTrial.clipsLeft
+      : Math.floor(credits / perJob);
   const low = credits < perJob;
   const demo = isDemoMode(session);
   const signed = Boolean(session.signedIn && session.durable);
+  const trialDone = freeTrialExhausted(session);
+  const freeLive = session.freeTrial?.freeLive;
 
   if (compact) {
     return (
@@ -65,9 +71,13 @@ export function CreditsBadge({ compact }: { compact?: boolean }) {
         title={
           demo
             ? `${credits} credits · demo-cached free`
-            : signed
-              ? `${credits} durable shadow · cookie still generates`
-              : `${credits} credits`
+            : trialDone
+              ? `Free Mini trial used · ${credits} cr left · upgrade or wait refresh`
+              : signed
+                ? `${credits} durable shadow · cookie still generates`
+                : freeLive
+                  ? `${credits} cr · Free Mini ${freeLive.resolution} ${freeLive.durationSec}s`
+                  : `${credits} credits`
         }
       >
         {credits}
@@ -86,9 +96,13 @@ export function CreditsBadge({ compact }: { compact?: boolean }) {
       title={
         demo
           ? `${session.planName} · demo-cached · live needs ${perJob} credits each`
-          : signed
-            ? `Signed-in · durable shadow ${credits} cr · ~${clips} live · cookie still authoritative for generate`
-            : `${session.planName} · ${credits} credits · ~${clips} live jobs`
+          : trialDone
+            ? `Free Mini trial exhausted · cached demos still free · compare plans`
+            : signed
+              ? `Signed-in · durable shadow ${credits} cr · ~${clips} live · cookie still authoritative for generate`
+              : freeLive
+                ? `Free Mini · ${freeLive.resolution} · ${freeLive.durationSec}s · ~${clips} live · on-player mark`
+                : `${session.planName} · ${credits} credits · ~${clips} live jobs`
       }
     >
       <span

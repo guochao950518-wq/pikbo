@@ -909,7 +909,19 @@ assert.match(
   fs.readFileSync(join(root, "app/api/generations/route.ts"), "utf8"),
   /byStatus/
 );
+assert.match(
+  fs.readFileSync(join(root, "app/api/generations/route.ts"), "utf8"),
+  /touchJob|touchedOpen/
+);
 assert.match(createStudio, /idempotentReplay|no second charge/);
+// Soft-launch free trial honesty on /api/me
+const meRoute = fs.readFileSync(join(root, "app/api/me/route.ts"), "utf8");
+assert.match(meRoute, /freeTrial/);
+assert.match(meRoute, /seedance-mini|480p|exhausted/);
+assert.match(
+  fs.readFileSync(join(root, "lib/meClient.ts"), "utf8"),
+  /freeTrialExhausted|MeFreeTrial/
+);
 assert.match(genJobsStore, /toPublicJob/);
 assert.match(genJobsStore, /forkRetryJob/);
 assert.match(genJobsStore, /parentJobId/);

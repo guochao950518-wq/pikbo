@@ -5,6 +5,7 @@ import {
   jobTimeoutMs,
   listJobsForSession,
   sweepTimedOutJobs,
+  touchJob,
   toPublicJob,
 } from "@/lib/generationJobs";
 
@@ -14,12 +15,24 @@ export const runtime = "nodejs";
  * Phase D — list recent jobs for this session (local memory adapter).
  * Durable async queue still requires Supabase; soft-launch sync path is
  * POST /api/generate, which records jobs into this ledger.
- * GET also sweeps timed-out queued/running jobs (timeout recovery).
+ * GET also sweeps timed-out queued/running jobs (timeout recovery) and
+ * touches open jobs so Library poll does not false-TIMEOUT mid-generate.
  */
 export async function GET() {
   const session = await ensureSession();
   const timedOut = sweepTimedOutJobs();
-  const raw = listJobsForSession(session.id, 30);
+  const listed = listJobsForSession(session.id, 30);
+  // Library polls this list (not always /[id]) — slide TTL on every open job.
+  let touchedOpen = 0;
+  const raw = listed.map((j) => {
+    if (j.status !== "queued" && j.status !== "running") return j;
+    const next = touchJob(j.id);
+    if (next) {
+      touchedOpen += 1;
+      return next;
+    }
+    return j;
+  });
   const jobs = raw.map((j) => toPublicJob(j, session.id));
   const byStatus = {
     queued: 0,
@@ -39,11 +52,13 @@ export async function GET() {
     jobTimeoutMs: jobTimeoutMs(),
     timedOutThisSweep: timedOut.filter((j) => j.sessionId === session.id)
       .length,
+    /** How many open jobs had updatedAt slid this poll. */
+    touchedOpen,
     /** Session-scoped histogram (Library recovery UI). */
     byStatus,
     open: byStatus.queued + byStatus.running,
     note:
-      "In-process ledger for soft-launch recovery. Not multi-node durable. Use POST /api/generate for work. Queued/running jobs past jobTimeoutMs fail with TIMEOUT. GET /api/generations/[id] touches open jobs.",
+      "In-process ledger for soft-launch recovery. Not multi-node durable. Use POST /api/generate for work. Queued/running jobs past jobTimeoutMs fail with TIMEOUT. List + detail GET touch open jobs.",
     compatibility: {
       syncGenerate: "/api/generate",
       jobStatus: "/api/generations/[id]",

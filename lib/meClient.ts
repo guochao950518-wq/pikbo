@@ -15,16 +15,44 @@ export type MeDurableWallet = {
   authority?: "shadow" | "authoritative";
 };
 
+/** Soft-launch free trial honesty from GET /api/me */
+export type MeFreeTrial = {
+  planId: string;
+  isFreePlan: boolean;
+  credits: number;
+  clipsLeft: number;
+  liveJobCredits: number;
+  watermark: boolean;
+  cachedDemoFree: boolean;
+  freeLive: {
+    modelClass: "seedance-mini";
+    durationSec: 5;
+    resolution: "480p";
+    onPlayerMark: true;
+  } | null;
+  exhausted: boolean;
+};
+
 export type MeResponse = PublicSession & {
   mode?: GenerateMode | string;
   cachedDemoFree?: boolean;
   liveJobCredits?: number;
+  freeTrial?: MeFreeTrial;
   signedIn?: boolean;
   authConfigured?: boolean;
   durableCreditsActive?: boolean;
   auth?: { id: string; email: string | null } | null;
   durable?: MeDurableWallet | null;
 };
+
+/** True when Free plan has fewer than one live job of credits left. */
+export function freeTrialExhausted(me: MeResponse | null | undefined): boolean {
+  if (!me) return false;
+  if (me.freeTrial) return me.freeTrial.exhausted === true;
+  if (me.plan !== "free") return false;
+  const need = me.liveJobCredits ?? 10;
+  return me.credits < need;
+}
 
 export function isDemoMode(me: MeResponse | null | undefined): boolean {
   if (!me) return false;

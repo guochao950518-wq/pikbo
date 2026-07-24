@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { CREDITS_PER_VIDEO } from "@/lib/pricing";
+import { CREDITS_PER_VIDEO, getPlan } from "@/lib/pricing";
 import { generateMode } from "@/lib/requestMeta";
 import { ensureSession, publicSession } from "@/lib/session";
 import {
@@ -19,12 +19,37 @@ export const runtime = "nodejs";
 export async function GET(req: Request) {
   const session = await ensureSession();
   const mode = generateMode();
+  const plan = getPlan(session.plan);
+  const clipsLeft = Math.floor(session.credits / CREDITS_PER_VIDEO);
   const base = {
     ...publicSession(session),
     mode,
     /** Cached demos never charge; live jobs use flat CREDITS_PER_VIDEO */
     cachedDemoFree: true,
     liveJobCredits: CREDITS_PER_VIDEO,
+    /**
+     * Soft-launch free trial honesty (Free plan = 1 Mini live job / period).
+     * Server-enforced on /api/generate: free → Mini 480p 5s + watermark.
+     */
+    freeTrial: {
+      planId: session.plan,
+      isFreePlan: session.plan === "free",
+      credits: session.credits,
+      clipsLeft,
+      liveJobCredits: CREDITS_PER_VIDEO,
+      watermark: plan.watermark,
+      cachedDemoFree: true,
+      freeLive:
+        session.plan === "free"
+          ? {
+              modelClass: "seedance-mini" as const,
+              durationSec: 5,
+              resolution: "480p" as const,
+              onPlayerMark: true,
+            }
+          : null,
+      exhausted: session.plan === "free" && session.credits < CREDITS_PER_VIDEO,
+    },
     authConfigured: isSupabaseConfigured(),
     durableCreditsActive: durableCreditsActive(),
   };
