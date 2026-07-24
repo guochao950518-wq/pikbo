@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] GenerateFailPanel + error stage + Flow suite door
+- Shared `GenerateFailPanel` on Create / Batch / Landing / Image with Retry + Lab/Recipes/Modules.
+- Create result stage: dedicated **Clip didn't land** empty (not idle copy).
+- SuiteEntryStrip: Flow door + tags; Library empty media-stage craft.
+- generateClient error strings end in next actions.
+- Verified: typecheck · lint · pages 200.
+
 ### 2026-07-24 — [grok] DeliveryChecklist + wall hover play + pack empty copy
 - Interactive post-success checklist (session ticks) on Create / Landing / Seller Pack.
 - `sellerPackPostItems` · denser walls use hover play + metadata promote on enter.
