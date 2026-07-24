@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] H7/Y5 Batch quote + H1 Seedance suite doors
+- `batchQuoteLabel` + custom Batch credit strip (balance/shortfall/refund).
+- Batch upload craft (mint empty · pack/batch copy).
+- Seedance campaign: suite CTAs · Remake hover strip · interaction play.
+- Verified: typecheck · lint · engine-smoke.
+
 ### 2026-07-24 — [grok] Y2 Stills suite rail + Image studio craft
 - `GenerateSuiteChrome`: Stills mode → `/image` (Preview badge · Flux honesty).
 - Image studio: suite chrome · media-stage · safe handoff (`http(s)` + `/path`).

@@ -174,8 +174,7 @@ export function HfExploreHome({
             {item.title}
           </h1>
           <p className="mt-3 max-w-md text-sm leading-relaxed text-white/65 sm:text-[15px]">
-            One free try turns a photo of a toy you own into a listing or social
-            clip — TikTok, Etsy, shelf posts.
+            {t("home.hero.sub")}
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
@@ -475,12 +474,12 @@ export function HfExploreHome({
           </div>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
             {[
-              { href: "/create?try=1", label: "Try free", sub: "Sample ready" },
-              { href: "/effects", label: "Presets", sub: "Viral recipes" },
-              { href: "/create?mode=seller-pack", label: "Seller Pack", sub: "3 outputs" },
-              { href: "/image", label: "Stills", sub: "Flux" },
-              { href: "/community", label: "Lab", sub: "Examples" },
-              { href: "/models", label: "Models", sub: "Honest shelf" },
+              { href: "/create?try=1", label: "Try free video", sub: "Sample ready" },
+              { href: "/effects", label: "Video presets", sub: "Viral recipes" },
+              { href: "/create?mode=seller-pack", label: "Seller Pack", sub: "3 videos" },
+              { href: "/flow", label: "Flow", sub: "Video matrix" },
+              { href: "/community", label: "Lab", sub: "Video examples" },
+              { href: "/models", label: "Engines", sub: "Seedance live" },
             ].map((c) => (
               <Link
                 key={c.href}
@@ -500,14 +499,14 @@ export function HfExploreHome({
         <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-4 rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.06] to-transparent p-5 sm:flex-row sm:items-center sm:p-6">
           <div>
             <p className="text-[10px] font-black uppercase tracking-wider text-[#c8ff3d]">
-              Seller Pack · MVP
+              Seller Pack · 3 videos
             </p>
             <h3 className="mt-1 font-display text-lg font-bold uppercase tracking-tight sm:text-xl">
-              One photo → listing spin + reveal + social hook
+              One photo → three short videos
             </h3>
             <p className="mt-1 max-w-md text-[12px] text-white/50">
-              Three fixed formats for marketplace sellers. Official cached
-              examples free to view; live jobs use credits per clip.
+              Listing spin + reveal + social hook — all video outputs. Lab
+              examples free to watch; live jobs bill per clip.
             </p>
           </div>
           <Link

@@ -75,3 +75,14 @@ export function sellerPackQuoteLabel(quote: SellerPackQuote): string {
   }
   return `${quote.childCount} × ${quote.creditsPerChild} = ${quote.totalCredits} credits · failed child refunds 10`;
 }
+
+/**
+ * Custom multi-preset batch quote line (H7 / Y5).
+ * Same math as Seller Pack; wording says jobs not fixed pack.
+ */
+export function batchQuoteLabel(quote: SellerPackQuote): string {
+  if (quote.demo) {
+    return `${quote.childCount} jobs · cached free (0 credits)`;
+  }
+  return `${quote.childCount} jobs × ${quote.creditsPerChild} = ${quote.totalCredits} credits · fail refunds ${quote.creditsPerChild}`;
+}

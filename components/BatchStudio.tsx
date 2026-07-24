@@ -25,6 +25,7 @@ import {
   type SellerPackExportItem,
 } from "@/lib/sellerPackExport";
 import {
+  batchQuoteLabel,
   sellerPackBalanceCovers,
   sellerPackQuote,
   sellerPackQuoteLabel,
@@ -765,7 +766,55 @@ export function BatchStudio({
           ? `${sellerPackActive ? "Preview Seller Pack" : "Run batch"} · ${selected.length} · cached free`
           : sellerPackActive
             ? `Run Seller Pack · ${sellerPackQuoteLabel(packQuote)}`
-            : `Run batch · ${selected.length} · ${cost} credits`;
+            : `Run batch · ${batchQuoteLabel(packQuote)}`;
+
+  const creditStrip = (
+    <div
+      className={`rounded-lg border px-2.5 py-2 text-[11px] leading-relaxed text-[var(--fg-muted)] ${
+        sellerPackActive
+          ? "border-[var(--mint)]/20 bg-black/25"
+          : "border-white/12 bg-black/30"
+      }`}
+    >
+      <p
+        className={`font-bold ${
+          sellerPackActive ? "text-[var(--mint)]" : "text-white/85"
+        }`}
+      >
+        Credits ·{" "}
+        {sellerPackActive
+          ? sellerPackQuoteLabel(packQuote)
+          : batchQuoteLabel(packQuote)}
+      </p>
+      {demoMode ? (
+        <p className="mt-0.5 text-[var(--fg-dim)]">
+          Demo mode · no debit · upload is not sent to the model.
+        </p>
+      ) : (
+        <p className="mt-0.5 text-[var(--fg-dim)]">
+          Session balance:{" "}
+          <b className="text-[var(--fg)]">{me?.credits ?? "…"} credits</b>
+          {typeof me?.credits !== "number" ? (
+            <span> · loading balance…</span>
+          ) : !sellerPackBalanceCovers(packQuote, me.credits) ? (
+            <span className="text-amber-200">
+              {" "}
+              · short {sellerPackShortfall(packQuote, me.credits)}
+              {sellerPackActive
+                ? " — Free Mini covers one 10-cr job, not a full pack"
+                : " — Free Mini is one 10-cr job; deselect recipes or open single Generate"}
+            </span>
+          ) : (
+            <span>
+              {" "}
+              · covers this {sellerPackActive ? "pack" : "batch"}
+            </span>
+          )}
+          . Each confirmed fail restores {demoMode ? 0 : CREDITS_PER_VIDEO}.
+        </p>
+      )}
+    </div>
+  );
 
   return (
     <div className="mt-8 grid gap-6 pb-36 lg:grid-cols-[1fr_1.1fr] lg:pb-0">
@@ -782,35 +831,7 @@ export function BatchStudio({
                 (9:16).
               </p>
               {/* Y5 credit transparency — balance · per child · total · refund */}
-              <div className="mt-2 rounded-lg border border-[var(--mint)]/20 bg-black/25 px-2.5 py-2 text-[11px] leading-relaxed text-[var(--fg-muted)]">
-                <p className="font-bold text-[var(--mint)]">
-                  Credits · {sellerPackQuoteLabel(packQuote)}
-                </p>
-                {demoMode ? (
-                  <p className="mt-0.5 text-[var(--fg-dim)]">
-                    Demo mode · no debit · upload is not sent to the model.
-                  </p>
-                ) : (
-                  <p className="mt-0.5 text-[var(--fg-dim)]">
-                    Session balance:{" "}
-                    <b className="text-[var(--fg)]">
-                      {me?.credits ?? "…"} credits
-                    </b>
-                    {typeof me?.credits !== "number" ? (
-                      <span> · loading balance…</span>
-                    ) : !sellerPackBalanceCovers(packQuote, me.credits) ? (
-                      <span className="text-amber-200">
-                        {" "}
-                        · short {sellerPackShortfall(packQuote, me.credits)} —
-                        Free Mini covers one 10-cr job, not a full pack
-                      </span>
-                    ) : (
-                      <span> · covers this pack</span>
-                    )}
-                    . Each confirmed fail restores 10.
-                  </p>
-                )}
-              </div>
+              <div className="mt-2">{creditStrip}</div>
               <ul className="mt-2 space-y-0.5 text-[10px] text-[var(--fg-dim)]">
                 {SELLER_PACK_ITEMS.map((item) => (
                   <li key={item.key}>
@@ -825,9 +846,32 @@ export function BatchStudio({
             <SellerPackSteps step={sellerStep} />
           </div>
         )}
+        {!sellerPackActive ? (
+          <div className="rounded-2xl border border-white/12 bg-gradient-to-br from-white/[0.04] to-black/40 px-3.5 py-3 text-xs text-[var(--fg-muted)]">
+            <p className="font-bold text-white/85">
+              Custom batch · Preview
+            </p>
+            <p className="mt-1 leading-relaxed text-white/50">
+              Queue any recipes · sequential Seedance jobs · not multi-model
+              Supercomputer. Prefer fixed shop formats?{" "}
+              <Link
+                href="/create?mode=seller-pack"
+                className="font-semibold text-[var(--mint)] hover:underline"
+              >
+                Seller Pack
+              </Link>
+              .
+            </p>
+            <div className="mt-2">{creditStrip}</div>
+          </div>
+        ) : null}
         <label
           id="seller-pack-photo"
-          className="flex aspect-video cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--border)] bg-[var(--bg-soft)]"
+          className={`flex aspect-video cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed bg-black/40 transition-all duration-200 hover:border-[var(--mint)]/55 hover:bg-black/55 ${
+            image
+              ? "border-white/12 ring-1 ring-white/5"
+              : "border-[var(--mint)]/40 shadow-[0_0_40px_rgba(200,255,61,0.06)]"
+          }`}
           onDragOver={(e) => e.preventDefault()}
           onDrop={(e) => {
             e.preventDefault();
@@ -843,7 +887,13 @@ export function BatchStudio({
             />
           ) : (
             <span className="px-4 text-center text-sm text-[var(--fg-dim)]">
-              🧸 Drop one toy photo for the whole batch
+              <span className="mb-2 block text-2xl" aria-hidden>
+                🧸
+              </span>
+              Drop one toy photo for the whole{" "}
+              {sellerPackActive ? "pack" : "batch"}
+              <br />
+              <span className="text-xs">or tap · JPEG / PNG / WebP · under ~8 MB</span>
             </span>
           )}
           <input

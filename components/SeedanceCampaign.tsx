@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { DEMO_VIDEOS } from "@/lib/demoVideos";
 import { AutoPlayVideo } from "@/components/AutoPlayVideo";
+import { createRemixHref } from "@/lib/remixIntent";
 
-/** Full-bleed flagship banner — HF Seedance battle pattern */
+/** Full-bleed flagship banner — HF Seedance battle pattern (H1). */
 export function SeedanceCampaign() {
   const hero = DEMO_VIDEOS[0];
-  const strip = DEMO_VIDEOS;
+  const strip = DEMO_VIDEOS.slice(0, 8);
 
   return (
     <section className="relative my-2 overflow-hidden border-y border-white/[0.06]">
@@ -15,6 +16,7 @@ export function SeedanceCampaign() {
           webm={hero.webm}
           mp4={hero.mp4}
           eager
+          focusable={false}
           className="h-full w-full object-cover opacity-55"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/30" />
@@ -33,18 +35,46 @@ export function SeedanceCampaign() {
           <p className="mt-2 text-sm font-semibold uppercase tracking-[0.18em] text-white/50">
             Cached showcase · Mini live trial when configured
           </p>
-          <div className="mt-7 flex flex-wrap gap-3">
+          <p className="mt-3 max-w-lg text-sm leading-relaxed text-white/45">
+            Honest single-track motion engine — not a multi-model zoo. Upload a
+            figure you own → listing, hook, or pack.
+          </p>
+          <div className="mt-7 flex flex-wrap gap-2.5">
+            <Link
+              href="/create?try=1&sample=scout"
+              className="rounded-full bg-[var(--mint)] px-6 py-2.5 text-sm font-black text-black shadow-[0_0_28px_rgba(200,255,61,0.25)] transition hover:-translate-y-0.5"
+            >
+              Try Mini free
+            </Link>
             <Link
               href="/create"
-              className="rounded-full bg-[var(--mint)] px-7 py-3 text-sm font-black text-black"
+              className="rounded-full border border-[var(--mint)]/40 bg-[var(--mint)]/10 px-5 py-2.5 text-sm font-bold text-[var(--mint)] transition hover:bg-[var(--mint)]/15"
             >
-              Try Mini
+              Generate
+            </Link>
+            <Link
+              href="/modules"
+              className="rounded-full border border-white/20 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur transition hover:border-white/35"
+            >
+              Modules
+            </Link>
+            <Link
+              href="/create?mode=seller-pack"
+              className="rounded-full border border-white/20 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur transition hover:border-white/35"
+            >
+              Seller Pack
+            </Link>
+            <Link
+              href="/flow"
+              className="rounded-full border border-white/15 px-5 py-2.5 text-sm font-semibold text-white/75 transition hover:border-white/30 hover:text-white"
+            >
+              Flow
             </Link>
             <Link
               href="/community"
-              className="rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold text-white backdrop-blur"
+              className="rounded-full border border-white/15 px-5 py-2.5 text-sm font-semibold text-white/70 transition hover:border-white/30 hover:text-white"
             >
-              Open PIKBO Lab
+              PIKBO Lab
             </Link>
           </div>
         </div>
@@ -53,17 +83,22 @@ export function SeedanceCampaign() {
           {strip.map((d) => (
             <Link
               key={d.id}
-              href={`/create?effect=${encodeURIComponent(d.preset)}`}
-              className="relative h-40 w-24 shrink-0 overflow-hidden rounded-xl border border-white/10 sm:h-48 sm:w-28"
+              href={createRemixHref(d.preset, d.id)}
+              className="group relative h-40 w-24 shrink-0 overflow-hidden rounded-xl border border-white/10 transition duration-300 ease-out hover:-translate-y-0.5 hover:border-[var(--mint)]/45 hover:shadow-[0_10px_28px_rgba(0,0,0,0.45)] sm:h-48 sm:w-28"
             >
               <AutoPlayVideo
                 poster={d.poster}
                 webm={d.webm}
                 mp4={d.mp4}
-                className="absolute inset-0 h-full w-full object-cover"
+                focusable={false}
+                desktopPlayMode="interaction"
+                className="absolute inset-0 h-full w-full object-cover transition duration-700 ease-out group-hover:scale-[1.06]"
               />
-              <span className="absolute inset-x-0 bottom-0 bg-black/70 px-1 py-1 text-center text-[9px] font-bold uppercase text-white">
-                Try recipe
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+              <span className="absolute inset-x-0 bottom-0 px-1 py-1.5 text-center text-[9px] font-bold uppercase tracking-wide text-white">
+                <span className="rounded-full bg-[var(--mint)]/15 px-1.5 py-0.5 text-[var(--mint)] ring-1 ring-[var(--mint)]/25 transition group-hover:bg-[var(--mint)] group-hover:text-black">
+                  Remake →
+                </span>
               </span>
             </Link>
           ))}

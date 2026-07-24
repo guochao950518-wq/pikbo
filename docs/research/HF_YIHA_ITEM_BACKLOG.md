@@ -3,7 +3,9 @@
 **日期：** 2026-07-24  
 **对象：** [higgsfield.ai](https://higgsfield.ai/) · [yiha.ai](https://yiha.ai/)  
 **原则：** 合法学 **结构 / 交互 / 工作流**；不抄片源、文案、商标、假 UGC、假多模型 live。  
-**产品刀口：** 潮玩垂直 = 已有玩具静图 → 可发可卖短视频。
+**产品刀口（定死）：主卖 AI 视频生成，不是卖静图。**  
+静图/照片只是 **输入**；产出与商业价值是 **短视频**（对标 HF Seedance / Viral Presets 墙）。  
+潮玩垂直 = 你的玩具照片 → 可发抖音/上架/发售的 **视频**。静帧（Flux）仅辅助，永远不是主路径。
 
 ---
 
@@ -27,13 +29,13 @@
 
 | # | HF 能力 | 研究结论 | Pikbo 动作 | 优先级 | 状态 |
 |---|---------|----------|------------|--------|------|
-| H1 | 首页战役条 + 模型/App 入口卡 | 结果与工具并列 | Suite strip + 战役条（Seedance 诚实） | P0 | partial |
+| H1 | 首页战役条 + 模型/App 入口卡 | 结果与工具并列 | Suite strip + 战役条（Seedance 诚实） | P0 | live |
 | H2 | Viral Presets 墙（独立片） | 一键 = 完整配方 | `/effects` + home rail | P0 | live · AutoPlay budget |
 | H3 | Explore inside project | 输入/输出/参数可拆 | `/projects/[slug]` | P0 | live |
 | H4 | **Flow 创建矩阵** | 视频卡进工作区 | **`/flow` 媒体矩阵重做** | **P0** | live · AutoPlay budget |
 | H5 | Generate 工作台 | 输入+参数+结果 | `/create` 旗舰 | P0 | live 打磨 |
 | H6 | Product / Marketing 三步 | 商品图→片→卖 | Seller Pack | P0 | live |
-| H7 | Supercomputer / Batch | 多任务 | Seller Pack 优先；Batch Preview | P1 | partial |
+| H7 | Supercomputer / Batch | 多任务 | Seller Pack 优先；Batch Preview + Y5 quote | P1 | live |
 | H8 | Library / Assets | 云资产 | 本机 Library + session jobs | P1 | soft |
 | H9 | Community UGC remake | 真用户 | Lab only until auth+mod | P2 | blocked |
 | H10 | 多模型墙 | 核心商业 | Models 诚实 Soon | — | 永不假做 |
@@ -50,7 +52,7 @@
 | Y2 | 顶栏 Video/Image/Edit | 模态分轨 | Generate / Stills / Modules / Pack / Flow | P0 | live |
 | Y3 | **/lego 垂直 mini-app** | 固定工作流壳 | `/modules` | P0 | live |
 | Y4 | Explore → remix | 灵感回 Create | Explore/project remix | P0 | live |
-| Y5 | Membership 积分透明 | 生成前成本 | pricing + banner credits | P1 | partial |
+| Y5 | Membership 积分透明 | 生成前成本 | pricing + Create + Pack + Batch quote | P1 | live |
 | Y6 | 多模态 Music/KOL… | 泛平台 | **不做** | — | skip |
 | Y7 | 多模型超市 | 有 key | 诚实单轨 Seedance | — | 永不假做 |
 
@@ -91,5 +93,7 @@ Round C              真 UGC / 云 Library / 真多模型（要账号+key）
 - [x] 错误态 micro-copy 全站统一（`GenerateFailPanel` · Create/Landing/Batch/Image + generateClient action copy）  
 - [x] Suite strip 加 **Flow** 门 + tag 密度（H1 partial → denser）  
 - [x] **Y2** suite chrome 加 **Stills** 轨 + `/image` 套 chrome · handoff 安全 URL  
+- [x] **H7/Y5** custom Batch credit strip (`batchQuoteLabel`) + photo craft  
+- [x] **H1** Seedance 战役条 suite doors + strip Remake hover play  
 
 *Grok · HF_YIHA_ITEM_BACKLOG · 2026-07-24*

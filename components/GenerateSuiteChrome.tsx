@@ -9,6 +9,7 @@ import { useI18n } from "@/components/LanguageProvider";
  * HF Generate–style suite chrome for the toy vertical.
  * Modes map to real Pikbo surfaces only (no fake Cinema tabs).
  */
+/** Video modes first — Stills is optional support (not the product). */
 const MODE_DEFS = [
   {
     id: "generate" as const,
@@ -17,10 +18,10 @@ const MODE_DEFS = [
     blurbKey: "suite.mode.generate.blurb",
   },
   {
-    id: "image" as const,
-    href: "/image",
-    labelKey: "suite.mode.stills",
-    blurbKey: "suite.mode.stills.blurb",
+    id: "flow" as const,
+    href: "/flow",
+    labelKey: "suite.mode.flow",
+    blurbKey: "suite.mode.flow.blurb",
   },
   {
     id: "modules" as const,
@@ -41,10 +42,10 @@ const MODE_DEFS = [
     blurbKey: "suite.mode.recipes.blurb",
   },
   {
-    id: "flow" as const,
-    href: "/flow",
-    labelKey: "suite.mode.flow",
-    blurbKey: "suite.mode.flow.blurb",
+    id: "image" as const,
+    href: "/image",
+    labelKey: "suite.mode.stills",
+    blurbKey: "suite.mode.stills.blurb",
   },
 ];
 

@@ -1098,7 +1098,7 @@ export function CreateStudio({
             Seedance · live
           </span>
           <span className="rounded-full border border-white/10 px-2.5 py-0.5 text-white/45">
-            Flux stills · /image
+            Stills optional · video is main
           </span>
           <span className="rounded-full border border-white/10 px-2.5 py-0.5 text-white/35">
             Kling / Veo / Sora · Soon

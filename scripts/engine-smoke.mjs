@@ -1428,7 +1428,13 @@ const spQuoteSrc = fs.readFileSync(
 assert.match(spQuoteSrc, /export function sellerPackQuote/);
 assert.match(spQuoteSrc, /export function sellerPackBalanceCovers/);
 assert.match(spQuoteSrc, /export function sellerPackQuoteLabel/);
+assert.match(spQuoteSrc, /export function batchQuoteLabel/);
 assert.match(batchStudio, /sellerPackQuoteLabel|sellerPackQuote\(/);
+assert.match(batchStudio, /batchQuoteLabel|Custom batch · Preview/);
+assert.match(
+  fs.readFileSync(join(root, "components/SeedanceCampaign.tsx"), "utf8"),
+  /createRemixHref|desktopPlayMode=["']interaction["']|Seller Pack/
+);
 assert.match(batchStudio, /Session balance|covers this pack|short /);
 assert.match(
   fs.readFileSync(join(root, "components/SellerPackSteps.tsx"), "utf8"),
