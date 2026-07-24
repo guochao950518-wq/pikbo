@@ -127,8 +127,31 @@ export default function ModulesPage() {
   const live = listLiveWorkflows();
   const preview = listPreviewWorkflows();
 
+  // Live job blocks only — Preview shelves stay off structured data.
+  const itemListLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Pikbo toy workflow modules",
+    description:
+      "Modular toy video jobs that open Generate with a registered recipe — listing, social, unbox, Seller Pack.",
+    numberOfItems: live.length,
+    itemListElement: live.map((w, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: w.label,
+      url: w.href.startsWith("http")
+        ? w.href
+        : `${site.url}${w.href.startsWith("/") ? w.href : `/${w.href}`}`,
+      description: w.blurb,
+    })),
+  };
+
   return (
     <div className="min-h-[calc(100vh-3.5rem)] pb-28 lg:pb-0">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListLd) }}
+      />
       <Suspense
         fallback={
           <div className="border-b border-white/10 px-4 py-3 text-sm text-white/40">
