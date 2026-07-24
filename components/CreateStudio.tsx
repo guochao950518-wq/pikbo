@@ -2215,7 +2215,7 @@ export function CreateStudio({
                     ? `${PROVENANCE.cachedDemo} — does not animate your upload.`
                     : `${PROVENANCE.liveGeneration} — each run creates a separate version. Returned provider failures restore credits; ambiguous network results are marked unconfirmed.`}
                 </p>
-                <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+                <div className="mt-4 flex flex-col items-center gap-2">
                   {downloadAllowed ? (
                     <a
                       href={
@@ -2230,7 +2230,7 @@ export function CreateStudio({
                       }
                       target="_blank"
                       rel="noreferrer"
-                      className="btn btn-primary px-4 py-2 text-xs"
+                      className="btn btn-primary w-full max-w-sm px-6 py-3.5 text-sm font-black tracking-tight sm:w-auto sm:min-w-[14rem]"
                       onClick={() => {
                         markActivationShared();
                         track({
@@ -2253,22 +2253,23 @@ export function CreateStudio({
                       type="button"
                       disabled
                       title={freeLiveDownloadBlockReason()}
-                      className="btn btn-primary cursor-not-allowed px-4 py-2 text-xs opacity-50"
+                      className="btn btn-primary w-full max-w-sm cursor-not-allowed px-6 py-3.5 text-sm font-black opacity-50 sm:w-auto sm:min-w-[14rem]"
                     >
                       Download · blocked (Free raw)
                     </button>
                   )}
+                  <div className="flex flex-wrap items-center justify-center gap-2">
                   <button
                     type="button"
                     onClick={copyLink}
-                    className="btn btn-ghost px-4 py-2 text-xs"
+                    className="btn btn-ghost px-3.5 py-2 text-xs"
                   >
                     {copied ? "Copied!" : "Copy link"}
                   </button>
                   <button
                     type="button"
                     onClick={shareX}
-                    className="btn btn-ghost px-4 py-2 text-xs"
+                    className="btn btn-ghost px-3.5 py-2 text-xs"
                   >
                     Share on X
                   </button>
@@ -2276,7 +2277,7 @@ export function CreateStudio({
                     type="button"
                     onClick={retryActiveVersion}
                     title="Reuse this version's exact recipe, still, duration, aspect, model, and seed. Appends a new version."
-                    className="btn btn-ghost px-4 py-2 text-xs"
+                    className="btn btn-ghost px-3.5 py-2 text-xs"
                   >
                     Retry · same settings
                   </button>
@@ -2284,9 +2285,9 @@ export function CreateStudio({
                     type="button"
                     onClick={makeVariant}
                     title="Uses your current Composer settings (recipe, duration, aspect, model) — not the frozen version."
-                    className="btn btn-ghost px-4 py-2 text-xs"
+                    className="btn btn-ghost px-3.5 py-2 text-xs"
                   >
-                    Make variant · current settings
+                    Make variant
                   </button>
                 {!downloadAllowed ? (
                   <p className="basis-full text-center text-[10px] leading-relaxed text-amber-100/80">
@@ -2315,10 +2316,11 @@ export function CreateStudio({
                   </Link>
                   <Link
                     href="/create?mode=seller-pack"
-                    className="btn btn-ghost px-4 py-2 text-xs"
+                    className="btn btn-ghost px-3.5 py-2 text-xs"
                   >
                     Seller Pack
                   </Link>
+                  </div>
                 </div>
 
                 {/* Wave A: server-returned metadata for the active version */}

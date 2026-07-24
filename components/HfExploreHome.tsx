@@ -266,17 +266,20 @@ export function HfExploreHome({
       <HomeViralPresetRail />
 
       {/* ── Screen 2: Before → after ── */}
-      <section className="border-b border-white/10 px-3 py-10 sm:px-5">
+      <section className="border-b border-white/10 bg-gradient-to-b from-black via-[#08080c] to-black px-3 py-12 sm:px-5">
         <div className="mx-auto max-w-5xl">
-          <h2 className="font-display text-xl font-bold uppercase tracking-tight sm:text-2xl">
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#c8ff3d]/90">
+            Proof
+          </p>
+          <h2 className="font-display mt-1 text-xl font-bold uppercase tracking-tight sm:text-3xl">
             Before → after
           </h2>
-          <p className="mt-1 text-sm text-white/50">
-            Same official example: one still in, one cached clip out. Not a
+          <p className="mt-2 max-w-lg text-sm leading-relaxed text-white/50">
+            Same official Lab example: one still in, one cached clip out — not a
             customer post.
           </p>
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            <div className="overflow-hidden rounded-2xl bg-neutral-900 ring-1 ring-white/10">
+          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            <div className="overflow-hidden rounded-2xl bg-neutral-950 ring-1 ring-white/10 shadow-[0_24px_60px_-28px_rgba(0,0,0,0.9)]">
               <div className="relative aspect-[4/5]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -284,27 +287,33 @@ export function HfExploreHome({
                   alt={`Input still for ${item.title}`}
                   className="absolute inset-0 h-full w-full object-cover"
                 />
+                <span className="absolute left-3 top-3 rounded-full border border-white/15 bg-black/60 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white/70 backdrop-blur">
+                  Before
+                </span>
               </div>
-              <p className="p-3 text-xs font-bold uppercase tracking-wide text-white/60">
+              <p className="p-3.5 text-xs font-bold uppercase tracking-wide text-white/55">
                 Input · still photo
               </p>
             </div>
-            <div className="overflow-hidden rounded-2xl bg-neutral-900 ring-1 ring-white/10">
+            <div className="overflow-hidden rounded-2xl bg-neutral-950 ring-1 ring-[#c8ff3d]/25 shadow-[0_24px_60px_-24px_rgba(200,255,61,0.2)]">
               <div className="relative aspect-[4/5]">
                 <Clip
                   demo={item.demo}
                   className="absolute inset-0 h-full w-full object-cover"
                 />
+                <span className="absolute left-3 top-3 rounded-full bg-[#c8ff3d] px-2 py-0.5 text-[9px] font-black uppercase tracking-wide text-black shadow-[0_0_16px_rgba(200,255,61,0.4)]">
+                  After
+                </span>
               </div>
-              <p className="p-3 text-xs font-bold uppercase tracking-wide text-[#c8ff3d]">
+              <p className="p-3.5 text-xs font-bold uppercase tracking-wide text-[#c8ff3d]">
                 Output · official cached example
               </p>
             </div>
           </div>
-          <dl className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-[12px] text-white/55">
+          <dl className="mt-5 flex flex-wrap gap-x-6 gap-y-2 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-[12px] text-white/55">
             <div>
               <dt className="inline text-white/35">Recipe · </dt>
-              <dd className="inline font-semibold text-white/80">
+              <dd className="inline font-semibold text-white/85">
                 {item.title}
               </dd>
             </div>
@@ -322,12 +331,12 @@ export function HfExploreHome({
             )}
             <div>
               <dt className="inline text-white/35">Mode · </dt>
-              <dd className="inline">Cached validation (not live)</dd>
+              <dd className="inline">Cached Lab · not live</dd>
             </div>
           </dl>
           <Link
             href={item.href}
-            className="mt-6 inline-flex rounded-full bg-[#c8ff3d] px-6 py-3 text-sm font-black text-black"
+            className="mt-7 inline-flex rounded-full bg-[#c8ff3d] px-7 py-3.5 text-sm font-black text-black shadow-[0_0_40px_-8px_rgba(200,255,61,0.5)] transition hover:-translate-y-0.5"
           >
             Replace this toy with mine
           </Link>
