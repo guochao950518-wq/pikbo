@@ -1370,7 +1370,7 @@ export function CreateStudio({
         </aside>
 
         {/* ── Controls: upload → recipe → preflight ── */}
-        <section className="space-y-4 overflow-y-auto border-b border-[var(--border)] p-4 lg:border-b-0 lg:border-r">
+        <section className="space-y-4 overflow-y-auto border-b border-white/[0.07] bg-[#08080a] p-4 lg:max-h-[calc(100vh-8rem)] lg:border-b-0 lg:border-r">
           {upgradedBanner && (
             <div className="rounded-xl border border-[var(--mint)]/40 bg-[color-mix(in_srgb,var(--mint)_10%,transparent)] px-3 py-2 text-xs">
               Paid allowance active — 720p path, no on-player watermark.
