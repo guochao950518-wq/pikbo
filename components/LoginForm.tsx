@@ -22,8 +22,17 @@ export function LoginForm({ auth }: { auth: AuthPublic }) {
         <p className="text-sm font-semibold text-white">Sign-in not live yet</p>
         <p className="text-xs leading-relaxed text-white/55">
           Supabase Auth keys are not configured on this deployment. Your guest
-          cookie still works for Generate, credits, and this-device Library.
+          cookie still works for Generate, Modules, Seller Pack, and this-device
+          Library.
         </p>
+        <div className="flex flex-wrap gap-2 pt-1">
+          <a href="/create" className="btn btn-primary !px-3 !py-1.5 text-xs">
+            Generate
+          </a>
+          <a href="/modules" className="btn btn-ghost !px-3 !py-1.5 text-xs">
+            Modules
+          </a>
+        </div>
       </div>
     );
   }
@@ -43,9 +52,16 @@ export function LoginForm({ auth }: { auth: AuthPublic }) {
         ok?: boolean;
         error?: string;
         message?: string;
+        retryAfterSec?: number;
       };
       if (!res.ok || !data.ok) {
-        setErr(data.error || "Could not send magic link");
+        const wait =
+          typeof data.retryAfterSec === "number" && data.retryAfterSec > 0
+            ? ` · try again in ${data.retryAfterSec}s`
+            : res.status === 429
+              ? " · try again in a moment"
+              : "";
+        setErr((data.error || "Could not send magic link") + wait);
         return;
       }
       setNote(
