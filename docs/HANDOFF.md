@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Create next-job grid + Pricing/Project craft
+- Create success: same-photo next jobs as blurb cards + SKU chip.
+- Pricing hero suite doors · soft-launch billing badge · free CTA → Lab sample.
+- Project inside: media-stage I/O · Flow breadcrumb/CTAs · stronger Use recipe.
+- Verified: typecheck · lint · engine-smoke.
+
 ### 2026-07-24 — [grok] Flow remake density + GenerateFailPanel wave
 - FlowMediaCard / VideoTile / viral rail: interaction play + Remake hover CTAs.
 - Home hero Browse Flow; Modules/Flow hero glow; Toast lime craft.

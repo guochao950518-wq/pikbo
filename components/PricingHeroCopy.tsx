@@ -82,11 +82,41 @@ export function PricingHeroCopy({
           <Button asChild variant="secondary" size="lg">
             <Link href="#plans">{copy.secondary}</Link>
           </Button>
+          <Button asChild variant="secondary" size="lg">
+            <Link href="/create?try=1&sample=scout">Try free · 10s</Link>
+          </Button>
+        </div>
+        <div className="mt-5 flex flex-wrap justify-center gap-2">
+          <Link
+            href="/flow"
+            className="rounded-full border border-white/12 bg-white/[0.03] px-3 py-1.5 text-[11px] font-semibold text-white/55 transition hover:border-[var(--mint)]/40 hover:text-[var(--mint)]"
+          >
+            Flow matrix
+          </Link>
+          <Link
+            href="/modules"
+            className="rounded-full border border-white/12 bg-white/[0.03] px-3 py-1.5 text-[11px] font-semibold text-white/55 transition hover:border-[var(--mint)]/40 hover:text-[var(--mint)]"
+          >
+            Modules
+          </Link>
+          <Link
+            href="/create?mode=seller-pack"
+            className="rounded-full border border-white/12 bg-white/[0.03] px-3 py-1.5 text-[11px] font-semibold text-white/55 transition hover:border-[var(--mint)]/40 hover:text-[var(--mint)]"
+          >
+            Seller Pack · 3 clips
+          </Link>
+          <Link
+            href="/effects"
+            className="rounded-full border border-white/12 bg-white/[0.03] px-3 py-1.5 text-[11px] font-semibold text-white/55 transition hover:border-[var(--mint)]/40 hover:text-[var(--mint)]"
+          >
+            Recipe wall
+          </Link>
         </div>
         <div className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-[var(--fg-dim)]">
           <span>✓ Cached official examples use no credits</span>
           <span>✓ Failed live jobs return their credit charge</span>
           <span>✓ Commercial use starts on paid plans</span>
+          <span>✓ Live billing stays off until you greenlight Mode A</span>
         </div>
       </div>
     </section>

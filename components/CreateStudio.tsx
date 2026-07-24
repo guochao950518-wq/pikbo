@@ -2174,31 +2174,54 @@ export function CreateStudio({
                   })}
                 />
 
-                {/* Same photo · next job — accelerate cycle, no new provider */}
+                {/* Same photo · next job — accelerate cycle, no re-upload */}
                 {image && status === "done" && (
-                  <div className="mx-auto mt-4 max-w-lg">
-                    <p className="mb-2 text-center text-[10px] font-bold uppercase tracking-[0.14em] text-white/40">
-                      Same photo · next job
-                    </p>
-                    <div className="flex flex-wrap justify-center gap-1.5">
+                  <div className="mx-auto mt-4 max-w-lg overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.06] to-black/40 p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+                    <div className="mb-2.5 flex flex-wrap items-end justify-between gap-2">
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--mint)]">
+                          Same photo · next job
+                        </p>
+                        <p className="mt-0.5 text-[11px] leading-snug text-white/45">
+                          Keep this still — spin listing, hook, or full Seller
+                          Pack without re-uploading.
+                        </p>
+                      </div>
+                      {toyIdentity.sku ? (
+                        <span className="rounded-full border border-[var(--mint)]/25 bg-[var(--mint)]/10 px-2 py-0.5 text-[9px] font-bold text-[var(--mint)]">
+                          {toyIdentity.sku}
+                        </span>
+                      ) : null}
+                    </div>
+                    <div className="grid gap-1.5 sm:grid-cols-2">
                       {JOB_INTENTS.filter((j) => j.id !== jobIntentId).map(
                         (job) =>
                           job.href ? (
                             <Link
                               key={job.id}
                               href={job.href}
-                              className="rounded-full border border-[var(--mint)]/35 bg-[var(--mint)]/[0.1] px-3 py-1.5 text-[10px] font-bold text-[var(--mint)] transition hover:border-[var(--mint)] hover:bg-[var(--mint)]/20"
+                              className="rounded-xl border border-[var(--mint)]/40 bg-[var(--mint)]/[0.12] px-3 py-2.5 text-left transition hover:border-[var(--mint)] hover:bg-[var(--mint)]/20"
                             >
-                              {job.label}
+                              <span className="block text-[11px] font-bold text-[var(--mint)]">
+                                {job.label}
+                              </span>
+                              <span className="mt-0.5 block text-[10px] leading-snug text-white/45">
+                                {job.blurb}
+                              </span>
                             </Link>
                           ) : (
                             <button
                               key={job.id}
                               type="button"
                               onClick={() => void generateForJob(job.id)}
-                              className="rounded-full border border-white/15 bg-white/[0.04] px-3 py-1.5 text-[10px] font-bold text-white/75 transition hover:border-white/35 hover:bg-white/[0.08]"
+                              className="rounded-xl border border-white/12 bg-white/[0.04] px-3 py-2.5 text-left transition hover:border-white/30 hover:bg-white/[0.08]"
                             >
-                              {job.label}
+                              <span className="block text-[11px] font-bold text-white/90">
+                                {job.label}
+                              </span>
+                              <span className="mt-0.5 block text-[10px] leading-snug text-white/40">
+                                {job.blurb} · {job.aspectRatio}
+                              </span>
                             </button>
                           )
                       )}

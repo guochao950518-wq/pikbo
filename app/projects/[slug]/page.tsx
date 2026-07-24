@@ -62,8 +62,16 @@ export default async function ShowcaseProjectPage({ params }: Props) {
           aria-label="Breadcrumb"
           className="mb-6 flex flex-wrap items-center gap-2 text-[11px] text-white/45"
         >
+          <Link href="/" className="hover:text-white">
+            Home
+          </Link>
+          <span aria-hidden>/</span>
           <Link href="/explore" className="hover:text-white">
             Explore
+          </Link>
+          <span aria-hidden>/</span>
+          <Link href="/flow" className="hover:text-white">
+            Flow
           </Link>
           <span aria-hidden>/</span>
           <span className="text-white/70">{project.title}</span>
@@ -72,11 +80,14 @@ export default async function ShowcaseProjectPage({ params }: Props) {
         <header className="mb-7 flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-full bg-[#c8ff3d] px-2.5 py-1 text-[10px] font-black uppercase tracking-wide text-black">
+              <span className="rounded-full bg-[#c8ff3d] px-2.5 py-1 text-[10px] font-black uppercase tracking-wide text-black shadow-[0_0_20px_rgba(200,255,61,0.25)]">
                 Inside project
               </span>
               <span className="rounded-full border border-white/15 bg-white/[0.05] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white/70">
                 {provenance}
+              </span>
+              <span className="rounded-full border border-white/10 px-2.5 py-1 text-[10px] font-semibold text-white/45">
+                {project.aspectRatio} · {project.durationSeconds}s
               </span>
             </div>
             <h1 className="font-display mt-4 max-w-3xl text-3xl font-black uppercase leading-[1.02] tracking-tight sm:text-5xl">
@@ -86,29 +97,35 @@ export default async function ShowcaseProjectPage({ params }: Props) {
               {project.result}
             </p>
           </div>
-          <div className="flex w-full flex-col gap-2 sm:w-auto">
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:min-w-[16rem]">
             <Link
               href={showcaseRecipeHref(project)}
-              className="inline-flex w-full items-center justify-center rounded-full bg-[#c8ff3d] px-7 py-3.5 text-sm font-black text-black transition hover:-translate-y-0.5"
+              className="inline-flex w-full items-center justify-center rounded-full bg-[#c8ff3d] px-7 py-3.5 text-sm font-black text-black shadow-[0_0_40px_rgba(200,255,61,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_0_48px_rgba(200,255,61,0.35)]"
             >
-              Use this recipe
+              Use this recipe →
             </Link>
-            <div className="flex flex-wrap gap-2">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-2">
+              <Link
+                href="/flow"
+                className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/[0.03] px-4 py-2 text-[11px] font-bold text-white/80 transition hover:border-[#c8ff3d]/40 hover:text-[#c8ff3d]"
+              >
+                Flow
+              </Link>
               <Link
                 href="/modules"
-                className="inline-flex flex-1 items-center justify-center rounded-full border border-white/20 px-4 py-2 text-[11px] font-bold text-white/80 hover:border-[#c8ff3d]/40 hover:text-[#c8ff3d]"
+                className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/[0.03] px-4 py-2 text-[11px] font-bold text-white/80 transition hover:border-[#c8ff3d]/40 hover:text-[#c8ff3d]"
               >
                 Modules
               </Link>
               <Link
                 href="/create?mode=seller-pack"
-                className="inline-flex flex-1 items-center justify-center rounded-full border border-white/20 px-4 py-2 text-[11px] font-bold text-white/80 hover:border-[#c8ff3d]/40 hover:text-[#c8ff3d]"
+                className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/[0.03] px-4 py-2 text-[11px] font-bold text-white/80 transition hover:border-[#c8ff3d]/40 hover:text-[#c8ff3d]"
               >
                 Seller Pack
               </Link>
               <Link
                 href="/create?try=1&sample=scout"
-                className="inline-flex flex-1 items-center justify-center rounded-full border border-white/20 px-4 py-2 text-[11px] font-bold text-white/80 hover:border-[#c8ff3d]/40 hover:text-[#c8ff3d]"
+                className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/[0.03] px-4 py-2 text-[11px] font-bold text-white/80 transition hover:border-[#c8ff3d]/40 hover:text-[#c8ff3d]"
               >
                 Try free
               </Link>
@@ -120,7 +137,7 @@ export default async function ShowcaseProjectPage({ params }: Props) {
           aria-label="Input and output comparison"
           className="grid gap-3 lg:grid-cols-2"
         >
-          <article className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
+          <article className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] shadow-[0_20px_50px_-30px_rgba(0,0,0,0.9)]">
             <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-wider text-white/40">
@@ -132,17 +149,17 @@ export default async function ShowcaseProjectPage({ params }: Props) {
                 {project.character}
               </span>
             </div>
-            <div className="grid min-h-[360px] place-items-center bg-neutral-950 p-3 sm:min-h-[520px]">
+            <div className="media-stage m-3 grid min-h-[320px] place-items-center p-3 sm:min-h-[480px]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={project.inputImage}
                 alt={`Input still for ${project.title}`}
-                className="max-h-[68vh] w-full rounded-xl object-contain"
+                className="relative z-[2] max-h-[64vh] w-full rounded-xl object-contain"
               />
             </div>
           </article>
 
-          <article className="overflow-hidden rounded-2xl border border-[#c8ff3d]/25 bg-white/[0.03]">
+          <article className="overflow-hidden rounded-2xl border border-[#c8ff3d]/30 bg-white/[0.03] shadow-[0_20px_50px_-28px_rgba(200,255,61,0.12)]">
             <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-wider text-[#c8ff3d]">
@@ -154,9 +171,9 @@ export default async function ShowcaseProjectPage({ params }: Props) {
                 {project.durationSeconds}s · {project.aspectRatio}
               </span>
             </div>
-            <div className="grid min-h-[360px] place-items-center bg-neutral-950 p-3 sm:min-h-[520px]">
+            <div className="media-stage m-3 grid min-h-[320px] place-items-center p-3 sm:min-h-[480px]">
               <video
-                className="max-h-[68vh] w-full rounded-xl object-contain"
+                className="relative z-[2] max-h-[64vh] w-full rounded-xl object-contain"
                 poster={project.poster}
                 controls
                 playsInline
@@ -307,22 +324,30 @@ export default async function ShowcaseProjectPage({ params }: Props) {
             <div className="mt-6 grid gap-2">
               <Link
                 href={showcaseRecipeHref(project)}
-                className="rounded-full bg-[#c8ff3d] px-5 py-3 text-center text-sm font-black text-black"
+                className="rounded-full bg-[#c8ff3d] px-5 py-3 text-center text-sm font-black text-black shadow-[0_0_28px_rgba(200,255,61,0.2)] transition hover:-translate-y-0.5"
               >
-                Use this recipe
+                Use this recipe →
               </Link>
               <Link
                 href={`/effects/${project.recipeSlug}`}
-                className="rounded-full border border-white/15 px-5 py-3 text-center text-sm font-bold text-white"
+                className="rounded-full border border-white/15 bg-white/[0.03] px-5 py-3 text-center text-sm font-bold text-white transition hover:border-[#c8ff3d]/40"
               >
                 Read recipe requirements
               </Link>
-              <Link
-                href="/explore"
-                className="px-5 py-2 text-center text-xs text-white/45 hover:text-white"
-              >
-                Browse more projects
-              </Link>
+              <div className="grid grid-cols-2 gap-2">
+                <Link
+                  href="/flow"
+                  className="rounded-full border border-white/12 px-3 py-2 text-center text-[11px] font-semibold text-white/55 hover:text-white"
+                >
+                  Flow
+                </Link>
+                <Link
+                  href="/explore"
+                  className="rounded-full border border-white/12 px-3 py-2 text-center text-[11px] font-semibold text-white/55 hover:text-white"
+                >
+                  More projects
+                </Link>
+              </div>
             </div>
           </section>
         </div>

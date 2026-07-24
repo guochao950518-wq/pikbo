@@ -128,9 +128,14 @@ export function PricingPlanCards() {
 
               <CardFooter className="mt-auto flex-col items-stretch gap-2">
                 {plan.id === "free" ? (
-                  <Button asChild className="w-full" size="lg">
-                    <Link href="/create">{plan.cta}</Link>
-                  </Button>
+                  <>
+                    <Button asChild className="w-full" size="lg">
+                      <Link href="/create?try=1&sample=scout">{plan.cta}</Link>
+                    </Button>
+                    <p className="text-center text-[10px] text-[var(--fg-dim)]">
+                      Opens Lab sample · live Mini when provider is on
+                    </p>
+                  </>
                 ) : annual ? (
                   <>
                     <Button

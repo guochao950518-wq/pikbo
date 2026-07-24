@@ -86,22 +86,25 @@ export default async function PricingPage({
       <PricingHeroCopy variant={copyVariant} />
 
       <div className="container-x py-12 sm:py-16">
-        <Card className="mb-8 border-[var(--mint)]/20 bg-[var(--mint)]/[0.04]">
+        <Card className="mb-8 overflow-hidden border-[var(--mint)]/25 bg-gradient-to-br from-[var(--mint)]/[0.08] via-[var(--mint)]/[0.03] to-transparent shadow-[0_0_40px_rgba(200,255,61,0.06)]">
           <CardContent className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-bold text-[var(--fg)]">
-                Plan around finished product clips—not vague AI usage
+                Plan around finished product clips — not vague AI usage
               </p>
               <p className="mt-1 max-w-3xl text-xs leading-5 text-[var(--fg-muted)]">
-                The current validation allowances are one Free trial, about
-                five Creator jobs, or about fifteen Shop jobs at the flat
-                10-credit rate. Use them to compare production capacity, not as
-                a promise of sales or exact output quality.
+                Validation allowances: Free ~1 trial · Creator ~5 · Shop ~15 at
+                the flat 10-credit rate. Compare production capacity — not a
+                sales guarantee. Stripe live checkout stays gated until public
+                Mode A.
               </p>
             </div>
-            <Badge variant="outline" className="shrink-0">
-              Foundation aligned
-            </Badge>
+            <div className="flex shrink-0 flex-col items-start gap-2 sm:items-end">
+              <Badge variant="outline">Foundation aligned</Badge>
+              <Badge variant="live" className="normal-case">
+                Billing soft-launch
+              </Badge>
+            </div>
           </CardContent>
         </Card>
 
@@ -227,13 +230,16 @@ export default async function PricingPage({
                 <Link href="/create?source=pricing-bottom">Animate one SKU</Link>
               </Button>
               <Button asChild variant="secondary">
+                <Link href="/flow">Flow</Link>
+              </Button>
+              <Button asChild variant="secondary">
                 <Link href="/modules">Toy Modules</Link>
               </Button>
               <Button asChild variant="secondary">
                 <Link href="/create?mode=seller-pack">Seller Pack</Link>
               </Button>
               <Button asChild variant="secondary">
-                <Link href="/community">Lab examples</Link>
+                <Link href="/create?try=1&sample=scout">Try free</Link>
               </Button>
             </div>
           </CardHeader>
