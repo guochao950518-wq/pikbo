@@ -53,8 +53,13 @@ export function LandingResults({
 
   return (
     <section className="container-x py-12">
-      <h2 className="text-2xl font-bold">{title}</h2>
-      <p className="mt-2 max-w-2xl text-sm text-[var(--fg-muted)]">
+      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--mint)]">
+        Lab proof
+      </p>
+      <h2 className="mt-1 font-display text-2xl font-black tracking-tight">
+        {title}
+      </h2>
+      <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[var(--fg-muted)]">
         Official cached references for motion and framing
         {effectSlug
           ? " matched to this recipe"
@@ -62,7 +67,10 @@ export function LandingResults({
       </p>
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {demos.map((d) => (
-          <article key={d.id} className="card overflow-hidden p-0">
+          <article
+            key={d.id}
+            className="group overflow-hidden rounded-2xl border border-white/10 bg-black/40 shadow-[0_16px_40px_-28px_rgba(0,0,0,0.9)] transition hover:border-[var(--mint)]/35"
+          >
             <div className="aspect-video bg-black/50">
               <video
                 poster={d.poster}
@@ -77,12 +85,20 @@ export function LandingResults({
                 <source src={d.mp4} type="video/mp4" />
               </video>
             </div>
-            <div className="p-3">
-              <p className="text-sm font-semibold">{d.title}</p>
-              <p className="mt-0.5 text-[10px] text-[var(--fg-dim)]">
+            <div className="p-3.5">
+              <p className="text-sm font-semibold text-white">{d.title}</p>
+              <p className="mt-0.5 text-[10px] text-white/40">
                 Official example · cached · {d.character}
               </p>
-              <p className="mt-1 text-xs text-[var(--fg-muted)]">{d.result}</p>
+              <p className="mt-1 text-xs leading-relaxed text-white/50">
+                {d.result}
+              </p>
+              <Link
+                href={`/create?effect=${encodeURIComponent(d.preset)}`}
+                className="mt-2.5 inline-flex text-[11px] font-bold text-[var(--mint)] opacity-90 hover:underline group-hover:opacity-100"
+              >
+                Remake in Generate →
+              </Link>
             </div>
           </article>
         ))}

@@ -43,11 +43,20 @@ export default function LoginPage() {
         <LoginForm auth={auth} />
 
         <div className="mt-8 flex flex-wrap gap-3 text-sm">
-          <Link href="/create" className="text-[var(--mint)] hover:underline">
+          <Link href="/create" className="font-semibold text-[var(--mint)] hover:underline">
             Continue as guest → Generate
+          </Link>
+          <Link href="/flow" className="text-[var(--mint)] hover:underline">
+            Flow
           </Link>
           <Link href="/modules" className="text-[var(--mint)] hover:underline">
             Modules
+          </Link>
+          <Link
+            href="/create?try=1&sample=scout"
+            className="text-[var(--fg-muted)] hover:text-white"
+          >
+            Try free
           </Link>
           <Link
             href="/create?mode=seller-pack"

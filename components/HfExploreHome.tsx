@@ -394,7 +394,7 @@ export function HfExploreHome({
             {projects.slice(0, 8).map((project, i) => (
               <div
                 key={project.slug}
-                className="group relative overflow-hidden rounded-xl bg-neutral-900 ring-1 ring-white/5 transition hover:-translate-y-1 hover:ring-[#c8ff3d]/40"
+                className="group relative overflow-hidden rounded-xl bg-neutral-900 ring-1 ring-white/10 shadow-[0_12px_32px_-18px_rgba(0,0,0,0.85)] transition duration-300 hover:-translate-y-1 hover:ring-[#c8ff3d]/45 hover:shadow-[0_20px_40px_-20px_rgba(200,255,61,0.12)]"
               >
                 <button
                   type="button"
@@ -435,13 +435,13 @@ export function HfExploreHome({
                 <div className="absolute inset-x-0 bottom-0 flex gap-1 p-2">
                   <Link
                     href={showcaseRecipeHref(project)}
-                    className="flex-1 rounded-full bg-[#c8ff3d] py-1.5 text-center text-[10px] font-black text-black"
+                    className="flex-1 rounded-full bg-[#c8ff3d] py-1.5 text-center text-[10px] font-black text-black shadow-[0_0_16px_rgba(200,255,61,0.25)] transition hover:brightness-110"
                   >
-                    Use recipe
+                    Remake
                   </Link>
                   <Link
                     href={showcaseProjectHref(project)}
-                    className="rounded-full border border-white/20 bg-black/50 px-2 py-1.5 text-[10px] font-bold text-white"
+                    className="rounded-full border border-white/20 bg-black/55 px-2.5 py-1.5 text-[10px] font-bold text-white backdrop-blur-sm transition hover:border-[#c8ff3d]/40"
                   >
                     Inside
                   </Link>
