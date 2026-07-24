@@ -69,6 +69,18 @@ export function downloadAllowedForJob(opts: {
   return canDownloadResult({ demo: opts.demo, watermark: opts.watermark });
 }
 
+/** Lookup by client idempotency key (session-scoped). */
+export function findJobByIdempotencyKey(
+  sessionId: string,
+  idempotencyKey: string
+): GenerationJob | null {
+  const key = idempotencyKey.trim();
+  if (!sessionId || !key) return null;
+  const id = byIdempotency.get(`${sessionId}:${key}`);
+  if (!id) return null;
+  return jobs.get(id) ?? null;
+}
+
 export function createJob(input: {
   sessionId: string;
   effect: string;
@@ -291,14 +303,22 @@ export function beginSyncGenerateJob(input: {
   model?: string;
   watermark?: boolean;
   provider?: string;
+  idempotencyKey?: string;
 }): GenerationJob {
   const job = createJob({
     sessionId: input.sessionId,
     effect: input.effect,
     status: "running",
+    idempotencyKey: input.idempotencyKey,
   });
+  // Existing terminal row from same key is returned as-is by createJob —
+  // callers must short-circuit via findJobByIdempotencyKey first.
+  if (job.status !== "running" && job.status !== "queued") {
+    return job;
+  }
   return (
     updateJob(job.id, {
+      status: "running",
       model: input.model,
       watermark: input.watermark ?? true,
       provider: input.provider,
@@ -433,6 +453,7 @@ export function recordSucceededGenerate(input: {
   provider?: string;
   /** Prefer provider requestId as job id when unique. */
   preferredId?: string;
+  idempotencyKey?: string;
 }): GenerationJob {
   const t = nowIso();
   const id =
@@ -457,6 +478,7 @@ export function recordSucceededGenerate(input: {
     aspectRatio: input.aspectRatio,
     resolution: input.resolution,
     costCredits: input.costCredits,
+    idempotencyKey: input.idempotencyKey,
     creditsOutcome: input.creditsOutcome,
     requestId: input.requestId,
     provider: input.provider,
@@ -464,6 +486,9 @@ export function recordSucceededGenerate(input: {
     updatedAt: t,
   };
   jobs.set(id, job);
+  if (input.idempotencyKey) {
+    byIdempotency.set(`${input.sessionId}:${input.idempotencyKey}`, id);
+  }
   trimStore();
   return job;
 }
@@ -477,6 +502,7 @@ export function recordFailedGenerate(input: {
   model?: string;
   creditsRefunded?: boolean;
   preferredId?: string;
+  idempotencyKey?: string;
 }): GenerationJob {
   const t = nowIso();
   const id =
@@ -499,10 +525,14 @@ export function recordFailedGenerate(input: {
     errorCode: input.errorCode,
     creditsRefunded: input.creditsRefunded,
     creditsOutcome,
+    idempotencyKey: input.idempotencyKey,
     createdAt: t,
     updatedAt: t,
   };
   jobs.set(id, job);
+  if (input.idempotencyKey) {
+    byIdempotency.set(`${input.sessionId}:${input.idempotencyKey}`, id);
+  }
   trimStore();
   return job;
 }

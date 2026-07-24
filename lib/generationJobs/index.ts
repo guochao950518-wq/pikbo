@@ -11,6 +11,7 @@ export {
   beginSyncGenerateJob,
   completeSyncGenerateJob,
   failSyncGenerateJob,
+  findJobByIdempotencyKey,
   recordSucceededGenerate,
   recordFailedGenerate,
   toPublicJob,

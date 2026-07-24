@@ -98,7 +98,8 @@
 57. [x] Round B Y5 sellerPackQuote · Pack balance strip · Library By SKU · NETWORK/CANCEL codes · CP /flow /apps
 58. [x] Live generate beginSyncGenerateJob (running ledger) · complete/fail · Library cancel/timeout mid-flight
 59. [x] jobId echo on success · jobs probe byStatus/open · NETWORK/CANCEL → refund unconfirmed
-60. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
+60. [x] Generate idempotencyKey: success/fail replay · running→JOB_IN_FLIGHT · client mint once per attempt
+61. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
 
 ### 老板醒来验收
 
@@ -112,8 +113,8 @@
 
 ## Grok 本拍状态（3 行）
 
-- Success payload echoes `jobId` (ledger) + `requestId` (provider).  
-- health jobs probe: byStatus/open/timedOutThisProbe; cancel/network → refund unconfirmed.  
+- Generate **idempotencyKey**: same key replays success (no 2nd debit) / fail / JOB_IN_FLIGHT.  
+- Client `mintGenerateIdempotencyKey` once per attempt across rate-limit retries.  
 - Mode A still needs boss Vercel login · SQL · T6 bake.
 
 ---

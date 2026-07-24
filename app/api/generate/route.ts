@@ -44,7 +44,9 @@ import {
   beginSyncGenerateJob,
   completeSyncGenerateJob,
   failSyncGenerateJob,
+  findJobByIdempotencyKey,
   recordSucceededGenerate,
+  type GenerationJob,
 } from "@/lib/generationJobs";
 import { getLocalAsset } from "@/lib/localAssets";
 
@@ -57,6 +59,47 @@ function err(
   headers?: HeadersInit
 ): NextResponse<GenerateErrorBody> {
   return NextResponse.json(body, { status, headers });
+}
+
+function normalizeIdempotencyKey(raw: unknown): string | undefined {
+  if (typeof raw !== "string") return undefined;
+  const t = raw.trim().slice(0, 128);
+  // Reject tiny keys (collision / abuse); UUID is 36 chars.
+  if (t.length < 8) return undefined;
+  return t;
+}
+
+function successFromJob(
+  job: GenerationJob,
+  session: Parameters<typeof publicSession>[0],
+  replay: boolean
+): GenerateSuccess {
+  const demo = Boolean(job.demo);
+  const outcome =
+    job.creditsOutcome === "0 cached" || job.creditsOutcome === "10 used"
+      ? job.creditsOutcome
+      : demo
+        ? ("0 cached" as const)
+        : ("10 used" as const);
+  return {
+    videoUrl: job.videoUrl!,
+    demo,
+    watermark: job.watermark,
+    model: job.model || (demo ? "demo-cached" : "unknown"),
+    duration: typeof job.duration === "number" ? job.duration : 5,
+    aspectRatio: job.aspectRatio || "1:1",
+    resolution: job.resolution || "480p",
+    session: publicSession(session),
+    requestId: job.requestId || job.id,
+    jobId: job.id,
+    provider: job.provider,
+    effect: job.effect,
+    costCredits:
+      typeof job.costCredits === "number" ? job.costCredits : demo ? 0 : 10,
+    creditsOutcome: outcome,
+    ...(demo ? { demoReason: "no_provider_key" as const } : {}),
+    ...(replay ? { idempotentReplay: true } : {}),
+  };
 }
 
 function noteFailed(
@@ -157,6 +200,62 @@ export async function POST(req: Request) {
     );
   }
 
+  // Idempotent replay: same session + key returns prior result (no second debit).
+  const idempotencyKey = normalizeIdempotencyKey(body.idempotencyKey);
+  if (idempotencyKey) {
+    const prior = findJobByIdempotencyKey(session.id, idempotencyKey);
+    if (prior) {
+      if (
+        prior.status === "succeeded" &&
+        prior.videoUrl &&
+        isSafeDeliverableUrl(prior.videoUrl)
+      ) {
+        return NextResponse.json(successFromJob(prior, session, true));
+      }
+      if (prior.status === "running" || prior.status === "queued") {
+        const retryAfterSec = jobInFlightRetryAfterSec(session.id);
+        return err(
+          {
+            error: `A generate with this idempotency key is still running — try again in ${retryAfterSec}s`,
+            code: "JOB_IN_FLIGHT",
+            retryAfterSec,
+            session: publicSession(session),
+          },
+          409,
+          { "Retry-After": String(retryAfterSec) }
+        );
+      }
+      if (prior.status === "failed" || prior.status === "canceled") {
+        const code =
+          (prior.errorCode as GenerateErrorBody["code"]) || "GENERATION_FAILED";
+        const status =
+          code === "CONTENT_POLICY"
+            ? 422
+            : code === "PROVIDER_TIMEOUT"
+              ? 504
+              : code === "PROVIDER_BALANCE"
+                ? 402
+                : code === "PROVIDER_RATE_LIMIT"
+                  ? 429
+                  : code === "UNSAFE_URL" || code === "MODEL_EMPTY"
+                    ? 502
+                    : 500;
+        return err(
+          {
+            error:
+              prior.error ||
+              "Prior generate attempt failed — mint a new idempotency key to retry",
+            code,
+            model: prior.model,
+            session: publicSession(session),
+            creditsRefunded: prior.creditsRefunded,
+          },
+          status
+        );
+      }
+    }
+  }
+
   const rl = takeGenerateBudget(session.id, clientIp(req), "gen");
   if (!rl.ok) {
     return err(
@@ -227,6 +326,7 @@ export async function POST(req: Request) {
           costCredits: 0,
           creditsOutcome: "0 cached",
           provider: "demo-cached",
+          idempotencyKey,
         });
         payload.requestId = job.id;
         payload.jobId = job.id;
@@ -279,6 +379,7 @@ export async function POST(req: Request) {
         model,
         watermark: plan.watermark,
         provider: "bytedance-seedance",
+        idempotencyKey,
       }).id;
     } catch {
       liveJobId = undefined;

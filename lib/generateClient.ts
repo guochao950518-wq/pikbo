@@ -375,11 +375,24 @@ export async function releaseSellerPackChildClient(input: {
   }
 }
 
+/** One logical generate attempt — reused across rate-limit / in-flight retries. */
+export function mintGenerateIdempotencyKey(): string {
+  try {
+    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+      return crypto.randomUUID();
+    }
+  } catch {
+    /* fall through */
+  }
+  return `idemp_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 12)}`;
+}
+
 /**
  * POST generate with automatic recovery:
  * - one retry on RATE_LIMITED / PROVIDER_RATE_LIMIT / JOB_IN_FLIGHT
  * - one ASSET_NOT_FOUND recovery: drop expired assetId and re-POST inline still
  *   (Phase D local assets TTL ~15m / process restart — Seller Pack mid-queue)
+ * - stable idempotencyKey for the whole attempt (network retry = no double debit)
  */
 export async function postGenerateWithRetry(
   body: GenerateRequestBody,
@@ -394,8 +407,14 @@ export async function postGenerateWithRetry(
   }
 ): Promise<GenerateResult> {
   const maxRetries = opts?.maxRetries ?? 1;
+  // One key per user-facing attempt. Caller Retry button must not reuse body key.
+  const idempotencyKey =
+    typeof body.idempotencyKey === "string" && body.idempotencyKey.trim().length >= 8
+      ? body.idempotencyKey.trim().slice(0, 128)
+      : mintGenerateIdempotencyKey();
+  const keyed: GenerateRequestBody = { ...body, idempotencyKey };
   let attempt = 0;
-  let result = await postGenerate(body, { signal: opts?.signal });
+  let result = await postGenerate(keyed, { signal: opts?.signal });
   while (
     !result.ok &&
     attempt < maxRetries &&
@@ -421,6 +440,7 @@ export async function postGenerateWithRetry(
         return {
           ok: false,
           status: 0,
+          code: "REQUEST_CANCELED",
           error:
             "Request canceled — if credits were debited, check balance or retry (refund unconfirmed until server confirms)",
           fatal: false,
@@ -429,7 +449,7 @@ export async function postGenerateWithRetry(
       }
       throw e;
     }
-    result = await postGenerate(body, { signal: opts?.signal });
+    result = await postGenerate(keyed, { signal: opts?.signal });
   }
 
   // Asset registry miss: re-post with inline still once (no second rate-limit loop).
@@ -444,7 +464,7 @@ export async function postGenerateWithRetry(
     fallback.length >= 32
   ) {
     const recovered = await postGenerate(
-      { ...body, assetId: undefined, image: fallback },
+      { ...keyed, assetId: undefined, image: fallback },
       { signal: opts?.signal }
     );
     if (recovered.ok) {

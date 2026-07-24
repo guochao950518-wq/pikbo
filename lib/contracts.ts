@@ -27,6 +27,12 @@ export type GenerateRequestBody = {
    * Server rejects live jobs without this flag (demo path also requires it).
    */
   ownsRights?: boolean;
+  /**
+   * Client-minted key for one logical generate attempt (UUID).
+   * Same key + session: success/fail replay without double-debit; running → JOB_IN_FLIGHT.
+   * User Retry must mint a new key. Soft-launch process-memory only.
+   */
+  idempotencyKey?: string;
 };
 
 export type GenerateSuccess = {
@@ -59,6 +65,11 @@ export type GenerateSuccess = {
   costCredits?: number;
   /** Human credit outcome for the result strip. */
   creditsOutcome?: "0 cached" | "10 used";
+  /**
+   * True when this body reuses a prior success for the same idempotencyKey
+   * (no second debit / no second fal call).
+   */
+  idempotentReplay?: boolean;
 };
 
 export type GenerateErrorBody = {

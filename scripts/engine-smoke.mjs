@@ -1091,6 +1091,20 @@ assert.match(
   /jobId\?:/
 );
 assert.match(genRoute, /jobId/);
+// Generate idempotency — network retry must not double-debit
+assert.match(
+  fs.readFileSync(join(root, "lib/contracts.ts"), "utf8"),
+  /idempotencyKey\?:/
+);
+assert.match(
+  fs.readFileSync(join(root, "lib/contracts.ts"), "utf8"),
+  /idempotentReplay\?:/
+);
+assert.match(genJobsStore, /export function findJobByIdempotencyKey/);
+assert.match(genRoute, /findJobByIdempotencyKey/);
+assert.match(genRoute, /idempotentReplay|successFromJob/);
+assert.match(gen, /mintGenerateIdempotencyKey|idempotencyKey/);
+assert.match(gen, /export function mintGenerateIdempotencyKey/);
 // Network/cancel codes → refund unconfirmed settlement
 assert.match(
   fs.readFileSync(join(root, "lib/createTrust.ts"), "utf8"),
