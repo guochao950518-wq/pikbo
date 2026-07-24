@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] DeliveryChecklist + wall hover play + pack empty copy
+- Interactive post-success checklist (session ticks) on Create / Landing / Seller Pack.
+- `sellerPackPostItems` · denser walls use hover play + metadata promote on enter.
+- Seller Pack queue empty state job-oriented CTAs.
+- Verified: engine-smoke · typecheck · lint.
+
 ### 2026-07-24 — [grok] Flow/home viral AutoPlay budget (no multi-autoPlay)
 - `FlowMediaCard` + home viral rail use shared AutoPlayVideo (mobile ≤1 concurrent).
 - `/flow` PREVIEW_ROBOTS; HF/Yiha Round A acceptance checked off.

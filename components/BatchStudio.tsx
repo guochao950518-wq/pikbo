@@ -31,6 +31,8 @@ import {
   sellerPackShortfall,
 } from "@/lib/sellerPackQuote";
 import { canDownloadResult } from "@/lib/createTrust";
+import { sellerPackPostItems } from "@/lib/deliveryPack";
+import { DeliveryChecklist } from "@/components/DeliveryChecklist";
 import { SellerPackSteps } from "@/components/SellerPackSteps";
 
 type Job = {
@@ -1154,10 +1156,41 @@ export function BatchStudio({
           </div>
         </div>
         {jobs.length === 0 && (
-          <p className="text-sm text-[var(--fg-dim)]">
-            No jobs yet. Pick presets (or open Batch from an effect page) and
-            run.
-          </p>
+          <div className="rounded-xl border border-dashed border-white/12 bg-black/25 px-4 py-8 text-center">
+            <p className="text-sm font-semibold text-[var(--fg)]">
+              {sellerPackActive
+                ? "Your pack queue is empty"
+                : "No batch jobs yet"}
+            </p>
+            <p className="mx-auto mt-1.5 max-w-sm text-xs leading-relaxed text-[var(--fg-dim)]">
+              {sellerPackActive
+                ? "Upload one owned toy photo → Generate pack. Three formats land here with independent success/fail. Failed children refund; siblings stay."
+                : "Pick presets (or open Batch from an effect page), confirm ownership, then run. Finished clips also save on this device Library."}
+            </p>
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              <Link
+                href="/create?try=1&sample=scout"
+                className="rounded-full border border-[var(--mint)]/35 px-3 py-1.5 text-[11px] font-bold text-[var(--mint)]"
+              >
+                Try free · Lab sample
+              </Link>
+              {!sellerPackActive ? (
+                <Link
+                  href="/create?mode=seller-pack"
+                  className="rounded-full border border-white/15 px-3 py-1.5 text-[11px] font-bold text-white/70"
+                >
+                  Seller Pack · 3 outputs
+                </Link>
+              ) : (
+                <Link
+                  href="/create"
+                  className="rounded-full border border-white/15 px-3 py-1.5 text-[11px] font-bold text-white/70"
+                >
+                  Single Generate
+                </Link>
+              )}
+            </div>
+          </div>
         )}
         {jobs.length > 0 && (
           <div className="flex flex-wrap items-center gap-2 rounded-xl border border-[var(--border)] bg-black/30 px-3 py-2">
@@ -1192,44 +1225,33 @@ export function BatchStudio({
             </span>
           </div>
         )}
-        {/* Delivery pack — only for downloadable children (T6 Free raw blocked) */}
+        {/* Post pack checklist — interactive ticks after first success */}
         {sellerPackActive && doneCount > 0 && (
-          <div className="rounded-xl border border-[var(--mint)]/25 bg-[var(--mint)]/[0.06] px-3 py-2.5">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--mint)]">
-              Delivery pack ·{" "}
-              {
-                jobs.filter(
-                  (j) =>
-                    j.status === "succeeded" &&
-                    canDownloadResult({
-                      demo: Boolean(j.demo),
-                      watermark: Boolean(j.watermark),
-                    })
-                ).length
-              }
-              /{doneCount} downloadable
-            </p>
-            <ul className="mt-1.5 space-y-1 text-[11px] text-[var(--fg-muted)]">
-              <li>
-                ○ Export CSV/Manifest only includes downloadable clips · Free
-                Mini live raw stays blocked until T6 file bake
-              </li>
-              <li>○ Listing Spin → shop gallery (1:1) · verify sculpt</li>
-              <li>○ Blind-box Reveal → drop / restock story (9:16)</li>
-              <li>○ Social Flash → TikTok / Reels first second (9:16)</li>
-              <li>
-                ○{" "}
-                <Link href="/library" className="text-[var(--mint)] hover:underline">
-                  Library
-                </Link>{" "}
-                keeps this device set ·{" "}
-                <Link href="/create" className="text-[var(--mint)] hover:underline">
-                  single Generate
-                </Link>{" "}
-                for one more variant
-              </li>
-            </ul>
-          </div>
+          <DeliveryChecklist
+            title={`Post pack · ${
+              jobs.filter(
+                (j) =>
+                  j.status === "succeeded" &&
+                  canDownloadResult({
+                    demo: Boolean(j.demo),
+                    watermark: Boolean(j.watermark),
+                  })
+              ).length
+            }/${doneCount} downloadable`}
+            surface="seller-pack"
+            items={sellerPackPostItems({
+              readyCount: doneCount,
+              downloadableCount: jobs.filter(
+                (j) =>
+                  j.status === "succeeded" &&
+                  canDownloadResult({
+                    demo: Boolean(j.demo),
+                    watermark: Boolean(j.watermark),
+                  })
+              ).length,
+            })}
+            className="border-[var(--mint)]/25 bg-[var(--mint)]/[0.06]"
+          />
         )}
         {jobs.map((j) => (
           <div

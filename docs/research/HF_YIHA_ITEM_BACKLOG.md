@@ -84,8 +84,10 @@ Round C              真 UGC / 云 Library / 真多模型（要账号+key）
 ## 6. 质感冲刺（ongoing · 对标领先）
 
 - [x] suite glass · media-stage · nav underline · primary glow（`1f9197c`）  
-- [ ] Create 三栏视觉再压一层（密度/留白像 HF Generate）  
-- [ ] 配方墙 hover 播放更丝滑 · 独立真片审计  
-- [ ] 空状态 / 错误 / 成功 全站 micro-copy 统一  
+- [x] Create 三栏视觉再压一层（workbench density + controls craft · main）  
+- [x] 配方墙 hover 播放更丝滑（`desktopPlayMode=interaction` · hover preload metadata）  
+- [x] 空状态 / 成功 micro-copy：Seller Pack queue empty + interactive DeliveryChecklist  
+- [ ] 独立真片审计（人工 QA / Lab proof scores）  
+- [ ] 错误态 micro-copy 全站再扫一遍（Create/Landing/Batch/API codes）  
 
 *Grok · HF_YIHA_ITEM_BACKLOG · 2026-07-24*

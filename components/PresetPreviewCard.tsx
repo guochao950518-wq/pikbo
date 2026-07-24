@@ -21,7 +21,7 @@ export function PresetPreviewCard({ preset }: { preset: Preset }) {
   return (
     <Link
       href={createRemixHref(preset.slug, exact ? demo.id : undefined)}
-      className="video-tile group block overflow-hidden"
+      className="video-tile group block overflow-hidden transition duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_12px_40px_rgba(0,0,0,0.45)]"
     >
       <div className="relative aspect-[3/4]">
         <AutoPlayVideo
@@ -29,17 +29,21 @@ export function PresetPreviewCard({ preset }: { preset: Preset }) {
           webm={demo.webm}
           mp4={demo.mp4}
           focusable={false}
-          className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
+          desktopPlayMode="interaction"
+          className="absolute inset-0 h-full w-full object-cover transition duration-700 ease-out will-change-transform group-hover:scale-[1.06]"
         />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-95 transition duration-300 group-hover:opacity-100" />
         <span
-          className={`absolute right-2 top-2 rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wider ${
+          className={`absolute right-2 top-2 rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wider transition duration-300 ${
             exact
               ? "bg-[var(--mint)] text-black shadow-[0_0_16px_rgba(200,255,61,0.35)]"
               : "border border-white/15 bg-black/60 text-white/70"
           }`}
         >
           {exact ? "Lab proof" : "Concept"}
+        </span>
+        <span className="pointer-events-none absolute left-2 top-2 rounded-full border border-white/15 bg-black/55 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white/70 opacity-0 transition duration-300 group-hover:opacity-100">
+          Hover play
         </span>
         <div className="absolute inset-x-0 bottom-0 p-3">
           <p className="text-[13px] font-bold leading-snug text-white">
@@ -48,7 +52,7 @@ export function PresetPreviewCard({ preset }: { preset: Preset }) {
           <p className="mt-0.5 line-clamp-2 text-[11px] text-white/60">
             {preset.tagline}
           </p>
-          <p className="mt-2 inline-flex items-center gap-1 rounded-full bg-[var(--mint)]/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--mint)] ring-1 ring-[var(--mint)]/25 opacity-90 transition group-hover:bg-[var(--mint)] group-hover:text-black group-hover:opacity-100">
+          <p className="mt-2 inline-flex items-center gap-1 rounded-full bg-[var(--mint)]/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--mint)] ring-1 ring-[var(--mint)]/25 opacity-90 transition duration-300 group-hover:bg-[var(--mint)] group-hover:text-black group-hover:opacity-100">
             Remake →
           </p>
         </div>

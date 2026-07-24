@@ -1,0 +1,144 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+import type { DeliveryItem } from "@/lib/deliveryPack";
+import { deliveryChecklistStorageKey } from "@/lib/deliveryPack";
+import { markActivationShared } from "@/components/ActivationChecklist";
+
+/**
+ * Interactive post-success checklist — ticks stay on this device (sessionStorage).
+ * Not fake "posted" analytics; seller self-checks export/post jobs.
+ */
+export function DeliveryChecklist({
+  title = "Delivery · next steps",
+  surface,
+  items,
+  className = "",
+}: {
+  title?: string;
+  /** Namespaces sessionStorage — e.g. create:etsy-listing · seller-pack */
+  surface: string;
+  items: DeliveryItem[];
+  className?: string;
+}) {
+  const storageKey = useMemo(
+    () => deliveryChecklistStorageKey(surface),
+    [surface]
+  );
+  const [checked, setChecked] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    const t = window.setTimeout(() => {
+      try {
+        const raw = sessionStorage.getItem(storageKey);
+        if (!raw) {
+          setChecked({});
+          return;
+        }
+        const parsed = JSON.parse(raw) as Record<string, boolean>;
+        setChecked(parsed && typeof parsed === "object" ? parsed : {});
+      } catch {
+        setChecked({});
+      }
+    }, 0);
+    return () => window.clearTimeout(t);
+  }, [storageKey]);
+
+  function toggle(id: string) {
+    setChecked((prev) => {
+      const next = { ...prev, [id]: !prev[id] };
+      try {
+        sessionStorage.setItem(storageKey, JSON.stringify(next));
+      } catch {
+        /* private mode */
+      }
+      if (next[id] && (id === "download" || id === "export" || id === "post")) {
+        markActivationShared();
+      }
+      return next;
+    });
+  }
+
+  if (items.length === 0) return null;
+
+  const done = items.filter((it) => checked[it.id]).length;
+
+  return (
+    <div
+      className={`rounded-xl border border-white/10 bg-black/50 px-3.5 py-3 text-left backdrop-blur-sm ${className}`}
+    >
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--mint)]/80">
+          {title}
+          {done > 0 ? (
+            <span className="ml-1.5 font-semibold normal-case tracking-normal text-white/40">
+              · {done}/{items.length}
+            </span>
+          ) : null}
+        </p>
+        {done > 0 ? (
+          <button
+            type="button"
+            className="text-[10px] text-white/35 hover:text-white/60"
+            onClick={() => {
+              setChecked({});
+              try {
+                sessionStorage.removeItem(storageKey);
+              } catch {
+                /* ignore */
+              }
+            }}
+          >
+            Reset ticks
+          </button>
+        ) : null}
+      </div>
+      <ul className="mt-2 space-y-1.5 text-[11px] text-white/65">
+        {items.map((item) => {
+          const ok = Boolean(checked[item.id]);
+          return (
+            <li key={item.id} className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => toggle(item.id)}
+                className={`mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded border text-[9px] font-black transition ${
+                  ok
+                    ? "border-[var(--mint)]/60 bg-[var(--mint)] text-black"
+                    : "border-white/25 bg-black/40 text-transparent hover:border-[var(--mint)]/40"
+                }`}
+                aria-pressed={ok}
+                aria-label={ok ? `Unmark ${item.label}` : `Mark ${item.label}`}
+              >
+                ✓
+              </button>
+              {item.href ? (
+                <Link
+                  href={item.href}
+                  className={`font-medium hover:underline ${
+                    ok ? "text-white/40 line-through" : "text-[var(--mint)]"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => toggle(item.id)}
+                  className={`text-left ${
+                    ok ? "text-white/40 line-through" : "text-white/70"
+                  }`}
+                >
+                  {item.label}
+                </button>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+      <p className="mt-2 text-[10px] leading-snug text-white/35">
+        Ticks stay on this device only · not cloud-synced · failed jobs refund
+      </p>
+    </div>
+  );
+}

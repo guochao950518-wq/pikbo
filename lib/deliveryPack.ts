@@ -85,7 +85,7 @@ export function deliveryItemsForJob(
     case "seller-pack":
       items.push({
         id: "post",
-        label: "Export all three · listing + reveal + social",
+        label: "Export CSV / Manifest for downloadable children only",
       });
       items.push({
         id: "next",
@@ -106,4 +106,55 @@ export function deliveryItemsForJob(
   }
 
   return items;
+}
+
+/**
+ * Seller Pack post-success checklist — channel jobs for each of the three fixed children.
+ * Honest: Free live raw may be blocked (T6); export only lists downloadable clips.
+ */
+export function sellerPackPostItems(opts?: {
+  downloadableCount?: number;
+  readyCount?: number;
+}): DeliveryItem[] {
+  const downloadable = Math.max(0, opts?.downloadableCount ?? 0);
+  const ready = Math.max(0, opts?.readyCount ?? 0);
+  const items: DeliveryItem[] = [
+    {
+      id: "export",
+      label:
+        downloadable > 0
+          ? `Export CSV / Manifest · ${downloadable}/${ready || downloadable} downloadable`
+          : ready > 0
+            ? `Clips ready · download blocked on Free raw until T6 (${ready} playable)`
+            : "Wait for at least one succeeded child before export",
+    },
+    {
+      id: "listing-spin",
+      label: "Listing Spin → shop gallery (1:1) · verify sculpt",
+    },
+    {
+      id: "blind-box",
+      label: "Blind-box Reveal → drop / restock story (9:16)",
+    },
+    {
+      id: "social-flash",
+      label: "Social Flash → TikTok / Reels first second (9:16)",
+    },
+    {
+      id: "library",
+      label: "Library keeps this device set",
+      href: "/library",
+    },
+    {
+      id: "variant",
+      label: "Single Generate for one more variant",
+      href: "/create",
+    },
+  ];
+  return items;
+}
+
+/** sessionStorage key for interactive delivery ticks (device-local only). */
+export function deliveryChecklistStorageKey(surface: string): string {
+  return `pikbo:delivery-check:${surface}`;
 }

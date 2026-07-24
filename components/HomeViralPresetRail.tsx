@@ -55,7 +55,7 @@ export function HomeViralPresetRail() {
                   meta: { surface: "home_viral_rail" },
                 })
               }
-              className="group relative w-[9.5rem] shrink-0 overflow-hidden rounded-2xl bg-neutral-900 ring-1 ring-white/10 transition hover:-translate-y-0.5 hover:ring-[#c8ff3d]/45 sm:w-[11rem]"
+              className="group relative w-[9.5rem] shrink-0 overflow-hidden rounded-2xl bg-neutral-900 ring-1 ring-white/10 transition duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_12px_36px_rgba(0,0,0,0.4)] hover:ring-[#c8ff3d]/45 sm:w-[11rem]"
             >
               <div className="relative aspect-[3/4]">
                 <AutoPlayVideo
@@ -63,7 +63,8 @@ export function HomeViralPresetRail() {
                   webm={d.webm}
                   mp4={d.mp4}
                   focusable={false}
-                  className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
+                  desktopPlayMode="interaction"
+                  className="absolute inset-0 h-full w-full object-cover transition duration-700 ease-out will-change-transform group-hover:scale-[1.06]"
                 />
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent" />
                 <span className="absolute left-2 top-2 rounded-full bg-black/55 px-1.5 py-0.5 text-[8px] font-bold uppercase text-[#c8ff3d]">

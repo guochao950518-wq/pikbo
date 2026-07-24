@@ -86,7 +86,12 @@ export function AutoPlayVideo({
   function playFromInteraction() {
     if (desktopPlayMode === "interaction") {
       const video = ref.current;
-      if (video) claim(video);
+      if (!video) return;
+      // Dense walls use preload=none — promote metadata on hover so first play is snappier.
+      if (video.preload === "none") {
+        video.preload = "metadata";
+      }
+      claim(video);
     }
   }
 

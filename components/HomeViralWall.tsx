@@ -71,13 +71,15 @@ export function HomeViralWall({ items }: { items: FeedItem[] }) {
           <Link
             key={item.id}
             href={item.href}
-            className="group relative aspect-[3/4] overflow-hidden rounded-xl bg-zinc-900 sm:aspect-[9/14]"
+            className="group relative aspect-[3/4] overflow-hidden rounded-xl bg-zinc-900 transition duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_10px_32px_rgba(0,0,0,0.45)] sm:aspect-[9/14]"
           >
             <AutoPlayVideo
               poster={item.demo.poster}
               webm={item.demo.webm}
               mp4={item.demo.mp4}
-              className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.05]"
+              focusable={false}
+              desktopPlayMode="interaction"
+              className="absolute inset-0 h-full w-full object-cover transition duration-700 ease-out will-change-transform group-hover:scale-[1.06]"
               style={{
                 filter:
                   i % 5 === 1

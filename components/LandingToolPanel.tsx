@@ -25,6 +25,7 @@ import {
   freeLiveDownloadBlockReason,
 } from "@/lib/createTrust";
 import { deliveryItemsForJob } from "@/lib/deliveryPack";
+import { DeliveryChecklist } from "@/components/DeliveryChecklist";
 import { track } from "@/lib/analytics";
 
 type Status = "idle" | "generating" | "done" | "error";
@@ -636,27 +637,12 @@ export function LandingToolPanel({
                 </Link>
               </div>
               {/* First-principles delivery steps (honest Free download). */}
-              <ul className="mx-auto mt-3 max-w-sm space-y-1 text-left text-[10px] text-[var(--fg-dim)]">
-                {deliveryItemsForJob(null, { demo, downloadAllowed }).map(
-                  (item) => (
-                    <li key={item.id} className="flex gap-1.5">
-                      <span className="text-[var(--mint)]" aria-hidden>
-                        ○
-                      </span>
-                      {item.href ? (
-                        <Link
-                          href={item.href}
-                          className="text-[var(--mint)] hover:underline"
-                        >
-                          {item.label}
-                        </Link>
-                      ) : (
-                        <span>{item.label}</span>
-                      )}
-                    </li>
-                  )
-                )}
-              </ul>
+              <DeliveryChecklist
+                className="mx-auto mt-3 max-w-sm"
+                title="Delivery · next steps"
+                surface="landing:default"
+                items={deliveryItemsForJob(null, { demo, downloadAllowed })}
+              />
               {!downloadAllowed ? (
                 <p className="mt-2 text-center text-[10px] leading-snug text-amber-100/80">
                   {freeLiveDownloadBlockReason()}

@@ -1615,15 +1615,29 @@ assert.match(toyIdSrc, /sanitizeToyIdentity|ToyIdentity/);
 const deliverySrc = fs.readFileSync(join(root, "lib/deliveryPack.ts"), "utf8");
 assert.match(deliverySrc, /deliveryItemsForJob/);
 assert.match(deliverySrc, /downloadAllowed|T6/);
+assert.match(deliverySrc, /sellerPackPostItems/);
+assert.match(deliverySrc, /deliveryChecklistStorageKey/);
 assert.match(createStudio, /composeExtraWithIdentity|toyIdentity/);
-assert.match(createStudio, /deliveryItemsForJob/);
+assert.match(createStudio, /deliveryItemsForJob|DeliveryChecklist/);
 assert.match(createStudio, /Same photo · next job|generateForJob/);
 const landingToolPanel = fs.readFileSync(
   join(root, "components/LandingToolPanel.tsx"),
   "utf8"
 );
 assert.match(landingToolPanel, /registerLocalAsset|assetId/);
-assert.match(landingToolPanel, /deliveryItemsForJob/);
+assert.match(landingToolPanel, /deliveryItemsForJob|DeliveryChecklist/);
+assert.match(
+  fs.readFileSync(join(root, "components/BatchStudio.tsx"), "utf8"),
+  /sellerPackPostItems|DeliveryChecklist/
+);
+assert.match(
+  fs.readFileSync(join(root, "components/DeliveryChecklist.tsx"), "utf8"),
+  /sessionStorage|markActivationShared/
+);
+assert.match(
+  fs.readFileSync(join(root, "components/PresetPreviewCard.tsx"), "utf8"),
+  /desktopPlayMode=["']interaction["']/
+);
 assert.match(
   fs.readFileSync(join(root, "lib/workflows.ts"), "utf8"),
   /listCreateShelfWorkflows|Workflow/

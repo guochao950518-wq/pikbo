@@ -24,12 +24,12 @@ export default function LibraryPage() {
             </p>
             <h1 className="mt-1 text-2xl font-bold">Local Library</h1>
             <p className="mt-1 max-w-2xl text-sm text-[var(--fg-muted)]">
-              Higgsfield Library pattern, soft-launch: clips stay in{" "}
+              Higgsfield Library pattern, soft-launch:{" "}
               <span className="font-semibold text-[var(--mint)]">
-                this browser only
-              </span>
-              . Group by project or Toy Identity SKU · remake into Generate · not
-              cloud-synced yet.
+                Saved on this device
+              </span>{" "}
+              only (this browser). Group by project or Toy Identity SKU · remake
+              into Generate · not cloud-synced yet.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">

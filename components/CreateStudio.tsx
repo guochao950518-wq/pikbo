@@ -57,6 +57,7 @@ import {
   type ToyIdentity,
 } from "@/lib/toyIdentity";
 import { deliveryItemsForJob } from "@/lib/deliveryPack";
+import { DeliveryChecklist } from "@/components/DeliveryChecklist";
 
 type Status = "idle" | "uploading" | "generating" | "done" | "error";
 type Mode = "i2v" | "t2v";
@@ -2162,35 +2163,20 @@ export function CreateStudio({
                   </p>
                 </div>
 
-                {/* Delivery pack — value only after export/post (first principles P4) */}
-                <div className="mx-auto mt-3 max-w-md rounded-xl border border-white/10 bg-black/50 px-3.5 py-3 text-left backdrop-blur-sm">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--mint)]/80">
-                    Delivery · next steps
-                    {toyIdentity.sku ? ` · ${toyIdentity.sku}` : ""}
-                  </p>
-                  <ul className="mt-2 space-y-1.5 text-[11px] text-white/65">
-                    {deliveryItemsForJob(jobIntentId, {
-                      demo,
-                      downloadAllowed,
-                    }).map((item) => (
-                      <li key={item.id} className="flex gap-2">
-                        <span className="text-[var(--mint)]" aria-hidden>
-                          ○
-                        </span>
-                        {item.href ? (
-                          <Link
-                            href={item.href}
-                            className="font-medium text-[var(--mint)] hover:underline"
-                          >
-                            {item.label}
-                          </Link>
-                        ) : (
-                          <span>{item.label}</span>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                {/* Delivery pack — interactive ticks (session-local, first principles P4) */}
+                <DeliveryChecklist
+                  className="mx-auto mt-3 max-w-md"
+                  title={
+                    toyIdentity.sku
+                      ? `Delivery · next steps · ${toyIdentity.sku}`
+                      : "Delivery · next steps"
+                  }
+                  surface={`create:${jobIntentId ?? "default"}`}
+                  items={deliveryItemsForJob(jobIntentId, {
+                    demo,
+                    downloadAllowed,
+                  })}
+                />
 
                 {/* Same photo · next job — accelerate cycle, no new provider */}
                 {image && status === "done" && (
