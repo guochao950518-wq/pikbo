@@ -34,41 +34,51 @@ export function ActivationChecklist({
   if (!state || state.dismissed) return null;
   const { done, total, complete } = activationProgress(state);
   if (complete) return null;
+  const pct = Math.round((done / total) * 100);
 
   const items: Array<{ key: keyof ActivationState; label: string; ok: boolean }> =
     [
-      { key: "choseJob", label: "Pick a job (Etsy / TikTok / reveal…)", ok: state.choseJob },
-      { key: "addedPhoto", label: "Add your toy photo", ok: state.addedPhoto },
-      { key: "generated", label: "Generate one clip", ok: state.generated },
+      { key: "choseJob", label: "Pick a job", ok: state.choseJob },
+      { key: "addedPhoto", label: "Add photo", ok: state.addedPhoto },
+      { key: "generated", label: "Generate", ok: state.generated },
       {
         key: "savedOrShared",
-        label: "Download, copy link, or open Library",
+        label: "Save / share",
         ok: state.savedOrShared,
       },
     ];
 
   return (
-    <div className="border-b border-white/10 bg-white/[0.03] px-4 py-2.5">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-start justify-between gap-2">
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--mint)]">
+    <div className="border-b border-white/10 bg-gradient-to-r from-[var(--mint)]/[0.06] to-transparent px-4 py-2.5">
+      <div className="mx-auto max-w-6xl">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--mint)]">
             First clip · {done}/{total}
           </p>
-          <ul className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-[11px] text-white/60">
-            {items.map((it) => (
-              <li key={it.key} className={it.ok ? "text-[var(--mint)]" : ""}>
-                {it.ok ? "✓" : "○"} {it.label}
-              </li>
-            ))}
-          </ul>
+          <button
+            type="button"
+            className="text-[10px] text-white/40 hover:text-white/70"
+            onClick={() => setState(saveActivation({ dismissed: true }))}
+          >
+            Hide
+          </button>
         </div>
-        <button
-          type="button"
-          className="text-[10px] text-white/40 hover:text-white/70"
-          onClick={() => setState(saveActivation({ dismissed: true }))}
-        >
-          Hide
-        </button>
+        <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-white/10">
+          <div
+            className="h-full rounded-full bg-[var(--mint)] transition-all duration-300"
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+        <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-0.5 text-[11px] text-white/55">
+          {items.map((it) => (
+            <li
+              key={it.key}
+              className={it.ok ? "font-semibold text-[var(--mint)]" : ""}
+            >
+              {it.ok ? "✓" : "○"} {it.label}
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );

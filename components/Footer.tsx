@@ -7,31 +7,40 @@ import { TOY_TYPES } from "@/lib/toytypes";
 
 export function Footer() {
   return (
-    <footer className="mt-10 border-t border-[var(--border)] bg-[var(--bg-soft)]">
-      <div className="container-x py-12">
+    <footer className="mt-10 border-t border-white/[0.07] bg-gradient-to-b from-[#0a0a0c] to-black">
+      <div className="container-x py-14">
         <div className="grid gap-10 md:grid-cols-6">
           <div className="md:col-span-2">
             <Logo size={30} />
 
-            <p className="mt-3 max-w-xs text-sm text-[var(--fg-dim)]">
-              {site.tagline} Video-first studio for toys you own.
+            <p className="mt-3 max-w-xs text-sm leading-relaxed text-white/45">
+              {site.tagline} Video-first studio for toys you own — Generate,
+              Modules, Seller Pack.
             </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Link href="/create" className="btn btn-primary !px-3 !py-1.5 text-xs">
+                Generate
+              </Link>
+              <Link href="/modules" className="btn btn-ghost !px-3 !py-1.5 text-xs">
+                Modules
+              </Link>
+            </div>
           </div>
           <div>
-            <h4 className="mb-3 text-xs font-bold uppercase tracking-wider text-[var(--fg-dim)]">
+            <h4 className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--mint)]/80">
               Effects
             </h4>
-            <ul className="space-y-2 text-sm text-[var(--fg-muted)]">
+            <ul className="space-y-2 text-sm text-white/50">
               <li>
-                <Link href="/effects" className="hover:text-[var(--mint)]">
+                <Link href="/effects" className="transition hover:text-[var(--mint)]">
                   All presets
                 </Link>
               </li>
               {CATEGORIES.map((c) => (
                 <li key={c.id}>
                   <Link
-                    href={`/effects#${c.id}`}
-                    className="hover:text-[var(--mint)]"
+                    href={`/effects#cat-${c.id}`}
+                    className="transition hover:text-[var(--mint)]"
                   >
                     {c.label}
                   </Link>
@@ -40,15 +49,16 @@ export function Footer() {
             </ul>
           </div>
           <div>
-            <h4 className="mb-3 text-xs font-bold uppercase tracking-wider text-[var(--fg-dim)]">
+            <h4 className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--mint)]/80">
               Product
             </h4>
-            <ul className="space-y-2 text-sm text-[var(--fg-muted)]">
+            <ul className="space-y-2 text-sm text-white/50">
               {[
                 ["/create", "Generate"],
                 ["/modules", "Modules"],
+                ["/flow", "Flow"],
                 ["/create?mode=seller-pack", "Seller Pack"],
-                ["/library", "Library"],
+                ["/library", "Assets"],
                 ["/pricing", "Pricing"],
                 ["/effects", "Presets"],
                 ["/community", "Lab"],
@@ -59,7 +69,7 @@ export function Footer() {
                 ["/terms", "Terms"],
               ].map(([h, l]) => (
                 <li key={h}>
-                  <Link href={h} className="hover:text-[var(--mint)]">
+                  <Link href={h} className="transition hover:text-[var(--mint)]">
                     {l}
                   </Link>
                 </li>
