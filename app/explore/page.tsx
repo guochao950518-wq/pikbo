@@ -6,12 +6,19 @@ import {
   listShowcaseProjects,
   type ShowcaseCategory,
 } from "@/lib/showcaseProjects";
+import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Explore Official AI Toy Video Projects",
   description:
     "Open PIKBO Lab toy-video projects, inspect the owned input and cached output, then reuse the exact recipe with a toy photo you own.",
   alternates: { canonical: "/explore" },
+  openGraph: {
+    title: `Explore official toy video projects | ${site.name}`,
+    description:
+      "Traceable Lab projects with owned input, cached output, and recipe remix into Generate.",
+    url: `${site.url}/explore`,
+  },
 };
 
 export default async function ExplorePage({
@@ -26,8 +33,28 @@ export default async function ExplorePage({
       : "all";
   const projects = listShowcaseProjects();
 
+  const itemListLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Pikbo Lab official toy video projects",
+    description:
+      "Traceable official examples — owned input still, distinct output, registered recipe.",
+    numberOfItems: projects.length,
+    itemListElement: projects.map((p, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: p.title,
+      url: `${site.url}/projects/${p.slug}`,
+      description: p.result,
+    })),
+  };
+
   return (
     <main className="min-h-screen bg-black pb-24 text-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListLd) }}
+      />
       <header className="sticky top-0 z-20 border-b border-white/10 bg-black/90 px-4 py-4 backdrop-blur sm:px-6">
         <div className="mx-auto flex max-w-7xl flex-wrap items-end justify-between gap-4">
           <div>
@@ -44,6 +71,12 @@ export default async function ExplorePage({
           </div>
           <div className="flex flex-wrap gap-2">
             <Link
+              href="/create?try=1&sample=scout"
+              className="rounded-full bg-[#c8ff3d] px-5 py-2.5 text-xs font-black text-black"
+            >
+              Try free
+            </Link>
+            <Link
               href="/modules"
               className="rounded-full border border-[#c8ff3d]/40 bg-[#c8ff3d]/10 px-5 py-2.5 text-xs font-black text-[#c8ff3d]"
             >
@@ -51,7 +84,7 @@ export default async function ExplorePage({
             </Link>
             <Link
               href="/create"
-              className="rounded-full bg-[#c8ff3d] px-5 py-2.5 text-xs font-black text-black"
+              className="rounded-full border border-white/15 px-4 py-2.5 text-xs font-bold text-white/80"
             >
               Generate
             </Link>
