@@ -6,6 +6,7 @@ export type {
 export {
   createJob,
   getJob,
+  touchJob,
   listJobsForSession,
   updateJob,
   beginSyncGenerateJob,

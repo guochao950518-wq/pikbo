@@ -701,6 +701,10 @@ export function CreateStudio({
         prev ? { ...prev, ...data.session } : (data.session as MeResponse)
       );
     }
+    // Network-retry recovery: same idempotencyKey, no second debit/fal.
+    if (data.idempotentReplay) {
+      toast("Recovered prior clip · no second charge");
+    }
     const serverDuration =
       typeof data.duration === "number" ? data.duration : requestDuration;
     const serverAspect =

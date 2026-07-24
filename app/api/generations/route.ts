@@ -19,9 +19,18 @@ export const runtime = "nodejs";
 export async function GET() {
   const session = await ensureSession();
   const timedOut = sweepTimedOutJobs();
-  const jobs = listJobsForSession(session.id, 30).map((j) =>
-    toPublicJob(j, session.id)
-  );
+  const raw = listJobsForSession(session.id, 30);
+  const jobs = raw.map((j) => toPublicJob(j, session.id));
+  const byStatus = {
+    queued: 0,
+    running: 0,
+    succeeded: 0,
+    failed: 0,
+    canceled: 0,
+  };
+  for (const j of raw) {
+    byStatus[j.status] = (byStatus[j.status] ?? 0) + 1;
+  }
   return NextResponse.json({
     ok: true,
     mode: "local-memory",
@@ -30,8 +39,11 @@ export async function GET() {
     jobTimeoutMs: jobTimeoutMs(),
     timedOutThisSweep: timedOut.filter((j) => j.sessionId === session.id)
       .length,
+    /** Session-scoped histogram (Library recovery UI). */
+    byStatus,
+    open: byStatus.queued + byStatus.running,
     note:
-      "In-process ledger for soft-launch recovery. Not multi-node durable. Use POST /api/generate for work. Queued/running jobs past jobTimeoutMs fail with TIMEOUT.",
+      "In-process ledger for soft-launch recovery. Not multi-node durable. Use POST /api/generate for work. Queued/running jobs past jobTimeoutMs fail with TIMEOUT. GET /api/generations/[id] touches open jobs.",
     compatibility: {
       syncGenerate: "/api/generate",
       jobStatus: "/api/generations/[id]",

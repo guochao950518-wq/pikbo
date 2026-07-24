@@ -100,7 +100,8 @@
 59. [x] jobId echo on success · jobs probe byStatus/open · NETWORK/CANCEL → refund unconfirmed
 60. [x] Generate idempotencyKey: success/fail replay · running→JOB_IN_FLIGHT · client mint once per attempt
 61. [x] Idempotency before image/asset resolve · health.product video-first · mode-a jobs.byStatus
-62. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
+62. [x] touchJob on poll · generations byStatus/open · idempotentReplay toast honesty
+63. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
 
 ### 老板醒来验收
 
@@ -114,8 +115,8 @@
 
 ## Grok 本拍状态（3 行）
 
-- Idempotency short-circuit **before** image/asset resolve (retry without re-upload).  
-- health.product primary=video · stills=optional-support; mode-a checks byStatus.  
+- `touchJob` on GET /api/generations/[id] slides open-job TTL while clients poll.  
+- Session jobs list exposes byStatus/open; Create toasts idempotentReplay.  
 - Mode A still needs boss Vercel login · SQL · T6 bake.
 
 ---

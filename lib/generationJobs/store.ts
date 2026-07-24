@@ -192,6 +192,18 @@ export function getJob(id: string): GenerationJob | null {
 }
 
 /**
+ * Slide updatedAt on open jobs while a client is polling.
+ * Prevents false TIMEOUT when soft-launch sync fal is still working and the
+ * operator set a short PIKBO_JOB_TIMEOUT_MS. Terminal jobs are unchanged.
+ */
+export function touchJob(id: string): GenerationJob | null {
+  const job = findJobByRequestOrId(id);
+  if (!job) return null;
+  if (job.status !== "queued" && job.status !== "running") return job;
+  return updateJob(job.id, {}) ?? job;
+}
+
+/**
  * Cancel a queued/running local job. Terminal states are left unchanged.
  * Soft-launch sync generate cannot interrupt fal mid-flight; this marks the
  * ledger honestly for clients that abandon a poll.

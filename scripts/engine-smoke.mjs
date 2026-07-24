@@ -899,7 +899,17 @@ assert.match(genJobsStore, /recordFailedGenerate/);
 assert.match(genJobsStore, /export function beginSyncGenerateJob/);
 assert.match(genJobsStore, /export function completeSyncGenerateJob/);
 assert.match(genJobsStore, /export function failSyncGenerateJob/);
+assert.match(genJobsStore, /export function touchJob/);
 assert.match(genJobsStore, /downloadAllowedForJob/);
+assert.match(
+  fs.readFileSync(join(root, "app/api/generations/[id]/route.ts"), "utf8"),
+  /touchJob/
+);
+assert.match(
+  fs.readFileSync(join(root, "app/api/generations/route.ts"), "utf8"),
+  /byStatus/
+);
+assert.match(createStudio, /idempotentReplay|no second charge/);
 assert.match(genJobsStore, /toPublicJob/);
 assert.match(genJobsStore, /forkRetryJob/);
 assert.match(genJobsStore, /parentJobId/);
