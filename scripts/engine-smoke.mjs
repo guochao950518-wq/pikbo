@@ -20,8 +20,14 @@ function classifyProviderError(raw) {
   if (/Forbidden/i.test(raw) && /balance|billing|quota/i.test(raw)) {
     return "balance";
   }
-  if (/rate.?limit|too many|429/i.test(raw)) {
+  if (/rate.?limit|too many|429|throttl/i.test(raw)) {
     return "rate";
+  }
+  if (/timeout|timed?\s*out|deadline exceeded|ETIMEDOUT|Gateway Time-out|504/i.test(raw)) {
+    return "timeout";
+  }
+  if (/content.?policy|nsfw|safety|moderation|blocked.?content|violat/i.test(raw)) {
+    return "content";
   }
   return "other";
 }
@@ -62,6 +68,8 @@ function interpretGenerateResponse(status, raw) {
 assert.equal(classifyProviderError("Exhausted balance"), "balance");
 assert.equal(classifyProviderError("rate limit exceeded"), "rate");
 assert.equal(classifyProviderError("boom"), "other");
+assert.equal(classifyProviderError("Gateway Time-out 504"), "timeout");
+assert.equal(classifyProviderError("content policy violation"), "content");
 
 // --- image mime ---
 assert.equal(
@@ -124,6 +132,9 @@ const demoIdx = genRoute.indexOf("if (!process.env.FAL_KEY)");
 const deductIdx = genRoute.indexOf("deductCredits(session");
 assert.ok(demoIdx > 0 && deductIdx > demoIdx, "demo path must run before credit deduct");
 assert.match(genRoute, /Cached demos stay free|free cached Lab/i);
+assert.match(genRoute, /isSafeDeliverableUrl/);
+assert.match(genRoute, /Retry-After/);
+assert.match(pe, /timeout|content/);
 
 const imgRoute = fs.readFileSync(join(root, "app/api/image/route.ts"), "utf8");
 const imgDemo = imgRoute.indexOf("if (!process.env.FAL_KEY)");
@@ -1300,6 +1311,7 @@ assert.match(gen, /reserveSellerPackShadowClient/);
 assert.match(genJobsStore, /applyProviderWebhookEvent/);
 assert.match(genJobsStore, /findJobByRequestOrId/);
 assert.match(genJobsStore, /webhookEvents/);
+assert.match(genJobsStore, /UNSAFE_URL|isSafeDeliverableUrl/);
 
 // Phase D job timeout recovery
 assert.match(genJobsStore, /sweepTimedOutJobs/);

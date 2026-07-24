@@ -4,7 +4,7 @@
  * Supabase job table remains the production target (AUTH_CREDITS / Phase D PRD).
  */
 
-import { canDownloadResult } from "@/lib/createTrust";
+import { canDownloadResult, isSafeDeliverableUrl } from "@/lib/createTrust";
 import type {
   GenerationJob,
   GenerationJobStatus,
@@ -459,6 +459,13 @@ export function applyProviderWebhookEvent(input: {
   if (!job) {
     // Unknown request: create a shell so retries still idempotent.
     if (input.status === "succeeded" && input.videoUrl) {
+      if (!isSafeDeliverableUrl(input.videoUrl)) {
+        return {
+          ok: false,
+          code: "UNSAFE_URL",
+          message: "succeeded webhook videoUrl is not a safe http(s) or /path URL",
+        };
+      }
       job = recordSucceededGenerate({
         sessionId: "webhook-orphan",
         effect: "unknown",
@@ -528,6 +535,13 @@ export function applyProviderWebhookEvent(input: {
         ok: false,
         code: "MISSING_VIDEO",
         message: "succeeded webhook requires videoUrl",
+      };
+    }
+    if (!isSafeDeliverableUrl(input.videoUrl)) {
+      return {
+        ok: false,
+        code: "UNSAFE_URL",
+        message: "succeeded webhook videoUrl is not a safe http(s) or /path URL",
       };
     }
     // Never store raw provider URL as permanent customer storage claim —

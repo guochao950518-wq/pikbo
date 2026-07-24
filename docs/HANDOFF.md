@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Safe provider videoUrl + timeout/content classify
+- Generate validates `isSafeDeliverableUrl` before settle (unsafe → refund + MODEL_EMPTY).
+- Webhook job store rejects unsafe success URLs (`UNSAFE_URL`). Provider rate → Retry-After.
+- classifyProviderError: timeout + content policy kinds; next.config X-Frame-Options DENY.
+- Verified: engine-smoke · typecheck · lint.
+
 ### 2026-07-24 — [grok] VideoTile AutoPlay budget + Effects proof ItemList
 - VideoTile uses shared AutoPlayVideo (mobile ≤1 concurrent · preload none · focusable=false).
 - Effects hub: ItemList JSON-LD for proof-backed recipes only; hub copy notes Lab-proof count.

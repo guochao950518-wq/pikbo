@@ -91,7 +91,8 @@
 50. [x] ProjectCard AutoPlay budget · Apps/Community ItemList JSON-LD
 51. [x] Auth magic-link/claim rate limits · safe download redirect URLs
 52. [x] VideoTile AutoPlay budget · Effects proof-backed ItemList JSON-LD
-53. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
+53. [x] Safe provider videoUrl gate · timeout/content classify · generate Retry-After
+54. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
 
 ### 老板醒来验收
 
@@ -105,8 +106,8 @@
 
 ## Grok 本拍状态（3 行）
 
-- VideoTile + ProjectCard share AutoPlayVideo (mobile one-at-a-time · preload none).  
-- Effects hub ItemList = proof-backed recipes only (Phase H).  
+- Generate rejects unsafe videoUrl (refund); webhook store same gate (UNSAFE_URL).  
+- Provider classify +timeout/content; rate fails return Retry-After; X-Frame DENY in next.  
 - Mode A still needs boss Vercel login · SQL · T6 bake.
 
 ---

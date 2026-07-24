@@ -25,6 +25,7 @@ import {
   isValidImageDataUrl,
   providerErrorMessage,
 } from "@/lib/providerError";
+import { isSafeDeliverableUrl } from "@/lib/createTrust";
 import { buildGeneratePrompt } from "@/lib/promptBuild";
 import type {
   GenerateErrorBody,
@@ -359,6 +360,21 @@ export async function POST(req: Request) {
         noteFailed(session.id, preset.slug, failBody);
         return err(failBody, 502);
       }
+      // Refuse non-http(s) / non-relative deliverables (open-redirect / injection).
+      if (!isSafeDeliverableUrl(videoUrl)) {
+        session = refundCredits(session, check.cost);
+        await saveSession(session);
+        await shadowRelease(shadow, "unsafe_url");
+        const failBody: GenerateErrorBody = {
+          error: "Model returned an unsafe video URL — credits restored",
+          code: "MODEL_EMPTY",
+          model,
+          session: publicSession(session),
+          creditsRefunded: true,
+        };
+        noteFailed(session.id, preset.slug, failBody);
+        return err(failBody, 502);
+      }
 
       await shadowSettle(shadow, result.requestId);
       const payload: GenerateSuccess = {
@@ -419,16 +435,22 @@ export async function POST(req: Request) {
           : kind === "rate"
             ? "PROVIDER_RATE_LIMIT"
             : "GENERATION_FAILED";
-      const status = kind === "balance" ? 402 : kind === "rate" ? 429 : 500;
+      const status =
+        kind === "balance" ? 402 : kind === "rate" ? 429 : kind === "timeout" ? 504 : 500;
       const failBody: GenerateErrorBody = {
         error: msg,
         code,
         model,
         session: publicSession(session),
         creditsRefunded: true,
+        ...(kind === "rate" ? { retryAfterSec: 8 } : {}),
       };
       noteFailed(session.id, preset.slug, failBody);
-      return err(failBody, status);
+      return err(
+        failBody,
+        status,
+        kind === "rate" ? { "Retry-After": "8" } : undefined
+      );
     }
   } finally {
     endJob(session.id);
