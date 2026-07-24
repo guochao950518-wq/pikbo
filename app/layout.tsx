@@ -8,10 +8,11 @@ import { AppShell } from "@/components/AppShell";
  * next/font/google was removed so CI/offline builds never hang on fonts.googleapis.com.
  * Stack is system + generic display; premium webfonts can return later as local files.
  */
+/** TDH frozen for soft launch — see lib/site.ts + docs/growth/GEFEI_LAUNCH_DECISION_2026-07-24.md */
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} — AI Toy Video Generator for Sellers`,
+    default: site.titleDefault,
     template: `%s | ${site.name}`,
   },
   description: site.description,
@@ -24,7 +25,7 @@ export const metadata: Metadata = {
     "TikTok toy ad generator",
   ],
   openGraph: {
-    title: `${site.name} — Turn one toy photo into a video ready to sell`,
+    title: site.titleDefault,
     description: site.description,
     url: site.url,
     siteName: site.name,
@@ -32,7 +33,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: `${site.name} — AI Toy Video Generator`,
+    title: site.titleDefault,
     description: site.description,
   },
 };

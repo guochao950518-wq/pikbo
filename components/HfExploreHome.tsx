@@ -17,6 +17,7 @@ import { HomeViralWall } from "@/components/HomeViralWall";
 import { HfProductRail } from "@/components/HfProductRail";
 import { SeedanceCampaign } from "@/components/SeedanceCampaign";
 import { useI18n } from "@/components/LanguageProvider";
+import { site } from "@/lib/site";
 
 /** Soft concurrent autoplay budget — pause extras when many tiles enter view. */
 const playingVideos = new Set<HTMLVideoElement>();
@@ -189,10 +190,14 @@ export function HfExploreHome({
           <span className="mt-3 inline-flex w-fit items-center rounded-full border border-[#c8ff3d]/30 bg-black/60 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#c8ff3d] shadow-[0_0_24px_rgba(200,255,61,0.15)] backdrop-blur">
             {item.badge ?? "Official example"}
           </span>
+          {/* Stable H1 for SEO (哥飞 TDH freeze) — demo title is visual subhead only */}
           <h1 className="font-display mt-3 max-w-xl text-3xl font-black uppercase leading-[1.02] tracking-tight sm:text-5xl md:text-6xl">
-            {item.title}
+            {site.homeH1}
           </h1>
-          <p className="mt-3 max-w-md text-sm leading-relaxed text-white/65 sm:text-[15px]">
+          <p className="mt-2 max-w-md text-base font-semibold text-white/80 sm:text-lg">
+            {item.title}
+          </p>
+          <p className="mt-2 max-w-md text-sm leading-relaxed text-white/65 sm:text-[15px]">
             {t("home.hero.sub")}
           </p>
           <div className="mt-6 flex flex-wrap gap-3">

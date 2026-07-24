@@ -1,16 +1,24 @@
+/**
+ * Launch TDH (Title / Description / H1) — FREEZE 1–4 weeks after public go-live
+ * (哥飞 SEO SOP). Change only with explicit boss approval during freeze.
+ */
 export const site = {
   name: "Pikbo",
   domain: "pikbo.ai",
   url: "https://pikbo.ai",
   /**
-   * Product is VIDEO-first (like HF Seedance / viral presets).
-   * Photo is the input; the sellable output is short toy video — not stills.
+   * VIDEO-first product. Photo = input; short AI video = output.
+   * Soft launch: free Mini trial / labeled Lab demos; no fake multi-model.
    */
-  tagline: "AI toy video — photo in, short clip out.",
+  tagline: "AI toy video generator — photo to short video",
+  /** Meta description — frozen for soft launch */
   description:
-    "Pikbo is an AI video generator for designer toys: upload a photo of a figure you own, pick a motion recipe, get a short video for TikTok, listings, drops, and shelf posts. Video is the product; stills are optional support.",
+    "Turn one photo of a designer toy you own into a short AI video for TikTok, listings, and drops. Free Mini trial. No card. Failed live jobs refund credits.",
+  /** Default document title (layout) — frozen for soft launch */
+  titleDefault: "Pikbo — AI Toy Video Generator | Photo to Short Video",
+  /** Canonical homepage H1 — stable; do not rotate with demo carousel */
+  homeH1: "Turn one toy photo into a short video",
   keyword: "AI toy video generator",
   twitter: "@pikbo_ai",
-  /** Product one-liner for UI chrome — video first */
   suiteLine: "AI video for toys · Seedance live",
 } as const;

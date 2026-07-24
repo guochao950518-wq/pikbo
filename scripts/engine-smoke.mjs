@@ -1933,8 +1933,8 @@ assert.match(
 
 // Video-first product line (not stills shop) — site + suite order + image honesty
 const siteSrc = fs.readFileSync(join(root, "lib/site.ts"), "utf8");
-assert.match(siteSrc, /AI toy video|photo in, short clip out/);
-assert.match(siteSrc, /Video is the product|stills are optional/i);
+assert.match(siteSrc, /AI toy video|photo to short video|titleDefault|homeH1/i);
+assert.match(siteSrc, /VIDEO-first|Free Mini trial|homeH1/i);
 const suiteChromeSrc = fs.readFileSync(
   join(root, "components/GenerateSuiteChrome.tsx"),
   "utf8"

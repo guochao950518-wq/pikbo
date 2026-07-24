@@ -1,7 +1,8 @@
 # GO / NO-GO — Soft public launch gate
 
 **Status:** **SOFT GO for Mode A private preview** as of 2026-07-24.  
-**Public Mode B (`pikbo.ai` DNS)** remains **NO-GO** until boss deploys + final crawl + explicit domain approval.
+**Public Mode B (`pikbo.ai` DNS)** remains **NO-GO** until boss deploys + final crawl + explicit domain approval.  
+**Growth decision (哥飞 2026-07-24):** Path **A — soft public this week**; do not block on HF pixel parity. See `docs/growth/GEFEI_LAUNCH_DECISION_2026-07-24.md`.
 **Evidence:** `docs/BRUTAL_EXPERT_ROAST_2026-07-23.md`
 **Navigation/proof contract:** `docs/prd/SOFT_NAV_AND_PRESETS.md`
 **This file is the living gate.** Agents must not tell the boss “ready to launch” until the table is green.
