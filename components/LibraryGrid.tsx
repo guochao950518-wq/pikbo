@@ -605,9 +605,34 @@ export function LibraryGrid() {
                   </p>
                 </div>
               </div>
-              <span className="rounded-full border border-[var(--border)] px-2.5 py-1 text-[10px] font-bold uppercase text-[var(--fg-dim)]">
-                Local only · not cloud-synced
-              </span>
+              <div className="flex flex-wrap items-center gap-2">
+                {group.items[0]?.effect ? (
+                  <Link
+                    href={createRemixHref(
+                      group.items[0].effect,
+                      group.items[0].sourceProject
+                    )}
+                    className="rounded-full border border-[var(--mint)]/35 bg-[var(--mint)]/10 px-2.5 py-1 text-[10px] font-bold text-[var(--mint)] hover:border-[var(--mint)]"
+                  >
+                    Remake · same recipe
+                  </Link>
+                ) : null}
+                <Link
+                  href="/create?mode=seller-pack"
+                  className="rounded-full border border-white/15 px-2.5 py-1 text-[10px] font-bold text-white/70 hover:border-white/30"
+                >
+                  Seller Pack
+                </Link>
+                <Link
+                  href="/modules"
+                  className="rounded-full border border-white/15 px-2.5 py-1 text-[10px] font-bold text-white/70 hover:border-white/30"
+                >
+                  Modules
+                </Link>
+                <span className="rounded-full border border-[var(--border)] px-2.5 py-1 text-[10px] font-bold uppercase text-[var(--fg-dim)]">
+                  Local only
+                </span>
+              </div>
             </div>
           )}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
