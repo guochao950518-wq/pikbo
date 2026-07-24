@@ -118,7 +118,8 @@ export function forkRetryJob(input: {
 }):
   | { ok: true; job: GenerationJob; parent: GenerationJob }
   | { ok: false; code: "NOT_FOUND" | "NOT_OWNED"; message: string } {
-  const parent = jobs.get(input.parentId);
+  // Accept job id or provider requestId (Library / downloads may store either).
+  const parent = findJobByRequestOrId(input.parentId);
   if (!parent) {
     return {
       ok: false,

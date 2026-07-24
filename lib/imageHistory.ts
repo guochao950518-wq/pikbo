@@ -3,11 +3,47 @@ export type ImageHistoryItem = {
   imageUrl: string;
   prompt: string;
   demo?: boolean;
+  /** Server-echoed when present (0 cached · flat live). */
+  costCredits?: number;
+  creditsOutcome?: "0 cached" | "10 used";
   createdAt: string;
 };
 
 const KEY = "pikbo_image_library_v1";
 const MAX = 24;
+/** Skip persisting huge data URLs (demo SVG can be large base64). */
+const MAX_STORE_URL_CHARS = 120_000;
+
+function slimItem(item: ImageHistoryItem): ImageHistoryItem {
+  if (
+    !item.imageUrl ||
+    item.imageUrl.length <= MAX_STORE_URL_CHARS ||
+    !item.imageUrl.startsWith("data:")
+  ) {
+    return item;
+  }
+  // Keep metadata; drop heavy still — user can re-generate demo free.
+  return { ...item, imageUrl: "" };
+}
+
+function writeList(list: ImageHistoryItem[]): void {
+  const capped = list.slice(0, MAX).map(slimItem).filter((i) => i.imageUrl || i.prompt);
+  try {
+    localStorage.setItem(KEY, JSON.stringify(capped));
+    return;
+  } catch {
+    /* quota */
+  }
+  try {
+    // Drop empty/data URLs and keep newest half.
+    const half = capped
+      .filter((i) => i.imageUrl && !i.imageUrl.startsWith("data:"))
+      .slice(0, Math.max(4, Math.floor(MAX / 2)));
+    localStorage.setItem(KEY, JSON.stringify(half.length ? half : capped.slice(0, 4)));
+  } catch {
+    /* give up */
+  }
+}
 
 export function loadImageHistory(): ImageHistoryItem[] {
   if (typeof window === "undefined") return [];
@@ -15,7 +51,25 @@ export function loadImageHistory(): ImageHistoryItem[] {
     const raw = localStorage.getItem(KEY);
     if (!raw) return [];
     const list = JSON.parse(raw) as ImageHistoryItem[];
-    return Array.isArray(list) ? list : [];
+    if (!Array.isArray(list)) return [];
+    return list
+      .filter(
+        (i) =>
+          i &&
+          typeof i.prompt === "string" &&
+          typeof i.imageUrl === "string" &&
+          i.imageUrl
+      )
+      .map((i) => ({
+        ...i,
+        demo: Boolean(i.demo),
+        costCredits:
+          typeof i.costCredits === "number" ? i.costCredits : undefined,
+        creditsOutcome:
+          i.creditsOutcome === "0 cached" || i.creditsOutcome === "10 used"
+            ? i.creditsOutcome
+            : undefined,
+      }));
   } catch {
     return [];
   }
@@ -29,28 +83,14 @@ export function pushImageHistory(
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     createdAt: new Date().toISOString(),
   };
-  // data URLs can be large — skip storing huge demo svg if needed
   const list = [next, ...loadImageHistory()].slice(0, MAX);
-  try {
-    localStorage.setItem(KEY, JSON.stringify(list));
-  } catch {
-    // quota — drop older
-    try {
-      localStorage.setItem(KEY, JSON.stringify(list.slice(0, 8)));
-    } catch {
-      // ignore
-    }
-  }
-  return list;
+  writeList(list);
+  return loadImageHistory();
 }
 
 export function removeImageHistoryItem(id: string): ImageHistoryItem[] {
   const list = loadImageHistory().filter((i) => i.id !== id);
-  try {
-    localStorage.setItem(KEY, JSON.stringify(list));
-  } catch {
-    // ignore
-  }
+  writeList(list);
   return list;
 }
 

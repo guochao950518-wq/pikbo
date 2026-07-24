@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Image settlement echo + forkRetry requestId + demo disk check
+- `/api/image`: costCredits/creditsOutcome (0 cached · 10 used); PROVIDER_RATE_LIMIT Retry-After.
+- `forkRetryJob` resolves parent via findJobByRequestOrId; imageHistory slims huge data URLs.
+- preflight + engine-smoke assert all demoClips/samples files on disk.
+- Verified: engine-smoke · typecheck · lint.
+
 ### 2026-07-24 — [grok] Image Cancel + Tools/Guides ItemList JSON-LD
 - `/image` Still studio: AbortController cancel + refund-unconfirmed honesty (Create parity).
 - Tools hub + Guides hub: real ItemList structured data (registered URLs only).

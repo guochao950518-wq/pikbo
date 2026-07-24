@@ -129,6 +129,9 @@ const imgRoute = fs.readFileSync(join(root, "app/api/image/route.ts"), "utf8");
 const imgDemo = imgRoute.indexOf("if (!process.env.FAL_KEY)");
 const imgDeduct = imgRoute.indexOf("deductCredits(session");
 assert.ok(imgDemo > 0 && imgDeduct > imgDemo, "image demo path free before deduct");
+assert.match(imgRoute, /costCredits:\s*0/);
+assert.match(imgRoute, /creditsOutcome:\s*"0 cached"|creditsOutcome:\s*"10 used"/);
+assert.match(imgRoute, /Retry-After/);
 
 const ent = fs.readFileSync(join(root, "lib/entitlements.ts"), "utf8");
 assert.match(ent, /probeEntitlementsStore/);
@@ -986,6 +989,26 @@ assert.match(
   /ItemList|itemListElement/
 );
 assert.match(genJobsStore, /export function generationJobsProbe/);
+assert.match(genJobsStore, /forkRetryJob[\s\S]*findJobByRequestOrId/);
+// Demo + sample stills must exist on disk (preflight parity)
+{
+  const demoClipsSrc = fs.readFileSync(join(root, "lib/demoClips.ts"), "utf8");
+  const demoPaths = [
+    ...demoClipsSrc.matchAll(/["'](\/demos\/[^"']+)["']/g),
+  ].map((m) => m[1]);
+  const samplesSrc = fs.readFileSync(join(root, "lib/samples.ts"), "utf8");
+  const samplePaths = [
+    ...samplesSrc.matchAll(/path:\s*["'](\/demos\/[^"']+)["']/g),
+  ].map((m) => m[1]);
+  for (const p of new Set([...demoPaths, ...samplePaths])) {
+    const disk = join(root, "public", p.replace(/^\//, ""));
+    assert.ok(fs.existsSync(disk), `missing demo/sample asset: ${p}`);
+  }
+}
+assert.match(
+  fs.readFileSync(join(root, "lib/imageHistory.ts"), "utf8"),
+  /MAX_STORE_URL_CHARS|slimItem|costCredits/
+);
 assert.match(genJobsStore, /findJobByRequestOrId/);
 // getJob must resolve provider requestId (not only job_*)
 assert.match(

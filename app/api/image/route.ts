@@ -91,6 +91,9 @@ export async function POST(req: Request) {
         demoReason: "no_provider_key",
         model: "demo",
         session: publicSession(session),
+        // Parity with /api/generate honesty — cached demos never charge.
+        costCredits: 0,
+        creditsOutcome: "0 cached" as const,
       });
     }
 
@@ -178,6 +181,9 @@ export async function POST(req: Request) {
         demo: false,
         model: IMAGE_MODEL,
         session: publicSession(session),
+        // Server-echo settlement (Wave B parity with generate).
+        costCredits: check.cost,
+        creditsOutcome: "10 used" as const,
       });
     } catch (err) {
       console.error("image gen error:", err);
@@ -206,8 +212,12 @@ export async function POST(req: Request) {
           code,
           session: publicSession(session),
           creditsRefunded: true,
+          ...(kind === "rate" ? { retryAfterSec: 8 } : {}),
         },
-        { status }
+        {
+          status,
+          ...(kind === "rate" ? { headers: { "Retry-After": "8" } } : {}),
+        }
       );
     }
   } finally {

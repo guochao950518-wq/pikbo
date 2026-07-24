@@ -84,6 +84,15 @@ export default function ImageStudioPage() {
             imageUrl: data.imageUrl,
             prompt: trimmed,
             demo: Boolean(data.demo),
+            costCredits:
+              typeof data.costCredits === "number"
+                ? data.costCredits
+                : undefined,
+            creditsOutcome:
+              data.creditsOutcome === "0 cached" ||
+              data.creditsOutcome === "10 used"
+                ? data.creditsOutcome
+                : undefined,
           })
         );
       }

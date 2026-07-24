@@ -53,6 +53,25 @@ if [[ "$missing_still" -ne 0 ]]; then
 fi
 echo "OK: sample stills present"
 
+# Source-of-truth paths from lib/demoClips + lib/samples (engine-smoke also asserts)
+node -e "
+const fs=require('fs');const path=require('path');
+const root=process.cwd();
+function pathsFrom(file, re){
+  const t=fs.readFileSync(path.join(root,file),'utf8');
+  return [...t.matchAll(re)].map(m=>m[1]);
+}
+const demos=pathsFrom('lib/demoClips.ts', /[\"'](\\/demos\\/[^\"']+)[\"']/g);
+const samples=pathsFrom('lib/samples.ts', /path:\\s*[\"'](\\/demos\\/[^\"']+)[\"']/g);
+let miss=0;
+for (const p of new Set([...demos,...samples])) {
+  const disk=path.join(root,'public',p.replace(/^\\//,''));
+  if (!fs.existsSync(disk)) { console.error('FAIL missing', p); miss=1; }
+}
+if (miss) process.exit(1);
+console.log('OK: demoClips+samples disk assets', new Set([...demos,...samples]).size);
+"
+
 node scripts/engine-smoke.mjs
 echo "OK: engine-smoke"
 
