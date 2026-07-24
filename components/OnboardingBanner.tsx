@@ -3,13 +3,12 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-const KEY = "pikbo_onboard_v2";
+const KEY = "pikbo_onboard_v3";
 
 export function OnboardingBanner() {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    // Defer localStorage read to avoid sync setState-in-effect (React 19 lint)
     const t = window.setTimeout(() => {
       try {
         if (!localStorage.getItem(KEY)) setShow(true);
@@ -32,25 +31,24 @@ export function OnboardingBanner() {
   }
 
   return (
-    <div className="border-b border-[var(--border)] bg-[var(--bg-soft)] px-4 py-2.5 sm:px-6">
+    <div className="border-b border-[var(--mint)]/20 bg-gradient-to-r from-[var(--mint)]/[0.08] via-black/80 to-black/90 px-4 py-2.5 sm:px-6">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3">
-        <div className="text-sm">
-          <span className="font-semibold text-[var(--mint)]">
-            Toy suite · Generate + Modules
+        <div className="min-w-0 text-sm">
+          <span className="font-bold text-[var(--mint)]">
+            One photo · listing or social clip
           </span>
-          <span className="text-[var(--fg-muted)]">
+          <span className="text-white/55">
             {" "}
-            — one photo of a figure you own → listing, unbox, or social clip.
-            Free Mini trial: 5s · 480p · on-player mark when live is configured.
+            — free Mini trial 5s · 480p when live is on · Modules for job packs
           </span>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Link
             href="/create?try=1&sample=scout"
             onClick={dismiss}
-            className="btn btn-primary px-3 py-1.5 text-xs"
+            className="btn btn-primary px-3.5 py-1.5 text-xs"
           >
-            Try free
+            Try free · 10s
           </Link>
           <Link
             href="/modules"
@@ -62,7 +60,7 @@ export function OnboardingBanner() {
           <button
             type="button"
             onClick={dismiss}
-            className="text-xs text-[var(--fg-dim)] hover:text-[var(--fg)]"
+            className="text-xs text-white/40 hover:text-white/70"
           >
             Dismiss
           </button>

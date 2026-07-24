@@ -162,26 +162,26 @@ export function HfExploreHome({
         </div>
 
         <div className="relative mx-auto flex min-h-[min(860px,calc(100svh-3.5rem))] max-w-6xl flex-col justify-end px-4 pb-8 pt-16 sm:px-6 sm:pb-12">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-white/50">
-            Feel it first — then you&apos;ll know what it&apos;s for
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/45">
+            Feel it first — then make yours
           </p>
-          <span className="mt-3 inline-flex w-fit items-center rounded-full border border-white/15 bg-black/55 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#c8ff3d]">
+          <span className="mt-3 inline-flex w-fit items-center rounded-full border border-[#c8ff3d]/30 bg-black/60 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#c8ff3d] shadow-[0_0_24px_rgba(200,255,61,0.15)] backdrop-blur">
             {item.badge ?? "Official example"}
           </span>
-          <h1 className="font-display mt-3 max-w-xl text-3xl font-black uppercase leading-[1.05] tracking-tight sm:text-5xl">
+          <h1 className="font-display mt-3 max-w-xl text-3xl font-black uppercase leading-[1.02] tracking-tight sm:text-5xl md:text-6xl">
             {item.title}
           </h1>
-          <p className="mt-2 max-w-md text-sm text-white/70">
-            Watch this clip. In one free try you can make something like it from
-            a single toy photo — for TikTok, Etsy, or your shelf.
+          <p className="mt-3 max-w-md text-sm leading-relaxed text-white/65 sm:text-[15px]">
+            One free try turns a photo of a toy you own into a listing or social
+            clip — TikTok, Etsy, shelf posts.
           </p>
-          <div className="mt-5 flex flex-wrap gap-3">
+          <div className="mt-6 flex flex-wrap gap-3">
             <Link
               href="/create?try=1&sample=scout"
               onClick={() =>
                 track({ event: "landing_view", path: "/", meta: { cta: "try_free" } })
               }
-              className="inline-flex items-center justify-center rounded-full bg-[#c8ff3d] px-6 py-3 text-sm font-black text-black shadow-[0_0_40px_-8px_rgba(200,255,61,0.5)] transition hover:-translate-y-0.5"
+              className="inline-flex items-center justify-center rounded-full bg-[#c8ff3d] px-7 py-3.5 text-sm font-black text-black shadow-[0_0_48px_-6px_rgba(200,255,61,0.55)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_56px_-4px_rgba(200,255,61,0.65)]"
             >
               Try free in 10 seconds
             </Link>
@@ -194,7 +194,7 @@ export function HfExploreHome({
                   recipe: item.recipeSlug,
                 })
               }
-              className="inline-flex items-center justify-center rounded-full border border-white/25 bg-black/40 px-5 py-3 text-sm font-bold text-white backdrop-blur transition hover:border-[#c8ff3d]/50"
+              className="inline-flex items-center justify-center rounded-full border border-white/20 bg-black/50 px-5 py-3.5 text-sm font-bold text-white backdrop-blur-md transition hover:border-[#c8ff3d]/50 hover:bg-black/60"
             >
               Use this recipe
             </Link>
