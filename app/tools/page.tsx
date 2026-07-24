@@ -21,8 +21,29 @@ export const metadata: Metadata = {
  * No fake capability list — every card opens a real registered tool page.
  */
 export default function ToolsIndexPage() {
+  // Phase H: ItemList of real tool URLs only (no thin fake catalog).
+  const itemListLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Pikbo toy video tools",
+    description:
+      "Search-intent toy video tools that deep-link to a registered Create recipe.",
+    numberOfItems: TOOLS.length,
+    itemListElement: TOOLS.map((t, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: t.label,
+      url: `${site.url}/tools/${t.slug}`,
+      description: t.h1,
+    })),
+  };
+
   return (
     <div className="px-4 py-10 sm:px-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListLd) }}
+      />
       <div className="mx-auto max-w-5xl">
         <p className="section-label">Tools</p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">

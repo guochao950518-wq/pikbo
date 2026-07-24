@@ -4,6 +4,11 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Image Cancel + Tools/Guides ItemList JSON-LD
+- `/image` Still studio: AbortController cancel + refund-unconfirmed honesty (Create parity).
+- Tools hub + Guides hub: real ItemList structured data (registered URLs only).
+- Verified: engine-smoke · typecheck · lint.
+
 ### 2026-07-24 — [grok] Batch/Seller Pack Cancel mid-pack
 - BatchStudio AbortController: Cancel pack keeps finished children; aborts running child + waits.
 - Shadow release for not_started/canceled; interrupted live → refund unconfirmed honesty.

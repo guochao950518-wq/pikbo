@@ -1,17 +1,42 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { GUIDES } from "@/lib/guides";
+import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Guides",
   description:
     "How-to guides for making great AI videos of designer toys, figures, and blind boxes — spin videos, photo tips, and content ideas.",
   alternates: { canonical: "/guides" },
+  openGraph: {
+    title: `Guides | ${site.name}`,
+    description:
+      "Practical guides for turning owned-toy photos into listing and social clips.",
+    url: `${site.url}/guides`,
+  },
 };
 
 export default function GuidesHub() {
+  const itemListLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Pikbo toy video guides",
+    numberOfItems: GUIDES.length,
+    itemListElement: GUIDES.map((g, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: g.title,
+      url: `${site.url}/guides/${g.slug}`,
+      description: g.dek,
+    })),
+  };
+
   return (
     <div className="container-x py-14">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListLd) }}
+      />
       <div className="max-w-2xl">
         <span className="chip">📚 Guides</span>
         <h1 className="mt-4 text-4xl font-bold sm:text-5xl">

@@ -86,7 +86,8 @@
 45. [x] Asset id session-reservation + PUT NOT_OWNED · no dataUrl echo · abort copy
 46. [x] Create Cancel request mid-generate · AbortController + sleep(signal)
 47. [x] Batch/Seller Pack Cancel mid-pack · keep finished · preflight demos+2
-48. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
+48. [x] Image Cancel request + Tools/Guides ItemList JSON-LD
+49. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
 
 ### 老板醒来验收
 
@@ -100,9 +101,9 @@
 
 ## Grok 本拍状态（3 行）
 
-- Batch/Seller Pack Cancel aborts in-flight child + waits; finished siblings kept.  
-- Shadow release for not_started; refund unconfirmed honesty on interrupted live.  
-- preflight +2 Lab demos · Mode A still needs boss Vercel login.
+- Image still studio Cancel mid-request (AbortController · refund unconfirmed honesty).  
+- Tools + Guides hubs: ItemList JSON-LD of real registered URLs.  
+- Mode A still needs boss Vercel login · SQL · T6 bake.
 
 ---
 

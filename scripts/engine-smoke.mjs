@@ -973,6 +973,18 @@ assert.match(gen, /AbortError|Request canceled/);
 assert.match(gen, /export function sleep/);
 assert.match(createStudio, /cancelInFlightGenerate|Cancel request|AbortController/);
 assert.match(gen, /signal\?: AbortSignal|sleep\([^)]*signal/);
+// Image still studio cancel + tools/guides ItemList SEO
+const imagePage = fs.readFileSync(join(root, "app/image/page.tsx"), "utf8");
+assert.match(imagePage, /AbortController|Cancel request/);
+assert.match(imagePage, /refund unconfirmed|Request canceled/);
+assert.match(
+  fs.readFileSync(join(root, "app/tools/page.tsx"), "utf8"),
+  /ItemList|itemListElement/
+);
+assert.match(
+  fs.readFileSync(join(root, "app/guides/page.tsx"), "utf8"),
+  /ItemList|itemListElement/
+);
 assert.match(genJobsStore, /export function generationJobsProbe/);
 assert.match(genJobsStore, /findJobByRequestOrId/);
 // getJob must resolve provider requestId (not only job_*)

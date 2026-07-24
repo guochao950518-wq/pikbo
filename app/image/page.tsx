@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
 import {
   clearImageHistory,
@@ -21,13 +21,26 @@ export default function ImageStudioPage() {
   const [error, setError] = useState<string | null>(null);
   const [demo, setDemo] = useState(false);
   const [history, setHistory] = useState<ImageHistoryItem[]>([]);
+  /** Phase D/F parity — cancel mid still; refund unconfirmed if live debit started. */
+  const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     const t = window.setTimeout(() => {
       setHistory(loadImageHistory());
     }, 0);
-    return () => window.clearTimeout(t);
+    return () => {
+      window.clearTimeout(t);
+      abortRef.current?.abort();
+      abortRef.current = null;
+    };
   }, []);
+
+  function cancelInFlight() {
+    const ctrl = abortRef.current;
+    if (!ctrl) return;
+    ctrl.abort();
+    abortRef.current = null;
+  }
 
   async function generate() {
     const trimmed = prompt.trim();
@@ -35,6 +48,9 @@ export default function ImageStudioPage() {
       setError("Write a short prompt (at least 4 characters).");
       return;
     }
+    abortRef.current?.abort();
+    const abortCtrl = new AbortController();
+    abortRef.current = abortCtrl;
     setBusy(true);
     setError(null);
     try {
@@ -42,6 +58,7 @@ export default function ImageStudioPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: trimmed, aspect }),
+        signal: abortCtrl.signal,
       });
       const data = await res.json();
       if (!res.ok) {
@@ -51,7 +68,9 @@ export default function ImageStudioPage() {
             : "";
         throw new Error(
           (data.error || "Image generation failed") +
-            (data.code === "RATE_LIMITED" || data.code === "PROVIDER_RATE_LIMIT"
+            (data.code === "RATE_LIMITED" ||
+            data.code === "PROVIDER_RATE_LIMIT" ||
+            data.code === "JOB_IN_FLIGHT"
               ? wait
               : "")
         );
@@ -69,8 +88,20 @@ export default function ImageStudioPage() {
         );
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed");
+      const aborted =
+        (e instanceof Error && e.name === "AbortError") ||
+        (typeof DOMException !== "undefined" &&
+          e instanceof DOMException &&
+          e.name === "AbortError");
+      setError(
+        aborted
+          ? "Request canceled — if credits were debited, check balance or retry (refund unconfirmed until server confirms)"
+          : e instanceof Error
+            ? e.message
+            : "Failed"
+      );
     } finally {
+      if (abortRef.current === abortCtrl) abortRef.current = null;
       setBusy(false);
     }
   }
@@ -127,18 +158,34 @@ export default function ImageStudioPage() {
                 </button>
               ))}
             </div>
-            <button
-              type="button"
-              disabled={busy}
-              onClick={generate}
-              className="btn btn-primary mt-4 w-full disabled:opacity-50"
-            >
-              {busy
-                ? "Generating still…"
-                : `Generate still · ${CREDITS_PER_VIDEO} credits`}
-            </button>
+            {busy ? (
+              <div className="mt-4 space-y-2">
+                <button
+                  type="button"
+                  onClick={cancelInFlight}
+                  className="btn btn-ghost w-full border border-white/20"
+                  title="Aborts this browser request. Soft-launch may still finish server-side."
+                >
+                  Cancel request
+                </button>
+                <p className="text-center text-[10px] text-[var(--fg-dim)]">
+                  Generating still… stops waiting in this tab. Live debit may
+                  still settle — check balance before retry.
+                </p>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => void generate()}
+                className="btn btn-primary mt-4 w-full disabled:opacity-50"
+              >
+                Generate still · {CREDITS_PER_VIDEO} credits
+              </button>
+            )}
             {error && (
-              <p className="mt-2 text-sm text-[var(--brand)]">{error}</p>
+              <p className="mt-2 text-sm text-[var(--brand)]" role="alert">
+                {error}
+              </p>
             )}
             {demo && (
               <p className="mt-2 text-xs text-[var(--fg-dim)]">
