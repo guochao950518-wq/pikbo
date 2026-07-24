@@ -14,6 +14,7 @@ import {
 } from "@/lib/rateLimit";
 import { clientIp } from "@/lib/requestMeta";
 import { ensureSession, publicSession, saveSession } from "@/lib/session";
+import { isSafeDeliverableUrl } from "@/lib/createTrust";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -169,6 +170,20 @@ export async function POST(req: Request) {
           {
             error: "No image returned",
             code: "MODEL_EMPTY",
+            session: publicSession(session),
+            creditsRefunded: true,
+          },
+          { status: 502 }
+        );
+      }
+      // Parity with /api/generate — refuse non-http(s) open-redirect / injection URLs.
+      if (!isSafeDeliverableUrl(imageUrl)) {
+        session = refundCredits(session, check.cost);
+        await saveSession(session);
+        return NextResponse.json(
+          {
+            error: "Model returned an unsafe image URL — credits restored",
+            code: "UNSAFE_URL",
             session: publicSession(session),
             creditsRefunded: true,
           },

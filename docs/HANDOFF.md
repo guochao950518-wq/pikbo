@@ -4,6 +4,11 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Image UNSAFE_URL gate + Create adoptImage useCallback
+- `/api/image` live stills: `isSafeDeliverableUrl` or refund + `UNSAFE_URL` (generate parity).
+- Image studio surfaces refunded copy; Create adoptImage useCallback + safe pending-still schemes.
+- Verified: engine-smoke · typecheck · lint.
+
 ### 2026-07-24 — [grok] Safe provider videoUrl + timeout/content classify
 - Generate validates `isSafeDeliverableUrl` before settle (unsafe → refund + MODEL_EMPTY).
 - Webhook job store rejects unsafe success URLs (`UNSAFE_URL`). Provider rate → Retry-After.

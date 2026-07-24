@@ -92,7 +92,8 @@
 51. [x] Auth magic-link/claim rate limits · safe download redirect URLs
 52. [x] VideoTile AutoPlay budget · Effects proof-backed ItemList JSON-LD
 53. [x] Safe provider videoUrl gate · timeout/content classify · generate Retry-After
-54. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
+54. [x] Image UNSAFE_URL gate + Create adoptImage useCallback / pending-still scheme filter
+55. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
 
 ### 老板醒来验收
 
@@ -106,8 +107,8 @@
 
 ## Grok 本拍状态（3 行）
 
-- Generate rejects unsafe videoUrl (refund); webhook store same gate (UNSAFE_URL).  
-- Provider classify +timeout/content; rate fails return Retry-After; X-Frame DENY in next.  
+- Image live stills gate isSafeDeliverableUrl · UNSAFE_URL refund (generate parity).  
+- Create adoptImage useCallback · pending stills only data:image / http(s).  
 - Mode A still needs boss Vercel login · SQL · T6 bake.
 
 ---

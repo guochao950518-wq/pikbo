@@ -333,29 +333,6 @@ export function CreateStudio({
     }
   }
 
-  useEffect(() => {
-    const t = window.setTimeout(() => {
-      setFavorites(loadFavorites());
-      setToyIdentity(loadToyIdentity());
-      // optional still from Image studio
-      try {
-        const pending = sessionStorage.getItem("pikbo_pending_still");
-        if (pending?.startsWith("data:image")) {
-          sessionStorage.removeItem("pikbo_pending_still");
-          void adoptImage(pending);
-        } else if (pending?.startsWith("http")) {
-          sessionStorage.removeItem("pikbo_pending_still");
-          sampleToDataUrl(pending)
-            .then((data) => void adoptImage(data))
-            .catch(() => undefined);
-        }
-      } catch {
-        // ignore
-      }
-    }, 0);
-    return () => window.clearTimeout(t);
-  }, []);
-
   // First-run: ?sample=scout or ?try=1 → load sample and auto-generate
   useEffect(() => {
     if (!initialSample) return;
@@ -453,25 +430,57 @@ export function CreateStudio({
     };
   }, [refreshSession]);
 
-  async function adoptImage(dataUrl: string) {
-    setImage(dataUrl);
-    setAssetId(null);
-    setError(null);
-    track({
-      event: "upload_ready",
-      path: "/create",
-      recipe: effect,
-      meta: { bytes: dataUrl.length },
-    });
-    // Register into process-memory asset store so generate can skip large JSON.
-    try {
-      const { registerLocalAsset } = await import("@/lib/clientAssets");
-      const reg = await registerLocalAsset(dataUrl);
-      if (reg?.assetId) setAssetId(reg.assetId);
-    } catch {
-      /* generate still works with inline data URL */
-    }
-  }
+  const adoptImage = useCallback(
+    async (dataUrl: string) => {
+      setImage(dataUrl);
+      setAssetId(null);
+      setError(null);
+      track({
+        event: "upload_ready",
+        path: "/create",
+        recipe: effect,
+        meta: { bytes: dataUrl.length },
+      });
+      // Register into process-memory asset store so generate can skip large JSON.
+      try {
+        const { registerLocalAsset } = await import("@/lib/clientAssets");
+        const reg = await registerLocalAsset(dataUrl);
+        if (reg?.assetId) setAssetId(reg.assetId);
+      } catch {
+        /* generate still works with inline data URL */
+      }
+    },
+    [effect]
+  );
+
+  // Favorites + toy identity + optional still from Image studio (after adoptImage exists).
+  useEffect(() => {
+    const t = window.setTimeout(() => {
+      setFavorites(loadFavorites());
+      setToyIdentity(loadToyIdentity());
+      try {
+        const pending = sessionStorage.getItem("pikbo_pending_still");
+        if (pending?.startsWith("data:image")) {
+          sessionStorage.removeItem("pikbo_pending_still");
+          void adoptImage(pending);
+        } else if (
+          pending?.startsWith("https://") ||
+          pending?.startsWith("http://")
+        ) {
+          sessionStorage.removeItem("pikbo_pending_still");
+          sampleToDataUrl(pending)
+            .then((data) => void adoptImage(data))
+            .catch(() => undefined);
+        } else if (pending) {
+          // Drop unsafe schemes (javascript:, data: non-image, //protocol-relative).
+          sessionStorage.removeItem("pikbo_pending_still");
+        }
+      } catch {
+        // ignore
+      }
+    }, 0);
+    return () => window.clearTimeout(t);
+  }, [adoptImage]);
 
   function loadFile(file: File | undefined | null) {
     if (!file || !file.type.startsWith("image/")) {

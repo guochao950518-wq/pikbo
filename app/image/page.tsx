@@ -68,13 +68,31 @@ export default function ImageStudioPage() {
           typeof data.retryAfterSec === "number"
             ? ` · retry in ${data.retryAfterSec}s`
             : "";
+        const refunded =
+          data.creditsRefunded === true
+            ? " · 10 credits restored"
+            : data.code === "UNSAFE_URL"
+              ? " · check balance (refund unconfirmed)"
+              : "";
         throw new Error(
           (data.error || "Image generation failed") +
             (data.code === "RATE_LIMITED" ||
             data.code === "PROVIDER_RATE_LIMIT" ||
             data.code === "JOB_IN_FLIGHT"
               ? wait
-              : "")
+              : "") +
+            refunded
+        );
+      }
+      // Live stills must be http(s) or same-origin path; never trust odd schemes.
+      if (
+        typeof data.imageUrl === "string" &&
+        !data.demo &&
+        !/^https?:\/\//i.test(data.imageUrl) &&
+        !data.imageUrl.startsWith("/")
+      ) {
+        throw new Error(
+          "Server returned an unsafe image URL — not displaying · check balance"
         );
       }
       setImageUrl(data.imageUrl);

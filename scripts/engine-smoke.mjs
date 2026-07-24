@@ -1023,6 +1023,18 @@ assert.match(
   fs.readFileSync(join(root, "app/effects/page.tsx"), "utf8"),
   /proofBackedRecipeSlugs|ItemList/
 );
+// Image live URL safety (generate parity)
+const imageRoute = fs.readFileSync(
+  join(root, "app/api/image/route.ts"),
+  "utf8"
+);
+assert.match(imageRoute, /isSafeDeliverableUrl/);
+assert.match(imageRoute, /UNSAFE_URL/);
+assert.match(
+  fs.readFileSync(join(root, "app/image/page.tsx"), "utf8"),
+  /UNSAFE_URL|creditsRefunded/
+);
+assert.match(createStudio, /useCallback[\s\S]*adoptImage|adoptImage = useCallback/);
 assert.match(genJobsStore, /export function generationJobsProbe/);
 assert.match(genJobsStore, /forkRetryJob[\s\S]*findJobByRequestOrId/);
 // Demo + sample stills must exist on disk (preflight parity)
