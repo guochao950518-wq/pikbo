@@ -72,27 +72,33 @@ export default async function ExplorePage({
           <div className="flex flex-wrap gap-2">
             <Link
               href="/create?try=1&sample=scout"
-              className="rounded-full bg-[#c8ff3d] px-5 py-2.5 text-xs font-black text-black"
+              className="rounded-full bg-[#c8ff3d] px-5 py-2.5 text-xs font-black text-black shadow-[0_0_28px_rgba(200,255,61,0.22)] transition hover:-translate-y-0.5"
             >
               Try free
             </Link>
             <Link
+              href="/flow"
+              className="rounded-full border border-[#c8ff3d]/40 bg-[#c8ff3d]/10 px-5 py-2.5 text-xs font-black text-[#c8ff3d] transition hover:bg-[#c8ff3d]/15"
+            >
+              Flow
+            </Link>
+            <Link
               href="/modules"
-              className="rounded-full border border-[#c8ff3d]/40 bg-[#c8ff3d]/10 px-5 py-2.5 text-xs font-black text-[#c8ff3d]"
+              className="rounded-full border border-white/15 bg-white/[0.03] px-4 py-2.5 text-xs font-bold text-white/80 transition hover:border-white/30"
             >
               Modules
             </Link>
             <Link
               href="/create"
-              className="rounded-full border border-white/15 px-4 py-2.5 text-xs font-bold text-white/80"
+              className="rounded-full border border-white/15 bg-white/[0.03] px-4 py-2.5 text-xs font-bold text-white/80 transition hover:border-white/30"
             >
               Generate
             </Link>
             <Link
               href="/effects"
-              className="rounded-full border border-white/15 px-4 py-2.5 text-xs font-bold text-white/70"
+              className="rounded-full border border-white/15 bg-white/[0.03] px-4 py-2.5 text-xs font-bold text-white/70 transition hover:border-white/30"
             >
-              All effects
+              Recipes
             </Link>
           </div>
         </div>

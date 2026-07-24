@@ -71,7 +71,7 @@ export function ExploreProjectGrid({
           {visible.map((project, index) => (
             <article
               key={project.slug}
-              className="group relative mb-2 break-inside-avoid overflow-hidden rounded-2xl border border-white/[0.08] bg-neutral-950 sm:mb-3"
+              className="group relative mb-2 break-inside-avoid overflow-hidden rounded-2xl border border-white/[0.08] bg-neutral-950 shadow-[0_12px_32px_-18px_rgba(0,0,0,0.9)] transition duration-300 hover:-translate-y-0.5 hover:border-[#c8ff3d]/35 hover:shadow-[0_20px_40px_-20px_rgba(200,255,61,0.12)] sm:mb-3"
             >
               <Link
                 href={showcaseProjectHref(project)}
@@ -105,9 +105,10 @@ export function ExploreProjectGrid({
                     /** Wave B: Link owns focus — no nested tabIndex video */
                     focusable={false}
                     eager={index === 0}
-                    className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.025]"
+                    className="absolute inset-0 h-full w-full object-cover transition duration-700 ease-out will-change-transform group-hover:scale-[1.05]"
                   />
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/15 to-transparent" />
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#c8ff3d]/40 to-transparent opacity-0 transition group-hover:opacity-100" />
                   <div className="absolute left-2 top-2 flex flex-wrap gap-1">
                     <span className="rounded-full border border-white/10 bg-black/65 px-2 py-1 text-[9px] font-black uppercase tracking-wide text-[#c8ff3d] backdrop-blur">
                       {showcaseProvenanceLabel(project.provenance)}
@@ -138,19 +139,19 @@ export function ExploreProjectGrid({
                     <p className="mt-1 line-clamp-2 text-[11px] leading-snug text-white/50">
                       {project.result}
                     </p>
-                    <span className="mt-2 inline-flex rounded-full border border-white/15 bg-black/40 px-2.5 py-1 text-[10px] font-bold text-white/80">
+                    <span className="mt-2 inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/40 px-2.5 py-1 text-[10px] font-bold text-white/80 transition group-hover:border-[#c8ff3d]/40 group-hover:bg-[#c8ff3d]/15 group-hover:text-[#c8ff3d]">
                       Inside project →
                     </span>
                   </div>
                 </div>
               </Link>
-              <div className="flex items-center justify-between gap-2 border-t border-white/10 px-3 py-2">
+              <div className="flex items-center justify-between gap-2 border-t border-white/10 bg-black/40 px-3 py-2">
                 <span className="truncate text-[10px] text-white/40">
                   {project.model}
                 </span>
                 <Link
                   href={showcaseRecipeHref(project)}
-                  className="shrink-0 text-[10px] font-black text-[#c8ff3d] hover:underline"
+                  className="shrink-0 rounded-full bg-[#c8ff3d]/15 px-2.5 py-1 text-[10px] font-black text-[#c8ff3d] transition hover:bg-[#c8ff3d] hover:text-black"
                   onClick={() =>
                     track({
                       event: "recipe_use",
@@ -160,7 +161,7 @@ export function ExploreProjectGrid({
                     })
                   }
                 >
-                  Use recipe
+                  Remake →
                 </Link>
               </div>
             </article>
