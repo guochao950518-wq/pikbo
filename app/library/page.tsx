@@ -15,38 +15,47 @@ export const metadata: Metadata = {
  */
 export default function LibraryPage() {
   return (
-    <div className="px-4 py-10 sm:px-8">
-      <div className="mx-auto max-w-6xl">
+    <div className="relative px-4 py-10 sm:px-8">
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-[radial-gradient(50%_80%_at_0%_0%,rgba(200,255,61,0.07),transparent_70%)]"
+        aria-hidden
+      />
+      <div className="relative mx-auto max-w-6xl">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--mint)]">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--mint)]">
               Assets · this device
             </p>
-            <h1 className="mt-1 text-2xl font-bold">Local Library</h1>
-            <p className="mt-1 max-w-2xl text-sm text-[var(--fg-muted)]">
-              Higgsfield Library pattern, soft-launch:{" "}
+            <h1 className="mt-1 font-display text-2xl font-black uppercase tracking-tight sm:text-3xl">
+              Local Library
+            </h1>
+            <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-[var(--fg-muted)]">
+              Suite Library pattern, soft-launch:{" "}
               <span className="font-semibold text-[var(--mint)]">
-                Saved on this device
-              </span>{" "}
-              only (this browser). Group by project or Toy Identity SKU · remake
-              into Generate · not cloud-synced yet.
+                this browser only
+              </span>
+              . Group by project or Toy Identity SKU · remake into Generate · not
+              cloud-synced until durable sign-in.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Link href="/create" className="btn btn-primary text-sm">
               Generate
             </Link>
-            <Link href="/modules" className="btn btn-ghost text-sm">
-              Modules
+            <Link
+              href="/create?try=1&sample=scout"
+              className="btn btn-ghost text-sm"
+            >
+              Try free
+            </Link>
+            <Link href="/flow" className="btn btn-ghost text-sm">
+              Flow
             </Link>
             <Link
               href="/create?mode=seller-pack"
               className="btn btn-ghost text-sm"
             >
               Seller Pack
-            </Link>
-            <Link href="/flow" className="btn btn-ghost text-sm">
-              Flow
             </Link>
           </div>
         </div>

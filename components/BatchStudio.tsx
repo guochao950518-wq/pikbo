@@ -772,11 +772,11 @@ export function BatchStudio({
       <div className="space-y-4">
         {sellerPackActive && (
           <div className="space-y-3">
-            <div className="rounded-xl border border-[var(--mint)]/30 bg-[var(--mint)]/[0.06] px-3 py-2.5 text-xs text-[var(--fg-muted)]">
+            <div className="rounded-2xl border border-[var(--mint)]/35 bg-gradient-to-br from-[var(--mint)]/[0.1] to-black/40 px-3.5 py-3 text-xs text-[var(--fg-muted)] shadow-[inset_0_1px_0_rgba(200,255,61,0.08)]">
               <p className="font-bold text-[var(--mint)]">
-                Seller Pack · HF Product three-step
+                Seller Pack · product three-step
               </p>
-              <p className="mt-1 leading-relaxed">
+              <p className="mt-1 leading-relaxed text-white/55">
                 Upload product photo → generate three formats → export & post.
                 Listing Spin (1:1) · Blind-box Reveal (9:16) · Social Flash
                 (9:16).
