@@ -22,10 +22,24 @@ export default function StatusPage() {
         <code className="text-[var(--mint)]">/api/health</code> — no secrets
         shown. Launch gates: docs/prd/GO_NO_GO.md.
       </p>
+      <p className="mt-3 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-[11px] leading-relaxed text-[var(--fg-dim)]">
+        Product soft-live: Generate · Modules · Seller Pack · Cancel mid-job.
+        Public Mode B still needs boss Vercel + DNS; paid path needs T6 bake +
+        Stripe when you open charging.
+      </p>
       <StatusProbe />
       <div className="mt-8 flex flex-wrap gap-3 text-sm">
         <Link href="/create" className="text-[var(--mint)] hover:underline">
-          Create →
+          Generate →
+        </Link>
+        <Link href="/modules" className="text-[var(--mint)] hover:underline">
+          Modules
+        </Link>
+        <Link
+          href="/create?mode=seller-pack"
+          className="text-[var(--fg-muted)] hover:text-white"
+        >
+          Seller Pack
         </Link>
         <Link href="/login" className="text-[var(--fg-muted)] hover:text-white">
           Sign in
