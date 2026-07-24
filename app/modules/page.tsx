@@ -164,55 +164,70 @@ export default function ModulesPage() {
       >
         <GenerateSuiteChrome />
       </Suspense>
-      <div className="relative px-4 py-10 sm:px-8">
-        <div
-          className="pointer-events-none absolute inset-x-0 top-0 h-56 bg-[radial-gradient(60%_80%_at_0%_0%,rgba(200,255,61,0.08),transparent_70%)]"
-          aria-hidden
-        />
-        <div className="relative mx-auto max-w-6xl">
-          <span className="chip">Modular · toy jobs</span>
-          <h1 className="mt-3 font-display text-3xl font-black uppercase tracking-tight sm:text-4xl">
-            Toy Modules
-          </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[var(--fg-muted)]">
-            Fixed seller & collector jobs — pick a block, one photo in, recipe
-            and aspect pre-set. Same Seedance engine as Generate. Structure of
-            suite mini-apps; all media is Pikbo Lab.
-          </p>
-          <div className="mt-5 flex flex-wrap gap-2">
+      {/* Yiha /lego density: sticky header + media-first job grid */}
+      <div className="sticky top-0 z-20 border-b border-white/10 bg-black/90 px-3 py-3 backdrop-blur-xl sm:px-5">
+        <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#c8ff3d]">
+              Modules · video jobs
+            </p>
+            <h1 className="font-display text-lg font-black uppercase tracking-tight sm:text-xl">
+              Pick a job · get a video
+            </h1>
+          </div>
+          <div className="flex flex-wrap gap-2">
             <Link
               href="/create?try=1&sample=scout"
-              className="btn btn-primary text-sm"
+              className="rounded-full bg-[#c8ff3d] px-4 py-2 text-xs font-black text-black"
             >
-              Try free · Lab sample
+              Generate free
             </Link>
-            <Link href="/flow" className="btn btn-ghost text-sm">
-              Browse Flow
+            <Link
+              href="/create"
+              className="rounded-full border border-white/20 px-4 py-2 text-xs font-bold text-white/80"
+            >
+              Video
             </Link>
-            <Link href="/create" className="btn btn-ghost text-sm">
-              Open Generate
+            <Link
+              href="/flow"
+              className="rounded-full border border-white/15 px-4 py-2 text-xs font-bold text-white/55"
+            >
+              Flow
             </Link>
             <Link
               href="/create?mode=seller-pack"
-              className="btn btn-ghost text-sm"
+              className="rounded-full border border-white/15 px-4 py-2 text-xs font-bold text-white/55"
             >
-              Seller Pack · 3 clips
+              Seller Pack
             </Link>
-            <Link href="/effects" className="btn btn-ghost text-sm">
-              Full recipe wall
+            <Link
+              href="/effects"
+              className="rounded-full border border-white/15 px-4 py-2 text-xs font-bold text-white/55"
+            >
+              Viral presets
             </Link>
           </div>
+        </div>
+      </div>
 
-          <section className="mt-12">
-            <div className="mb-4 flex items-end justify-between gap-3">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--mint)]">
-                Job blocks · {live.length}
+      <div className="relative px-3 py-6 sm:px-5">
+        <div className="relative mx-auto max-w-[1400px]">
+          <p className="mb-4 max-w-2xl text-sm leading-relaxed text-white/50">
+            Yiha-style mini-app shelf: each block is a fixed{" "}
+            <b className="text-white/75">video</b> job — photo in, recipe +
+            aspect ready, Seedance out. Lab posters are style only.
+          </p>
+
+          <section>
+            <div className="mb-3 flex items-end justify-between gap-3">
+              <h2 className="text-[10px] font-black uppercase tracking-[0.16em] text-[#c8ff3d]">
+                Live jobs · {live.length}
               </h2>
-              <p className="text-[11px] text-[var(--fg-dim)]">
-                One photo in · Seedance path · Lab poster ≠ your upload
+              <p className="text-[11px] text-white/40">
+                One photo · Seedance video · not a stills shop
               </p>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {live.map((w) => (
                 <ModuleCard
                   key={w.id}
@@ -225,16 +240,16 @@ export default function ModulesPage() {
           </section>
 
           {preview.length > 0 ? (
-            <section className="mt-12">
-              <div className="mb-4 flex items-end justify-between gap-3">
-                <h2 className="text-xs font-bold uppercase tracking-wider text-amber-100/80">
-                  Preview shelves · {preview.length}
+            <section className="mt-10">
+              <div className="mb-3 flex items-end justify-between gap-3">
+                <h2 className="text-[10px] font-black uppercase tracking-[0.16em] text-amber-100/80">
+                  Preview · {preview.length}
                 </h2>
-                <p className="text-[11px] text-[var(--fg-dim)]">
-                  Reachable · not soft-launch primary jobs
+                <p className="text-[11px] text-white/35">
+                  Reachable · not primary video jobs
                 </p>
               </div>
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {preview.map((w) => (
                   <ModuleCard
                     key={w.id}
@@ -247,24 +262,26 @@ export default function ModulesPage() {
             </section>
           ) : null}
 
-          <section className="mt-14 rounded-2xl border border-white/10 bg-black/30 p-6 sm:p-8">
-            <h2 className="text-sm font-bold text-white">How modules work</h2>
-            <ol className="mt-4 grid gap-4 sm:grid-cols-3">
+          <section className="mt-12 rounded-2xl border border-white/10 bg-black/40 p-5 sm:p-7">
+            <h2 className="text-sm font-bold text-white">
+              How modules make video
+            </h2>
+            <ol className="mt-4 grid gap-3 sm:grid-cols-3">
               {[
                 {
                   n: "1",
-                  t: "Pick a block",
-                  d: "Listing, hook, unbox, shelf, or full pack — job first, not model name.",
+                  t: "Pick a video job",
+                  d: "Hook, unbox, listing spin, pack — job first, not model name.",
                 },
                 {
                   n: "2",
                   t: "Drop your toy photo",
-                  d: "A figure you own. Optional SKU name locks identity across clips.",
+                  d: "A figure you own. Photo is input; the product is the clip.",
                 },
                 {
                   n: "3",
                   t: "Generate & deliver",
-                  d: "Review on-player; Free Mini live raw download stays blocked until T6 file bake. Paid/clean file or Library on this device.",
+                  d: "Seedance video out. Free Mini raw download gated until T6 bake.",
                 },
               ].map((s) => (
                 <li
