@@ -34,6 +34,12 @@ const MODES = [
     href: "/effects",
     blurb: "Preset wall",
   },
+  {
+    id: "flow",
+    label: "Flow",
+    href: "/flow",
+    blurb: "Matrix",
+  },
 ] as const;
 
 export function GenerateSuiteChrome({
@@ -48,9 +54,7 @@ export function GenerateSuiteChrome({
 
   function isActive(id: (typeof MODES)[number]["id"]) {
     if (id === "generate") {
-      return (
-        (path === "/create" || path === "/generate") && !sellerMode
-      );
+      return (path === "/create" || path === "/generate") && !sellerMode;
     }
     if (id === "seller") {
       return path === "/create" && sellerMode;
@@ -61,29 +65,35 @@ export function GenerateSuiteChrome({
     if (id === "recipes") {
       return path.startsWith("/effects");
     }
+    if (id === "flow") {
+      return path === "/flow";
+    }
     return false;
   }
 
   return (
-    <div className="border-b border-white/10 bg-[#08080c]/90 px-4 py-3 backdrop-blur-md">
+    <div className="suite-chrome px-4 py-3">
       <div className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <h1
               className={cn(
-                "font-black tracking-tight text-white",
+                "font-display font-black tracking-tight text-white",
                 compact ? "text-base" : "text-lg sm:text-xl"
               )}
             >
               Generate
             </h1>
-            <span className="rounded-full border border-[var(--mint)]/35 bg-[var(--mint)]/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-[var(--mint)]">
+            <span className="rounded-full border border-[var(--mint)]/40 bg-[var(--mint)]/12 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-[var(--mint)] shadow-[0_0_20px_rgba(200,255,61,0.12)]">
               Toy studio
+            </span>
+            <span className="hidden rounded-full border border-white/10 px-2 py-0.5 text-[9px] font-semibold text-white/40 sm:inline">
+              Seedance live
             </span>
           </div>
           {!compact && (
             <p className="mt-0.5 text-[11px] text-white/45 sm:text-xs">
-              {site.suiteLine} — designer-toy workbench (not a generic model zoo)
+              {site.suiteLine} — craft-grade toy clips, not a model zoo
             </p>
           )}
         </div>
@@ -98,10 +108,10 @@ export function GenerateSuiteChrome({
                 key={m.id}
                 href={m.href}
                 className={cn(
-                  "shrink-0 rounded-xl border px-3 py-1.5 transition",
+                  "shrink-0 rounded-xl border px-3 py-1.5 transition duration-200",
                   active
-                    ? "border-[var(--mint)] bg-[var(--mint)]/15 text-[var(--mint)]"
-                    : "border-white/10 bg-white/[0.03] text-white/70 hover:border-white/25 hover:text-white"
+                    ? "border-[var(--mint)] bg-[var(--mint)]/15 text-[var(--mint)] shadow-[0_0_24px_rgba(200,255,61,0.12)]"
+                    : "border-white/10 bg-white/[0.03] text-white/70 hover:border-white/25 hover:bg-white/[0.05] hover:text-white"
                 )}
               >
                 <span className="block text-[11px] font-bold leading-none">

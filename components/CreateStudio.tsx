@@ -1905,7 +1905,7 @@ export function CreateStudio({
               type="button"
               onClick={() => void generate()}
               disabled={!canGenerate}
-              className="btn btn-primary hidden w-full disabled:opacity-50 lg:flex"
+              className="btn btn-primary hidden w-full py-3.5 text-[15px] font-black tracking-tight disabled:opacity-50 lg:flex"
             >
               {primaryLabel}
             </button>
@@ -1977,7 +1977,7 @@ export function CreateStudio({
               {usedModel || MODELS.find((m) => m.id === modelId)?.label}
             </span>
           </div>
-          <div className="relative flex min-h-[280px] flex-1 items-center justify-center overflow-hidden rounded-2xl border border-[var(--mint)]/15 bg-black bg-[radial-gradient(120%_80%_at_50%_0%,rgba(200,255,61,0.07),transparent_60%)] ring-1 ring-inset ring-white/5 sm:min-h-[400px]">
+          <div className="media-stage relative flex min-h-[280px] flex-1 items-center justify-center sm:min-h-[420px]">
             {status === "generating" && (
               <div className="p-8 text-center text-[var(--fg-muted)] sm:p-10">
                 <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--mint)]" />
@@ -2507,9 +2507,9 @@ export function CreateStudio({
       </div>
 
       {/* ── Sticky mobile primary CTA — above AppShell tab nav ── */}
-      <div className="fixed inset-x-0 bottom-[4.75rem] z-40 border-t border-white/10 bg-black/90 px-4 py-2.5 pb-[max(0.6rem,env(safe-area-inset-bottom))] backdrop-blur-md lg:hidden">
+      <div className="fixed inset-x-0 bottom-[4.75rem] z-40 border-t border-white/10 bg-black/92 px-4 py-2.5 pb-[max(0.6rem,env(safe-area-inset-bottom))] shadow-[0_-12px_40px_rgba(0,0,0,0.55)] backdrop-blur-xl lg:hidden">
         {image ? (
-          <p className="mb-1.5 truncate text-center text-[10px] text-white/50">
+          <p className="mb-1.5 truncate text-center text-[10px] font-medium text-white/55">
             {preset.emoji} {viralName(preset.slug, preset.name)} · {aspectRatio}
             {toyIdentity.sku ? ` · ${toyIdentity.sku}` : ""}
           </p>
@@ -2595,7 +2595,7 @@ export function CreateStudio({
                 ?.scrollIntoView({ behavior: "smooth", block: "start" });
             }}
             disabled={busy || !ownsRights || (mode === "i2v" && !image)}
-            className="btn btn-primary w-full py-3 text-sm disabled:opacity-50"
+            className="btn btn-primary w-full py-3.5 text-[15px] font-black tracking-tight disabled:opacity-50"
           >
             {primaryLabel}
           </button>

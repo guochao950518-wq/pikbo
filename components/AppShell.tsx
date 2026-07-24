@@ -168,7 +168,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col bg-black text-white">
       {/* Desktop top nav — soft-launch critical path + More */}
-      <header className="sticky top-0 z-50 hidden h-14 items-center gap-6 border-b border-white/[0.07] bg-black/80 px-5 backdrop-blur-md lg:flex">
+      <header className="sticky top-0 z-50 hidden h-14 items-center gap-6 border-b border-white/[0.07] bg-black/75 px-5 backdrop-blur-xl lg:flex">
         <Link href="/" className="flex shrink-0 items-center" title={site.name}>
           <Logo size={30} />
         </Link>
@@ -178,13 +178,16 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
               key={item.href}
               href={item.href}
               className={cn(
-                "shrink-0 whitespace-nowrap text-[13px] font-medium transition-colors",
+                "relative shrink-0 whitespace-nowrap text-[13px] font-medium transition-colors",
                 active(path, item.href)
                   ? "text-[#c8ff3d]"
                   : "text-white/55 hover:text-white"
               )}
             >
               {t(item.key)}
+              {active(path, item.href) ? (
+                <span className="absolute -bottom-[15px] left-0 right-0 h-px bg-[#c8ff3d] shadow-[0_0_12px_#c8ff3d]" />
+              ) : null}
             </Link>
           ))}
           <MoreMenu path={path} />
@@ -205,7 +208,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
           </Link>
           <Link
             href="/create"
-            className="rounded-full bg-[#c8ff3d] px-4 py-1.5 text-[13px] font-black text-black transition-transform hover:-translate-y-0.5"
+            className="rounded-full bg-[#c8ff3d] px-4 py-1.5 text-[13px] font-black text-black shadow-[0_0_24px_rgba(200,255,61,0.25)] transition-transform hover:-translate-y-0.5 hover:shadow-[0_0_32px_rgba(200,255,61,0.4)]"
           >
             {t("cta.generate")}
           </Link>

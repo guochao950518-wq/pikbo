@@ -76,6 +76,9 @@
 html {
   scroll-behavior: smooth;
 }
+html[data-scroll-behavior="smooth"] {
+  scroll-behavior: smooth;
+}
 
 /* Cinematic film grain — the subtle premium texture Higgsfield/Yiha have */
 body::after {
@@ -151,11 +154,19 @@ h1,
   background: var(--mint);
   color: #07070a;
   padding: 0.8rem 1.4rem;
-  box-shadow: 0 0 24px rgba(200, 255, 61, 0.25);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+    0 0 28px rgba(200, 255, 61, 0.28);
+  letter-spacing: -0.01em;
 }
 .btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 0 36px rgba(200, 255, 61, 0.4);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.12) inset,
+    0 0 42px rgba(200, 255, 61, 0.45);
+}
+.btn-primary:active {
+  transform: translateY(0);
 }
 .btn-accent {
   background: var(--grad);
@@ -173,10 +184,58 @@ h1,
 }
 
 .card {
-  background: var(--card);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.035) 0%,
+    rgba(16, 16, 18, 1) 40%
+  );
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 12px 40px -24px rgba(0, 0, 0, 0.85);
+}
+
+/* Cinematic result stage — Create / landing after generate */
+.media-stage {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  background:
+    radial-gradient(
+      120% 80% at 50% 0%,
+      rgba(200, 255, 61, 0.07),
+      transparent 55%
+    ),
+    #030305;
+  border: 1px solid rgba(200, 255, 61, 0.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 24px 80px -40px rgba(0, 0, 0, 0.9);
+}
+.media-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.03) 0%,
+    transparent 28%
+  );
+  z-index: 1;
+}
+
+/* Suite chrome surface */
+.suite-chrome {
+  background: linear-gradient(
+    180deg,
+    rgba(12, 12, 16, 0.96) 0%,
+    rgba(0, 0, 0, 0.92) 100%
+  );
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .chip {
