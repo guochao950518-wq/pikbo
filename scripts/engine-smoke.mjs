@@ -896,10 +896,19 @@ const genJobsStore = fs.readFileSync(
 );
 assert.match(genJobsStore, /recordSucceededGenerate/);
 assert.match(genJobsStore, /recordFailedGenerate/);
+assert.match(genJobsStore, /export function beginSyncGenerateJob/);
+assert.match(genJobsStore, /export function completeSyncGenerateJob/);
+assert.match(genJobsStore, /export function failSyncGenerateJob/);
 assert.match(genJobsStore, /downloadAllowedForJob/);
 assert.match(genJobsStore, /toPublicJob/);
 assert.match(genJobsStore, /forkRetryJob/);
 assert.match(genJobsStore, /parentJobId/);
+// Live generate must open running row before fal (Library cancel/timeout).
+assert.match(genRoute, /beginSyncGenerateJob/);
+assert.match(genRoute, /completeSyncGenerateJob/);
+assert.match(genRoute, /failSyncGenerateJob|noteFailed/);
+// Demo path still uses instant succeeded record (no mid-flight).
+assert.match(genRoute, /recordSucceededGenerate/);
 // Pure download gate parity (same rules as createTrust)
 function downloadAllowedForJob(opts) {
   if (opts.status !== "succeeded") return false;
@@ -953,9 +962,11 @@ assert.match(downloadRoute, /downloadAllowed/);
 // Resolve by job id *or* provider requestId (Create/Library may store either)
 assert.match(downloadRoute, /findJobByRequestOrId/);
 assert.match(genJobsStore, /export function findJobByRequestOrId/);
-// Generate must record jobs on success
+// Generate must record jobs: demo=succeeded insert; live=begin running → complete/fail
 assert.match(genRoute, /recordSucceededGenerate/);
-assert.match(genRoute, /recordFailedGenerate|noteFailed/);
+assert.match(genRoute, /beginSyncGenerateJob/);
+assert.match(genRoute, /completeSyncGenerateJob/);
+assert.match(genRoute, /failSyncGenerateJob|noteFailed/);
 // Health acceptance ladder for demo vs soft-live
 assert.match(health, /acceptance/);
 assert.match(health, /demoCached/);
@@ -1542,12 +1553,20 @@ assert.match(library, /Session jobs|\/api\/generations/);
 assert.match(library, /SessionJobsPanel|No clips saved on this device yet/);
 assert.match(library, /this server process/);
 assert.match(library, /Cancel ledger|method:\s*[\"']DELETE[\"']/);
-assert.match(createStudio, /try another recipe|open free sample/);
+// Failure next-actions live on shared GenerateFailPanel (Create/Batch/Landing/Image)
+const failPanel = fs.readFileSync(
+  join(root, "components/GenerateFailPanel.tsx"),
+  "utf8"
+);
+assert.match(failPanel, /Try another recipe|Free Lab sample/);
+assert.match(failPanel, /10 credits restored|Refund unconfirmed/);
+assert.match(createStudio, /GenerateFailPanel/);
+assert.match(batchStudio, /GenerateFailPanel/);
 assert.match(batchStudio, /registerLocalAsset|sharedAssetId/);
 assert.match(batchStudio, /retryAllFailed|Retry failed only/);
 assert.match(
   fs.readFileSync(join(root, "components/LandingToolPanel.tsx"), "utf8"),
-  /open free sample|try another recipe/
+  /GenerateFailPanel/
 );
 assert.match(
   fs.readFileSync(join(root, "app/auth/callback/layout.tsx"), "utf8"),

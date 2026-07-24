@@ -4,6 +4,14 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Flow remake density + GenerateFailPanel wave
+- FlowMediaCard / VideoTile / viral rail: interaction play + Remake hover CTAs.
+- Home hero Browse Flow; Modules/Flow hero glow; Toast lime craft.
+- GenerateFailPanel on Create/Batch/Landing/Image; Create error stage.
+- Suite strip Flow door; Library empty media-stage; Toy Identity craft; ⌘K palette.
+- completeSyncGenerateJob: provider success can recover canceled ledger (cancel ≠ kill fal).
+- Verified: typecheck · lint · main.
+
 ### 2026-07-24 — [grok] GenerateFailPanel + error stage + Flow suite door
 - Shared `GenerateFailPanel` on Create / Batch / Landing / Image with Retry + Lab/Recipes/Modules.
 - Create result stage: dedicated **Clip didn't land** empty (not idle copy).

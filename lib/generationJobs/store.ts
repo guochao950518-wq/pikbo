@@ -330,10 +330,8 @@ export function completeSyncGenerateJob(input: {
   if (input.jobId) {
     const cur = jobs.get(input.jobId);
     if (cur && cur.sessionId === input.sessionId) {
-      // Only upgrade non-terminal (or re-stamp same success). Never clobber canceled.
-      if (cur.status === "canceled") {
-        return cur;
-      }
+      // Provider finished wins: cancel is ledger abandon only (not fal kill).
+      // Still stamp success so Library can recover the deliverable.
       const next = updateJob(input.jobId, {
         status: "succeeded",
         videoUrl: input.videoUrl,

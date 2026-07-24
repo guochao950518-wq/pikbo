@@ -9,6 +9,7 @@ import { PRESETS } from "@/lib/presets";
 const LINKS = [
   { href: "/", label: "Home" },
   { href: "/create", label: "Generate · Toy Studio" },
+  { href: "/flow", label: "Flow · creation matrix" },
   { href: "/modules", label: "Modules · job blocks" },
   { href: "/create?mode=seller-pack", label: "Seller Pack · 3 clips" },
   { href: "/create?job=etsy-listing", label: "Job · Etsy listing spin" },
@@ -73,46 +74,54 @@ export function CommandPalette() {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-start justify-center bg-black/60 px-4 pt-[15vh]"
+      className="fixed inset-0 z-[100] flex items-start justify-center bg-black/70 px-4 pt-[12vh] backdrop-blur-sm"
       onClick={() => setOpen(false)}
     >
       <div
-        className="card w-full max-w-lg overflow-hidden p-0 shadow-2xl"
+        className="w-full max-w-lg overflow-hidden rounded-2xl border border-[var(--mint)]/20 bg-[#0c0c10]/96 shadow-[0_24px_80px_-20px_rgba(0,0,0,0.9),0_0_40px_rgba(200,255,61,0.06)] backdrop-blur-xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <input
-          autoFocus
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Jump to page or preset… (⌘K)"
-          className="w-full border-b border-[var(--border)] bg-transparent px-4 py-3 text-sm outline-none"
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && items[0]) {
-              router.push(items[0].href);
-              setOpen(false);
-            }
-          }}
-        />
+        <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--mint)]">
+            Jump
+          </span>
+          <input
+            autoFocus
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Generate · Flow · Modules · recipe… (⌘K)"
+            className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-white/35"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && items[0]) {
+                router.push(items[0].href);
+                setOpen(false);
+              }
+            }}
+          />
+          <kbd className="hidden rounded border border-white/15 px-1.5 py-0.5 text-[10px] font-semibold text-white/40 sm:inline">
+            esc
+          </kbd>
+        </div>
         <ul className="max-h-72 overflow-y-auto py-2">
+          {items.length === 0 ? (
+            <li className="px-4 py-6 text-center text-xs text-white/40">
+              No match — try Flow, Seller Pack, or a recipe name
+            </li>
+          ) : null}
           {items.map((item) => (
             <li key={item.href + item.label}>
               <Link
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className="flex items-center justify-between px-4 py-2 text-sm hover:bg-[var(--bg-soft)]"
+                className="flex items-center justify-between px-4 py-2 text-sm text-white/85 transition hover:bg-[var(--mint)]/10 hover:text-white"
               >
                 <span>{item.label}</span>
-                <span className="text-[10px] uppercase text-[var(--fg-dim)]">
+                <span className="text-[10px] font-bold uppercase tracking-wide text-white/35">
                   {item.kind}
                 </span>
               </Link>
             </li>
           ))}
-          {items.length === 0 && (
-            <li className="px-4 py-6 text-center text-xs text-[var(--fg-dim)]">
-              No matches
-            </li>
-          )}
         </ul>
       </div>
     </div>
