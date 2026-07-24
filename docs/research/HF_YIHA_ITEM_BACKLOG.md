@@ -59,21 +59,25 @@
 ## 3. 执行顺序（一项一项）
 
 ```text
-Round A（本周可感）  H4 Flow 矩阵 · H2 预设密度 · H5 工作台四段清晰
-Round B              H6 Seller 交付更深 · Y5 积分透明 · Library 像 Assets
+Round A（本周可感）  H4 Flow 矩阵 · H2 预设密度 · H5 工作台四段清晰  ✅
+Round B              H6 Seller 三步交付 · Y5 积分透明 · Library 像 Assets
 Round C              真 UGC / 云 Library / 真多模型（要账号+key）
 永不                 假 Cinema 全套 · 假 Kling live · 抄片
 ```
 
 ---
 
-## 4. 本轮交付验收
+## 4. Round A 验收
 
 - [x] `/flow` 媒体优先、分 Core/Jobs/Preview，卡可进真路径  
-- [x] 首页在 suite 后有 **Toy viral presets** 横滑（独立 Lab 片）  
-- [x] Create 顶区引擎诚实条（Seedance live only）  
-- [x] 本文 backlog 入库  
-- [x] Flow + home viral: **shared AutoPlay budget** (no multi-autoPlay hammer)  
-- [x] `/flow` PREVIEW_ROBOTS (suite matrix, not primary SEO)
+- [x] 首页 **Toy viral presets** 横滑  
+- [x] Create 引擎诚实条  
+- [x] AutoPlay budget · PREVIEW_ROBOTS  
+
+## 5. Round B 进度
+
+- [x] **H6 Seller Pack** 三步 UI：Upload → Generate pack → Deliver（`SellerPackSteps`）  
+- [ ] Y5 积分在生成按钮更透明（Create quote strip 已有，Pack 再硬一点）  
+- [ ] Library 更像 Assets（SKU 组 + 再 remix 密度）  
 
 *Grok · HF_YIHA_ITEM_BACKLOG · 2026-07-24*

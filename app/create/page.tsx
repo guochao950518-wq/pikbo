@@ -75,15 +75,16 @@ export default async function CreatePage({
         </Suspense>
         <div className="px-4 py-8 sm:px-8">
           <div className="mx-auto max-w-6xl">
-            <span className="chip">Seller Pack · suite module</span>
+            <span className="chip">Seller Pack · product studio</span>
             <h1 className="mt-3 text-3xl font-bold">
-              One photo · three seller formats
+              Upload → pack → deliver
             </h1>
             <p className="mt-2 max-w-2xl text-sm text-[var(--fg-muted)]">
-              Listing Spin (1:1), Blind-box Reveal (9:16), Social Flash (9:16).
-              Cached demos free and labeled. Live path charges per successful
-              child; only confirmed post-debit failures are marked restored.
-              Device-local results — not cloud-synced.
+              Higgsfield Product-studio pattern for toys: one owned photo becomes
+              Listing Spin (1:1), Blind-box Reveal (9:16), and Social Flash
+              (9:16). Cached demos free and labeled. Live charges per successful
+              child; confirmed failures restore credits. Results stay on this
+              device until cloud Library ships.
             </p>
             <p className="mt-2 text-xs text-[var(--fg-dim)]">
               Single careful shot?{" "}

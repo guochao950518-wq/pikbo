@@ -25,6 +25,7 @@ import {
   type SellerPackExportItem,
 } from "@/lib/sellerPackExport";
 import { canDownloadResult } from "@/lib/createTrust";
+import { SellerPackSteps } from "@/components/SellerPackSteps";
 
 type Job = {
   slug: string;
@@ -654,6 +655,16 @@ export function BatchStudio({
   }
 
   const doneCount = jobs.filter((j) => j.status === "succeeded").length;
+  /** HF Product three-step: upload → run → deliver */
+  const sellerStep: 1 | 2 | 3 = !image
+    ? 1
+    : doneCount > 0
+      ? 3
+      : running || jobs.some((j) => j.status === "running" || j.status === "queued")
+        ? 2
+        : image
+          ? 2
+          : 1;
   const failedRetryCount = jobs.filter(
     (job) => job.status === "failed" || job.status === "refunded"
   ).length;
@@ -743,26 +754,32 @@ export function BatchStudio({
     <div className="mt-8 grid gap-6 pb-36 lg:grid-cols-[1fr_1.1fr] lg:pb-0">
       <div className="space-y-4">
         {sellerPackActive && (
-          <div className="rounded-xl border border-[var(--mint)]/30 bg-[var(--mint)]/[0.06] px-3 py-2.5 text-xs text-[var(--fg-muted)]">
-            <p className="font-bold text-[var(--mint)]">
-              Seller Pack · 3 outputs
-            </p>
-            <p className="mt-1 leading-relaxed">
-              Listing Spin (1:1) · Blind-box Reveal (9:16) · Social Flash (9:16).
-              {demoMode
-                ? " Cached demos · 0 credits · upload not rendered."
-                : ` Live quote ${selected.length * CREDITS_PER_VIDEO} credits · only a returned post-debit failure is marked restored.`}
-            </p>
-            <ul className="mt-2 space-y-0.5 text-[10px] text-[var(--fg-dim)]">
-              {SELLER_PACK_ITEMS.map((item) => (
-                <li key={item.key}>
-                  {item.label} → {item.channel}
-                </li>
-              ))}
-            </ul>
+          <div className="space-y-3">
+            <div className="rounded-xl border border-[var(--mint)]/30 bg-[var(--mint)]/[0.06] px-3 py-2.5 text-xs text-[var(--fg-muted)]">
+              <p className="font-bold text-[var(--mint)]">
+                Seller Pack · HF Product three-step
+              </p>
+              <p className="mt-1 leading-relaxed">
+                Upload product photo → generate three formats → export & post.
+                Listing Spin (1:1) · Blind-box Reveal (9:16) · Social Flash
+                (9:16).
+                {demoMode
+                  ? " Cached demos · 0 credits · upload not rendered."
+                  : ` Live quote ${selected.length * CREDITS_PER_VIDEO} credits · confirmed post-debit failures restore credits.`}
+              </p>
+              <ul className="mt-2 space-y-0.5 text-[10px] text-[var(--fg-dim)]">
+                {SELLER_PACK_ITEMS.map((item) => (
+                  <li key={item.key}>
+                    {item.label} → {item.channel}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <SellerPackSteps step={sellerStep} />
           </div>
         )}
         <label
+          id="seller-pack-photo"
           className="flex aspect-video cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--border)] bg-[var(--bg-soft)]"
           onDragOver={(e) => e.preventDefault()}
           onDrop={(e) => {
