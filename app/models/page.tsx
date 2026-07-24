@@ -15,11 +15,17 @@ export default function ModelsPage() {
   const soon = MODELS.filter((m) => !m.live);
 
   return (
-    <div className="px-4 py-10 sm:px-8">
-      <div className="mx-auto max-w-6xl">
-        <span className="chip">Engines</span>
-        <h1 className="mt-3 text-3xl font-bold">Models</h1>
-        <p className="mt-2 max-w-2xl text-sm text-[var(--fg-muted)]">
+    <div className="relative px-4 py-10 sm:px-8">
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-[radial-gradient(50%_70%_at_0%_0%,rgba(200,255,61,0.07),transparent_70%)]"
+        aria-hidden
+      />
+      <div className="relative mx-auto max-w-6xl">
+        <span className="chip">Engines · honest shelf</span>
+        <h1 className="mt-3 font-display text-3xl font-black uppercase tracking-tight sm:text-4xl">
+          Models
+        </h1>
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[var(--fg-muted)]">
           Configured model shelf for the PIKBO workflow.{" "}
           <strong className="text-[var(--mint)]">WIRED</strong> cards open a
           workspace; live output still requires provider credentials.{" "}
@@ -30,6 +36,9 @@ export default function ModelsPage() {
         <div className="mt-4 flex flex-wrap gap-2">
           <Link href="/create" className="btn btn-primary text-sm">
             Generate with Seedance →
+          </Link>
+          <Link href="/flow" className="btn btn-ghost text-sm">
+            Flow
           </Link>
           <Link href="/modules" className="btn btn-ghost text-sm">
             Toy Modules

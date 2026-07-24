@@ -39,14 +39,18 @@ export default function ToolsIndexPage() {
   };
 
   return (
-    <div className="px-4 py-10 sm:px-8">
+    <div className="relative px-4 py-10 sm:px-8">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListLd) }}
       />
-      <div className="mx-auto max-w-5xl">
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-44 bg-[radial-gradient(45%_80%_at_0%_0%,rgba(200,255,61,0.06),transparent_70%)]"
+        aria-hidden
+      />
+      <div className="relative mx-auto max-w-5xl">
         <p className="section-label">Tools</p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
+        <h1 className="mt-2 font-display text-3xl font-black tracking-tight sm:text-4xl">
           Toy video tools from one photo
         </h1>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[var(--fg-muted)]">
@@ -54,6 +58,20 @@ export default function ToolsIndexPage() {
           Create deep-link, Free Mini limits (5s · 480p · on-player mark), and
           honest FAQ. No unlimited generation and no guaranteed sales.
         </p>
+        <div className="mt-5 flex flex-wrap gap-2">
+          <Link href="/create" className="btn btn-primary text-sm">
+            Open Generate
+          </Link>
+          <Link href="/flow" className="btn btn-ghost text-sm">
+            Flow
+          </Link>
+          <Link href="/modules" className="btn btn-ghost text-sm">
+            Modules
+          </Link>
+          <Link href="/create?try=1&sample=scout" className="btn btn-ghost text-sm">
+            Try free
+          </Link>
+        </div>
 
         <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {TOOLS.map((t) => (

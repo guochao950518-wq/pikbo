@@ -18,8 +18,20 @@ export function SuiteDoorLinks({
 
   return (
     <div className={`flex flex-wrap gap-2 ${className}`}>
-      <Link href={generateHref} className="btn btn-primary !px-4 !py-2 text-xs">
+      <Link
+        href={generateHref}
+        className="btn btn-primary !px-4 !py-2 text-xs font-black"
+      >
         Open Generate
+      </Link>
+      <Link
+        href="/create?try=1&sample=scout"
+        className="btn btn-ghost !px-3 !py-2 text-xs"
+      >
+        Try free
+      </Link>
+      <Link href="/flow" className="btn btn-ghost !px-3 !py-2 text-xs">
+        Flow
       </Link>
       <Link href="/modules" className="btn btn-ghost !px-3 !py-2 text-xs">
         Modules
@@ -29,12 +41,6 @@ export function SuiteDoorLinks({
         className="btn btn-ghost !px-3 !py-2 text-xs"
       >
         Seller Pack
-      </Link>
-      <Link
-        href="/create?try=1&sample=scout"
-        className="btn btn-ghost !px-3 !py-2 text-xs"
-      >
-        Try free
       </Link>
     </div>
   );
