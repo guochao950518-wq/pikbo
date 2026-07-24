@@ -1892,5 +1892,24 @@ assert.match(
   /\/modules/
 );
 
+// Video-first product line (not stills shop) — site + suite order + image honesty
+const siteSrc = fs.readFileSync(join(root, "lib/site.ts"), "utf8");
+assert.match(siteSrc, /AI toy video|photo in, short clip out/);
+assert.match(siteSrc, /Video is the product|stills are optional/i);
+const suiteChromeSrc = fs.readFileSync(
+  join(root, "components/GenerateSuiteChrome.tsx"),
+  "utf8"
+);
+// Video modes before image/stills in MODE_DEFS
+const genIdx = suiteChromeSrc.indexOf('id: "generate"');
+const flowIdx = suiteChromeSrc.indexOf('id: "flow"');
+const imageIdx = suiteChromeSrc.indexOf('id: "image"');
+assert.ok(genIdx > 0 && flowIdx > genIdx, "flow after generate");
+assert.ok(imageIdx > flowIdx, "stills mode after video suite doors");
+assert.match(
+  fs.readFileSync(join(root, "app/image/page.tsx"), "utf8"),
+  /Optional support|not the product|photo → Seedance/
+);
+
 console.log("engine-smoke: PASS");
 void pathToFileURL; // keep import used on older node

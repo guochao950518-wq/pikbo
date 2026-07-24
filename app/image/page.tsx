@@ -168,15 +168,15 @@ export default function ImageStudioPage() {
       <div className="mx-auto max-w-5xl">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <span className="chip">🖼️ Stills · suite Preview</span>
+            <span className="chip">🖼️ Optional support · Preview</span>
             <h1 className="mt-3 text-2xl font-bold tracking-tight sm:text-3xl">
               Still studio
             </h1>
             <p className="mt-2 max-w-2xl text-sm text-[var(--fg-muted)]">
-              Mock packaging & colorways before motion. Flux via fal (
-              {CREDITS_PER_VIDEO} credits live · demos labeled 0). Hand off a
-              safe URL into Generate, Modules, or Seller Pack — not a free
-              image farm.
+              Optional packaging mock before video — not the product. Flux via
+              fal ({CREDITS_PER_VIDEO} credits live · demos labeled 0). Hand a
+              safe URL into Generate, Modules, or Seller Pack. Primary path
+              remains photo → Seedance clip.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">

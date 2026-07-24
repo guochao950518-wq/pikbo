@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] video-first gates + Image optional support
+- Image studio: optional-support copy (not primary product).
+- engine-smoke: `site` video-first tagline + suite mode order (stills last).
+- Prior on main: H7 Batch quote · H1 Seedance doors · video-first site/i18n.
+- Verified: typecheck · lint · engine-smoke.
+
 ### 2026-07-24 — [grok] H7/Y5 Batch quote + H1 Seedance suite doors
 - `batchQuoteLabel` + custom Batch credit strip (balance/shortfall/refund).
 - Batch upload craft (mint empty · pack/batch copy).
