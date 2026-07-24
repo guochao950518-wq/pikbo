@@ -41,7 +41,9 @@ import {
 } from "@/lib/durableCredits/shadow";
 import { getAuthUserFromRequest } from "@/lib/supabase/user";
 import {
-  recordFailedGenerate,
+  beginSyncGenerateJob,
+  completeSyncGenerateJob,
+  failSyncGenerateJob,
   recordSucceededGenerate,
 } from "@/lib/generationJobs";
 import { getLocalAsset } from "@/lib/localAssets";
@@ -60,10 +62,12 @@ function err(
 function noteFailed(
   sessionId: string,
   effect: string,
-  body: GenerateErrorBody
+  body: GenerateErrorBody,
+  jobId?: string
 ) {
   try {
-    recordFailedGenerate({
+    failSyncGenerateJob({
+      jobId,
       sessionId,
       effect,
       error: body.error,
@@ -264,6 +268,21 @@ export async function POST(req: Request) {
       prefer: modelPref as ModelPreference,
     });
 
+    // Open process-memory `running` row so Library cancel/timeout/poll work
+    // during the long fal.subscribe (previously only terminal rows existed).
+    let liveJobId: string | undefined;
+    try {
+      liveJobId = beginSyncGenerateJob({
+        sessionId: session.id,
+        effect: preset.slug,
+        model,
+        watermark: plan.watermark,
+        provider: "bytedance-seedance",
+      }).id;
+    } catch {
+      liveJobId = undefined;
+    }
+
     // G6 ops: prove post-debit refund without burning fal when not on production.
     // Never enable on Vercel production or NODE_ENV=production.
     const forceFail =
@@ -283,7 +302,7 @@ export async function POST(req: Request) {
         session: publicSession(session),
         creditsRefunded: true,
       };
-      noteFailed(session.id, preset.slug, failBody);
+      noteFailed(session.id, preset.slug, failBody, liveJobId);
       return err(failBody, 500);
     }
 
@@ -297,31 +316,29 @@ export async function POST(req: Request) {
         session = refundCredits(session, check.cost);
         await saveSession(session);
         await shadowRelease(shadow, "invalid_image");
-        return err(
-          {
-            error: "Could not read image data",
-            code: "INVALID_REQUEST",
-            model,
-            session: publicSession(session),
-            creditsRefunded: true,
-          },
-          400
-        );
+        const failBody: GenerateErrorBody = {
+          error: "Could not read image data",
+          code: "INVALID_REQUEST",
+          model,
+          session: publicSession(session),
+          creditsRefunded: true,
+        };
+        noteFailed(session.id, preset.slug, failBody, liveJobId);
+        return err(failBody, 400);
       }
       if (!blob || blob.size < 32) {
         session = refundCredits(session, check.cost);
         await saveSession(session);
         await shadowRelease(shadow, "empty_image");
-        return err(
-          {
-            error: "Image data empty or too small",
-            code: "INVALID_REQUEST",
-            model,
-            session: publicSession(session),
-            creditsRefunded: true,
-          },
-          400
-        );
+        const failBody: GenerateErrorBody = {
+          error: "Image data empty or too small",
+          code: "INVALID_REQUEST",
+          model,
+          session: publicSession(session),
+          creditsRefunded: true,
+        };
+        noteFailed(session.id, preset.slug, failBody, liveJobId);
+        return err(failBody, 400);
       }
       const file = new File([blob], "toy.png", {
         type: blob.type || "image/png",
@@ -358,7 +375,7 @@ export async function POST(req: Request) {
           session: publicSession(session),
           creditsRefunded: true,
         };
-        noteFailed(session.id, preset.slug, failBody);
+        noteFailed(session.id, preset.slug, failBody, liveJobId);
         return err(failBody, 502);
       }
       // Refuse non-http(s) / non-relative deliverables (open-redirect / injection).
@@ -374,7 +391,7 @@ export async function POST(req: Request) {
           session: publicSession(session),
           creditsRefunded: true,
         };
-        noteFailed(session.id, preset.slug, failBody);
+        noteFailed(session.id, preset.slug, failBody, liveJobId);
         return err(failBody, 502);
       }
 
@@ -388,7 +405,8 @@ export async function POST(req: Request) {
         aspectRatio: aspect,
         resolution,
         session: publicSession(session),
-        requestId: result.requestId,
+        // Prefer provider requestId; fall back to local ledger id for poll/cancel.
+        requestId: result.requestId || liveJobId,
         provider: "bytedance-seedance",
         // Wave B — echo server-validated recipe + live settlement
         effect: preset.slug,
@@ -396,7 +414,8 @@ export async function POST(req: Request) {
         creditsOutcome: "10 used",
       };
       try {
-        recordSucceededGenerate({
+        completeSyncGenerateJob({
+          jobId: liveJobId,
           sessionId: session.id,
           effect: preset.slug,
           videoUrl,
@@ -408,9 +427,8 @@ export async function POST(req: Request) {
           resolution,
           costCredits: check.cost,
           creditsOutcome: "10 used",
-          requestId: result.requestId,
+          requestId: result.requestId || liveJobId,
           provider: "bytedance-seedance",
-          preferredId: result.requestId,
         });
       } catch {
         /* best-effort */
@@ -442,7 +460,7 @@ export async function POST(req: Request) {
           ? { retryAfterSec: http.retryAfterSec }
           : {}),
       };
-      noteFailed(session.id, preset.slug, failBody);
+      noteFailed(session.id, preset.slug, failBody, liveJobId);
       return err(
         failBody,
         http.status,

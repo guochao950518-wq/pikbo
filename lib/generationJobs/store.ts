@@ -280,6 +280,144 @@ export function updateJob(
   return next;
 }
 
+/**
+ * Soft-launch sync live generate: open a `running` ledger row *before* fal.
+ * Library session jobs + cancel + timeout sweep only work when this exists.
+ * Demo path stays recordSucceededGenerate (instant, no mid-flight).
+ */
+export function beginSyncGenerateJob(input: {
+  sessionId: string;
+  effect: string;
+  model?: string;
+  watermark?: boolean;
+  provider?: string;
+}): GenerationJob {
+  const job = createJob({
+    sessionId: input.sessionId,
+    effect: input.effect,
+    status: "running",
+  });
+  return (
+    updateJob(job.id, {
+      model: input.model,
+      watermark: input.watermark ?? true,
+      provider: input.provider,
+      demo: false,
+      downloadAllowed: false,
+    }) ?? job
+  );
+}
+
+/**
+ * Finalize a beginSyncGenerateJob row on success (or insert if mid-flight lost).
+ */
+export function completeSyncGenerateJob(input: {
+  jobId?: string;
+  sessionId: string;
+  effect: string;
+  videoUrl: string;
+  demo: boolean;
+  watermark: boolean;
+  model?: string;
+  duration?: number;
+  aspectRatio?: string;
+  resolution?: string;
+  costCredits?: number;
+  creditsOutcome?: GenerationJob["creditsOutcome"];
+  requestId?: string;
+  provider?: string;
+}): GenerationJob {
+  if (input.jobId) {
+    const cur = jobs.get(input.jobId);
+    if (cur && cur.sessionId === input.sessionId) {
+      // Only upgrade non-terminal (or re-stamp same success). Never clobber canceled.
+      if (cur.status === "canceled") {
+        return cur;
+      }
+      const next = updateJob(input.jobId, {
+        status: "succeeded",
+        videoUrl: input.videoUrl,
+        demo: input.demo,
+        watermark: input.watermark,
+        model: input.model ?? cur.model,
+        duration: input.duration,
+        aspectRatio: input.aspectRatio,
+        resolution: input.resolution,
+        costCredits: input.costCredits,
+        creditsOutcome: input.creditsOutcome,
+        requestId: input.requestId ?? cur.requestId,
+        provider: input.provider ?? cur.provider,
+        error: undefined,
+        errorCode: undefined,
+        creditsRefunded: undefined,
+      });
+      if (next) return next;
+    }
+  }
+  return recordSucceededGenerate({
+    sessionId: input.sessionId,
+    effect: input.effect,
+    videoUrl: input.videoUrl,
+    demo: input.demo,
+    watermark: input.watermark,
+    model: input.model,
+    duration: input.duration,
+    aspectRatio: input.aspectRatio,
+    resolution: input.resolution,
+    costCredits: input.costCredits,
+    creditsOutcome: input.creditsOutcome,
+    requestId: input.requestId,
+    provider: input.provider,
+    preferredId: input.requestId,
+  });
+}
+
+/**
+ * Finalize beginSyncGenerateJob on failure (refund path). Falls back to insert.
+ * Respects ledger cancel — does not overwrite canceled with failed.
+ */
+export function failSyncGenerateJob(input: {
+  jobId?: string;
+  sessionId: string;
+  effect: string;
+  error: string;
+  errorCode?: string;
+  model?: string;
+  creditsRefunded?: boolean;
+}): GenerationJob {
+  if (input.jobId) {
+    const cur = jobs.get(input.jobId);
+    if (cur && cur.sessionId === input.sessionId) {
+      if (cur.status === "canceled") {
+        return cur;
+      }
+      if (cur.status === "succeeded") {
+        // Race: provider finished after client canceled path — leave success.
+        return cur;
+      }
+      const next = updateJob(input.jobId, {
+        status: "failed",
+        error: input.error,
+        errorCode: input.errorCode,
+        model: input.model ?? cur.model,
+        creditsRefunded: input.creditsRefunded,
+        creditsOutcome: input.creditsRefunded ? "10 restored" : undefined,
+        downloadAllowed: false,
+        videoUrl: undefined,
+      });
+      if (next) return next;
+    }
+  }
+  return recordFailedGenerate({
+    sessionId: input.sessionId,
+    effect: input.effect,
+    error: input.error,
+    errorCode: input.errorCode,
+    model: input.model,
+    creditsRefunded: input.creditsRefunded,
+  });
+}
+
 /** Record a finished sync generate (success path). */
 export function recordSucceededGenerate(input: {
   sessionId: string;

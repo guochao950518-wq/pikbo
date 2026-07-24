@@ -1419,29 +1419,35 @@ export function CreateStudio({
               )}
             </div>
             <label
-              className={`flex cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed bg-black/40 transition-all duration-200 hover:border-[var(--mint)]/55 hover:bg-black/55 ${
+              className={`group/drop relative flex cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed bg-black/40 transition-all duration-200 hover:border-[var(--mint)]/55 hover:bg-black/55 ${
                 image
-                  ? "aspect-[16/10] border-white/12 ring-1 ring-white/5"
+                  ? "aspect-[16/10] border-[var(--mint)]/25 ring-1 ring-[var(--mint)]/15"
                   : "min-h-[160px] border-[var(--mint)]/40 shadow-[0_0_40px_rgba(200,255,61,0.06)] sm:aspect-video"
               }`}
               onDragOver={(e) => e.preventDefault()}
               onDrop={onDrop}
             >
               {image ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={image}
-                  alt="your toy"
-                  className="h-full w-full object-contain"
-                />
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={image}
+                    alt="your toy"
+                    className="h-full w-full object-contain"
+                  />
+                  <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-3 py-2.5 text-center text-[10px] font-semibold text-white/70 opacity-0 transition group-hover/drop:opacity-100">
+                    Drop or click to replace still
+                  </span>
+                </>
               ) : (
                 <span className="px-6 text-center text-sm text-[var(--fg-dim)]">
-                  <span className="mb-2 block text-2xl" aria-hidden>
+                  <span className="mb-2 grid h-12 w-12 place-items-center rounded-2xl border border-[var(--mint)]/30 bg-[var(--mint)]/[0.08] text-2xl mx-auto" aria-hidden>
                     🧸
                   </span>
-                  Drop a photo of a figure you own
-                  <br />
-                  <span className="text-xs">
+                  <span className="block font-semibold text-white/80">
+                    Drop a photo of a figure you own
+                  </span>
+                  <span className="mt-1 block text-xs text-white/45">
                     or tap · JPEG / PNG / WebP / GIF · under ~8 MB
                   </span>
                 </span>
@@ -1455,13 +1461,23 @@ export function CreateStudio({
             </label>
 
             {/* Toy Identity — 2 fields only (five-step: not Character cloud) */}
-            <div className="mt-3 rounded-xl border border-white/10 bg-black/25 px-3 py-2.5">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--mint)]/90">
-                Toy identity · optional
-              </p>
-              <p className="mt-0.5 text-[10px] text-white/40">
-                Same SKU across clips. Not a multi-model character train.
-              </p>
+            <div className="mt-3 rounded-xl border border-[var(--mint)]/15 bg-gradient-to-br from-[var(--mint)]/[0.06] to-black/30 px-3 py-2.5 shadow-[inset_0_1px_0_rgba(200,255,61,0.08)]">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--mint)]/90">
+                    Toy identity · optional
+                  </p>
+                  <p className="mt-0.5 text-[10px] leading-snug text-white/40">
+                    Lock SKU + paint details so remakes stay on-figure. Not a
+                    cloud character train.
+                  </p>
+                </div>
+                {(toyIdentity.sku || toyIdentity.preserve) && (
+                  <span className="shrink-0 rounded-full border border-[var(--mint)]/30 bg-[var(--mint)]/10 px-1.5 py-0.5 text-[9px] font-bold text-[var(--mint)]">
+                    Active
+                  </span>
+                )}
+              </div>
               <div className="mt-2 grid gap-2 sm:grid-cols-2">
                 <label className="block">
                   <span className="text-[10px] font-semibold text-[var(--fg-dim)]">
@@ -1472,7 +1488,7 @@ export function CreateStudio({
                     onChange={(e) => updateToyIdentity({ sku: e.target.value })}
                     placeholder="e.g. Scout pink #3"
                     maxLength={48}
-                    className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-2.5 py-1.5 text-xs outline-none focus:border-[var(--mint)]"
+                    className="mt-1 w-full rounded-lg border border-white/10 bg-black/40 px-2.5 py-1.5 text-xs outline-none transition focus:border-[var(--mint)] focus:ring-1 focus:ring-[var(--mint)]/30"
                   />
                 </label>
                 <label className="block">
@@ -1486,7 +1502,7 @@ export function CreateStudio({
                     }
                     placeholder="paint lines, logo, sculpt"
                     maxLength={120}
-                    className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-2.5 py-1.5 text-xs outline-none focus:border-[var(--mint)]"
+                    className="mt-1 w-full rounded-lg border border-white/10 bg-black/40 px-2.5 py-1.5 text-xs outline-none transition focus:border-[var(--mint)] focus:ring-1 focus:ring-[var(--mint)]/30"
                   />
                 </label>
               </div>

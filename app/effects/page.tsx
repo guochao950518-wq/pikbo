@@ -87,6 +87,12 @@ export default function EffectsHub() {
               Try free
             </Link>
             <Link
+              href="/flow"
+              className="btn btn-ghost !px-3 !py-2 text-xs"
+            >
+              Flow
+            </Link>
+            <Link
               href="/modules"
               className="btn btn-ghost !px-3 !py-2 text-xs"
             >
