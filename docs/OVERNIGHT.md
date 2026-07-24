@@ -88,7 +88,8 @@
 47. [x] Batch/Seller Pack Cancel mid-pack · keep finished · preflight demos+2
 48. [x] Image Cancel request + Tools/Guides ItemList JSON-LD
 49. [x] Image costCredits echo · forkRetry by requestId · demo disk integrity
-50. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
+50. [x] ProjectCard AutoPlay budget · Apps/Community ItemList JSON-LD
+51. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
 
 ### 老板醒来验收
 
@@ -102,9 +103,9 @@
 
 ## Grok 本拍状态（3 行）
 
-- Image API echoes costCredits/creditsOutcome (0 cached · 10 used) + rate Retry-After.  
-- forkRetryJob resolves parent by requestId; imageHistory quota-slims data URLs.  
-- preflight+smoke assert all demoClips/samples on disk · Mode A needs boss Vercel.
+- Community ProjectCard shares AutoPlayVideo budget (mobile one-at-a-time).  
+- Apps + Community ItemList structured data · live/official only.  
+- Mode A still needs boss Vercel login · SQL · T6 bake.
 
 ---
 

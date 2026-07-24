@@ -4,6 +4,11 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] ProjectCard AutoPlay budget + Apps/Community ItemList
+- ProjectCard uses shared AutoPlayVideo (mobile ≤1 concurrent · preload none · focusable=false).
+- Apps + Community hubs: ItemList JSON-LD for live/official URLs only (no SOON/fake UGC).
+- Verified: engine-smoke · typecheck · lint.
+
 ### 2026-07-24 — [grok] Image settlement echo + forkRetry requestId + demo disk check
 - `/api/image`: costCredits/creditsOutcome (0 cached · 10 used); PROVIDER_RATE_LIMIT Retry-After.
 - `forkRetryJob` resolves parent via findJobByRequestOrId; imageHistory slims huge data URLs.

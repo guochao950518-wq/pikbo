@@ -1,62 +1,30 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { AutoPlayVideo } from "@/components/AutoPlayVideo";
 import type { CommunityProject } from "@/lib/videoFeed";
 
 /**
  * PIKBO Lab recipe card:
  * playable cached media + provenance row + preset path into Studio.
+ * Uses shared AutoPlayVideo budget (mobile ≤1 concurrent · non-hero preload none).
  */
 export function ProjectCard({ project }: { project: CommunityProject }) {
-  const ref = useRef<HTMLVideoElement>(null);
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    const video = ref.current;
-    if (!video) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && entry.intersectionRatio >= 0.3) {
-          video.play().catch(() => undefined);
-        } else {
-          video.pause();
-        }
-      },
-      { threshold: [0, 0.3, 0.6] }
-    );
-    io.observe(video);
-    return () => io.disconnect();
-  }, [project.id]);
-
   return (
     <article className="group overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-[var(--shadow-md)]">
       <Link
         href={project.remakeHref}
         className="relative block aspect-[4/5] overflow-hidden bg-black sm:aspect-[3/4]"
+        aria-label={`Remix ${project.title}`}
       >
-        <video
-          ref={ref}
-          className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+        <AutoPlayVideo
           poster={project.demo.poster}
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          onLoadedData={() => setReady(true)}
-        >
-          <source src={project.demo.webm} type="video/webm" />
-          <source src={project.demo.mp4} type="video/mp4" />
-        </video>
-        {!ready && (
-          <div
-            className="absolute inset-0 animate-pulse"
-            style={{
-              background: `linear-gradient(135deg, ${project.demo.accent}44, #000)`,
-            }}
-          />
-        )}
+          webm={project.demo.webm}
+          mp4={project.demo.mp4}
+          /** Wave B: Link owns focus — no nested video tab target */
+          focusable={false}
+          className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+        />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent" />
         <span className="absolute left-2.5 top-2.5 rounded-full border border-white/10 bg-black/55 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white/85 backdrop-blur">
           {project.visibility}

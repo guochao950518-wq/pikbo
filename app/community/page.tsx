@@ -9,12 +9,19 @@ import {
 import { VideoTile } from "@/components/VideoTile";
 import { VideoRail } from "@/components/VideoRail";
 import { ProjectCard } from "@/components/ProjectCard";
+import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Official AI Toy Video Examples",
   description:
     "Browse official cached Pikbo examples and toy-video recipes. These are product demonstrations, not customer posts or claimed community activity.",
   alternates: { canonical: "/community" },
+  openGraph: {
+    title: `Official AI Toy Video Examples | ${site.name}`,
+    description:
+      "PIKBO Lab cached demos — owned inputs, distinct outputs, honest official-example labels. Not customer UGC.",
+    url: `${site.url}/community`,
+  },
 };
 
 /** PIKBO Lab: unique official demos only — no shared-loop density wall (G2/G3). */
@@ -24,8 +31,31 @@ export default function CommunityPage() {
   const wall = buildVideoFeed();
   const concepts = conceptRecipeCount();
 
+  // Phase H: ItemList of official Lab project detail URLs only (no fake UGC).
+  const itemListLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Pikbo Lab official toy video examples",
+    description:
+      "Official cached demonstrations with owned inputs and distinct outputs — not community posts.",
+    numberOfItems: projects.length,
+    itemListElement: projects.map((p, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: p.title,
+      url: p.detailHref.startsWith("http")
+        ? p.detailHref
+        : `${site.url}${p.detailHref}`,
+      description: p.look,
+    })),
+  };
+
   return (
     <div className="pb-24">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListLd) }}
+      />
       <div className="sticky top-0 z-20 border-b border-[var(--border)] bg-[var(--bg)]/90 px-4 py-3 backdrop-blur sm:px-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>

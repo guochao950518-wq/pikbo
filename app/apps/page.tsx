@@ -2,12 +2,19 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { WORKFLOWS } from "@/lib/workflows";
 import { APPS } from "@/lib/catalog";
+import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Apps & Workflows · Toy video mini-apps",
   description:
     "Pikbo toy-native workflows — listing spin, TikTok hook, blind-box drop, Seller Pack. Same Create engine, job-first mini-apps (Yiha/lego-style shelf, legal IA only).",
   alternates: { canonical: "/apps" },
+  openGraph: {
+    title: `Apps & Workflows | ${site.name}`,
+    description:
+      "Live toy-native mini-apps — listing, social, drop, Seller Pack. Same Generate engine.",
+    url: `${site.url}/apps`,
+  },
 };
 
 const CATS = [
@@ -31,8 +38,38 @@ export default function AppsPage() {
   );
   const soon = APPS.filter((a) => !a.live);
 
+  // Phase H: ItemList of live jobs only — never list SOON / preview as indexable apps.
+  const itemListLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Pikbo live toy workflows",
+    description:
+      "Live mini-apps that open Create with a prefilled recipe. Preview/soon items are omitted.",
+    numberOfItems: liveWorkflows.length + extraLive.length,
+    itemListElement: [
+      ...liveWorkflows.map((w, i) => ({
+        "@type": "ListItem" as const,
+        position: i + 1,
+        name: w.label,
+        url: w.href.startsWith("http") ? w.href : `${site.url}${w.href}`,
+        description: w.blurb,
+      })),
+      ...extraLive.map((a, i) => ({
+        "@type": "ListItem" as const,
+        position: liveWorkflows.length + i + 1,
+        name: a.name,
+        url: a.href.startsWith("http") ? a.href : `${site.url}${a.href}`,
+        description: a.blurb ?? a.name,
+      })),
+    ],
+  };
+
   return (
     <div className="px-4 py-10 sm:px-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListLd) }}
+      />
       <div className="mx-auto max-w-6xl">
         <span className="chip">🧸 Suite · toy workflows</span>
         <h1 className="mt-3 text-3xl font-bold">Apps & workflows</h1>

@@ -988,6 +988,20 @@ assert.match(
   fs.readFileSync(join(root, "app/guides/page.tsx"), "utf8"),
   /ItemList|itemListElement/
 );
+assert.match(
+  fs.readFileSync(join(root, "app/apps/page.tsx"), "utf8"),
+  /ItemList|liveWorkflows/
+);
+assert.match(
+  fs.readFileSync(join(root, "app/community/page.tsx"), "utf8"),
+  /ItemList|official Lab/
+);
+const projectCard = fs.readFileSync(
+  join(root, "components/ProjectCard.tsx"),
+  "utf8"
+);
+assert.match(projectCard, /AutoPlayVideo/);
+assert.match(projectCard, /focusable=\{false\}/);
 assert.match(genJobsStore, /export function generationJobsProbe/);
 assert.match(genJobsStore, /forkRetryJob[\s\S]*findJobByRequestOrId/);
 // Demo + sample stills must exist on disk (preflight parity)
