@@ -81,4 +81,11 @@ Round C              真 UGC / 云 Library / 真多模型（要账号+key）
 - [x] **Library Assets-like** group By SKU（device-local Toy Identity · not cloud）  
 - [x] Library remix density：组内 Remake / Modules / Seller Pack · Assets 页顶 suite 门  
 
+## 6. 质感冲刺（ongoing · 对标领先）
+
+- [x] suite glass · media-stage · nav underline · primary glow（`1f9197c`）  
+- [ ] Create 三栏视觉再压一层（密度/留白像 HF Generate）  
+- [ ] 配方墙 hover 播放更丝滑 · 独立真片审计  
+- [ ] 空状态 / 错误 / 成功 全站 micro-copy 统一  
+
 *Grok · HF_YIHA_ITEM_BACKLOG · 2026-07-24*

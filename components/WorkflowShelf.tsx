@@ -27,8 +27,8 @@ export function WorkflowShelf({
 
   return (
     <div
-      className={`border-b border-white/10 bg-gradient-to-b from-[var(--mint)]/[0.06] to-transparent ${
-        compact ? "px-3 py-2" : "px-4 py-3"
+      className={`border-b border-white/10 bg-gradient-to-b from-[var(--mint)]/[0.08] via-black/40 to-transparent ${
+        compact ? "px-3 py-2" : "px-4 py-3.5"
       }`}
     >
       <div className="mx-auto max-w-6xl">
@@ -75,10 +75,10 @@ export function WorkflowShelf({
                     });
                     onPick(w);
                   }}
-                  className={`min-w-[8.5rem] max-w-[11rem] shrink-0 rounded-2xl border px-3 py-2.5 text-left transition ${
+                  className={`min-w-[8.75rem] max-w-[11rem] shrink-0 rounded-2xl border px-3 py-2.5 text-left transition duration-200 ${
                     active
-                      ? "border-[var(--mint)] bg-[var(--mint)]/15 shadow-[0_0_0_1px_var(--mint)]"
-                      : "border-white/12 bg-black/35 hover:border-white/25 hover:bg-black/50"
+                      ? "border-[var(--mint)] bg-[var(--mint)]/15 shadow-[0_0_28px_rgba(200,255,61,0.15)]"
+                      : "border-white/12 bg-black/40 hover:border-white/28 hover:bg-black/55"
                   }`}
                 >
                   <WorkflowCardBody workflow={w} active={active} />
@@ -98,10 +98,10 @@ export function WorkflowShelf({
                     meta: { workflow: w.id, surface: "shelf_link" },
                   })
                 }
-                className={`min-w-[8.5rem] max-w-[11rem] shrink-0 rounded-2xl border px-3 py-2.5 text-left transition ${
+                className={`min-w-[8.75rem] max-w-[11rem] shrink-0 rounded-2xl border px-3 py-2.5 text-left transition duration-200 ${
                   active
-                    ? "border-[var(--mint)] bg-[var(--mint)]/15"
-                    : "border-white/12 bg-black/35 hover:border-white/25 hover:bg-black/50"
+                    ? "border-[var(--mint)] bg-[var(--mint)]/15 shadow-[0_0_28px_rgba(200,255,61,0.15)]"
+                    : "border-white/12 bg-black/40 hover:border-white/28 hover:bg-black/55"
                 }`}
               >
                 <WorkflowCardBody workflow={w} active={active} />
