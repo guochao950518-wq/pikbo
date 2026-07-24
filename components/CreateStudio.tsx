@@ -8,7 +8,12 @@ import {
   postGenerateWithRetry,
 } from "@/lib/generateClient";
 import { pushHistory } from "@/lib/history";
-import { fetchMe, isDemoMode, type MeResponse } from "@/lib/meClient";
+import {
+  fetchMe,
+  freeTrialExhausted,
+  isDemoMode,
+  type MeResponse,
+} from "@/lib/meClient";
 import { isValidImageDataUrl } from "@/lib/providerError";
 import { SAMPLE_TOYS, sampleToDataUrl } from "@/lib/samples";
 import { PRESETS } from "@/lib/presets";
@@ -511,6 +516,14 @@ export function CreateStudio({
   const canAfford = creditsLeft === null || creditsLeft >= CREDITS_PER_VIDEO;
   const isFree = session?.plan === "free" || session?.watermark;
   const demoMode = isDemoMode(session);
+  const trialDone = freeTrialExhausted(session);
+  const freeLive = session?.freeTrial?.freeLive;
+  const clipsLeft =
+    typeof session?.freeTrial?.clipsLeft === "number"
+      ? session.freeTrial.clipsLeft
+      : creditsLeft !== null
+        ? Math.floor(creditsLeft / CREDITS_PER_VIDEO)
+        : null;
   // Free tier is hard-locked to 5s server-side; keep UI in sync without an effect.
   const effectiveDuration = isFree ? 5 : duration;
 
@@ -938,7 +951,7 @@ export function CreateStudio({
         ? t("create.confirmOwnership")
         : demoMode
           ? t("create.genCached")
-          : !canAfford
+          : !canAfford || trialDone
             ? t("create.needsCredits", { n: CREDITS_PER_VIDEO })
             : isFree
               ? t("create.genMini", { n: CREDITS_PER_VIDEO })
@@ -1172,11 +1185,27 @@ export function CreateStudio({
                   Lab example · <b className="text-[var(--fg)]">not your photo</b>
                   <span className="hidden sm:inline"> · 0 credits</span>
                 </>
+              ) : trialDone && isFree ? (
+                <>
+                  Free Mini trial used · cached Lab demos still free ·{" "}
+                  <Link href="/pricing" className="font-semibold text-[var(--mint)] hover:underline">
+                    compare plans
+                  </Link>
+                </>
               ) : (
                 <>
-                  Your photo · {isFree ? "Mini 5s 480p" : `${effectiveDuration}s · ${resolution}`} ·{" "}
-                  {CREDITS_PER_VIDEO} cr
-                  {creditsLeft !== null ? ` · ${creditsLeft} left` : ""}
+                  Your photo ·{" "}
+                  {isFree && freeLive
+                    ? `Mini ${freeLive.durationSec}s ${freeLive.resolution}`
+                    : isFree
+                      ? "Mini 5s 480p"
+                      : `${effectiveDuration}s · ${resolution}`}{" "}
+                  · {CREDITS_PER_VIDEO} cr
+                  {clipsLeft !== null
+                    ? ` · ~${clipsLeft} live left`
+                    : creditsLeft !== null
+                      ? ` · ${creditsLeft} cr left`
+                      : ""}
                   <span className="hidden sm:inline">
                     {" "}
                     · <b className="text-[var(--fg)]">failed jobs refund</b>
@@ -1192,6 +1221,17 @@ export function CreateStudio({
                   {session.credits}
                 </span>{" "}
                 · {session.planName}
+                {isFree && !demoMode ? (
+                  <span
+                    className={
+                      trialDone
+                        ? " ml-1 text-amber-200"
+                        : " ml-1 text-[var(--fg-dim)]"
+                    }
+                  >
+                    {trialDone ? "· trial done" : "· Free Mini"}
+                  </span>
+                ) : null}
               </span>
             )}
             <Link href="/pricing" className="text-[var(--mint)] hover:underline">
@@ -1894,20 +1934,49 @@ export function CreateStudio({
                 <b className="text-[var(--fg)]">{PROVENANCE.cachedDemo}</b> — does not use
                 your upload · costs 0 credits
               </p>
+            ) : trialDone && isFree ? (
+              <div className="space-y-1 text-[var(--fg-muted)]">
+                <p>
+                  <b className="text-amber-200">Free Mini trial exhausted</b> —
+                  not enough credits for another live job ({CREDITS_PER_VIDEO}{" "}
+                  needed
+                  {creditsLeft !== null ? ` · ${creditsLeft} left` : ""}).
+                </p>
+                <p className="text-[var(--fg-dim)]">
+                  Cached Lab samples stay free ·{" "}
+                  <Link
+                    href="/pricing"
+                    className="font-semibold text-[var(--mint)] hover:underline"
+                  >
+                    finite plans
+                  </Link>{" "}
+                  when live billing opens · failed live jobs still refund.
+                </p>
+              </div>
             ) : (
               <div className="space-y-1 text-[var(--fg-muted)]">
                 <p>
                   <b className="text-[var(--fg)]">
                     {isFree ? "Live Mini trial" : PROVENANCE.liveGeneration}
                   </b>{" "}
-                  — uses your photo · {isFree ? "Seedance Mini · " : ""}
-                  {effectiveDuration}s · {isFree ? "480p" : resolution} ·{" "}
-                  {aspectRatio}
+                  — uses your photo ·{" "}
+                  {isFree
+                    ? freeLive
+                      ? `Seedance Mini · ${freeLive.durationSec}s · ${freeLive.resolution}`
+                      : "Seedance Mini · 5s · 480p"
+                    : `${effectiveDuration}s · ${resolution}`}{" "}
+                  · {aspectRatio}
+                  {isFree ? " · on-player mark" : ""}
                 </p>
                 <p className="text-[var(--fg-dim)]">
                   Costs {CREDITS_PER_VIDEO} credits
-                  {creditsLeft !== null ? ` · ${creditsLeft} left` : ""} · fal.ai /
-                  Seedance · <b className="text-[var(--fg)]">failed jobs refund</b>
+                  {clipsLeft !== null
+                    ? ` · ~${clipsLeft} live left`
+                    : creditsLeft !== null
+                      ? ` · ${creditsLeft} left`
+                      : ""}{" "}
+                  · fal.ai / Seedance ·{" "}
+                  <b className="text-[var(--fg)]">failed jobs refund</b>
                 </p>
               </div>
             )}

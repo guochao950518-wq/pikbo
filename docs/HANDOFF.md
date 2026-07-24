@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] freeTrial honesty Create/SoftLaunch + P6 Inside
+- Create mode banner + preflight: Free Mini clips left / trial exhausted.
+- SoftLaunchStrip reads `/api/me` freeTrial (pricing CTA when exhausted).
+- HomeProjectsExplore: Remake + Inside doors · interaction play (P6).
+- Verified: typecheck · lint · engine-smoke.
+
 ### 2026-07-24 — [grok] Phase D Library byStatus recovery + PRIVATE_ROBOTS
 - Library SessionJobsPanel: open count · byStatus chips · timeout sweep note.
 - Poll uses server `open` + jobs; Profile adds Flow/Status doors.

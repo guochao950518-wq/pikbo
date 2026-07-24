@@ -1771,6 +1771,15 @@ assert.match(deliverySrc, /deliveryChecklistStorageKey/);
 assert.match(createStudio, /composeExtraWithIdentity|toyIdentity/);
 assert.match(createStudio, /deliveryItemsForJob|DeliveryChecklist/);
 assert.match(createStudio, /Same photo · next job|create\.nextJob|generateForJob/);
+assert.match(createStudio, /freeTrialExhausted|Free Mini trial exhausted|clipsLeft/);
+assert.match(
+  fs.readFileSync(join(root, "components/SoftLaunchStrip.tsx"), "utf8"),
+  /freeTrialExhausted|Trial used|clipsLeft/
+);
+assert.match(
+  fs.readFileSync(join(root, "components/HomeProjectsExplore.tsx"), "utf8"),
+  /detailHref|Inside|Remake|desktopPlayMode/
+);
 const landingToolPanel = fs.readFileSync(
   join(root, "components/LandingToolPanel.tsx"),
   "utf8"
