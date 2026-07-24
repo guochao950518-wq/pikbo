@@ -73,7 +73,10 @@ export type GenerateErrorBody = {
     | "RATE_LIMITED"
     | "JOB_IN_FLIGHT"
     | "RIGHTS_REQUIRED"
-    | "UNSAFE_URL";
+    | "UNSAFE_URL"
+    /** Client-side only — fetch never reached a typed server body. */
+    | "NETWORK_ERROR"
+    | "REQUEST_CANCELED";
   need?: number;
   have?: number;
   model?: string;

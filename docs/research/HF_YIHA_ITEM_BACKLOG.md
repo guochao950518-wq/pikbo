@@ -77,7 +77,8 @@ Round C              真 UGC / 云 Library / 真多模型（要账号+key）
 ## 5. Round B 进度
 
 - [x] **H6 Seller Pack** 三步 UI：Upload → Generate pack → Deliver（`SellerPackSteps`）  
-- [ ] Y5 积分在生成按钮更透明（Create quote strip 已有，Pack 再硬一点）  
-- [ ] Library 更像 Assets（SKU 组 + 再 remix 密度）  
+- [x] **Y5** Pack credit strip：`lib/sellerPackQuote.ts` · balance · 3×10=30 · fail refund · steps blurb  
+- [x] **Library Assets-like** group By SKU（device-local Toy Identity · not cloud）  
+- [ ] Library remix density / empty → workflow CTAs polish  
 
 *Grok · HF_YIHA_ITEM_BACKLOG · 2026-07-24*

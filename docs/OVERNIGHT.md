@@ -95,7 +95,8 @@
 54. [x] Image UNSAFE_URL gate + Create adoptImage useCallback / pending-still scheme filter
 55. [x] Generate UNSAFE_URL code parity (was MODEL_EMPTY) · providerFailHttp timeout/content codes · webhook UNSAFE→422
 56. [x] Flow + home viral: AutoPlay budget (kill multi-autoPlay) · flow PREVIEW_ROBOTS
-57. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
+57. [x] Round B Y5 sellerPackQuote · Pack balance strip · Library By SKU · NETWORK/CANCEL codes · CP /flow /apps
+58. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
 
 ### 老板醒来验收
 
@@ -109,8 +110,8 @@
 
 ## Grok 本拍状态（3 行）
 
-- Flow matrix + home viral rail: shared AutoPlayVideo (no all-cards autoPlay).  
-- `/flow` PREVIEW_ROBOTS · HF Round A acceptance checked.  
+- Y5 Seller Pack quote: `sellerPackQuote` 3×10=30 · balance/shortfall strip · steps blurb.  
+- Library **By SKU** group · generateClient NETWORK_ERROR/REQUEST_CANCELED · CP +/flow /apps.  
 - Mode A still needs boss Vercel login · SQL · T6 bake.
 
 ---

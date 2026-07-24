@@ -179,11 +179,12 @@ export async function postGenerate(
     return {
       ok: false,
       status: 0,
+      code: aborted ? "REQUEST_CANCELED" : "NETWORK_ERROR",
       error: aborted
         ? "Request canceled — if credits were debited, check balance or retry (refund unconfirmed until server confirms)"
         : e instanceof Error
-          ? e.message
-          : "Network error",
+          ? e.message || "Network error — check connection and balance"
+          : "Network error — check connection and balance",
       fatal: false,
       paywall: false,
     };

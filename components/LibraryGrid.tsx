@@ -20,7 +20,8 @@ import { PROVENANCE, resultProvenanceLabel } from "@/lib/provenance";
 import { track } from "@/lib/analytics";
 
 type KindFilter = "all" | "live" | "demo";
-type GroupMode = "flat" | "project";
+/** Assets-like: project = upload/remix group · sku = Toy Identity SKU · flat. */
+type GroupMode = "flat" | "project" | "sku";
 
 type SessionJob = {
   id: string;
@@ -266,27 +267,44 @@ export function LibraryGrid() {
     return list;
   }, [items, filter, sort, kind]);
 
-  /** Group by the existing device-local project metadata; never imply cloud sync. */
+  /** Group by device-local project or SKU; never imply cloud sync. */
   const grouped = useMemo(() => {
-    if (groupMode !== "project") {
+    if (groupMode === "flat") {
       return [
-        { key: "all", label: "All clips", input: undefined, items: filtered },
+        { key: "all", label: "All clips", input: undefined as string | undefined, items: filtered },
       ];
     }
     const map = new Map<string, HistoryItem[]>();
     for (const item of filtered) {
-      const key =
-        item.projectId?.trim() ||
-        item.sourceProject?.trim() ||
-        `legacy-${item.effect}`;
+      let key: string;
+      if (groupMode === "sku") {
+        const sku = item.sku?.trim();
+        key = sku ? `sku:${sku}` : "__no_sku__";
+      } else {
+        key =
+          item.projectId?.trim() ||
+          item.sourceProject?.trim() ||
+          `legacy-${item.effect}`;
+      }
       const list = map.get(key) || [];
       list.push(item);
       map.set(key, list);
     }
     return [...map.entries()]
       .map(([key, groupItems]) => {
-        const named = groupItems.find((item) => item.projectName)?.projectName;
         const input = groupItems.find((item) => item.inputImage)?.inputImage;
+        if (groupMode === "sku") {
+          return {
+            key,
+            label:
+              key === "__no_sku__"
+                ? "No SKU · set Name/SKU on Create"
+                : `SKU · ${key.replace(/^sku:/, "")}`,
+            input,
+            items: groupItems,
+          };
+        }
+        const named = groupItems.find((item) => item.projectName)?.projectName;
         return {
           key,
           label:
@@ -301,6 +319,11 @@ export function LibraryGrid() {
         };
       })
       .sort((a, b) => {
+        // SKU: put "No SKU" last; otherwise alpha.
+        if (groupMode === "sku") {
+          if (a.key === "__no_sku__") return 1;
+          if (b.key === "__no_sku__") return -1;
+        }
         return a.label.localeCompare(b.label);
       });
   }, [filtered, groupMode]);
@@ -472,9 +495,10 @@ export function LibraryGrid() {
             value={groupMode}
             onChange={(e) => setGroupMode(e.target.value as GroupMode)}
             className="rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] px-2 py-1.5 text-xs outline-none"
-            aria-label="Group by project"
+            aria-label="Group library clips"
           >
             <option value="project">By project</option>
+            <option value="sku">By SKU</option>
             <option value="flat">Flat list</option>
           </select>
           <span className="text-[10px] text-[var(--fg-dim)]">
@@ -554,7 +578,7 @@ export function LibraryGrid() {
           key={group.key}
           className="mb-8 rounded-2xl border border-[var(--border)] bg-[var(--bg-soft)]/40 p-3 sm:p-4"
         >
-          {groupMode === "project" && (
+          {(groupMode === "project" || groupMode === "sku") && (
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <div className="flex min-w-0 items-center gap-3">
                 {group.input ? (
@@ -566,7 +590,7 @@ export function LibraryGrid() {
                   />
                 ) : (
                   <span className="grid h-14 w-14 shrink-0 place-items-center rounded-xl border border-dashed border-[var(--border)] text-[10px] text-[var(--fg-dim)]">
-                    input
+                    {groupMode === "sku" ? "SKU" : "input"}
                   </span>
                 )}
                 <div className="min-w-0">
@@ -577,6 +601,7 @@ export function LibraryGrid() {
                     {group.items.length} version
                     {group.items.length === 1 ? "" : "s"} · Saved on this
                     device
+                    {groupMode === "sku" ? " · Assets-style SKU group" : ""}
                   </p>
                 </div>
               </div>

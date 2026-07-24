@@ -12,7 +12,11 @@ export function SellerPackSteps({
 }) {
   const items = [
     { n: 1 as const, label: "Upload", blurb: "One owned toy photo" },
-    { n: 2 as const, label: "Generate pack", blurb: "Listing · reveal · social" },
+    {
+      n: 2 as const,
+      label: "Generate pack",
+      blurb: "3 clips · 10 credits each (30 live)",
+    },
     { n: 3 as const, label: "Deliver", blurb: "Download · post · export" },
   ];
 

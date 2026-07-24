@@ -24,6 +24,12 @@ import {
   sellerPackManifest,
   type SellerPackExportItem,
 } from "@/lib/sellerPackExport";
+import {
+  sellerPackBalanceCovers,
+  sellerPackQuote,
+  sellerPackQuoteLabel,
+  sellerPackShortfall,
+} from "@/lib/sellerPackQuote";
 import { canDownloadResult } from "@/lib/createTrust";
 import { SellerPackSteps } from "@/components/SellerPackSteps";
 
@@ -729,10 +735,16 @@ export function BatchStudio({
       "application/json"
     );
   }
-  const liveQuoteCovered =
-    demoMode ||
-    me?.credits === undefined ||
-    me.credits >= cost;
+  // Y5: pure quote helpers — Seller Pack always 3×10; batch uses selected length.
+  const packQuote = useMemo(
+    () =>
+      sellerPackQuote({
+        demo: demoMode,
+        childCount: sellerPackActive ? undefined : selected.length || 1,
+      }),
+    [demoMode, sellerPackActive, selected.length]
+  );
+  const liveQuoteCovered = sellerPackBalanceCovers(packQuote, me?.credits);
   const canRun =
     !running &&
     Boolean(image) &&
@@ -748,7 +760,9 @@ export function BatchStudio({
         ? "Confirm ownership to continue"
         : demoMode
           ? `${sellerPackActive ? "Preview Seller Pack" : "Run batch"} · ${selected.length} · cached free`
-          : `${sellerPackActive ? "Run Seller Pack" : "Run batch"} · ${selected.length} · ${cost} credits`;
+          : sellerPackActive
+            ? `Run Seller Pack · ${sellerPackQuoteLabel(packQuote)}`
+            : `Run batch · ${selected.length} · ${cost} credits`;
 
   return (
     <div className="mt-8 grid gap-6 pb-36 lg:grid-cols-[1fr_1.1fr] lg:pb-0">
@@ -763,14 +777,44 @@ export function BatchStudio({
                 Upload product photo → generate three formats → export & post.
                 Listing Spin (1:1) · Blind-box Reveal (9:16) · Social Flash
                 (9:16).
-                {demoMode
-                  ? " Cached demos · 0 credits · upload not rendered."
-                  : ` Live quote ${selected.length * CREDITS_PER_VIDEO} credits · confirmed post-debit failures restore credits.`}
               </p>
+              {/* Y5 credit transparency — balance · per child · total · refund */}
+              <div className="mt-2 rounded-lg border border-[var(--mint)]/20 bg-black/25 px-2.5 py-2 text-[11px] leading-relaxed text-[var(--fg-muted)]">
+                <p className="font-bold text-[var(--mint)]">
+                  Credits · {sellerPackQuoteLabel(packQuote)}
+                </p>
+                {demoMode ? (
+                  <p className="mt-0.5 text-[var(--fg-dim)]">
+                    Demo mode · no debit · upload is not sent to the model.
+                  </p>
+                ) : (
+                  <p className="mt-0.5 text-[var(--fg-dim)]">
+                    Session balance:{" "}
+                    <b className="text-[var(--fg)]">
+                      {me?.credits ?? "…"} credits
+                    </b>
+                    {typeof me?.credits !== "number" ? (
+                      <span> · loading balance…</span>
+                    ) : !sellerPackBalanceCovers(packQuote, me.credits) ? (
+                      <span className="text-amber-200">
+                        {" "}
+                        · short {sellerPackShortfall(packQuote, me.credits)} —
+                        Free Mini covers one 10-cr job, not a full pack
+                      </span>
+                    ) : (
+                      <span> · covers this pack</span>
+                    )}
+                    . Each confirmed fail restores 10.
+                  </p>
+                )}
+              </div>
               <ul className="mt-2 space-y-0.5 text-[10px] text-[var(--fg-dim)]">
                 {SELLER_PACK_ITEMS.map((item) => (
                   <li key={item.key}>
                     {item.label} → {item.channel}
+                    {!demoMode
+                      ? ` · ${CREDITS_PER_VIDEO} credits`
+                      : " · 0 cached"}
                   </li>
                 ))}
               </ul>

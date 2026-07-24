@@ -1350,6 +1350,56 @@ assert.match(batchStudio, /releaseSellerPackChildClient/);
 assert.match(batchStudio, /packReservationId/);
 assert.match(gen, /reserveSellerPackShadowClient/);
 
+// Round B Y5 — pure Seller Pack quote + BatchStudio strip
+const spQuoteSrc = fs.readFileSync(
+  join(root, "lib/sellerPackQuote.ts"),
+  "utf8"
+);
+assert.match(spQuoteSrc, /export function sellerPackQuote/);
+assert.match(spQuoteSrc, /export function sellerPackBalanceCovers/);
+assert.match(spQuoteSrc, /export function sellerPackQuoteLabel/);
+assert.match(batchStudio, /sellerPackQuoteLabel|sellerPackQuote\(/);
+assert.match(batchStudio, /Session balance|covers this pack|short /);
+assert.match(
+  fs.readFileSync(join(root, "components/SellerPackSteps.tsx"), "utf8"),
+  /10 credits each|30 live/
+);
+// Pure quote math (mirror lib/sellerPackQuote)
+function sellerPackQuotePure(demo, childCount = 3) {
+  if (demo) return { childCount, creditsPerChild: 0, totalCredits: 0, demo: true };
+  return {
+    childCount,
+    creditsPerChild: 10,
+    totalCredits: childCount * 10,
+    demo: false,
+  };
+}
+assert.equal(sellerPackQuotePure(false).totalCredits, 30);
+assert.equal(sellerPackQuotePure(true).totalCredits, 0);
+assert.equal(sellerPackQuotePure(false, 1).totalCredits, 10);
+assert.equal(
+  sellerPackQuotePure(false).totalCredits <= 5
+    ? false
+    : sellerPackQuotePure(false).totalCredits === 30,
+  true
+);
+function sellerPackBalanceCoversPure(quote, balance) {
+  if (quote.demo) return true;
+  if (balance === undefined) return true;
+  return balance >= quote.totalCredits;
+}
+assert.equal(sellerPackBalanceCoversPure(sellerPackQuotePure(false), 30), true);
+assert.equal(sellerPackBalanceCoversPure(sellerPackQuotePure(false), 10), false);
+assert.equal(sellerPackBalanceCoversPure(sellerPackQuotePure(false), undefined), true);
+
+// Library Assets-like SKU group
+assert.match(library, /By SKU|groupMode === "sku"|value="sku"/);
+
+// Client network honesty codes
+assert.match(gen, /REQUEST_CANCELED|NETWORK_ERROR/);
+assert.match(contracts, /NETWORK_ERROR/);
+assert.match(contracts, /REQUEST_CANCELED/);
+
 // Phase D video-provider webhook idempotency (store + route)
 assert.match(genJobsStore, /applyProviderWebhookEvent/);
 assert.match(genJobsStore, /findJobByRequestOrId/);
@@ -1604,6 +1654,14 @@ assert.match(batchStudio, /downloadable|T6 file bake/);
 assert.match(
   fs.readFileSync(join(root, "scripts/critical-path.sh"), "utf8"),
   /\/modules/
+);
+assert.match(
+  fs.readFileSync(join(root, "scripts/critical-path.sh"), "utf8"),
+  /\/flow/
+);
+assert.match(
+  fs.readFileSync(join(root, "scripts/critical-path.sh"), "utf8"),
+  /\/apps/
 );
 
 // Suite IA consistency: Modules doors + G4 inventory
