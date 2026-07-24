@@ -36,7 +36,7 @@ function ModuleCard({
   return (
     <Link
       href={w.href}
-      className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.06] to-transparent transition hover:-translate-y-0.5 hover:border-[var(--mint)]/40"
+      className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.07] via-[#0c0c10] to-black shadow-[0_16px_40px_-28px_rgba(0,0,0,0.9)] transition duration-300 hover:-translate-y-1 hover:border-[var(--mint)]/45 hover:shadow-[0_24px_56px_-24px_rgba(200,255,61,0.15)]"
     >
       {poster ? (
         <div className="relative aspect-[16/10] overflow-hidden bg-black/50">
@@ -44,30 +44,30 @@ function ModuleCard({
           <img
             src={poster}
             alt=""
-            className="h-full w-full object-cover opacity-90 transition duration-300 group-hover:scale-[1.03]"
+            className="h-full w-full object-cover opacity-90 transition duration-500 group-hover:scale-[1.05]"
             loading="lazy"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-          <span className="absolute left-3 top-3 text-2xl drop-shadow">
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent" />
+          <span className="absolute left-3 top-3 text-2xl drop-shadow-lg">
             {w.emoji}
           </span>
           <div className="absolute right-3 top-3 flex flex-wrap justify-end gap-1">
             <span
               className={`rounded-full px-1.5 py-0.5 text-[9px] font-bold ${
                 isLive
-                  ? "bg-[var(--mint)]/90 text-black"
+                  ? "bg-[var(--mint)] text-black shadow-[0_0_16px_rgba(200,255,61,0.35)]"
                   : "bg-amber-400/90 text-black"
               }`}
             >
               {isLive ? "JOB" : "PREVIEW"}
             </span>
             {poster && isLive ? (
-              <span className="rounded-full bg-black/60 px-1.5 py-0.5 text-[9px] font-bold text-white/80 backdrop-blur">
+              <span className="rounded-full bg-black/65 px-1.5 py-0.5 text-[9px] font-bold text-white/80 backdrop-blur">
                 Lab proof
               </span>
             ) : null}
             {w.badge && (
-              <span className="rounded-full bg-black/60 px-1.5 py-0.5 text-[9px] font-bold text-white/80 backdrop-blur">
+              <span className="rounded-full bg-black/65 px-1.5 py-0.5 text-[9px] font-bold text-white/80 backdrop-blur">
                 {w.badge}
               </span>
             )}
@@ -75,7 +75,7 @@ function ModuleCard({
         </div>
       ) : (
         <div className="flex items-start justify-between gap-3 p-5 pb-0">
-          <span className="grid h-12 w-12 place-items-center rounded-2xl bg-[var(--grad-soft)] text-2xl">
+          <span className="grid h-12 w-12 place-items-center rounded-2xl bg-[var(--grad-soft)] text-2xl ring-1 ring-white/10">
             {w.emoji}
           </span>
           <div className="flex flex-wrap justify-end gap-1">
@@ -97,21 +97,24 @@ function ModuleCard({
         </div>
       )}
       <div className="p-5 pt-4">
-        <h3 className="text-lg font-bold group-hover:text-[var(--mint)]">
+        <h3 className="text-lg font-bold tracking-tight transition group-hover:text-[var(--mint)]">
           {w.label}
         </h3>
-        <p className="mt-1.5 text-xs leading-relaxed text-[var(--fg-muted)]">
+        <p className="mt-1.5 text-xs leading-relaxed text-white/50">
           {w.blurb}
         </p>
         {w.effect && (
-          <p className="mt-3 text-[10px] text-white/35">
+          <p className="mt-3 text-[10px] text-white/30">
             Recipe · {w.effect}
             {w.aspectRatio ? ` · ${w.aspectRatio}` : ""}
-            {poster ? " · Lab proof still (not your upload)" : ""}
+            {poster ? " · Lab still ≠ your upload" : ""}
           </p>
         )}
-        <p className="mt-3 text-[11px] font-bold text-[var(--mint)]">
-          {isLive ? "Launch module →" : "Open preview →"}
+        <p className="mt-3 inline-flex items-center gap-1 text-[11px] font-bold text-[var(--mint)]">
+          {isLive ? "Launch module" : "Open preview"}
+          <span className="transition group-hover:translate-x-0.5" aria-hidden>
+            →
+          </span>
         </p>
       </div>
     </Link>

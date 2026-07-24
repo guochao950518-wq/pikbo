@@ -2151,24 +2151,24 @@ export function CreateStudio({
                     )}
                   </div>
                 )}
-                <div className="mx-auto mt-3 max-w-md rounded-2xl border border-[var(--mint)]/30 bg-[var(--mint)]/[0.07] px-4 py-3 text-center">
-                  <p className="text-sm font-black text-[var(--fg)]">
-                    {demo ? "Preview ready ✨" : "Your clip is ready ✨"}
+                <div className="mx-auto mt-4 max-w-md rounded-2xl border border-[var(--mint)]/35 bg-gradient-to-b from-[var(--mint)]/[0.12] to-black/40 px-4 py-3.5 text-center shadow-[0_0_40px_rgba(200,255,61,0.1)]">
+                  <p className="text-[15px] font-black tracking-tight text-white">
+                    {demo ? "Lab preview ready" : "Your clip is ready"}
                   </p>
-                  <p className="mt-1 text-[12px] leading-relaxed text-[var(--fg-muted)]">
+                  <p className="mt-1 text-[12px] leading-relaxed text-white/55">
                     {demo
-                      ? "This is a free labeled demo — it shows the recipe style. Live mode uses your real toy photo."
-                      : "Save it, post it, or make another version. Retry appends a new version — prior clips stay switchable."}
+                      ? "Labeled Lab demo — style only. Live mode uses your photo."
+                      : "Download, post, or spin another version. Prior clips stay on the version chips."}
                   </p>
                 </div>
 
                 {/* Delivery pack — value only after export/post (first principles P4) */}
-                <div className="mx-auto mt-3 max-w-md rounded-xl border border-white/10 bg-black/35 px-3 py-2.5 text-left">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-white/45">
+                <div className="mx-auto mt-3 max-w-md rounded-xl border border-white/10 bg-black/50 px-3.5 py-3 text-left backdrop-blur-sm">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--mint)]/80">
                     Delivery · next steps
                     {toyIdentity.sku ? ` · ${toyIdentity.sku}` : ""}
                   </p>
-                  <ul className="mt-1.5 space-y-1 text-[11px] text-white/65">
+                  <ul className="mt-2 space-y-1.5 text-[11px] text-white/65">
                     {deliveryItemsForJob(jobIntentId, {
                       demo,
                       downloadAllowed,
@@ -2180,7 +2180,7 @@ export function CreateStudio({
                         {item.href ? (
                           <Link
                             href={item.href}
-                            className="text-[var(--mint)] hover:underline"
+                            className="font-medium text-[var(--mint)] hover:underline"
                           >
                             {item.label}
                           </Link>
@@ -2194,8 +2194,8 @@ export function CreateStudio({
 
                 {/* Same photo · next job — accelerate cycle, no new provider */}
                 {image && status === "done" && (
-                  <div className="mx-auto mt-3 max-w-lg">
-                    <p className="mb-1.5 text-center text-[10px] font-bold uppercase tracking-wider text-white/45">
+                  <div className="mx-auto mt-4 max-w-lg">
+                    <p className="mb-2 text-center text-[10px] font-bold uppercase tracking-[0.14em] text-white/40">
                       Same photo · next job
                     </p>
                     <div className="flex flex-wrap justify-center gap-1.5">
@@ -2205,7 +2205,7 @@ export function CreateStudio({
                             <Link
                               key={job.id}
                               href={job.href}
-                              className="rounded-full border border-[var(--mint)]/30 bg-[var(--mint)]/[0.08] px-2.5 py-1 text-[10px] font-semibold text-[var(--mint)] hover:border-[var(--mint)]"
+                              className="rounded-full border border-[var(--mint)]/35 bg-[var(--mint)]/[0.1] px-3 py-1.5 text-[10px] font-bold text-[var(--mint)] transition hover:border-[var(--mint)] hover:bg-[var(--mint)]/20"
                             >
                               {job.label}
                             </Link>
@@ -2214,7 +2214,7 @@ export function CreateStudio({
                               key={job.id}
                               type="button"
                               onClick={() => void generateForJob(job.id)}
-                              className="rounded-full border border-white/15 px-2.5 py-1 text-[10px] font-semibold text-white/75 hover:border-white/35"
+                              className="rounded-full border border-white/15 bg-white/[0.04] px-3 py-1.5 text-[10px] font-bold text-white/75 transition hover:border-white/35 hover:bg-white/[0.08]"
                             >
                               {job.label}
                             </button>
