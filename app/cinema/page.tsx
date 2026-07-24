@@ -63,14 +63,23 @@ export default function CinemaPage() {
               only.
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
+              <Link href="/flow" className="btn btn-ghost !px-3 !py-1.5 text-xs">
+                Flow
+              </Link>
               <Link href="/modules" className="btn btn-ghost !px-3 !py-1.5 text-xs">
-                Modules (jobs first)
+                Modules
               </Link>
               <Link
                 href="/create?mode=seller-pack"
                 className="btn btn-ghost !px-3 !py-1.5 text-xs"
               >
                 Seller Pack
+              </Link>
+              <Link
+                href="/create?try=1&sample=scout"
+                className="btn btn-ghost !px-3 !py-1.5 text-xs"
+              >
+                Try free
               </Link>
             </div>
           </div>

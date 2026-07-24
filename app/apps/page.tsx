@@ -65,15 +65,21 @@ export default function AppsPage() {
   };
 
   return (
-    <div className="px-4 py-10 sm:px-8">
+    <div className="relative px-4 py-10 sm:px-8">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListLd) }}
       />
-      <div className="mx-auto max-w-6xl">
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-52 bg-[radial-gradient(50%_80%_at_0%_0%,rgba(200,255,61,0.07),transparent_70%)]"
+        aria-hidden
+      />
+      <div className="relative mx-auto max-w-6xl">
         <span className="chip">🧸 Suite · toy workflows</span>
-        <h1 className="mt-3 text-3xl font-bold">Apps & workflows</h1>
-        <p className="mt-2 max-w-2xl text-sm text-[var(--fg-muted)]">
+        <h1 className="mt-3 font-display text-3xl font-black uppercase tracking-tight sm:text-4xl">
+          Apps & workflows
+        </h1>
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[var(--fg-muted)]">
           Vertical mini-apps for one photo of a toy you own — listing, social,
           drop, and batch. Same Seedance Generate engine; each card is a prefilled
           job (not a fake multi-model zoo). Canonical modular wall:{" "}
@@ -86,11 +92,17 @@ export default function AppsPage() {
           <Link href="/modules" className="btn btn-primary text-sm">
             Toy Modules
           </Link>
+          <Link href="/flow" className="btn btn-ghost text-sm">
+            Flow
+          </Link>
           <Link href="/create" className="btn btn-ghost text-sm">
             Open Generate
           </Link>
           <Link href="/create?mode=seller-pack" className="btn btn-ghost text-sm">
             Seller Pack
+          </Link>
+          <Link href="/create?try=1&sample=scout" className="btn btn-ghost text-sm">
+            Try free
           </Link>
           <Link href="/effects" className="btn btn-ghost text-sm">
             Recipe wall
@@ -109,17 +121,17 @@ export default function AppsPage() {
               <Link
                 key={app.id}
                 href={app.href}
-                className="card group flex gap-3 p-4 transition-transform hover:-translate-y-0.5"
+                className="group flex gap-3 rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.06] to-black/40 p-4 shadow-[0_16px_40px_-28px_rgba(0,0,0,0.9)] transition duration-300 hover:-translate-y-1 hover:border-[var(--mint)]/40 hover:shadow-[0_20px_48px_-24px_rgba(200,255,61,0.12)]"
               >
-                <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-[var(--grad-soft)] text-2xl">
+                <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-[var(--mint)]/20 bg-[var(--mint)]/[0.1] text-2xl">
                   {app.emoji}
                 </span>
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="font-semibold group-hover:text-[var(--mint)]">
+                    <h3 className="font-semibold text-white transition group-hover:text-[var(--mint)]">
                       {app.label}
                     </h3>
-                    <span className="rounded-full bg-[var(--mint)]/15 px-1.5 py-0.5 text-[9px] font-bold text-[var(--mint)]">
+                    <span className="rounded-full bg-[var(--mint)] px-1.5 py-0.5 text-[9px] font-black text-black">
                       LIVE
                     </span>
                     {app.badge && (
@@ -128,10 +140,10 @@ export default function AppsPage() {
                       </span>
                     )}
                   </div>
-                  <p className="mt-1 text-xs text-[var(--fg-muted)]">
+                  <p className="mt-1 text-xs leading-relaxed text-white/50">
                     {app.blurb}
                   </p>
-                  <p className="mt-2 text-[10px] font-semibold text-[var(--mint)]">
+                  <p className="mt-2 text-[10px] font-bold uppercase tracking-wide text-[var(--mint)]">
                     Launch →
                   </p>
                 </div>

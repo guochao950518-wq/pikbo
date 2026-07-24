@@ -146,9 +146,21 @@ export default async function EffectPage({
             <div className="flex flex-wrap gap-2">
               <Link
                 href={`/create?effect=${encodeURIComponent(preset.slug)}`}
-                className="btn btn-primary !px-4 !py-2 text-xs"
+                className="btn btn-primary !px-4 !py-2 text-xs font-black"
               >
                 Open Generate
+              </Link>
+              <Link
+                href="/create?try=1&sample=scout"
+                className="btn btn-ghost !px-3 !py-2 text-xs"
+              >
+                Try free
+              </Link>
+              <Link
+                href="/flow"
+                className="btn btn-ghost !px-3 !py-2 text-xs"
+              >
+                Flow
               </Link>
               <Link
                 href="/modules"
@@ -161,12 +173,6 @@ export default async function EffectPage({
                 className="btn btn-ghost !px-3 !py-2 text-xs"
               >
                 Seller Pack
-              </Link>
-              <Link
-                href="/pricing"
-                className="btn btn-ghost !px-3 !py-2 text-xs"
-              >
-                Pricing
               </Link>
             </div>
           </div>

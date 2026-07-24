@@ -40,31 +40,45 @@ export default async function SupercomputerPage({
     : undefined;
 
   return (
-    <div className="px-4 py-10 sm:px-8">
-      <div className="mx-auto max-w-6xl">
-        <span className="chip">🧠 Batch agent · Preview</span>
-        <h1 className="mt-3 text-3xl font-bold">One photo · many clips</h1>
-        <p className="mt-2 max-w-2xl text-sm text-[var(--fg-muted)]">
-          Shop workflow: upload a figure once, queue effects, render with
-          Seedance. For the fixed three-format seller path use Seller Pack.
-        </p>
-        <p className="mt-2 text-xs text-[var(--fg-dim)]">
-          Prefer fixed shop formats?{" "}
-          <Link
-            href="/create?mode=seller-pack"
-            className="text-[var(--mint)] hover:underline"
-          >
-            Seller Pack
-          </Link>
-          {" · "}
-          <Link href="/modules" className="text-[var(--mint)] hover:underline">
-            Modules
-          </Link>
-          {" · "}
-          <Link href="/create" className="text-[var(--brand)] hover:underline">
-            single Generate
-          </Link>
-          . This page is custom batch Preview.
+    <div className="relative px-4 py-10 sm:px-8">
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-52 bg-[radial-gradient(55%_80%_at_10%_0%,rgba(200,255,61,0.08),transparent_70%)]"
+        aria-hidden
+      />
+      <div className="relative mx-auto max-w-6xl">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <span className="chip">🧠 Batch agent · Preview</span>
+            <h1 className="mt-3 font-display text-3xl font-black uppercase tracking-tight sm:text-4xl">
+              One photo · many clips
+            </h1>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[var(--fg-muted)]">
+              Shop workflow: upload a figure once, queue recipes, render with
+              Seedance. Fixed three-format seller path lives on Seller Pack —
+              this page is custom multi-preset batch Preview.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href="/create?mode=seller-pack"
+              className="btn btn-primary text-sm"
+            >
+              Seller Pack · 3
+            </Link>
+            <Link href="/create" className="btn btn-ghost text-sm">
+              Generate
+            </Link>
+            <Link href="/flow" className="btn btn-ghost text-sm">
+              Flow
+            </Link>
+            <Link href="/modules" className="btn btn-ghost text-sm">
+              Modules
+            </Link>
+          </div>
+        </div>
+        <p className="mt-3 text-xs text-[var(--fg-dim)]">
+          Honest Preview · not multi-model Supercomputer. Credits debit per
+          child job · failed children refund when confirmed.
         </p>
         <BatchStudio initialEffects={initialEffects} />
       </div>

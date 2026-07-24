@@ -56,11 +56,11 @@ export default function CommunityPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListLd) }}
       />
-      <div className="sticky top-0 z-20 border-b border-[var(--border)] bg-[var(--bg)]/90 px-4 py-3 backdrop-blur sm:px-6">
+      <div className="sticky top-0 z-20 border-b border-white/[0.07] bg-black/90 px-4 py-3.5 backdrop-blur-xl sm:px-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="section-label">Official examples</p>
-            <h1 className="text-lg font-bold tracking-tight sm:text-xl">
+            <p className="section-label">Official examples · Lab only</p>
+            <h1 className="font-display text-lg font-black tracking-tight sm:text-xl">
               See what each toy-video recipe is designed to make
             </h1>
           </div>
