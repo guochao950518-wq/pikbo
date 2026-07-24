@@ -28,9 +28,9 @@
 | # | HF 能力 | 研究结论 | Pikbo 动作 | 优先级 | 状态 |
 |---|---------|----------|------------|--------|------|
 | H1 | 首页战役条 + 模型/App 入口卡 | 结果与工具并列 | Suite strip + 战役条（Seedance 诚实） | P0 | partial |
-| H2 | Viral Presets 墙（独立片） | 一键 = 完整配方 | `/effects` + home rail | P0 | partial → 加强真片 |
+| H2 | Viral Presets 墙（独立片） | 一键 = 完整配方 | `/effects` + home rail | P0 | live · AutoPlay budget |
 | H3 | Explore inside project | 输入/输出/参数可拆 | `/projects/[slug]` | P0 | live |
-| H4 | **Flow 创建矩阵** | 视频卡进工作区 | **`/flow` 媒体矩阵重做** | **P0** | **本轮** |
+| H4 | **Flow 创建矩阵** | 视频卡进工作区 | **`/flow` 媒体矩阵重做** | **P0** | live · AutoPlay budget |
 | H5 | Generate 工作台 | 输入+参数+结果 | `/create` 旗舰 | P0 | live 打磨 |
 | H6 | Product / Marketing 三步 | 商品图→片→卖 | Seller Pack | P0 | live |
 | H7 | Supercomputer / Batch | 多任务 | Seller Pack 优先；Batch Preview | P1 | partial |
@@ -69,9 +69,11 @@ Round C              真 UGC / 云 Library / 真多模型（要账号+key）
 
 ## 4. 本轮交付验收
 
-- [ ] `/flow` 媒体优先、分 Core/Jobs/Preview，卡可进真路径  
-- [ ] 首页在 suite 后有 **Toy viral presets** 横滑（独立 Lab 片）  
-- [ ] Create 顶区引擎诚实条（Seedance live only）  
-- [ ] 本文 backlog 入库  
+- [x] `/flow` 媒体优先、分 Core/Jobs/Preview，卡可进真路径  
+- [x] 首页在 suite 后有 **Toy viral presets** 横滑（独立 Lab 片）  
+- [x] Create 顶区引擎诚实条（Seedance live only）  
+- [x] 本文 backlog 入库  
+- [x] Flow + home viral: **shared AutoPlay budget** (no multi-autoPlay hammer)  
+- [x] `/flow` PREVIEW_ROBOTS (suite matrix, not primary SEO)
 
 *Grok · HF_YIHA_ITEM_BACKLOG · 2026-07-24*

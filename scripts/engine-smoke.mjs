@@ -1049,6 +1049,23 @@ assert.match(
   /PROVIDER_TIMEOUT/
 );
 assert.match(createStudio, /useCallback[\s\S]*adoptImage|adoptImage = useCallback/);
+// Flow + home viral: shared AutoPlay (no multi-autoPlay)
+assert.match(
+  fs.readFileSync(join(root, "components/FlowMediaCard.tsx"), "utf8"),
+  /AutoPlayVideo|focusable=\{false\}/
+);
+assert.match(
+  fs.readFileSync(join(root, "app/flow/page.tsx"), "utf8"),
+  /FlowMediaCard|PREVIEW_ROBOTS/
+);
+assert.match(
+  fs.readFileSync(join(root, "components/HomeViralPresetRail.tsx"), "utf8"),
+  /AutoPlayVideo/
+);
+assert.doesNotMatch(
+  fs.readFileSync(join(root, "components/HomeViralPresetRail.tsx"), "utf8"),
+  /autoPlay/
+);
 assert.match(genJobsStore, /export function generationJobsProbe/);
 assert.match(genJobsStore, /forkRetryJob[\s\S]*findJobByRequestOrId/);
 // Demo + sample stills must exist on disk (preflight parity)

@@ -4,6 +4,11 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Flow/home viral AutoPlay budget (no multi-autoPlay)
+- `FlowMediaCard` + home viral rail use shared AutoPlayVideo (mobile ≤1 concurrent).
+- `/flow` PREVIEW_ROBOTS; HF/Yiha Round A acceptance checked off.
+- Verified: engine-smoke · typecheck · lint.
+
 ### 2026-07-24 — [grok] generate UNSAFE_URL + providerFailHttp
 - Live unsafe videoUrl returns **`UNSAFE_URL`** (was mislabeled MODEL_EMPTY).
 - Shared `providerFailHttp`: PROVIDER_TIMEOUT 504 + Retry-After · CONTENT_POLICY 422 · balance/rate/other.

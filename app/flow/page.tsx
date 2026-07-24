@@ -4,13 +4,17 @@ import { Suspense } from "react";
 import { DEMO_VIDEOS } from "@/lib/demoVideos";
 import { listLiveWorkflows, listPreviewWorkflows } from "@/lib/workflows";
 import { GenerateSuiteChrome } from "@/components/GenerateSuiteChrome";
+import { FlowMediaCard } from "@/components/FlowMediaCard";
 import { site } from "@/lib/site";
+import { PREVIEW_ROBOTS } from "@/lib/seoIndex";
 
 export const metadata: Metadata = {
   title: "Flow · Creation matrix",
   description:
     "Higgsfield Flow–style creation hub for designer toys: pick a job, open Generate or Modules with media-first cards. Lab demos only.",
   alternates: { canonical: "/flow" },
+  // Phase H: suite matrix is useful but not primary SEO — robots already disallows /flow
+  robots: PREVIEW_ROBOTS,
 };
 
 type FlowCard = {
@@ -220,52 +224,18 @@ export default function FlowPage() {
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {sec.items.map((f) => {
                 const demo = resolveDemo(f);
-                const isPreview = f.tier === "preview";
                 return (
-                  <Link
+                  <FlowMediaCard
                     key={f.id}
                     href={f.href}
-                    className="group relative overflow-hidden rounded-2xl bg-neutral-900 ring-1 ring-white/10 transition hover:-translate-y-1 hover:ring-[#c8ff3d]/45"
-                  >
-                    <div className="relative aspect-video">
-                      <video
-                        className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
-                        poster={demo.poster}
-                        muted
-                        loop
-                        playsInline
-                        preload="none"
-                        autoPlay
-                      >
-                        <source src={demo.webm} type="video/webm" />
-                        <source src={demo.mp4} type="video/mp4" />
-                      </video>
-                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-transparent" />
-                      <span
-                        className={`absolute left-2.5 top-2.5 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide ${
-                          isPreview
-                            ? "bg-amber-400/90 text-black"
-                            : "bg-black/60 text-[#c8ff3d]"
-                        }`}
-                      >
-                        {f.badge}
-                      </span>
-                      <span className="absolute bottom-2 right-2 rounded bg-black/55 px-1.5 py-0.5 text-[9px] text-white/50">
-                        Lab media
-                      </span>
-                    </div>
-                    <div className="p-4">
-                      <h3 className="text-lg font-bold group-hover:text-[#c8ff3d]">
-                        {f.title}
-                      </h3>
-                      <p className="mt-1 text-sm leading-snug text-white/50">
-                        {f.blurb}
-                      </p>
-                      <p className="mt-3 text-[11px] font-bold uppercase tracking-wide text-[#c8ff3d]">
-                        Open →
-                      </p>
-                    </div>
-                  </Link>
+                    title={f.title}
+                    blurb={f.blurb}
+                    badge={f.badge}
+                    isPreview={f.tier === "preview"}
+                    poster={demo.poster}
+                    webm={demo.webm}
+                    mp4={demo.mp4}
+                  />
                 );
               })}
             </div>

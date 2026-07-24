@@ -94,7 +94,8 @@
 53. [x] Safe provider videoUrl gate · timeout/content classify · generate Retry-After
 54. [x] Image UNSAFE_URL gate + Create adoptImage useCallback / pending-still scheme filter
 55. [x] Generate UNSAFE_URL code parity (was MODEL_EMPTY) · providerFailHttp timeout/content codes · webhook UNSAFE→422
-56. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
+56. [x] Flow + home viral: AutoPlay budget (kill multi-autoPlay) · flow PREVIEW_ROBOTS
+57. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
 
 ### 老板醒来验收
 
@@ -108,8 +109,8 @@
 
 ## Grok 本拍状态（3 行）
 
-- Generate live unsafe videoUrl now returns **UNSAFE_URL** (was MODEL_EMPTY; client honesty).  
-- Shared `providerFailHttp`: PROVIDER_TIMEOUT 504 · CONTENT_POLICY 422 · webhook UNSAFE→422.  
+- Flow matrix + home viral rail: shared AutoPlayVideo (no all-cards autoPlay).  
+- `/flow` PREVIEW_ROBOTS · HF Round A acceptance checked.  
 - Mode A still needs boss Vercel login · SQL · T6 bake.
 
 ---

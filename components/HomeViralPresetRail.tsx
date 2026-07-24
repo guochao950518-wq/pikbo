@@ -4,6 +4,7 @@ import Link from "next/link";
 import { DEMO_VIDEOS } from "@/lib/demoVideos";
 import { track } from "@/lib/analytics";
 import { createRemixHref } from "@/lib/remixIntent";
+import { AutoPlayVideo } from "@/components/AutoPlayVideo";
 
 /**
  * HF Viral Presets pattern — dense horizontal rail of unique Lab clips.
@@ -57,19 +58,14 @@ export function HomeViralPresetRail() {
               className="group relative w-[9.5rem] shrink-0 overflow-hidden rounded-2xl bg-neutral-900 ring-1 ring-white/10 transition hover:-translate-y-0.5 hover:ring-[#c8ff3d]/45 sm:w-[11rem]"
             >
               <div className="relative aspect-[3/4]">
-                <video
-                  className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
+                <AutoPlayVideo
                   poster={d.poster}
-                  muted
-                  loop
-                  playsInline
-                  preload="none"
-                  autoPlay
-                >
-                  <source src={d.webm} type="video/webm" />
-                  <source src={d.mp4} type="video/mp4" />
-                </video>
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent" />
+                  webm={d.webm}
+                  mp4={d.mp4}
+                  focusable={false}
+                  className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
+                />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent" />
                 <span className="absolute left-2 top-2 rounded-full bg-black/55 px-1.5 py-0.5 text-[8px] font-bold uppercase text-[#c8ff3d]">
                   {d.eyebrow}
                 </span>
