@@ -74,6 +74,17 @@ if product:
         print("WARN health.product.stills should be optional-support")
 elif True:
     print("WARN health.product missing — preferred video-first orientation probe")
+billing=h.get("billing") or {}
+bft=billing.get("freeTrial") or {}
+if bft:
+    print(
+        f"billing.freeTrial clips={bft.get('clipsPerPeriod')} "
+        f"model={bft.get('modelClass')} refunds={bft.get('failedLiveRefunds')}"
+    )
+    if bft.get("failedLiveRefunds") is not True:
+        sys.exit("FAIL health.billing.freeTrial.failedLiveRefunds must be true")
+else:
+    print("WARN health.billing.freeTrial missing — preferred soft-launch contract")
 rl=h.get("rateLimit") or {}
 if isinstance(rl, dict):
     print(f"rateLimit inflight={rl.get('inflight')} ttlMs={rl.get('inflightTtlMs')}")

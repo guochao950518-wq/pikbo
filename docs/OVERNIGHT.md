@@ -102,7 +102,8 @@
 61. [x] Idempotency before image/asset resolve · health.product video-first · mode-a jobs.byStatus
 62. [x] touchJob on poll · generations byStatus/open · idempotentReplay toast honesty
 63. [x] List GET touches open jobs · /api/me freeTrial honesty · badge trial exhausted
-64. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
+64. [x] Download absolute /demos redirect + HEAD · health.billing.freeTrial · CP me freeTrial
+65. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
 
 ### 老板醒来验收
 
@@ -116,8 +117,8 @@
 
 ## Grok 本拍状态（3 行）
 
-- Library list poll **touches all open jobs** (`touchedOpen`) — anti false TIMEOUT.  
-- `/api/me` **freeTrial** (Mini 480p 5s · exhausted) · CreditsBadge titles honest.  
+- Downloads: absolute `/demos` Location + HEAD probe (auth same as GET).  
+- health.billing.freeTrial contract · critical-path asserts /api/me freeTrial.  
 - Mode A still needs boss Vercel login · SQL · T6 bake.
 
 ---

@@ -1340,10 +1340,18 @@ assert.doesNotMatch(
 );
 // Download redirect safety
 assert.match(createTrust, /export function isSafeDeliverableUrl/);
-assert.match(
-  fs.readFileSync(join(root, "app/api/downloads/[id]/route.ts"), "utf8"),
-  /isSafeDeliverableUrl|UNSAFE_URL/
+const downloadRouteSrc = fs.readFileSync(
+  join(root, "app/api/downloads/[id]/route.ts"),
+  "utf8"
 );
+assert.match(downloadRouteSrc, /isSafeDeliverableUrl|UNSAFE_URL/);
+// Relative /demos must become absolute Location (Next redirect requirement)
+assert.match(downloadRouteSrc, /absoluteDeliverableUrl|new URL\(/);
+assert.match(downloadRouteSrc, /export async function HEAD/);
+// Health free-trial product contract (session state stays on /api/me)
+assert.match(health, /freeTrial/);
+assert.match(health, /failedLiveRefunds/);
+assert.match(health, /seedance-mini|clipsPerPeriod/);
 // Pure safe-url checks
 function isSafeDeliverableUrlPure(url) {
   if (!url || typeof url !== "string") return false;

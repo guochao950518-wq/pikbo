@@ -111,12 +111,32 @@ assert "credits" in me and "plan" in me
 assert me.get("mode") in ("live-generate", "demo-cached")
 assert me.get("cachedDemoFree") is True
 print(f"me plan={me.get('plan')} mode={me.get('mode')} credits={me.get('credits')}")
+ft=me.get("freeTrial") or {}
+if not ft:
+    print("WARN /api/me freeTrial missing — preferred soft-launch honesty")
+else:
+    print(
+        f"freeTrial exhausted={ft.get('exhausted')} clipsLeft={ft.get('clipsLeft')} "
+        f"liveJobCredits={ft.get('liveJobCredits')}"
+    )
+    if ft.get("liveJobCredits") not in (10, None) and me.get("liveJobCredits") not in (10, None):
+        print("WARN freeTrial.liveJobCredits unexpected")
+    if ft.get("isFreePlan") is True and ft.get("freeLive"):
+        fl=ft["freeLive"]
+        print(f"freeLive {fl.get('modelClass')} {fl.get('resolution')} {fl.get('durationSec')}s")
+billing=(h.get("billing") or {})
+bft=billing.get("freeTrial") or {}
+if bft:
+    print(f"health.billing.freeTrial clips={bft.get('clipsPerPeriod')} refunds={bft.get('failedLiveRefunds')}")
 auth=json.load(open("/tmp/pikbo-auth.json"))
 assert "configured" in auth or "mode" in auth or auth.get("ok") is not None or "providers" in auth or True
 print(f"auth keys={list(auth.keys())[:8]}")
 gens=json.load(open("/tmp/pikbo-gens.json"))
 assert gens.get("ok") is True or "jobs" in gens
-print(f"generations mode={gens.get('mode')} jobs={len(gens.get('jobs') or [])}")
+print(
+    f"generations mode={gens.get('mode')} jobs={len(gens.get('jobs') or [])} "
+    f"open={gens.get('open')} touchedOpen={gens.get('touchedOpen')}"
+)
 PY
 fi
 

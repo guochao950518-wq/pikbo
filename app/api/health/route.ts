@@ -121,6 +121,17 @@ export async function GET() {
     billing: {
       cachedDemoCredits: 0,
       liveJobCredits: "flat CREDITS_PER_VIDEO",
+      /** Product-level free trial caps (session-specific state lives on /api/me). */
+      freeTrial: {
+        planCredits: 10,
+        clipsPerPeriod: 1,
+        liveJobCredits: 10,
+        modelClass: "seedance-mini",
+        durationSec: 5,
+        resolution: "480p",
+        onPlayerMark: true,
+        failedLiveRefunds: true,
+      },
     },
     rateLimit: {
       summary: "session-8rpm + ip-24rpm + inflight-1",

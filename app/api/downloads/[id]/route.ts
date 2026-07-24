@@ -11,36 +11,68 @@ export const runtime = "nodejs";
 type Props = { params: Promise<{ id: string }> };
 
 /**
- * Phase E gate — controlled download authorization.
- * Free live raw provider URLs are never returned (T6 still blocked for bake).
- * Cached demos and paid (no watermark) may redirect to the known output URL.
- * Accepts job id or provider requestId (Create/Library may store either).
+ * Resolve relative /demos paths against the request origin.
+ * NextResponse.redirect requires an absolute URL in edge/runtime edge cases.
  */
-export async function GET(_req: Request, { params }: Props) {
-  const { id } = await params;
-  const session = await ensureSession();
+function absoluteDeliverableUrl(req: Request, videoUrl: string): string {
+  const t = videoUrl.trim();
+  if (/^https?:\/\//i.test(t)) return t;
+  if (t.startsWith("/") && !t.startsWith("//")) {
+    try {
+      return new URL(t, new URL(req.url).origin).toString();
+    } catch {
+      return t;
+    }
+  }
+  return t;
+}
+
+type GateOk = {
+  ok: true;
+  videoUrl: string;
+  demo: boolean;
+  watermark: boolean;
+};
+type GateFail = {
+  ok: false;
+  status: number;
+  body: Record<string, unknown>;
+};
+
+function gateDownload(
+  sessionId: string,
+  id: string
+): GateOk | GateFail {
   sweepTimedOutJobs();
   const job = findJobByRequestOrId(id);
-  if (!job || job.sessionId !== session.id) {
-    return NextResponse.json(
-      { ok: false, code: "NOT_FOUND", error: "Download not found for this session" },
-      { status: 404 }
-    );
+  if (!job || job.sessionId !== sessionId) {
+    return {
+      ok: false,
+      status: 404,
+      body: {
+        ok: false,
+        code: "NOT_FOUND",
+        error: "Download not found for this session",
+      },
+    };
   }
   if (job.status !== "succeeded" || !job.videoUrl) {
-    return NextResponse.json(
-      {
+    return {
+      ok: false,
+      status: 409,
+      body: {
         ok: false,
         code: "NOT_READY",
         error: "Job has no successful deliverable",
         status: job.status,
       },
-      { status: 409 }
-    );
+    };
   }
   if (!job.downloadAllowed) {
-    return NextResponse.json(
-      {
+    return {
+      ok: false,
+      status: 403,
+      body: {
         ok: false,
         code: "DOWNLOAD_BLOCKED",
         error: freeLiveDownloadBlockReason(),
@@ -48,21 +80,62 @@ export async function GET(_req: Request, { params }: Props) {
         watermark: job.watermark,
         demo: job.demo,
       },
-      { status: 403 }
-    );
+    };
   }
-  // Only redirect to relative /demos paths or http(s) provider URLs.
   if (!isSafeDeliverableUrl(job.videoUrl)) {
-    return NextResponse.json(
-      {
+    return {
+      ok: false,
+      status: 422,
+      body: {
         ok: false,
         code: "UNSAFE_URL",
         error: "Deliverable URL is not a safe redirect target",
       },
-      { status: 422 }
-    );
+    };
   }
-  // Redirect to the allowed URL (demo assets or paid deliverable).
-  // Free live never reaches here. Provider raw is not rewritten to a bake yet.
-  return NextResponse.redirect(job.videoUrl, 302);
+  return {
+    ok: true,
+    videoUrl: job.videoUrl,
+    demo: job.demo,
+    watermark: job.watermark,
+  };
+}
+
+/**
+ * Phase E gate — controlled download authorization.
+ * Free live raw provider URLs are never returned (T6 still blocked for bake).
+ * Cached demos and paid (no watermark) may redirect to the known output URL.
+ * Accepts job id or provider requestId (Create/Library may store either).
+ */
+export async function GET(req: Request, { params }: Props) {
+  const { id } = await params;
+  const session = await ensureSession();
+  const gate = gateDownload(session.id, id);
+  if (!gate.ok) {
+    return NextResponse.json(gate.body, { status: gate.status });
+  }
+  // Absolute URL so relative /demos/* never fail as open redirects / invalid Location.
+  const target = absoluteDeliverableUrl(req, gate.videoUrl);
+  return NextResponse.redirect(target, 302);
+}
+
+/**
+ * Metadata probe without following the deliverable — Library can HEAD before
+ * navigating. Same authorization as GET.
+ */
+export async function HEAD(_req: Request, { params }: Props) {
+  const { id } = await params;
+  const session = await ensureSession();
+  const gate = gateDownload(session.id, id);
+  if (!gate.ok) {
+    return new NextResponse(null, { status: gate.status });
+  }
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      "X-Pikbo-Download": "allowed",
+      "X-Pikbo-Demo": gate.demo ? "1" : "0",
+      "Cache-Control": "no-store",
+    },
+  });
 }
