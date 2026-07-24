@@ -33,11 +33,11 @@ Explore → remix 回 Create
 
 | # | 对标项 | HF/Yiha | Pikbo 动作 | 状态 |
 |---|--------|---------|------------|------|
-| P1 | 满屏视频墙为主 | Viral Presets 网格 | 首页主区 `HomeViralWall` 密网 | **doing** |
-| P2 | 产品入口条 | Seedance/Image/… 大卡 | 顶栏 product rail 7 卡 | **doing** |
-| P3 | 底栏 5 键 | H·C·G·L·P | MOBILE_NAV 对齐 HF | **doing** |
-| P4 | 桌面主导航 | Explore/Video/Image/Cinema/Community | PRIMARY_NAV 对齐 | **doing** |
-| P5 | Generate 中心 | 大绿钮 / 中心 tab | 保留 + 强化 | partial |
+| P1 | 满屏视频墙为主 | Viral Presets 网格 | 首页主区 `HomeViralWall` 密网 | **live** |
+| P2 | 产品入口条 | Seedance/Image/… 大卡 | `HfProductRail` 8 卡 | **live** |
+| P3 | 底栏 5 键 | H·C·G·L·P | MOBILE_NAV 对齐 HF | **live** |
+| P4 | 桌面主导航 | Explore/Video/Image/Cinema/Community | PRIMARY_NAV 对齐 | **live** |
+| P5 | Generate 中心 | 模型条 + 结果台大 | Create 三栏压结果 + Seedance 条 | **doing** |
 | P6 | Inside project | 输入输出拆解 | `/projects` 已有，首页露更多 | partial |
 | P7 | Flow 矩阵 | 创建入口货架 | `/flow` 已有，首页门对齐 | partial |
 | P8 | Modules 像 lego | 固定工作流壳 | `/modules` 已有 | partial |

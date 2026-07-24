@@ -1105,6 +1105,25 @@ assert.match(genRoute, /findJobByIdempotencyKey/);
 assert.match(genRoute, /idempotentReplay|successFromJob/);
 assert.match(gen, /mintGenerateIdempotencyKey|idempotencyKey/);
 assert.match(gen, /export function mintGenerateIdempotencyKey/);
+// Idempotency must run before asset/image resolve (retry without re-upload).
+{
+  const idempAt = genRoute.indexOf("findJobByIdempotencyKey");
+  const assetAt = genRoute.indexOf("getLocalAsset");
+  const mimeAt = genRoute.indexOf("isValidImageDataUrl(image)");
+  assert.ok(idempAt > 0, "idempotency lookup present");
+  assert.ok(
+    assetAt < 0 || idempAt < assetAt,
+    "idempotency before getLocalAsset"
+  );
+  assert.ok(
+    mimeAt < 0 || idempAt < mimeAt,
+    "idempotency before still MIME gate"
+  );
+}
+// Health product orientation (video-first)
+assert.match(health, /primary:\s*"video"|primary:\s*'video'/);
+assert.match(health, /optional-support/);
+assert.match(health, /idempotency/);
 // Network/cancel codes → refund unconfirmed settlement
 assert.match(
   fs.readFileSync(join(root, "lib/createTrust.ts"), "utf8"),

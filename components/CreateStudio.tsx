@@ -1088,32 +1088,39 @@ export function CreateStudio({
       <div className="hidden lg:block">
         <GenerateSuiteChrome compact />
       </div>
-      {/* HF/Yiha workbench: engine honesty strip (no fake multi-model chips) */}
-      <div className="border-b border-white/10 bg-black/50 px-4 py-2">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-2 text-[11px]">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-white/40">
-            Engine
+      {/* HF-style model/mode strip — video models primary; honesty on Soon */}
+      <div className="border-b border-white/10 bg-[#050506] px-3 py-1.5 sm:px-4">
+        <div className="mx-auto flex max-w-[1600px] flex-wrap items-center gap-1.5 text-[11px]">
+          <span className="mr-1 text-[10px] font-bold uppercase tracking-[0.14em] text-white/35">
+            Video
           </span>
-          <span className="rounded-full border border-[var(--mint)]/40 bg-[var(--mint)]/15 px-2.5 py-0.5 font-bold text-[var(--mint)]">
-            Seedance · live
-          </span>
-          <span className="rounded-full border border-white/10 px-2.5 py-0.5 text-white/45">
-            Stills optional · video is main
-          </span>
-          <span className="rounded-full border border-white/10 px-2.5 py-0.5 text-white/35">
-            Kling / Veo / Sora · Soon
-          </span>
-          <Link
-            href="/models"
-            className="ml-auto text-[10px] font-semibold text-white/40 hover:text-[var(--mint)]"
+          <button
+            type="button"
+            className="rounded-full border border-[#c8ff3d]/50 bg-[#c8ff3d]/15 px-3 py-1 font-black text-[#c8ff3d] shadow-[0_0_16px_rgba(200,255,61,0.15)]"
           >
-            Models honesty →
+            Seedance · live
+          </button>
+          <span className="rounded-full border border-white/10 px-2.5 py-1 text-white/30">
+            Kling · Soon
+          </span>
+          <span className="rounded-full border border-white/10 px-2.5 py-1 text-white/30">
+            Veo · Soon
+          </span>
+          <span className="rounded-full border border-white/10 px-2.5 py-1 text-white/30">
+            Sora · Soon
+          </span>
+          <span className="mx-1 hidden h-4 w-px bg-white/10 sm:inline" />
+          <Link
+            href="/image"
+            className="rounded-full border border-white/10 px-2.5 py-1 text-white/40 hover:border-white/25 hover:text-white/70"
+          >
+            Image · optional
           </Link>
           <Link
             href="/flow"
-            className="text-[10px] font-semibold text-[var(--mint)] hover:underline"
+            className="ml-auto rounded-full border border-white/10 px-2.5 py-1 font-semibold text-[#c8ff3d]/90 hover:border-[#c8ff3d]/40"
           >
-            Flow matrix →
+            Flow →
           </Link>
         </div>
       </div>
@@ -1273,11 +1280,12 @@ export function CreateStudio({
         </ol>
       </div>
 
-      <div className="grid flex-1 lg:min-h-0 lg:grid-cols-[280px_minmax(320px,0.95fr)_minmax(0,1.15fr)]">
-        {/* ── Recipe rail (desktop) — HF density ── */}
-        <aside className="hidden max-h-[calc(100vh-8rem)] overflow-y-auto border-r border-white/[0.07] bg-[#070708] p-3 lg:block">
-          <p className="mb-2 px-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--mint)]/80">
-            Toy recipes
+      {/* HF Generate: narrow recipe rail · controls · dominant result stage */}
+      <div className="grid flex-1 lg:min-h-0 lg:grid-cols-[220px_minmax(280px,0.8fr)_minmax(0,1.4fr)] xl:grid-cols-[240px_minmax(300px,0.75fr)_minmax(0,1.5fr)]">
+        {/* ── Recipe rail (desktop) — HF Viral Presets density ── */}
+        <aside className="hidden max-h-[calc(100vh-7rem)] overflow-y-auto border-r border-white/[0.07] bg-[#050506] p-2.5 lg:block">
+          <p className="mb-2 px-1 text-[10px] font-black uppercase tracking-[0.16em] text-[#c8ff3d]/90">
+            Viral presets
           </p>
           <input
             value={presetFilter}

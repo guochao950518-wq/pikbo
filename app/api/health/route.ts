@@ -106,6 +106,17 @@ export async function GET() {
     stripeWebhook,
     sessionSecret,
     mode,
+    /**
+     * Product orientation — ops + Mode A honesty.
+     * Primary sell is AI video; stills are optional support (not a stills shop).
+     */
+    product: {
+      primary: "video" as const,
+      stills: "optional-support" as const,
+      generatePath: "/api/generate",
+      imagePath: "/api/image",
+      idempotency: "client-key-session-scoped",
+    },
     /** Honesty contract: cached demos free; live jobs charge flat credits */
     billing: {
       cachedDemoCredits: 0,

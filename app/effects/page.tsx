@@ -66,25 +66,25 @@ export default function EffectsHub() {
       <div className="sticky top-0 z-20 border-b border-white/[0.07] bg-black/85 px-4 py-3.5 backdrop-blur-xl sm:px-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="section-label">
-              {PRESETS.length} recipes · {proofPresets.length} lab proof
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#c8ff3d]">
+              Viral presets · {PRESETS.length} · {proofPresets.length} with Lab video
             </p>
-            <h1 className="font-display text-lg font-black tracking-tight sm:text-xl">
-              Viral presets · remake in Generate
+            <h1 className="font-display text-xl font-black uppercase tracking-tight sm:text-2xl">
+              Big-budget motion · remake as video
             </h1>
             <p className="mt-0.5 text-[11px] text-white/45">
-              HF-style wall, toy-native · Lab-proof clips only claim unique media ·{" "}
-              <Link href="/modules" className="font-semibold text-[var(--mint)] hover:underline">
-                Module jobs →
+              Pixel-parity with suite viral walls — tap any card to Generate video ·{" "}
+              <Link href="/create" className="font-semibold text-[#c8ff3d] hover:underline">
+                Open Generate →
               </Link>
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Link
               href="/create?try=1&sample=scout"
-              className="btn btn-primary !px-4 !py-2 text-xs"
+              className="btn btn-primary !px-4 !py-2 text-xs font-black"
             >
-              Try free
+              Generate free
             </Link>
             <Link
               href="/flow"
@@ -93,16 +93,10 @@ export default function EffectsHub() {
               Flow
             </Link>
             <Link
-              href="/modules"
-              className="btn btn-ghost !px-3 !py-2 text-xs"
-            >
-              Modules
-            </Link>
-            <Link
               href="/create"
               className="btn btn-ghost !px-3 !py-2 text-xs"
             >
-              Generate
+              Video
             </Link>
             <Link
               href="/create?mode=seller-pack"
@@ -153,7 +147,7 @@ export default function EffectsHub() {
               {items.length} looks
             </span>
           </div>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-2.5 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7">
+          <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 sm:gap-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
             {items.map((item) => (
               <VideoTile key={item.id} item={item} compact />
             ))}

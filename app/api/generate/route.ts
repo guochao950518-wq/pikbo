@@ -162,45 +162,8 @@ export async function POST(req: Request) {
 
   let session = await ensureSession();
 
-  // Phase D: prefer session-local asset over re-posted Base64.
-  let image =
-    typeof imageField === "string" && imageField.startsWith("data:image")
-      ? imageField
-      : undefined;
-  if (typeof assetId === "string" && assetId.startsWith("asset_")) {
-    const asset = getLocalAsset(assetId, session.id);
-    if (!asset) {
-      return err(
-        {
-          error:
-            "Asset missing, expired, or not owned by this session — re-upload the photo",
-          code: "ASSET_NOT_FOUND",
-          session: publicSession(session),
-        },
-        404
-      );
-    }
-    image = asset.dataUrl;
-  }
-
-  if (!image || !isValidImageDataUrl(image)) {
-    return err(
-      {
-        error:
-          "A toy photo is required (JPEG, PNG, WebP, or GIF data URL, or assetId from /api/assets)",
-        code: "INVALID_REQUEST",
-      },
-      400
-    );
-  }
-  if (image.length > 12_000_000) {
-    return err(
-      { error: "Image too large (max ~8MB)", code: "IMAGE_TOO_LARGE" },
-      413
-    );
-  }
-
-  // Idempotent replay: same session + key returns prior result (no second debit).
+  // Idempotent replay BEFORE image/asset resolve — network retries must not
+  // re-upload multi-MB stills or fail on expired assetId after success.
   const idempotencyKey = normalizeIdempotencyKey(body.idempotencyKey);
   if (idempotencyKey) {
     const prior = findJobByIdempotencyKey(session.id, idempotencyKey);
@@ -254,6 +217,44 @@ export async function POST(req: Request) {
         );
       }
     }
+  }
+
+  // Phase D: prefer session-local asset over re-posted Base64.
+  let image =
+    typeof imageField === "string" && imageField.startsWith("data:image")
+      ? imageField
+      : undefined;
+  if (typeof assetId === "string" && assetId.startsWith("asset_")) {
+    const asset = getLocalAsset(assetId, session.id);
+    if (!asset) {
+      return err(
+        {
+          error:
+            "Asset missing, expired, or not owned by this session — re-upload the photo",
+          code: "ASSET_NOT_FOUND",
+          session: publicSession(session),
+        },
+        404
+      );
+    }
+    image = asset.dataUrl;
+  }
+
+  if (!image || !isValidImageDataUrl(image)) {
+    return err(
+      {
+        error:
+          "A toy photo is required (JPEG, PNG, WebP, or GIF data URL, or assetId from /api/assets)",
+        code: "INVALID_REQUEST",
+      },
+      400
+    );
+  }
+  if (image.length > 12_000_000) {
+    return err(
+      { error: "Image too large (max ~8MB)", code: "IMAGE_TOO_LARGE" },
+      413
+    );
   }
 
   const rl = takeGenerateBudget(session.id, clientIp(req), "gen");

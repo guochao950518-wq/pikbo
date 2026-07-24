@@ -62,7 +62,18 @@ else:
     print(f"assets count={assets.get('count')} mode={assets.get('mode')}")
 jobs=h.get("jobs") or {}
 if jobs:
-    print(f"jobs count={jobs.get('count')} mode={jobs.get('mode')}")
+    print(f"jobs count={jobs.get('count')} mode={jobs.get('mode')} open={jobs.get('open')} byStatus={jobs.get('byStatus')}")
+    if "byStatus" not in jobs and jobs.get("mode") == "local-memory":
+        print("WARN health.jobs.byStatus missing — preferred after jobId/probe ship")
+product=h.get("product") or {}
+if product:
+    print(f"product primary={product.get('primary')} stills={product.get('stills')}")
+    if product.get("primary") != "video":
+        sys.exit("FAIL health.product.primary must be video (video-first)")
+    if product.get("stills") not in (None, "optional-support", "optional"):
+        print("WARN health.product.stills should be optional-support")
+elif True:
+    print("WARN health.product missing — preferred video-first orientation probe")
 rl=h.get("rateLimit") or {}
 if isinstance(rl, dict):
     print(f"rateLimit inflight={rl.get('inflight')} ttlMs={rl.get('inflightTtlMs')}")
