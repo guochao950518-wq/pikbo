@@ -102,7 +102,11 @@ export function interpretGenerateResponse(
                 ? "Image too large (max ~8MB)"
                 : code === "ASSET_NOT_FOUND"
                   ? "Photo asset expired on the server — re-upload or retry with the same still"
-                  : "Generation failed");
+                  : code === "UNSAFE_URL"
+                    ? "Provider returned an unsafe video URL — credits restored when the debit was confirmed. Retry generate."
+                    : code === "PROVIDER_RATE_LIMIT"
+                      ? `Provider rate limited — try again in ${retryAfterSec ?? "a few"}s`
+                      : "Generation failed");
 
   // PRD §5: recoverable failures must say whether the 10 credits were restored.
   if (
