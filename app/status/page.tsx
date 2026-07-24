@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { StatusProbe } from "@/components/StatusProbe";
+import { PRIVATE_ROBOTS } from "@/lib/seoIndex";
 
 export const metadata: Metadata = {
   title: "System status",
   description: "Pikbo soft-launch readiness (no secrets).",
-  robots: { index: false, follow: false },
+  robots: PRIVATE_ROBOTS,
 };
 
 export default function StatusPage() {

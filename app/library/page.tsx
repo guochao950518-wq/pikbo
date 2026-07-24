@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LibraryGrid } from "@/components/LibraryGrid";
+import { PRIVATE_ROBOTS } from "@/lib/seoIndex";
 
 export const metadata: Metadata = {
   title: "Assets · Local Library",
   description:
     "Device-local clips and toy SKU groups — remake, download, or open Generate. Not cloud-synced until durable sign-in.",
-  robots: { index: false, follow: false },
+  robots: PRIVATE_ROBOTS,
 };
 
 /**

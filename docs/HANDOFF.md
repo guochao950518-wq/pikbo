@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Phase D Library byStatus recovery + PRIVATE_ROBOTS
+- Library SessionJobsPanel: open count · byStatus chips · timeout sweep note.
+- Poll uses server `open` + jobs; Profile adds Flow/Status doors.
+- Library/Profile/Login/Status use shared `PRIVATE_ROBOTS` (Phase H).
+- Verified: typecheck · lint · engine-smoke.
+
 ### 2026-07-24 — [grok] video-first gates + Image optional support
 - Image studio: optional-support copy (not primary product).
 - engine-smoke: `site` video-first tagline + suite mode order (stills last).

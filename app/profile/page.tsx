@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ProfilePanel } from "@/components/ProfilePanel";
 import { publicAuthStatus } from "@/lib/authConfig";
+import { PRIVATE_ROBOTS } from "@/lib/seoIndex";
 
 export const metadata: Metadata = {
   title: "Profile",
   description: "Plan, credits, and your Pikbo session.",
-  robots: { index: false, follow: false },
+  robots: PRIVATE_ROBOTS,
 };
 
 export default function ProfilePage() {

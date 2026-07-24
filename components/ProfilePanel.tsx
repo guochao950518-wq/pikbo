@@ -213,6 +213,12 @@ export function ProfilePanel() {
           >
             Seller Pack
           </Link>
+          <Link href="/flow" className="btn btn-ghost w-full text-sm">
+            Flow
+          </Link>
+          <Link href="/status" className="btn btn-ghost w-full text-sm">
+            System status
+          </Link>
         </div>
         {!auth.signedIn ? (
           <Link href="/login" className="btn btn-ghost w-full text-sm">

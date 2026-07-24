@@ -3,11 +3,12 @@ import Link from "next/link";
 import { publicAuthStatus } from "@/lib/authConfig";
 import { site } from "@/lib/site";
 import { LoginForm } from "@/components/LoginForm";
+import { PRIVATE_ROBOTS } from "@/lib/seoIndex";
 
 export const metadata: Metadata = {
   title: "Sign in",
   description: `Sign in to ${site.name} for cross-device credits and saved projects.`,
-  robots: { index: false, follow: false },
+  robots: PRIVATE_ROBOTS,
 };
 
 export default function LoginPage() {

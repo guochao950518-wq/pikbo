@@ -36,34 +36,84 @@ type SessionJob = {
   createdAt?: string;
 };
 
+type SessionByStatus = {
+  queued: number;
+  running: number;
+  succeeded: number;
+  failed: number;
+  canceled: number;
+};
+
+type SessionJobsMeta = {
+  byStatus: SessionByStatus;
+  open: number;
+  jobTimeoutMs: number | null;
+  timedOutThisSweep: number;
+  mode: string | null;
+};
+
+const EMPTY_BY_STATUS: SessionByStatus = {
+  queued: 0,
+  running: 0,
+  succeeded: 0,
+  failed: 0,
+  canceled: 0,
+};
+
 function isCancellableSessionJob(status: string): boolean {
   return status === "queued" || status === "running";
+}
+
+function statusTone(status: string): string {
+  if (status === "succeeded") return "text-[var(--mint)]";
+  if (status === "failed" || status === "canceled") return "text-amber-200";
+  if (status === "running" || status === "queued") return "text-[var(--brand-2)]";
+  return "text-[var(--fg-dim)]";
 }
 
 /** Phase D: process-memory ledger — must show even when device history is empty. */
 function SessionJobsPanel({
   jobs,
+  meta,
   cancellingId,
   onCancel,
   onRefresh,
 }: {
   jobs: SessionJob[];
+  meta: SessionJobsMeta;
   cancellingId: string | null;
   onCancel: (id: string) => void;
   onRefresh: () => void;
 }) {
   if (jobs.length === 0) return null;
+  const { byStatus, open, jobTimeoutMs, timedOutThisSweep } = meta;
+  const timeoutMin =
+    typeof jobTimeoutMs === "number" && jobTimeoutMs > 0
+      ? Math.round(jobTimeoutMs / 60000)
+      : null;
+
   return (
     <section className="mb-6 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div>
           <p className="text-[10px] font-black uppercase tracking-wider text-[var(--fg-dim)]">
             Session jobs · this server process
+            {open > 0 ? (
+              <span className="ml-1.5 font-bold text-[var(--mint)]">
+                · {open} open
+              </span>
+            ) : null}
           </p>
           <p className="mt-1 text-xs text-[var(--fg-muted)]">
             Local ledger from Generate (not multi-node cloud). Device Library
             below is this browser only — empty until a clip is saved here.
             Cancel marks the ledger only; in-flight fal may still finish.
+            {timeoutMin ? (
+              <span className="text-[var(--fg-dim)]">
+                {" "}
+                Open jobs time out after ~{timeoutMin}m without poll.
+              </span>
+            ) : null}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
@@ -82,6 +132,32 @@ function SessionJobsPanel({
           </Link>
         </div>
       </div>
+      {/* Server byStatus histogram — recovery at a glance */}
+      <div className="mt-3 flex flex-wrap gap-1.5 text-[10px]">
+        {(
+          [
+            ["queued", byStatus.queued],
+            ["running", byStatus.running],
+            ["succeeded", byStatus.succeeded],
+            ["failed", byStatus.failed],
+            ["canceled", byStatus.canceled],
+          ] as const
+        ).map(([label, n]) =>
+          n > 0 ? (
+            <span
+              key={label}
+              className={`rounded-full border border-white/10 bg-black/35 px-2 py-0.5 font-semibold tabular-nums ${statusTone(label)}`}
+            >
+              {label} {n}
+            </span>
+          ) : null
+        )}
+        {timedOutThisSweep > 0 ? (
+          <span className="rounded-full border border-amber-300/30 bg-amber-300/10 px-2 py-0.5 font-semibold text-amber-100">
+            timeout sweep {timedOutThisSweep}
+          </span>
+        ) : null}
+      </div>
       <ul className="mt-3 space-y-2">
         {jobs.map((j) => (
           <li
@@ -91,7 +167,7 @@ function SessionJobsPanel({
             <div className="min-w-0">
               <p className="truncate font-semibold text-[var(--fg)]">
                 {j.effect}{" "}
-                <span className="font-normal text-[var(--fg-dim)]">
+                <span className={`font-normal ${statusTone(j.status)}`}>
                   · {j.status}
                   {j.creditsOutcome ? ` · ${j.creditsOutcome}` : ""}
                 </span>
@@ -153,8 +229,51 @@ export function LibraryGrid() {
   /** Wave A: group device-local clips by remix/sample project key */
   const [groupMode, setGroupMode] = useState<GroupMode>("project");
   const [sessionJobs, setSessionJobs] = useState<SessionJob[]>([]);
+  const [sessionMeta, setSessionMeta] = useState<SessionJobsMeta>({
+    byStatus: EMPTY_BY_STATUS,
+    open: 0,
+    jobTimeoutMs: null,
+    timedOutThisSweep: 0,
+    mode: null,
+  });
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const toast = useToast();
+
+  function applyGenerationsBody(body: {
+    ok?: boolean;
+    jobs?: SessionJob[];
+    byStatus?: Partial<SessionByStatus>;
+    open?: number;
+    jobTimeoutMs?: number;
+    timedOutThisSweep?: number;
+    mode?: string;
+  }) {
+    if (!body?.ok || !Array.isArray(body.jobs)) return;
+    setSessionJobs(body.jobs.slice(0, 12));
+    const bs = body.byStatus ?? {};
+    const byStatus: SessionByStatus = {
+      queued: Number(bs.queued) || 0,
+      running: Number(bs.running) || 0,
+      succeeded: Number(bs.succeeded) || 0,
+      failed: Number(bs.failed) || 0,
+      canceled: Number(bs.canceled) || 0,
+    };
+    const openFromServer =
+      typeof body.open === "number"
+        ? body.open
+        : byStatus.queued + byStatus.running;
+    setSessionMeta({
+      byStatus,
+      open: openFromServer,
+      jobTimeoutMs:
+        typeof body.jobTimeoutMs === "number" ? body.jobTimeoutMs : null,
+      timedOutThisSweep:
+        typeof body.timedOutThisSweep === "number"
+          ? body.timedOutThisSweep
+          : 0,
+      mode: typeof body.mode === "string" ? body.mode : null,
+    });
+  }
 
   useEffect(() => {
     const t = window.setTimeout(() => {
@@ -167,9 +286,8 @@ export function LibraryGrid() {
   async function refreshSessionJobs() {
     try {
       const r = await fetch("/api/generations");
-      const body = (await r.json()) as { ok?: boolean; jobs?: SessionJob[] };
-      if (!body?.ok || !Array.isArray(body.jobs)) return;
-      setSessionJobs(body.jobs.slice(0, 12));
+      const body = (await r.json()) as Parameters<typeof applyGenerationsBody>[0];
+      applyGenerationsBody(body);
     } catch {
       /* ignore */
     }
@@ -181,9 +299,9 @@ export function LibraryGrid() {
     const t = window.setTimeout(() => {
       void fetch("/api/generations")
         .then((r) => r.json())
-        .then((body: { ok?: boolean; jobs?: SessionJob[] }) => {
-          if (cancelled || !body?.ok || !Array.isArray(body.jobs)) return;
-          setSessionJobs(body.jobs.slice(0, 12));
+        .then((body: Parameters<typeof applyGenerationsBody>[0]) => {
+          if (cancelled) return;
+          applyGenerationsBody(body);
         })
         .catch(() => undefined);
     }, 0);
@@ -195,19 +313,20 @@ export function LibraryGrid() {
 
   // Poll while any job is still open so TIMEOUT/cancel/success surfaces without reload.
   useEffect(() => {
-    const open = sessionJobs.some((j) => isCancellableSessionJob(j.status));
+    const open =
+      sessionMeta.open > 0 ||
+      sessionJobs.some((j) => isCancellableSessionJob(j.status));
     if (!open) return;
     const t = window.setInterval(() => {
       void fetch("/api/generations")
         .then((r) => r.json())
-        .then((body: { ok?: boolean; jobs?: SessionJob[] }) => {
-          if (!body?.ok || !Array.isArray(body.jobs)) return;
-          setSessionJobs(body.jobs.slice(0, 12));
+        .then((body: Parameters<typeof applyGenerationsBody>[0]) => {
+          applyGenerationsBody(body);
         })
         .catch(() => undefined);
     }, 8000);
     return () => window.clearInterval(t);
-  }, [sessionJobs]);
+  }, [sessionJobs, sessionMeta.open]);
 
   async function cancelSessionJob(id: string) {
     setCancellingId(id);
@@ -398,6 +517,7 @@ export function LibraryGrid() {
       <div className="mt-8">
         <SessionJobsPanel
           jobs={sessionJobs}
+          meta={sessionMeta}
           cancellingId={cancellingId}
           onCancel={(id) => void cancelSessionJob(id)}
           onRefresh={() => void refreshSessionJobs()}
@@ -462,6 +582,7 @@ export function LibraryGrid() {
     <div className="mt-8">
       <SessionJobsPanel
         jobs={sessionJobs}
+        meta={sessionMeta}
         cancellingId={cancellingId}
         onCancel={(id) => void cancelSessionJob(id)}
         onRefresh={() => void refreshSessionJobs()}

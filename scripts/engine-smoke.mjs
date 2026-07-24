@@ -1224,7 +1224,11 @@ assert.match(robotsSrc, /\/cinema/);
 assert.match(robotsSrc, /\/library/);
 assert.match(robotsSrc, /\/image/);
 const libMeta = fs.readFileSync(join(root, "app/library/page.tsx"), "utf8");
-assert.match(libMeta, /index:\s*false/);
+assert.match(libMeta, /PRIVATE_ROBOTS|index:\s*false/);
+assert.match(
+  fs.readFileSync(join(root, "lib/seoIndex.ts"), "utf8"),
+  /export const PRIVATE_ROBOTS/
+);
 const appsMeta = fs.readFileSync(join(root, "app/apps/page.tsx"), "utf8");
 // Apps is the live workflow shelf (not a thin preview door).
 assert.match(appsMeta, /WORKFLOWS|workflows/);
@@ -1645,6 +1649,20 @@ assert.match(createStudio, /registerLocalAsset|assetId/);
 assert.match(library, /Session jobs|\/api\/generations/);
 // Empty device history must still mount SessionJobsPanel (Phase D recovery)
 assert.match(library, /SessionJobsPanel|No clips saved on this device yet/);
+assert.match(library, /byStatus|SessionJobsMeta|timedOutThisSweep/);
+assert.match(library, /applyGenerationsBody|jobTimeoutMs/);
+assert.match(
+  fs.readFileSync(join(root, "app/library/page.tsx"), "utf8"),
+  /PRIVATE_ROBOTS/
+);
+assert.match(
+  fs.readFileSync(join(root, "app/profile/page.tsx"), "utf8"),
+  /PRIVATE_ROBOTS/
+);
+assert.match(
+  fs.readFileSync(join(root, "app/login/page.tsx"), "utf8"),
+  /PRIVATE_ROBOTS/
+);
 assert.match(library, /this server process/);
 assert.match(library, /Cancel ledger|method:\s*[\"']DELETE[\"']/);
 // Failure next-actions live on shared GenerateFailPanel (Create/Batch/Landing/Image)
