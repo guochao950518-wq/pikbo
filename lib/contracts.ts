@@ -70,7 +70,8 @@ export type GenerateErrorBody = {
     | "PROVIDER_RATE_LIMIT"
     | "RATE_LIMITED"
     | "JOB_IN_FLIGHT"
-    | "RIGHTS_REQUIRED";
+    | "RIGHTS_REQUIRED"
+    | "UNSAFE_URL";
   need?: number;
   have?: number;
   model?: string;
