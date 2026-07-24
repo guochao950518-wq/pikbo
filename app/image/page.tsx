@@ -21,6 +21,8 @@ export default function ImageStudioPage() {
   const [error, setError] = useState<string | null>(null);
   const [demo, setDemo] = useState(false);
   const [history, setHistory] = useState<ImageHistoryItem[]>([]);
+  /** Server settlement echo — 0 cached vs 10 used (honest soft-launch). */
+  const [lastSettlement, setLastSettlement] = useState<string | null>(null);
   /** Phase D/F parity — cancel mid still; refund unconfirmed if live debit started. */
   const abortRef = useRef<AbortController | null>(null);
 
@@ -77,6 +79,15 @@ export default function ImageStudioPage() {
       }
       setImageUrl(data.imageUrl);
       setDemo(Boolean(data.demo));
+      const outcome =
+        data.creditsOutcome === "0 cached" || data.creditsOutcome === "10 used"
+          ? data.creditsOutcome
+          : typeof data.costCredits === "number"
+            ? data.costCredits === 0
+              ? "0 cached"
+              : `${data.costCredits} used`
+            : null;
+      setLastSettlement(outcome);
       // Store live URLs + labeled demo placeholders so history stays honest.
       if (data.imageUrl) {
         setHistory(
@@ -203,6 +214,14 @@ export default function ImageStudioPage() {
             )}
             {imageUrl && imageUrl.startsWith("http") && (
               <div className="mt-3 flex flex-col gap-2">
+                {(demo || lastSettlement) && (
+                  <p className="text-center text-[11px] text-[var(--fg-dim)]">
+                    {demo ? "Cached demo · 0 credits" : null}
+                    {!demo && lastSettlement
+                      ? `Settlement · ${lastSettlement}`
+                      : null}
+                  </p>
+                )}
                 <Link
                   href="/create"
                   className="btn btn-primary w-full text-sm"
