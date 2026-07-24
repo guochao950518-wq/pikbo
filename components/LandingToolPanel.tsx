@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   historyFieldsFromSuccess,
   postGenerateWithRetry,
@@ -59,6 +59,7 @@ export function LandingToolPanel({
   const [usedModel, setUsedModel] = useState<string | null>(null);
   const [resultResolution, setResultResolution] = useState<string | null>(null);
   const [requestId, setRequestId] = useState<string | null>(null);
+  const generateAbortRef = useRef<AbortController | null>(null);
   const toast = useToast();
   const downloadAllowed = canDownloadResult({
     demo,
@@ -71,6 +72,23 @@ export function LandingToolPanel({
     setSession(data);
     setWatermark(data.watermark);
   }, []);
+
+  useEffect(() => {
+    return () => {
+      generateAbortRef.current?.abort();
+      generateAbortRef.current = null;
+    };
+  }, []);
+
+  function cancelInFlightGenerate() {
+    const ctrl = generateAbortRef.current;
+    if (!ctrl) return;
+    ctrl.abort();
+    generateAbortRef.current = null;
+    toast(
+      "Canceled · check balance before retry if live debit may have started"
+    );
+  }
 
   useEffect(() => {
     const t = window.setTimeout(() => {
@@ -165,6 +183,9 @@ export function LandingToolPanel({
     setRequestId(null);
     setElapsed(0);
     setStatus("generating");
+    generateAbortRef.current?.abort();
+    const abortCtrl = new AbortController();
+    generateAbortRef.current = abortCtrl;
     const useAsset = Boolean(assetId);
     const result = await postGenerateWithRetry(
       {
@@ -179,8 +200,12 @@ export function LandingToolPanel({
       {
         maxRetries: 1,
         fallbackImage: useAsset && image ? image : undefined,
+        signal: abortCtrl.signal,
       }
     );
+    if (generateAbortRef.current === abortCtrl) {
+      generateAbortRef.current = null;
+    }
     // Dead asset after TTL/process restart — clear and re-register for next try.
     if (
       (!result.ok && result.code === "ASSET_NOT_FOUND") ||
@@ -395,16 +420,25 @@ export function LandingToolPanel({
             </span>
           </label>
 
-          <button
-            type="button"
-            disabled={busy || !image || !ownsRights}
-            onClick={() => void generate()}
-            className="btn btn-primary w-full disabled:opacity-50"
-          >
-            {busy
-              ? `Generating… ${elapsed}s`
-              : `Generate ${effectName} · ${CREDITS_PER_VIDEO} credits`}
-          </button>
+          {busy ? (
+            <button
+              type="button"
+              onClick={cancelInFlightGenerate}
+              title="Aborts this browser request. Soft-launch may still finish server-side; refund unconfirmed until balance confirms."
+              className="btn btn-ghost w-full border border-amber-400/40 text-amber-100"
+            >
+              Cancel request · {elapsed}s
+            </button>
+          ) : (
+            <button
+              type="button"
+              disabled={!image || !ownsRights}
+              onClick={() => void generate()}
+              className="btn btn-primary w-full disabled:opacity-50"
+            >
+              {`Generate ${effectName} · ${CREDITS_PER_VIDEO} credits`}
+            </button>
+          )}
 
           {error === "INSUFFICIENT" ||
           (error && error.toLowerCase().includes("credit")) ? (
@@ -467,6 +501,13 @@ export function LandingToolPanel({
                 <p className="mt-1 text-xs text-[var(--fg-dim)]">
                   Live renders usually take 30–90s; cached demos return faster · {elapsed}s
                 </p>
+                <button
+                  type="button"
+                  onClick={cancelInFlightGenerate}
+                  className="btn btn-ghost mt-4 border border-amber-400/35 px-3 py-1.5 text-xs text-amber-100"
+                >
+                  Cancel request
+                </button>
               </div>
             </div>
           )}
