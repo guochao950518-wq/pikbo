@@ -1,0 +1,58 @@
+# 像素级对标清单 — Higgsfield + Yiha → Pikbo
+
+**老板指令（2026-07-24）：** 像素级抄他们的网站功能与产品结构。  
+**合法边界：** 抄 IA / 布局 / 密度 / 交互 / 工作流；**不抄** 片源、商标、文案原文、假 UGC、假多模型 live。  
+**主产品：** AI **视频**生成（不是静图店）。
+
+---
+
+## 1. Higgsfield 首页物理结构（研究结论）
+
+```text
+[顶栏] Explore 系导航 · 积分 · Generate
+[战役轮播] 多视频卡横滑（新功能 / Seedance / Contest…）
+[产品入口条] Seedance Video · Image · Supercomputer · Cinema · …（大卡）
+[Viral Presets 墙] ALL + 分类 chip · 超密竖卡网格 · hover 播
+[Inside projects] 项目可点进拆解
+[Seedance 4K 大战役] 全宽视频 banner
+[底栏 mobile] Home · Community · Generate(中) · Library · Profile
+```
+
+**他们卖的是视频：** 墙全是动的；Generate 是中心动作。
+
+## 2. Yiha 结构（研究结论）
+
+```text
+Create 工作台 = 模型/提示/参考 + 结果
+顶栏 Video / Image / Edit 分轨
+/lego 类垂直 mini-app 壳
+Explore → remix 回 Create
+```
+
+## 3. Pikbo 像素对标动作（本轮起）
+
+| # | 对标项 | HF/Yiha | Pikbo 动作 | 状态 |
+|---|--------|---------|------------|------|
+| P1 | 满屏视频墙为主 | Viral Presets 网格 | 首页主区 `HomeViralWall` 密网 | **doing** |
+| P2 | 产品入口条 | Seedance/Image/… 大卡 | 顶栏 product rail 7 卡 | **doing** |
+| P3 | 底栏 5 键 | H·C·G·L·P | MOBILE_NAV 对齐 HF | **doing** |
+| P4 | 桌面主导航 | Explore/Video/Image/Cinema/Community | PRIMARY_NAV 对齐 | **doing** |
+| P5 | Generate 中心 | 大绿钮 / 中心 tab | 保留 + 强化 | partial |
+| P6 | Inside project | 输入输出拆解 | `/projects` 已有，首页露更多 | partial |
+| P7 | Flow 矩阵 | 创建入口货架 | `/flow` 已有，首页门对齐 | partial |
+| P8 | Modules 像 lego | 固定工作流壳 | `/modules` 已有 | partial |
+| P9 | Library/Assets | 底栏 Library | `/library` | soft local |
+| P10 | 多模型墙 | Kling/Veo live | **诚实 Soon，永不假 live** | skip fake |
+| P11 | 真 UGC 社区 | Community remake | Lab only until auth | blocked |
+| P12 | Cinema 全套 | Cinema Studio | Preview 壳 | partial |
+
+## 4. 明确不做（仍是像素对标里的红线）
+
+- 不用他们 CDN 片源 / logo / 文案  
+- 不写 fake “Kling live / Veo live”  
+- 不编假用户帖  
+
+## 5. 验收（老板体感）
+
+打开 `/` 应像：**进站先被视频墙砸中**，不是先读长文案再找生成。  
+Generate / Flow / Modules / Library 路径与 HF 同构。

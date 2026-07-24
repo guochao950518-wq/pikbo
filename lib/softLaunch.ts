@@ -1,30 +1,31 @@
 /**
  * Soft-launch freezes from docs/prd/SOFT_NAV_AND_PRESETS.md (+ suite Modules).
  * Code imports this so G1/G2 cannot drift from the product contract.
+ *
+ * 2026-07-24: PRIMARY/MOBILE aligned to HF pixel IA (Explore/Video/Image/Cinema/Community
+ * + bottom Home·Community·Generate·Library·Profile). Video is the product.
  */
 
 /**
- * Desktop primary destinations (suite IA).
- * Explore is `/` (home wall); Modules is the modular job wall (Yiha/lego pattern).
- * Pricing remains a header utility, not a primary peer of Create.
+ * Desktop primary — HF-style product OS nav (video first).
  */
 export const PRIMARY_NAV = [
   { href: "/", label: "Explore" },
-  { href: "/create", label: "Generate" },
-  { href: "/modules", label: "Modules" },
-  { href: "/effects", label: "Presets" },
-  { href: "/community", label: "Lab" },
+  { href: "/create", label: "Video" },
+  { href: "/image", label: "Image" },
+  { href: "/cinema", label: "Cinema" },
+  { href: "/community", label: "Community" },
 ] as const;
 
 export const PRIMARY_NAV_HREFS = PRIMARY_NAV.map((item) => item.href);
 
 /**
- * Mobile bottom bar (5 slots). Modules is the job wall peer of Generate;
- * Lab stays desktop PRIMARY_NAV + footer, not a bottom-tab peer.
+ * Mobile bottom bar — pixel parity with HF:
+ * Home · Community · Generate(center) · Library · Profile
  */
 export const MOBILE_NAV = [
   { href: "/", label: "Home" },
-  { href: "/modules", label: "Modules" },
+  { href: "/community", label: "Community" },
   { href: "/create", label: "Generate", primary: true as const },
   { href: "/library", label: "Library" },
   { href: "/profile", label: "Profile" },

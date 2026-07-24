@@ -13,6 +13,8 @@ import {
 import { track } from "@/lib/analytics";
 import { SuiteEntryStrip } from "@/components/SuiteEntryStrip";
 import { HomeViralPresetRail } from "@/components/HomeViralPresetRail";
+import { HomeViralWall } from "@/components/HomeViralWall";
+import { HfProductRail } from "@/components/HfProductRail";
 import { useI18n } from "@/components/LanguageProvider";
 
 /** Soft concurrent autoplay budget — pause extras when many tiles enter view. */
@@ -105,17 +107,21 @@ function Clip({
 }
 
 /**
- * Home retention loop (RETENTION_REMIX_LOOP):
- * Premiere → before/after → recipe rails with remix deep links.
+ * HF Explore home — pixel-parity structure:
+ * product rail → dense viral video wall → inside projects → suite doors.
+ * Video is the product; stills are not the homepage hero job.
  */
 export function HfExploreHome({
   demos,
   projects,
   feed,
+  viralWall,
 }: {
   demos: DemoVideo[];
   projects: ShowcaseProject[];
   feed: FeedItem[];
+  /** Dense HF-style viral presets grid (owned Lab media only) */
+  viralWall?: FeedItem[];
 }) {
   const { t } = useI18n();
   const showcase: FeedItem[] = feed.length
@@ -134,6 +140,9 @@ export function HfExploreHome({
         recipeSlug: d.preset,
       }));
 
+  const wallItems =
+    viralWall && viralWall.length > 0 ? viralWall : showcase;
+
   const [active, setActive] = useState(0);
   const item = showcase[active] ?? showcase[0];
   const preset = item?.recipeSlug ? getPreset(item.recipeSlug) : undefined;
@@ -151,8 +160,14 @@ export function HfExploreHome({
 
   return (
     <div className="min-h-screen bg-black pb-28 text-white sm:pb-16">
-      {/* ── Screen 1: Toy Premiere ── */}
-      <section className="relative min-h-[min(860px,calc(100svh-3.5rem))] overflow-hidden border-b border-white/10">
+      {/* HF product entry rail — capability cards before the wall */}
+      <HfProductRail />
+
+      {/* HF Viral Presets — dense grid is the homepage (not a blog) */}
+      <HomeViralWall items={wallItems} />
+
+      {/* Compact premiere strip (secondary to the wall) */}
+      <section className="relative min-h-[min(520px,70svh)] overflow-hidden border-b border-white/10">
         <div className="absolute inset-0">
           <Clip
             key={item.id}

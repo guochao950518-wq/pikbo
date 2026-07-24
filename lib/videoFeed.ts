@@ -58,6 +58,53 @@ function createHref(presetSlug: string, sourceId?: string) {
 export const HOME_SHOWCASE_LIMIT = HOME_PROOF_LIMIT;
 
 /**
+ * HF Viral Presets–density wall for home: every unique Lab demo + every
+ * showcase project card. Uses only owned footage (no shared-loop fakes).
+ */
+export function buildViralPresetsWallFeed(): FeedItem[] {
+  const fromDemos: FeedItem[] = DEMO_VIDEOS.map((demo) => {
+    const preset = PRESETS.find((p) => p.slug === demo.preset);
+    return {
+      id: `viral-demo-${demo.id}`,
+      title: viralName(demo.preset, demo.title),
+      subtitle: demo.eyebrow,
+      href: createHref(demo.preset, demo.id),
+      detailHref: `/effects/${demo.preset}`,
+      badge: HOME_PROOF_BADGE,
+      ratio: demo.ratio,
+      demo,
+      kind: "demo" as const,
+      category: preset?.category,
+      recipeSlug: demo.preset,
+    };
+  });
+  const seenPresets = new Set(fromDemos.map((f) => f.recipeSlug));
+  const fromProjects: FeedItem[] = listShowcaseProjects()
+    .filter((p) => !seenPresets.has(p.recipeSlug))
+    .map((project) => {
+      const preset = PRESETS.find((p) => p.slug === project.recipeSlug);
+      return {
+        id: `viral-proj-${project.slug}`,
+        title: viralName(project.recipeSlug, project.title),
+        subtitle: project.character,
+        href: showcaseRecipeHref(project),
+        detailHref: `/effects/${project.recipeSlug}`,
+        projectHref: showcaseProjectHref(project),
+        badge: HOME_PROOF_BADGE,
+        ratio:
+          project.aspectRatio === "1:1" || project.aspectRatio === "16:9"
+            ? project.aspectRatio
+            : "9:16",
+        demo: showcaseProjectAsDemo(project),
+        kind: "demo" as const,
+        category: preset?.category,
+        recipeSlug: project.recipeSlug,
+      } satisfies FeedItem;
+    });
+  return [...fromDemos, ...fromProjects];
+}
+
+/**
  * Homepage main proof wall — only the product-whitelisted 8 slugs, each with a
  * unique Lab demo asset. No shared-loop density fills.
  */

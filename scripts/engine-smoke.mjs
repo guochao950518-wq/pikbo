@@ -1739,13 +1739,21 @@ assert.match(historySrcLib, /sku\?:/);
 assert.match(library, /i\.sku|sku/);
 
 
-// Suite honesty: PRIMARY_NAV freeze + Modules preview vs job
+// Suite honesty: PRIMARY_NAV freeze (HF: Explore/Video/Image/Cinema/Community)
 const softLaunchSrc = fs.readFileSync(join(root, "lib/softLaunch.ts"), "utf8");
 assert.match(softLaunchSrc, /PRIMARY_NAV/);
-assert.match(softLaunchSrc, /\/modules/);
+assert.match(softLaunchSrc, /href:\s*["']\/create["']/);
+assert.match(softLaunchSrc, /href:\s*["']\/community["']/);
+assert.match(softLaunchSrc, /href:\s*["']\/image["']/);
+assert.match(softLaunchSrc, /href:\s*["']\/cinema["']/);
 assert.match(
   fs.readFileSync(join(root, "components/AppShell.tsx"), "utf8"),
   /PRIMARY_NAV/
+);
+// Modules remains a real product surface (not necessarily primary-nav peer)
+assert.match(
+  fs.readFileSync(join(root, "app/modules/page.tsx"), "utf8"),
+  /Modules|modules/
 );
 const workflowsSrc = fs.readFileSync(join(root, "lib/workflows.ts"), "utf8");
 assert.match(workflowsSrc, /listPreviewWorkflows/);
@@ -1870,15 +1878,17 @@ function resolveGenerateStillPure(input) {
   assert.equal(fresh.assetId, "asset_cur");
 }
 
-// Mobile bottom nav freeze: Modules peer of Generate (not Lab)
+// Mobile bottom nav: HF parity Home · Community · Generate · Library · Profile
 assert.match(softLaunchSrc, /MOBILE_NAV/);
-assert.match(softLaunchSrc, /MOBILE_NAV[\s\S]*href:\s*["']\/modules["']/);
+assert.match(softLaunchSrc, /MOBILE_NAV[\s\S]*href:\s*["']\/community["']/);
+assert.match(softLaunchSrc, /MOBILE_NAV[\s\S]*href:\s*["']\/create["']/);
+assert.match(softLaunchSrc, /MOBILE_NAV[\s\S]*href:\s*["']\/library["']/);
 const appShellSrc = fs.readFileSync(
   join(root, "components/AppShell.tsx"),
   "utf8"
 );
 assert.match(appShellSrc, /MOBILE_NAV/);
-assert.match(appShellSrc, /nav\.modules/);
+assert.match(appShellSrc, /nav\.lab|nav\.modules|nav\.video/);
 assert.match(
   fs.readFileSync(join(root, "app/tools/page.tsx"), "utf8"),
   /\/modules/

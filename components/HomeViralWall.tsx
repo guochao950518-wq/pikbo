@@ -32,19 +32,20 @@ export function HomeViralWall({ items }: { items: FeedItem[] }) {
         <div>
           <Link
             href="/effects"
-            className="text-xl font-bold tracking-tight text-white hover:text-[var(--mint)] sm:text-2xl"
+            className="font-display text-xl font-black uppercase tracking-tight text-white hover:text-[var(--mint)] sm:text-3xl"
           >
-            Viral toy presets
+            Viral presets
           </Link>
-          <p className="mt-1 text-sm text-white/40">
-            Cached or concept-labeled previews for figures you own — tap any card to try the recipe
+          <p className="mt-1 max-w-xl text-sm text-white/45">
+            Big-budget motion from one toy photo — tap any card to generate
+            video. Lab samples only · not customer UGC.
           </p>
         </div>
         <Link
           href="/effects"
-          className="text-xs font-semibold text-[var(--mint)] hover:underline"
+          className="text-xs font-bold text-[var(--mint)] hover:underline"
         >
-          View all presets
+          View all presets →
         </Link>
       </div>
 

@@ -20,9 +20,9 @@ import { MOBILE_NAV, PRIMARY_NAV } from "@/lib/softLaunch";
  */
 const PRIMARY_KEYS = [
   "nav.explore",
-  "nav.create",
-  "nav.modules",
-  "nav.presets",
+  "nav.video",
+  "nav.image",
+  "nav.cinema",
   "nav.lab",
 ] as const;
 
@@ -54,12 +54,12 @@ const MORE = [
  */
 const MOBILE_KEYS = [
   "nav.home",
-  "nav.modules",
+  "nav.lab",
   "cta.generate",
   "nav.library",
   "nav.profile",
 ] as const;
-const MOBILE_ICONS = ["⌂", "▦", "✦", "▢", "○"] as const;
+const MOBILE_ICONS = ["⌂", "◎", "✦", "▢", "○"] as const;
 
 const MOBILE = MOBILE_NAV.map((item, i) => ({
   href: item.href,
