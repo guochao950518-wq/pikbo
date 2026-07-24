@@ -1452,6 +1452,8 @@ assert.match(createStudio, /postGenerateWithRetry|fallbackImage/);
 assert.match(createStudio, /recoveredFromAssetMiss|registerLocalAsset/);
 assert.match(batchStudio, /fallbackImage/);
 assert.match(batchStudio, /recoveredFromAssetMiss/);
+assert.match(batchStudio, /cancelInFlightPack|AbortController/);
+assert.match(batchStudio, /Cancel pack/);
 assert.match(landingTool, /postGenerateWithRetry|fallbackImage/);
 assert.match(landingTool, /recoveredFromAssetMiss|registerLocalAsset/);
 function resolveSpecImagePure(spec, store) {

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   historyFieldsFromSuccess,
   postGenerateWithRetry,
@@ -135,13 +135,29 @@ export function BatchStudio({
   const [me, setMe] = useState<MeResponse | null>(null);
   const [ownsRights, setOwnsRights] = useState(false);
   const [runProjectId, setRunProjectId] = useState<string | null>(null);
+  /** Abort in-flight pack child + rate-limit waits (parity with Create Cancel). */
+  const packAbortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     const t = window.setTimeout(() => {
       void fetchMe().then(setMe);
     }, 0);
-    return () => window.clearTimeout(t);
+    return () => {
+      window.clearTimeout(t);
+      packAbortRef.current?.abort();
+      packAbortRef.current = null;
+    };
   }, []);
+
+  function cancelInFlightPack() {
+    const ctrl = packAbortRef.current;
+    if (!ctrl) return;
+    ctrl.abort();
+    packAbortRef.current = null;
+    setError(
+      "Pack canceled — finished children kept. Live debit on the interrupted child may still settle server-side (refund unconfirmed until confirmed)."
+    );
+  }
 
   const isFree = me?.plan === "free" || me?.watermark === true;
   const demoMode = me?.mode === "demo-cached";
@@ -213,7 +229,8 @@ export function BatchStudio({
     projectId: string,
     packReservationId?: string | null,
     /** Phase D: shared still asset — avoids re-posting multi-MB Base64 per child */
-    sharedAssetId?: string | null
+    sharedAssetId?: string | null,
+    signal?: AbortSignal
   ): Promise<{
     job: Job;
     stopQueue: boolean;
@@ -241,6 +258,7 @@ export function BatchStudio({
           sharedAssetId && image && image.startsWith("data:image")
             ? image
             : undefined,
+        signal,
       }
     );
 
@@ -366,6 +384,11 @@ export function BatchStudio({
     const projectId = `${sellerPackActive ? "seller-pack" : "batch"}-${Date.now()}`;
     setRunProjectId(projectId);
 
+    // Abort any prior pack before starting a new one.
+    packAbortRef.current?.abort();
+    const abortCtrl = new AbortController();
+    packAbortRef.current = abortCtrl;
+
     // Phase C: Seller Pack shadow-reserves 30 (or N×10) when durable is on.
     // Cookie still debits per child; DURABLE_OFF is non-fatal.
     let packReservationId: string | null = null;
@@ -406,55 +429,105 @@ export function BatchStudio({
     });
     setJobs(queue);
 
-    for (let i = 0; i < queue.length; i++) {
-      setJobs((prev) =>
-        prev.map((j, idx) => (idx === i ? { ...j, status: "running" } : j))
-      );
-      const outcome = await executeJob(
-        queue[i],
-        projectId,
-        packReservationId,
-        sharedAssetId
-      );
-      queue[i] = outcome.job;
-      setJobs((previous) =>
-        previous.map((job, index) => (index === i ? outcome.job : job))
-      );
-      // Mid-pack asset miss: re-register still so remaining children use a fresh assetId.
-      if (outcome.recoveredFromAssetMiss && image?.startsWith("data:image")) {
-        sharedAssetId = null;
-        try {
-          const reg = await registerLocalAsset(image);
-          if (reg?.assetId) sharedAssetId = reg.assetId;
-        } catch {
-          /* remaining children fall back to Base64 via executeJob */
+    try {
+      for (let i = 0; i < queue.length; i++) {
+        if (abortCtrl.signal.aborted) break;
+        setJobs((prev) =>
+          prev.map((j, idx) => (idx === i ? { ...j, status: "running" } : j))
+        );
+        const outcome = await executeJob(
+          queue[i],
+          projectId,
+          packReservationId,
+          sharedAssetId,
+          abortCtrl.signal
+        );
+        queue[i] = outcome.job;
+        setJobs((previous) =>
+          previous.map((job, index) => (index === i ? outcome.job : job))
+        );
+        // Mid-pack asset miss: re-register still so remaining children use a fresh assetId.
+        if (outcome.recoveredFromAssetMiss && image?.startsWith("data:image")) {
+          sharedAssetId = null;
+          try {
+            const reg = await registerLocalAsset(image);
+            if (reg?.assetId) sharedAssetId = reg.assetId;
+          } catch {
+            /* remaining children fall back to Base64 via executeJob */
+          }
+        }
+        if (outcome.stopQueue || abortCtrl.signal.aborted) {
+          if (!abortCtrl.signal.aborted) {
+            setError(outcome.job.error ?? "Seller Pack paused");
+          }
+          setJobs((previous) =>
+            previous.map((job, index) =>
+              index > i && job.status === "queued"
+                ? { ...job, status: "not_started" }
+                : job
+            )
+          );
+          // Release remaining shadow hold for children that never ran.
+          if (packReservationId) {
+            for (let j = i + 1; j < queue.length; j++) {
+              void releaseSellerPackChildClient({
+                reservationId: packReservationId,
+                childKey: queue[j].slug,
+                reason: "not_started",
+              });
+            }
+          }
+          break;
+        }
+        // Soft gap so sequential batch stays under session/IP soft limits.
+        if (i < queue.length - 1) {
+          await sleep(400, abortCtrl.signal);
         }
       }
-      if (outcome.stopQueue) {
-        setError(outcome.job.error ?? "Seller Pack paused");
+    } catch (e) {
+      const aborted =
+        (e instanceof Error && e.name === "AbortError") ||
+        abortCtrl.signal.aborted;
+      if (aborted) {
         setJobs((previous) =>
-          previous.map((job, index) =>
-            index > i && job.status === "queued"
-              ? { ...job, status: "not_started" }
+          previous.map((job) =>
+            job.status === "queued" || job.status === "running"
+              ? {
+                  ...job,
+                  status:
+                    job.status === "running" ? "failed" : "not_started",
+                  error:
+                    job.status === "running"
+                      ? "Canceled · refund unconfirmed if live debit started"
+                      : undefined,
+                  creditState:
+                    job.status === "running"
+                      ? "refund unconfirmed"
+                      : job.creditState,
+                }
               : job
           )
         );
-        // Release remaining shadow hold for children that never ran.
         if (packReservationId) {
-          for (let j = i + 1; j < queue.length; j++) {
-            void releaseSellerPackChildClient({
-              reservationId: packReservationId,
-              childKey: queue[j].slug,
-              reason: "not_started",
-            });
+          for (const job of queue) {
+            if (job.status === "queued" || job.status === "running") {
+              void releaseSellerPackChildClient({
+                reservationId: packReservationId,
+                childKey: job.slug,
+                reason: "canceled",
+              });
+            }
           }
         }
-        break;
+      } else {
+        setError(e instanceof Error ? e.message : "Batch failed");
       }
-      // Soft gap so sequential batch stays under session/IP soft limits.
-      if (i < queue.length - 1) await sleep(400);
+    } finally {
+      if (packAbortRef.current === abortCtrl) {
+        packAbortRef.current = null;
+      }
+      setRunning(false);
     }
-    setRunning(false);
   }
 
   async function retryJob(slug: string) {
@@ -472,6 +545,9 @@ export function BatchStudio({
     setRunProjectId(projectId);
     setRunning(true);
     setError(null);
+    packAbortRef.current?.abort();
+    const abortCtrl = new AbortController();
+    packAbortRef.current = abortCtrl;
     let sharedAssetId: string | null = null;
     if (image.startsWith("data:image")) {
       const reg = await registerLocalAsset(image);
@@ -488,19 +564,26 @@ export function BatchStudio({
     setJobs((previous) =>
       previous.map((job) => (job.slug === slug ? retrying : job))
     );
-    const outcome = await executeJob(
-      retrying,
-      projectId,
-      null,
-      sharedAssetId
-    );
-    setJobs((previous) =>
-      previous.map((job) => (job.slug === slug ? outcome.job : job))
-    );
-    if (!outcome.job.videoUrl) {
-      setError(outcome.job.error ?? "Retry failed");
+    try {
+      const outcome = await executeJob(
+        retrying,
+        projectId,
+        null,
+        sharedAssetId,
+        abortCtrl.signal
+      );
+      setJobs((previous) =>
+        previous.map((job) => (job.slug === slug ? outcome.job : job))
+      );
+      if (!outcome.job.videoUrl) {
+        setError(outcome.job.error ?? "Retry failed");
+      }
+    } finally {
+      if (packAbortRef.current === abortCtrl) {
+        packAbortRef.current = null;
+      }
+      setRunning(false);
     }
-    setRunning(false);
   }
 
   /** Phase F: partial failure — re-run only failed/refunded children; successes stay. */
@@ -516,41 +599,58 @@ export function BatchStudio({
     setRunProjectId(projectId);
     setRunning(true);
     setError(null);
+    packAbortRef.current?.abort();
+    const abortCtrl = new AbortController();
+    packAbortRef.current = abortCtrl;
     let sharedAssetId: string | null = null;
     if (image.startsWith("data:image")) {
       const reg = await registerLocalAsset(image);
       if (reg?.assetId) sharedAssetId = reg.assetId;
     }
-    for (let i = 0; i < failed.length; i++) {
-      const target = failed[i];
-      const retrying: Job = {
-        ...target,
-        status: "running",
-        error: undefined,
-        errorCode: undefined,
-        creditState: undefined,
-        retryCount: target.retryCount + 1,
-      };
-      setJobs((previous) =>
-        previous.map((job) => (job.slug === target.slug ? retrying : job))
-      );
-      const outcome = await executeJob(
-        retrying,
-        projectId,
-        null,
-        sharedAssetId
-      );
-      setJobs((previous) =>
-        previous.map((job) =>
-          job.slug === target.slug ? outcome.job : job
-        )
-      );
-      if (!outcome.job.videoUrl) {
-        setError(outcome.job.error ?? `Retry failed · ${target.name}`);
+    try {
+      for (let i = 0; i < failed.length; i++) {
+        if (abortCtrl.signal.aborted) break;
+        const target = failed[i];
+        const retrying: Job = {
+          ...target,
+          status: "running",
+          error: undefined,
+          errorCode: undefined,
+          creditState: undefined,
+          retryCount: target.retryCount + 1,
+        };
+        setJobs((previous) =>
+          previous.map((job) => (job.slug === target.slug ? retrying : job))
+        );
+        const outcome = await executeJob(
+          retrying,
+          projectId,
+          null,
+          sharedAssetId,
+          abortCtrl.signal
+        );
+        setJobs((previous) =>
+          previous.map((job) =>
+            job.slug === target.slug ? outcome.job : job
+          )
+        );
+        if (!outcome.job.videoUrl) {
+          setError(outcome.job.error ?? `Retry failed · ${target.name}`);
+        }
+        if (i < failed.length - 1) {
+          await sleep(400, abortCtrl.signal);
+        }
       }
-      if (i < failed.length - 1) await sleep(400);
+    } catch (e) {
+      if (!(e instanceof Error && e.name === "AbortError")) {
+        setError(e instanceof Error ? e.message : "Retry failed");
+      }
+    } finally {
+      if (packAbortRef.current === abortCtrl) {
+        packAbortRef.current = null;
+      }
+      setRunning(false);
     }
-    setRunning(false);
   }
 
   const doneCount = jobs.filter((j) => j.status === "succeeded").length;
@@ -897,14 +997,25 @@ export function BatchStudio({
           </span>
         </label>
 
-        <button
-          type="button"
-          disabled={!canRun}
-          onClick={() => void runBatch()}
-          className="btn btn-primary hidden w-full disabled:opacity-50 lg:flex"
-        >
-          {primaryBatchLabel}
-        </button>
+        {running ? (
+          <button
+            type="button"
+            onClick={cancelInFlightPack}
+            className="btn btn-ghost hidden w-full border border-white/20 lg:flex"
+            title="Aborts this browser request. Live debit on the running child may still settle server-side."
+          >
+            Cancel pack · keep finished children
+          </button>
+        ) : (
+          <button
+            type="button"
+            disabled={!canRun}
+            onClick={() => void runBatch()}
+            className="btn btn-primary hidden w-full disabled:opacity-50 lg:flex"
+          >
+            {primaryBatchLabel}
+          </button>
+        )}
         {!liveQuoteCovered && sellerPackActive ? (
           <div className="rounded-xl border border-amber-300/25 bg-amber-300/[0.06] p-3 text-xs text-amber-100">
             <p className="font-bold">
@@ -1180,8 +1291,12 @@ export function BatchStudio({
         ) : null}
         <button
           type="button"
-          disabled={running || (Boolean(image) && !canRun)}
+          disabled={!running && Boolean(image) && !canRun}
           onClick={() => {
+            if (running) {
+              cancelInFlightPack();
+              return;
+            }
             if (!image) {
               window.scrollTo({ top: 0, behavior: "smooth" });
               return;
@@ -1194,9 +1309,11 @@ export function BatchStudio({
             }
             if (canRun) void runBatch();
           }}
-          className="btn btn-primary w-full py-3 text-sm disabled:opacity-50"
+          className={`w-full py-3 text-sm disabled:opacity-50 ${
+            running ? "btn btn-ghost border border-white/20" : "btn btn-primary"
+          }`}
         >
-          {primaryBatchLabel}
+          {running ? "Cancel pack · keep finished" : primaryBatchLabel}
         </button>
       </div>
     </div>

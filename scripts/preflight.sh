@@ -21,7 +21,9 @@ for f in \
   public/demos/scout-walk.mp4 \
   public/demos/beatbot-neon.mp4 \
   public/demos/orbit-aura.mp4 \
-  public/demos/moon-smoke.mp4
+  public/demos/moon-smoke.mp4 \
+  public/demos/scout-story-mode.mp4 \
+  public/demos/beatbot-unboxed.mp4
 do
   if [[ ! -f "$f" ]]; then
     echo "FAIL: missing $f"

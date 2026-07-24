@@ -85,7 +85,8 @@
 44. [x] Pricing FAQ JSON-LD + Explore Lab≥4 provisional proof chips
 45. [x] Asset id session-reservation + PUT NOT_OWNED · no dataUrl echo · abort copy
 46. [x] Create Cancel request mid-generate · AbortController + sleep(signal)
-47. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
+47. [x] Batch/Seller Pack Cancel mid-pack · keep finished · preflight demos+2
+48. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
 
 ### 老板醒来验收
 
@@ -99,9 +100,9 @@
 
 ## Grok 本拍状态（3 行）
 
-- Create Cancel request aborts in-flight generate (desktop + mobile + spinner).  
-- sleep() honors AbortSignal on rate-limit waits; refund unconfirmed if status 0.  
-- Mode A still needs boss Vercel login · SQL · T6 bake.
+- Batch/Seller Pack Cancel aborts in-flight child + waits; finished siblings kept.  
+- Shadow release for not_started; refund unconfirmed honesty on interrupted live.  
+- preflight +2 Lab demos · Mode A still needs boss Vercel login.
 
 ---
 
