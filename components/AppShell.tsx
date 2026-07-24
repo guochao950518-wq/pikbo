@@ -33,8 +33,8 @@ const PRIMARY = PRIMARY_NAV.map((item, i) => ({
 
 /** Soft-nav: More entries carry honest capability tags (Local / Preview). */
 const MORE = [
-  { href: "/apps", key: "nav.apps", tag: null },
   { href: "/flow", key: "nav.flow", tag: null },
+  { href: "/apps", key: "nav.apps", tag: null },
   { href: "/library", key: "nav.library", tag: "Local" },
   { href: "/image", key: "nav.image", tag: "Preview" },
   { href: "/supercomputer", key: "nav.batch", tag: "Preview" },

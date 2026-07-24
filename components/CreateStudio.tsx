@@ -1083,6 +1083,35 @@ export function CreateStudio({
       <div className="hidden lg:block">
         <GenerateSuiteChrome compact />
       </div>
+      {/* HF/Yiha workbench: engine honesty strip (no fake multi-model chips) */}
+      <div className="border-b border-white/10 bg-black/50 px-4 py-2">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-2 text-[11px]">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-white/40">
+            Engine
+          </span>
+          <span className="rounded-full border border-[var(--mint)]/40 bg-[var(--mint)]/15 px-2.5 py-0.5 font-bold text-[var(--mint)]">
+            Seedance · live
+          </span>
+          <span className="rounded-full border border-white/10 px-2.5 py-0.5 text-white/45">
+            Flux stills · /image
+          </span>
+          <span className="rounded-full border border-white/10 px-2.5 py-0.5 text-white/35">
+            Kling / Veo / Sora · Soon
+          </span>
+          <Link
+            href="/models"
+            className="ml-auto text-[10px] font-semibold text-white/40 hover:text-[var(--mint)]"
+          >
+            Models honesty →
+          </Link>
+          <Link
+            href="/flow"
+            className="text-[10px] font-semibold text-[var(--mint)] hover:underline"
+          >
+            Flow matrix →
+          </Link>
+        </div>
+      </div>
       <ActivationChecklist
         hasImage={Boolean(image)}
         hasGenerated={status === "done" || versions.length > 0}

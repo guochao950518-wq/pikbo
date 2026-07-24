@@ -12,6 +12,7 @@ import {
 } from "@/lib/showcaseProjects";
 import { track } from "@/lib/analytics";
 import { SuiteEntryStrip } from "@/components/SuiteEntryStrip";
+import { HomeViralPresetRail } from "@/components/HomeViralPresetRail";
 
 /** Soft concurrent autoplay budget — pause extras when many tiles enter view. */
 const playingVideos = new Set<HTMLVideoElement>();
@@ -260,6 +261,9 @@ export function HfExploreHome({
 
       {/* Suite doors — Generate + Modules + Seller Pack */}
       <SuiteEntryStrip />
+
+      {/* HF Viral Presets pattern — toy-native Lab rail */}
+      <HomeViralPresetRail />
 
       {/* ── Screen 2: Before → after ── */}
       <section className="border-b border-white/10 px-3 py-10 sm:px-5">
