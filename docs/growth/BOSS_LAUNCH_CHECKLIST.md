@@ -54,7 +54,9 @@
 ## 工程已对齐（参考）
 
 - 决策全文：`docs/growth/GEFEI_LAUNCH_DECISION_2026-07-24.md`  
-- TDH 常量：`lib/site.ts`（`titleDefault` / `description` / `homeH1`）  
-- 本地验收：`http://localhost:3000` → `/` → `/create`  
+- TDH 常量：`lib/site.ts`（`titleDefault` / `description` / `homeH1`）— **上线后 1–4 周勿改**  
+- 首页：`SoftLaunchStrip` 免费试用 CTA + Viral demo 墙  
+- SEO 意图页已存在：`/for/*`（约 7）· `/tools/*`（约 14）· 进 sitemap（有 Lab proof 的）  
+- 本地验收：`http://localhost:3000` → `/` → `/create?try=1&sample=scout`  
 
 部署完成后把 **预览 URL** 或 **pikbo.ai 已解析** 发我，我跑 link-check + health 验收。

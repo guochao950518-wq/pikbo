@@ -16,6 +16,7 @@ import { HomeViralPresetRail } from "@/components/HomeViralPresetRail";
 import { HomeViralWall } from "@/components/HomeViralWall";
 import { HfProductRail } from "@/components/HfProductRail";
 import { SeedanceCampaign } from "@/components/SeedanceCampaign";
+import { SoftLaunchStrip } from "@/components/SoftLaunchStrip";
 import { useI18n } from "@/components/LanguageProvider";
 import { site } from "@/lib/site";
 
@@ -162,6 +163,9 @@ export function HfExploreHome({
 
   return (
     <div className="min-h-screen bg-black pb-28 text-white sm:pb-16">
+      {/* 哥飞 P0: free trial + Generate CTA above the fold */}
+      <SoftLaunchStrip />
+
       {/* HF product entry rail — capability cards before the wall */}
       <HfProductRail />
 

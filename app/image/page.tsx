@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
 import {
   clearImageHistory,
@@ -163,7 +163,15 @@ export default function ImageStudioPage() {
 
   return (
     <div>
-      <GenerateSuiteChrome />
+      <Suspense
+        fallback={
+          <div className="border-b border-white/10 px-4 py-3 text-sm text-white/40">
+            Generate · Stills
+          </div>
+        }
+      >
+        <GenerateSuiteChrome />
+      </Suspense>
       <div className="px-4 py-8 sm:px-8">
       <div className="mx-auto max-w-5xl">
         <div className="flex flex-wrap items-end justify-between gap-3">
