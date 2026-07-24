@@ -1,13 +1,14 @@
 /**
  * Seller Pack live quote helpers — Y5 credit transparency.
- * Pure: no React, no network. Used by BatchStudio + engine-smoke.
+ * Pure client-safe math only (no fs / durableCredits / server stores).
  */
 
-import {
-  SELLER_PACK_CHILD_COUNT,
-  SELLER_PACK_QUOTE_CREDITS,
-} from "@/lib/durableCredits/sellerPack";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
+
+/** Fixed Seller Pack child count (must match durableCredits/sellerPack server). */
+export const SELLER_PACK_CHILD_COUNT = 3;
+export const SELLER_PACK_QUOTE_CREDITS =
+  SELLER_PACK_CHILD_COUNT * CREDITS_PER_VIDEO; // 30
 
 export type SellerPackQuote = {
   childCount: number;
