@@ -31,7 +31,7 @@ export function VideoTile({
   return (
     <Link
       href={item.href}
-      className="video-tile group block overflow-hidden rounded-xl border border-white/[0.08] bg-black shadow-[0_8px_24px_-12px_rgba(0,0,0,0.8)]"
+      className="video-tile group block overflow-hidden rounded-xl border border-white/[0.08] bg-black shadow-[0_12px_32px_-14px_rgba(0,0,0,0.85)] transition duration-200 hover:border-[var(--mint)]/35 hover:shadow-[0_20px_48px_-16px_rgba(0,0,0,0.9)]"
       aria-label={`Open ${item.title}`}
     >
       <div className={`relative ${aspectClass(item.ratio, compact)}`}>

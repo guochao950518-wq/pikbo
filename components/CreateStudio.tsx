@@ -1268,17 +1268,17 @@ export function CreateStudio({
         </ol>
       </div>
 
-      <div className="grid flex-1 lg:grid-cols-[260px_minmax(0,1fr)_minmax(0,1.05fr)]">
-        {/* ── Recipe rail (desktop) / horizontal chips (mobile, in controls) ── */}
-        <aside className="hidden max-h-none overflow-y-auto border-r border-[var(--border)] p-3 lg:block">
-          <p className="mb-2 px-1 text-[10px] font-bold uppercase tracking-wider text-[var(--fg-dim)]">
+      <div className="grid flex-1 lg:min-h-0 lg:grid-cols-[280px_minmax(320px,0.95fr)_minmax(0,1.15fr)]">
+        {/* ── Recipe rail (desktop) — HF density ── */}
+        <aside className="hidden max-h-[calc(100vh-8rem)] overflow-y-auto border-r border-white/[0.07] bg-[#070708] p-3 lg:block">
+          <p className="mb-2 px-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--mint)]/80">
             Toy recipes
           </p>
           <input
             value={presetFilter}
             onChange={(e) => setPresetFilter(e.target.value)}
             placeholder="Search spin, unbox…"
-            className="mb-2 w-full rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] px-2.5 py-1.5 text-xs outline-none focus:border-[var(--brand)]"
+            className="mb-2 w-full rounded-lg border border-white/10 bg-black/50 px-2.5 py-2 text-xs outline-none focus:border-[var(--mint)]/50 focus:shadow-[0_0_0_3px_rgba(200,255,61,0.12)]"
           />
           {favorites.length > 0 && !presetFilter && (
             <div className="mb-2">
@@ -1307,10 +1307,10 @@ export function CreateStudio({
             {featuredPresets.map((p) => (
               <div
                 key={p.slug}
-                className={`flex items-stretch gap-1 rounded-xl border ${
+                className={`flex items-stretch gap-1 rounded-xl border transition duration-150 ${
                   effect === p.slug
-                    ? "border-[var(--mint)] bg-[var(--card)]"
-                    : "border-transparent bg-[var(--bg-soft)]"
+                    ? "border-[var(--mint)]/60 bg-[var(--mint)]/[0.08] shadow-[0_0_24px_rgba(200,255,61,0.1)]"
+                    : "border-transparent bg-white/[0.03] hover:border-white/10 hover:bg-white/[0.05]"
                 }`}
               >
                 <button
@@ -1417,10 +1417,10 @@ export function CreateStudio({
               )}
             </div>
             <label
-              className={`flex cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed bg-[var(--bg-soft)] transition-colors hover:border-[var(--mint)]/50 ${
+              className={`flex cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed bg-black/40 transition-all duration-200 hover:border-[var(--mint)]/55 hover:bg-black/55 ${
                 image
-                  ? "aspect-[16/10] border-[var(--border)]"
-                  : "min-h-[160px] border-[var(--mint)]/35 sm:aspect-video"
+                  ? "aspect-[16/10] border-white/12 ring-1 ring-white/5"
+                  : "min-h-[160px] border-[var(--mint)]/40 shadow-[0_0_40px_rgba(200,255,61,0.06)] sm:aspect-video"
               }`}
               onDragOver={(e) => e.preventDefault()}
               onDrop={onDrop}
@@ -1959,21 +1959,21 @@ export function CreateStudio({
           )}
         </section>
 
-        {/* ── Result panel ── */}
+        {/* ── Result panel — cinematic stage ── */}
         <section
           id="create-result"
-          className={`flex flex-col bg-[var(--bg-soft)] p-4 ${
+          className={`flex flex-col border-l border-white/[0.06] bg-[#050506] p-4 ${
             status === "done" || status === "generating" ? "order-first lg:order-none" : ""
           }`}
         >
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold">
+            <h2 className="text-[11px] font-bold uppercase tracking-[0.14em] text-white/55">
               <span className="mr-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--mint)] text-[9px] text-black lg:hidden">
                 4
               </span>
               Result
             </h2>
-            <span className="rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--fg-dim)]">
+            <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-[10px] font-semibold text-white/50">
               {usedModel || MODELS.find((m) => m.id === modelId)?.label}
             </span>
           </div>
