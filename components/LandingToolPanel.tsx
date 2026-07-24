@@ -26,6 +26,7 @@ import {
 } from "@/lib/createTrust";
 import { deliveryItemsForJob } from "@/lib/deliveryPack";
 import { DeliveryChecklist } from "@/components/DeliveryChecklist";
+import { GenerateFailPanel } from "@/components/GenerateFailPanel";
 import { track } from "@/lib/analytics";
 
 type Status = "idle" | "generating" | "done" | "error";
@@ -445,31 +446,15 @@ export function LandingToolPanel({
           (error && error.toLowerCase().includes("credit")) ? (
             <PaywallCard />
           ) : error ? (
-            <div
-              role="alert"
-              className="rounded-xl border border-[var(--brand)]/35 bg-[var(--brand)]/10 px-3 py-2 text-center"
-            >
-              <p className="text-xs font-semibold text-[var(--brand)]">
-                {error}
-              </p>
-              <p className="mt-1 text-[10px] leading-relaxed text-[var(--fg-dim)]">
-                Next: Retry · try another recipe · Free Lab sample is 0 credits
-                {" · "}
-                <Link
-                  href="/create?try=1&sample=scout"
-                  className="font-semibold text-[var(--mint)] hover:underline"
-                >
-                  open free sample
-                </Link>
-                {" · "}
-                <Link
-                  href={`/create?effect=${effectSlug}`}
-                  className="text-[var(--mint)] hover:underline"
-                >
-                  full studio
-                </Link>
-              </p>
-            </div>
+            <GenerateFailPanel
+              message={error}
+              compact
+              showModules={false}
+              showRecipes={false}
+              showLabSample
+              onRetry={image && !busy ? () => void generate() : undefined}
+              retryLabel="Retry"
+            />
           ) : null}
 
           <p className="text-center text-[10px] text-[var(--fg-dim)]">

@@ -10,6 +10,7 @@ import {
   removeImageHistoryItem,
   type ImageHistoryItem,
 } from "@/lib/imageHistory";
+import { GenerateFailPanel } from "@/components/GenerateFailPanel";
 
 export default function ImageStudioPage() {
   const [prompt, setPrompt] = useState(
@@ -221,11 +222,18 @@ export default function ImageStudioPage() {
                 Generate still · {CREDITS_PER_VIDEO} credits
               </button>
             )}
-            {error && (
-              <p className="mt-2 text-sm text-[var(--brand)]" role="alert">
-                {error}
-              </p>
-            )}
+            {error ? (
+              <GenerateFailPanel
+                className="mt-3"
+                message={error}
+                compact
+                onRetry={!busy ? () => void generate() : undefined}
+                retryLabel="Retry still"
+                showRecipes={false}
+                showModules={false}
+                showLabSample={false}
+              />
+            ) : null}
             {demo && (
               <p className="mt-2 text-xs text-[var(--fg-dim)]">
                 Demo placeholder — add FAL_KEY for Flux stills.

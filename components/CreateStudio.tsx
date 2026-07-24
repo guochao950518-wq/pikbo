@@ -47,6 +47,7 @@ import {
   markActivationJob,
   markActivationShared,
 } from "@/components/ActivationChecklist";
+import { GenerateFailPanel } from "@/components/GenerateFailPanel";
 import { getJobIntent, JOB_INTENTS, type JobIntentId } from "@/lib/jobIntents";
 import type { Workflow } from "@/lib/workflows";
 import {
@@ -1916,43 +1917,21 @@ export function CreateStudio({
             lastRefunded ||
             lastRequestCreditState === "refund unconfirmed" ||
             lastRequestCreditState === "10 restored") && (
-            <div
-              role="alert"
-              className={`rounded-xl border px-3 py-2.5 text-sm ${
-                lastRefunded || lastRequestCreditState === "10 restored"
-                  ? "border-amber-400/40 bg-amber-400/[0.08] text-amber-100"
-                  : lastRequestCreditState === "refund unconfirmed"
-                    ? "border-amber-300/30 bg-amber-300/[0.06] text-amber-100"
-                  : "border-[var(--brand)]/40 bg-[var(--brand)]/10 text-[var(--brand)]"
-              }`}
-            >
-              {error ? <p className="font-semibold">{error}</p> : null}
-              {(lastRefunded || lastRequestCreditState === "10 restored") && (
-                <p className="mt-1 text-[11px] font-bold uppercase tracking-wide text-amber-200/90">
-                  10 credits restored · not charged for this failed job
-                </p>
-              )}
-              {lastRequestCreditState === "refund unconfirmed" ? (
-                <p className="mt-1 text-[11px] font-bold uppercase tracking-wide text-amber-200/90">
-                  Refund unconfirmed · check your balance before retrying
-                </p>
-              ) : null}
-              <p className="mt-1.5 text-[11px] leading-relaxed text-amber-100/65">
-                Next: Retry keeps this still · try another recipe · Free Lab
-                sample is 0 credits
-                {image ? (
-                  <>
-                    {" · "}
-                    <Link
-                      href="/create?try=1&sample=scout"
-                      className="font-semibold text-[var(--mint)] hover:underline"
-                    >
-                      open free sample
-                    </Link>
-                  </>
-                ) : null}
-              </p>
-            </div>
+            <GenerateFailPanel
+              message={error}
+              creditState={lastRequestCreditState}
+              creditsRestored={lastRefunded}
+              onRetry={
+                image && !busy
+                  ? () => {
+                      if (activeVersion) retryActiveVersion();
+                      else void generate();
+                    }
+                  : undefined
+              }
+              retryLabel={activeVersion ? "Retry this version" : "Retry generate"}
+              showLabSample={!image}
+            />
           )}
 
           {showPaywall && (
@@ -2446,7 +2425,61 @@ export function CreateStudio({
                 </button>
               </div>
             )}
-            {(status === "idle" || status === "error") && !videoUrl && (
+            {status === "error" && !videoUrl && (
+              <div className="relative z-[2] flex flex-col items-center p-8 text-center sm:p-10">
+                <span className="grid h-14 w-14 place-items-center rounded-2xl border border-[var(--brand)]/35 bg-[var(--brand)]/[0.08] text-[var(--brand)] sm:h-16 sm:w-16">
+                  <svg
+                    width="26"
+                    height="26"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden
+                  >
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M12 8v5" />
+                    <path d="M12 16h.01" />
+                  </svg>
+                </span>
+                <p className="mt-4 font-display text-base font-bold uppercase tracking-tight text-white sm:text-lg">
+                  Clip didn&apos;t land
+                </p>
+                <p className="mt-1.5 max-w-sm text-xs leading-relaxed text-[var(--fg-muted)]">
+                  {error ||
+                    "Something blocked this run. Your still is still here — retry or switch recipe."}
+                </p>
+                <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+                  {image ? (
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => void generate()}
+                      className="btn btn-primary px-6 py-2.5 text-sm disabled:opacity-50"
+                    >
+                      Retry generate
+                    </button>
+                  ) : null}
+                  <Link
+                    href="/effects"
+                    className="rounded-full border border-white/20 bg-white/[0.05] px-4 py-2.5 text-sm font-semibold text-white/85 hover:border-white/35"
+                  >
+                    Pick another recipe
+                  </Link>
+                  <button
+                    type="button"
+                    disabled={sampleLoading || busy}
+                    onClick={() => void loadSampleToy("scout", true)}
+                    className="rounded-full border border-[var(--mint)]/35 bg-[var(--mint)]/10 px-4 py-2.5 text-sm font-semibold text-[var(--mint)] hover:bg-[var(--mint)]/18 disabled:opacity-50"
+                  >
+                    Free Lab sample
+                  </button>
+                </div>
+              </div>
+            )}
+            {status === "idle" && !videoUrl && (
               <div className="flex flex-col items-center p-8 text-center sm:p-10">
                 <span className="grid h-14 w-14 place-items-center rounded-2xl border border-[var(--mint)]/30 bg-[var(--mint)]/[0.06] text-[var(--mint)] sm:h-16 sm:w-16">
                   <svg

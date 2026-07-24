@@ -33,6 +33,7 @@ import {
 import { canDownloadResult } from "@/lib/createTrust";
 import { sellerPackPostItems } from "@/lib/deliveryPack";
 import { DeliveryChecklist } from "@/components/DeliveryChecklist";
+import { GenerateFailPanel } from "@/components/GenerateFailPanel";
 import { SellerPackSteps } from "@/components/SellerPackSteps";
 
 type Job = {
@@ -1102,7 +1103,21 @@ export function BatchStudio({
             </div>
           </div>
         ) : null}
-        {error && <p className="text-sm text-[var(--brand)]">{error}</p>}
+        {error ? (
+          <GenerateFailPanel
+            message={error}
+            onRetry={
+              image && !running && selected.length > 0
+                ? () => void runBatch()
+                : undefined
+            }
+            retryLabel={
+              sellerPackActive ? "Retry Seller Pack" : "Retry batch"
+            }
+            showLabSample={!image}
+            showModules={false}
+          />
+        ) : null}
         <p className="text-[11px] text-[var(--fg-dim)]">
           Sequential jobs use the same generate API
           {demoMode

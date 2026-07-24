@@ -88,6 +88,7 @@ Round C              真 UGC / 云 Library / 真多模型（要账号+key）
 - [x] 配方墙 hover 播放更丝滑（`desktopPlayMode=interaction` · hover preload metadata）  
 - [x] 空状态 / 成功 micro-copy：Seller Pack queue empty + interactive DeliveryChecklist  
 - [ ] 独立真片审计（人工 QA / Lab proof scores）  
-- [ ] 错误态 micro-copy 全站再扫一遍（Create/Landing/Batch/API codes）  
+- [x] 错误态 micro-copy 全站统一（`GenerateFailPanel` · Create/Landing/Batch/Image + generateClient action copy）  
+- [x] Suite strip 加 **Flow** 门 + tag 密度（H1 partial → denser）  
 
 *Grok · HF_YIHA_ITEM_BACKLOG · 2026-07-24*

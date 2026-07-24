@@ -89,28 +89,28 @@ export function interpretGenerateResponse(
   let error =
     body.error ||
     (code === "RATE_LIMITED"
-      ? `Too many generates — try again in ${retryAfterSec ?? "a few"}s`
+      ? `Too many generates — wait ${retryAfterSec ?? "a few"}s, then Retry`
       : code === "JOB_IN_FLIGHT"
-        ? `A generate is already running — try again in ${retryAfterSec ?? "a few"}s`
+        ? `A generate is already running — wait ${retryAfterSec ?? "a few"}s or Cancel first`
         : code === "PROVIDER_BALANCE"
-          ? "Provider balance empty — credits refunded."
+          ? "Upstream provider balance empty — credits restored when the debit was confirmed."
           : code === "RIGHTS_REQUIRED"
             ? "Confirm you own this photo and have the right to animate it"
             : code === "UNKNOWN_EFFECT"
-              ? "Unknown effect — pick a registered recipe"
+              ? "Unknown effect — open Recipes and pick a registered toy recipe"
               : code === "IMAGE_TOO_LARGE"
-                ? "Image too large (max ~8MB)"
+                ? "Image too large (max ~8MB) — compress or crop the product photo"
                 : code === "ASSET_NOT_FOUND"
-                  ? "Photo asset expired on the server — re-upload or retry with the same still"
+                  ? "Photo asset expired on the server — re-upload or Retry with the same still"
                   : code === "UNSAFE_URL"
-                    ? "Provider returned an unsafe video URL — credits restored when the debit was confirmed. Retry generate."
+                    ? "Provider returned an unsafe video URL — credits restored when confirmed. Retry generate."
                     : code === "PROVIDER_RATE_LIMIT"
-                      ? `Provider rate limited — try again in ${retryAfterSec ?? "a few"}s`
+                      ? `Provider busy — try again in ${retryAfterSec ?? "a few"}s`
                       : code === "PROVIDER_TIMEOUT"
-                        ? `Provider timed out — try again in ${retryAfterSec ?? "a few"}s`
+                        ? `Provider timed out — Retry in ${retryAfterSec ?? "a few"}s (same still kept)`
                         : code === "CONTENT_POLICY"
-                          ? "Provider rejected the still or prompt under content policy — try a clearer product photo"
-                          : "Generation failed");
+                          ? "Provider rejected this still or prompt — use a clear product photo on a simple background"
+                          : "Generation failed — Retry keeps your still, or try another recipe");
 
   // PRD §5: recoverable failures must say whether the 10 credits were restored.
   if (

@@ -402,55 +402,57 @@ export function LibraryGrid() {
           onCancel={(id) => void cancelSessionJob(id)}
           onRefresh={() => void refreshSessionJobs()}
         />
-        <div className="grid place-items-center rounded-2xl border border-dashed border-[var(--border)] bg-[var(--bg-soft)] py-16 text-center sm:py-20">
-          <p className="text-3xl">▢</p>
-          <p className="mt-3 text-base font-semibold text-[var(--fg)]">
-            {sessionJobs.length > 0
-              ? "No clips saved on this device yet"
-              : "Your first listing clip starts on Create"}
-          </p>
-          <p className="mt-2 max-w-sm text-xs leading-relaxed text-[var(--fg-dim)]">
-            {sessionJobs.length > 0 ? (
-              <>
-                Session jobs above are this server process only. Successful
-                generates also save under{" "}
-                <span className="font-semibold text-[var(--mint)]">
-                  {PROVENANCE.localLibrary}
-                </span>{" "}
-                when storage allows — not cloud-synced.
-              </>
-            ) : (
-              <>
-                {PROVENANCE.localLibrary} · saved on this device only (not
-                cloud). One photo → pick a job (Etsy spin, TikTok hook, reveal)
-                → generate.
-              </>
-            )}
-          </p>
-          <div className="mt-6 flex flex-wrap justify-center gap-2">
-            <Link
-              href="/create?try=1&sample=scout"
-              className="btn btn-primary text-sm"
-            >
-              ▶ Free sample · 10 seconds
-            </Link>
-            <Link href="/modules" className="btn btn-ghost text-sm">
-              Toy Modules
-            </Link>
-            <Link
-              href="/create?mode=seller-pack"
-              className="btn btn-ghost text-sm"
-            >
-              Seller Pack · 3 outputs
-            </Link>
-            <Link href="/create" className="btn btn-ghost text-sm">
-              Open Generate
-            </Link>
+        <div className="media-stage grid place-items-center py-16 text-center sm:py-20">
+          <div className="relative z-[2] flex flex-col items-center px-4">
+            <span className="grid h-14 w-14 place-items-center rounded-2xl border border-[var(--mint)]/30 bg-[var(--mint)]/[0.06] text-2xl text-[var(--mint)]">
+              ▢
+            </span>
+            <p className="mt-4 font-display text-base font-bold uppercase tracking-tight text-white sm:text-lg">
+              {sessionJobs.length > 0
+                ? "No clips saved on this device yet"
+                : "Your first listing clip starts on Create"}
+            </p>
+            <p className="mt-2 max-w-sm text-xs leading-relaxed text-[var(--fg-muted)]">
+              {sessionJobs.length > 0 ? (
+                <>
+                  Session jobs above are this server process only. Successful
+                  generates also save under{" "}
+                  <span className="font-semibold text-[var(--mint)]">
+                    {PROVENANCE.localLibrary}
+                  </span>{" "}
+                  when storage allows — not cloud-synced.
+                </>
+              ) : (
+                <>
+                  {PROVENANCE.localLibrary} · this device only. One photo → job
+                  (Etsy spin, TikTok hook, reveal) → generate.
+                </>
+              )}
+            </p>
+            <div className="mt-6 flex flex-wrap justify-center gap-2">
+              <Link
+                href="/create?try=1&sample=scout"
+                className="btn btn-primary text-sm"
+              >
+                ▶ Free sample · 10 seconds
+              </Link>
+              <Link href="/modules" className="btn btn-ghost text-sm">
+                Toy Modules
+              </Link>
+              <Link
+                href="/create?mode=seller-pack"
+                className="btn btn-ghost text-sm"
+              >
+                Seller Pack · 3 outputs
+              </Link>
+              <Link href="/flow" className="btn btn-ghost text-sm">
+                Browse Flow
+              </Link>
+            </div>
+            <p className="mt-4 max-w-xs text-[10px] text-[var(--fg-dim)]">
+              Clips land here after success · failed live jobs refund credits
+            </p>
           </div>
-          <p className="mt-4 max-w-xs text-[10px] text-[var(--fg-dim)]">
-            Clips appear here after a successful generate. Failed live jobs
-            refund credits.
-          </p>
         </div>
       </div>
     );
