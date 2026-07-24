@@ -14,9 +14,9 @@ export function JobIntentBar({
   onPick: (id: JobIntentId) => void;
 }) {
   return (
-    <div className="border-b border-white/10 bg-black/40 px-4 py-3">
+    <div className="border-b border-white/10 bg-gradient-to-r from-[var(--mint)]/[0.04] via-black/50 to-black/40 px-4 py-3">
       <div className="mx-auto max-w-6xl">
-        <p className="text-[10px] font-bold uppercase tracking-wider text-white/45">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--mint)]/80">
           What are you making? · one tap
         </p>
         <div className="mt-2 flex gap-2 overflow-x-auto pb-0.5 [scrollbar-width:none]">
@@ -26,12 +26,12 @@ export function JobIntentBar({
                 <Link
                   key={job.id}
                   href={job.href}
-                  className="shrink-0 rounded-full border border-[var(--mint)]/35 bg-[var(--mint)]/[0.08] px-3 py-1.5 text-left transition hover:border-[var(--mint)]"
+                  className="shrink-0 rounded-2xl border border-[var(--mint)]/40 bg-[var(--mint)]/[0.1] px-3.5 py-2 text-left shadow-[0_0_20px_rgba(200,255,61,0.08)] transition hover:border-[var(--mint)] hover:bg-[var(--mint)]/18"
                 >
                   <span className="block text-[11px] font-bold text-[var(--mint)]">
                     {job.label}
                   </span>
-                  <span className="block max-w-[10rem] text-[10px] text-white/50">
+                  <span className="mt-0.5 block max-w-[11rem] text-[10px] leading-snug text-white/50">
                     {job.blurb}
                   </span>
                 </Link>
@@ -43,14 +43,14 @@ export function JobIntentBar({
                 key={job.id}
                 type="button"
                 onClick={() => onPick(job.id)}
-                className={`shrink-0 rounded-full border px-3 py-1.5 text-left transition ${
+                className={`shrink-0 rounded-2xl border px-3.5 py-2 text-left transition ${
                   active
-                    ? "border-[var(--mint)] bg-[var(--mint)]/15 text-[var(--mint)]"
-                    : "border-white/15 text-white/75 hover:border-white/30"
+                    ? "border-[var(--mint)] bg-[var(--mint)]/15 text-[var(--mint)] shadow-[0_0_22px_rgba(200,255,61,0.12)]"
+                    : "border-white/12 bg-black/30 text-white/75 hover:border-white/30 hover:bg-black/45"
                 }`}
               >
                 <span className="block text-[11px] font-bold">{job.label}</span>
-                <span className="block max-w-[10rem] text-[10px] opacity-70">
+                <span className="mt-0.5 block max-w-[11rem] text-[10px] leading-snug opacity-70">
                   {job.blurb}
                 </span>
               </button>

@@ -46,9 +46,16 @@ export function OnboardingBanner() {
           <Link
             href="/create?try=1&sample=scout"
             onClick={dismiss}
-            className="btn btn-primary px-3.5 py-1.5 text-xs"
+            className="btn btn-primary px-3.5 py-1.5 text-xs font-black"
           >
             Try free · 10s
+          </Link>
+          <Link
+            href="/flow"
+            onClick={dismiss}
+            className="btn btn-ghost px-3 py-1.5 text-xs"
+          >
+            Flow
           </Link>
           <Link
             href="/modules"

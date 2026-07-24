@@ -78,8 +78,8 @@ export function CreditsBadge({ compact }: { compact?: boolean }) {
       href={signed ? "/profile" : "/pricing"}
       className={`hidden items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors sm:flex ${
         low && !demo
-          ? "border-[var(--brand)]/50 bg-[var(--grad-soft)] text-[var(--fg)]"
-          : "border-[var(--border)] bg-white/5 text-[var(--fg-muted)] hover:border-white/20 hover:text-[var(--fg)]"
+          ? "border-amber-400/45 bg-amber-400/10 text-[var(--fg)]"
+          : "border-white/12 bg-white/[0.04] text-[var(--fg-muted)] hover:border-[var(--mint)]/35 hover:text-[var(--fg)]"
       }`}
       title={
         demo
@@ -90,9 +90,9 @@ export function CreditsBadge({ compact }: { compact?: boolean }) {
       }
     >
       <span
-        className={
-          low && !demo ? "text-[var(--brand)]" : "text-[var(--mint)]"
-        }
+        className={`font-bold tabular-nums ${
+          low && !demo ? "text-amber-200" : "text-[var(--mint)]"
+        }`}
       >
         {credits}
       </span>
