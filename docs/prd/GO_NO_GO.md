@@ -37,7 +37,7 @@ Sunday deadline **does not override** Mode B gates.
 
 ## Current gates / remaining for public Mode B
 
-1. ~~Shell theater~~ — largely cut (primary + More).  
+1. ~~Shell theater~~ — largely cut (primary + More + Modules tab).  
 2. ~~Shared-loop wall~~ — home/Lab unique demos.  
 3. ~~Footer 404s~~ — aliases + link-check PASS.  
 4. ~~G6 incomplete~~ — **PASS** 2026-07-24 (3 lives + refund evidence logged).  
@@ -45,7 +45,15 @@ Sunday deadline **does not override** Mode B gates.
 6. **G4/G7 final deployed crawl** — run `link-check` + health on Vercel preview URL.  
 7. Performance LCP — measure on deployed preview (4G).  
 8. **No public DNS yet** — Mode B needs boss Vercel login + `pikbo.ai` bind after Mode A is healthy.  
-9. Supabase SQL migration should be applied before relying on cross-device paid wallets.
+9. Supabase SQL migration should be applied before relying on cross-device paid wallets.  
+10. **T6 file watermark bake** — Free live raw download stays blocked until baked derivative is proven.  
+11. Optional: `VIDEO_PROVIDER_WEBHOOK_SECRET` before relying on async provider webhooks in prod.
+
+### Product soft-live snapshot (local main, 2026-07-24)
+
+- **Suite:** Generate · Modules · Seller Pack · suite doors sitewide (Yiha/HF IA, toy vertical).  
+- **Ops UX:** Cancel mid-generate/pack/image; asset session ownership + sliding TTL; UNSAFE_URL gates.  
+- **SEO:** ItemList on Modules/Effects(proof)/Explore/Apps/Community/Tools/Guides; Pricing FAQ JSON-LD.
 
 ---
 
