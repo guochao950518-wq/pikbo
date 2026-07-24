@@ -400,8 +400,8 @@ assert.match(exploreGrid, /showcaseProjectHref/);
 assert.match(exploreGrid, /desktopPlayMode="interaction"/);
 assert.match(exploreGrid, /focusable=\{false\}/);
 assert.match(createStudio, /ResultVersion/);
-assert.match(createStudio, /Retry · same settings|retryActiveVersion/);
-assert.match(createStudio, /Make variant · current settings|makeVariant/);
+assert.match(createStudio, /create\.retrySame|Retry · same settings|retryActiveVersion/);
+assert.match(createStudio, /create\.makeVariant|Make variant|makeVariant/);
 assert.match(createStudio, /refund unconfirmed/);
 const batchStudio = fs.readFileSync(
   join(root, "components/BatchStudio.tsx"),
@@ -821,7 +821,7 @@ assert.match(
   fs.readFileSync(join(root, "lib/analytics.ts"), "utf8"),
   /export function track/
 );
-assert.match(createStudio, /showAllRecipes|More recipes/);
+assert.match(createStudio, /showAllRecipes|More recipes|create\.moreRecipes/);
 assert.match(
   fs.readFileSync(join(root, "app/robots.ts"), "utf8"),
   /\/login/
@@ -1688,7 +1688,10 @@ const pkgJson = fs.readFileSync(join(root, "package.json"), "utf8");
 assert.match(pkgJson, /mode-a-acceptance/);
 
 assert.match(fs.readFileSync(join(root, "lib/jobIntents.ts"), "utf8"), /JOB_INTENTS/);
-assert.match(fs.readFileSync(join(root, "components/JobIntentBar.tsx"), "utf8"), /What are you making/);
+assert.match(
+  fs.readFileSync(join(root, "components/JobIntentBar.tsx"), "utf8"),
+  /job\.what|What are you making/
+);
 assert.match(createStudio, /JobIntentBar|ActivationChecklist/);
 
 // Five-step toy identity + delivery honesty + landing assetId + workflows
@@ -1702,7 +1705,7 @@ assert.match(deliverySrc, /sellerPackPostItems/);
 assert.match(deliverySrc, /deliveryChecklistStorageKey/);
 assert.match(createStudio, /composeExtraWithIdentity|toyIdentity/);
 assert.match(createStudio, /deliveryItemsForJob|DeliveryChecklist/);
-assert.match(createStudio, /Same photo · next job|generateForJob/);
+assert.match(createStudio, /Same photo · next job|create\.nextJob|generateForJob/);
 const landingToolPanel = fs.readFileSync(
   join(root, "components/LandingToolPanel.tsx"),
   "utf8"
