@@ -26,31 +26,31 @@ export function SeedanceCampaign() {
       <div className="relative grid gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-end lg:py-16">
         <div>
           <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[var(--mint)]">
-            Now on Pikbo
+            Now in video · already on Pikbo
           </p>
           <h2 className="mt-2 text-4xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl">
             Seedance
-            <span className="block text-[var(--mint)]">for toys</span>
+            <span className="block text-[var(--mint)]">VIDEO</span>
           </h2>
           <p className="mt-2 text-sm font-semibold uppercase tracking-[0.18em] text-white/50">
-            Cached showcase · Mini live trial when configured
+            AI video for toys · Mini live when configured
           </p>
           <p className="mt-3 max-w-lg text-sm leading-relaxed text-white/45">
-            Honest single-track motion engine — not a multi-model zoo. Upload a
-            figure you own → listing, hook, or pack.
+            Photo in → short video out. Single live engine (Seedance). Not a
+            multi-model zoo. Kling / Veo / Sora stay Soon until real keys.
           </p>
           <div className="mt-7 flex flex-wrap gap-2.5">
             <Link
               href="/create?try=1&sample=scout"
               className="rounded-full bg-[var(--mint)] px-6 py-2.5 text-sm font-black text-black shadow-[0_0_28px_rgba(200,255,61,0.25)] transition hover:-translate-y-0.5"
             >
-              Try Mini free
+              Try free video
             </Link>
             <Link
               href="/create"
               className="rounded-full border border-[var(--mint)]/40 bg-[var(--mint)]/10 px-5 py-2.5 text-sm font-bold text-[var(--mint)] transition hover:bg-[var(--mint)]/15"
             >
-              Generate
+              Generate video
             </Link>
             <Link
               href="/modules"

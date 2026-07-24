@@ -160,77 +160,72 @@ export default function FlowPage() {
         <GenerateSuiteChrome />
       </Suspense>
 
-      <div className="relative border-b border-white/10 px-4 py-8 sm:px-8">
-        <div
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(80%_60%_at_10%_0%,rgba(200,255,61,0.08),transparent_55%)]"
-          aria-hidden
-        />
-        <div className="relative mx-auto max-w-6xl">
-          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#c8ff3d]">
-            Flow · creation matrix
-          </p>
-          <h1 className="mt-2 font-display text-3xl font-black uppercase tracking-tight sm:text-5xl">
-            How do you want to create?
-          </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-white/55">
-            Media-first workspace matrix for designer toys — same structure as
-            suite Flow hubs, rebuilt vertical. Every card opens a real{" "}
-            {site.name} path. No fake multi-model zoo.
-          </p>
-          <div className="mt-5 flex flex-wrap gap-2">
+      {/* HF Flow: tight header — matrix is the product */}
+      <div className="sticky top-0 z-20 border-b border-white/10 bg-black/90 px-3 py-3 backdrop-blur-xl sm:px-5">
+        <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#c8ff3d]">
+              Flow
+            </p>
+            <h1 className="font-display text-lg font-black uppercase tracking-tight sm:text-xl">
+              How do you want to create?
+            </h1>
+          </div>
+          <div className="flex flex-wrap gap-2">
             <Link
               href="/create?try=1&sample=scout"
-              className="btn btn-primary inline-flex rounded-full px-6 py-3 text-sm font-black"
+              className="rounded-full bg-[#c8ff3d] px-4 py-2 text-xs font-black text-black"
             >
-              Try free · 10s
-            </Link>
-            <Link
-              href="/modules"
-              className="inline-flex rounded-full border border-white/20 bg-white/[0.03] px-5 py-3 text-sm font-bold text-white/80 transition hover:border-[#c8ff3d]/40 hover:text-white"
-            >
-              All modules
+              Generate free
             </Link>
             <Link
               href="/create"
-              className="inline-flex rounded-full border border-white/20 bg-white/[0.03] px-5 py-3 text-sm font-bold text-white/80 transition hover:border-[#c8ff3d]/40 hover:text-white"
+              className="rounded-full border border-white/20 px-4 py-2 text-xs font-bold text-white/80"
             >
-              Open Generate
+              Video
             </Link>
             <Link
               href="/effects"
-              className="inline-flex rounded-full border border-white/15 px-5 py-3 text-sm font-bold text-white/55 transition hover:border-white/30 hover:text-white/80"
+              className="rounded-full border border-white/15 px-4 py-2 text-xs font-bold text-white/55"
             >
-              Recipe wall
+              Viral presets
+            </Link>
+            <Link
+              href="/modules"
+              className="rounded-full border border-white/15 px-4 py-2 text-xs font-bold text-white/55"
+            >
+              Modules
             </Link>
           </div>
-          <nav
-            aria-label="Flow sections"
-            className="mt-6 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none]"
-          >
-            {sections.map((s) => (
-              <a
-                key={s.id}
-                href={`#flow-${s.id}`}
-                className="shrink-0 rounded-full border border-white/15 px-3 py-1 text-[11px] font-semibold text-white/60 hover:border-[#c8ff3d]/40 hover:text-[#c8ff3d]"
-              >
-                {s.label.split("·")[0].trim()}
-              </a>
-            ))}
-          </nav>
         </div>
+        <nav
+          aria-label="Flow sections"
+          className="mx-auto mt-2 flex max-w-[1400px] gap-1.5 overflow-x-auto pb-0.5 [scrollbar-width:none]"
+        >
+          {sections.map((s) => (
+            <a
+              key={s.id}
+              href={`#flow-${s.id}`}
+              className="shrink-0 rounded-full border border-white/12 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white/50 hover:border-[#c8ff3d]/40 hover:text-[#c8ff3d]"
+            >
+              {s.label.split("·")[0].trim()} · {s.items.length}
+            </a>
+          ))}
+        </nav>
       </div>
 
       {sections.map((sec) => (
         <section
           key={sec.id}
           id={`flow-${sec.id}`}
-          className="scroll-mt-24 border-b border-white/10 px-3 py-8 sm:px-5"
+          className="scroll-mt-28 border-b border-white/10 px-2 py-5 sm:px-3"
         >
-          <div className="mx-auto max-w-6xl">
-            <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-white/45">
+          <div className="mx-auto max-w-[1400px]">
+            <h2 className="mb-3 px-1 text-[10px] font-black uppercase tracking-[0.16em] text-white/40">
               {sec.label} · {sec.items.length}
             </h2>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Dense media matrix — 2→4 cols like HF Flow cards */}
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
               {sec.items.map((f) => {
                 const demo = resolveDemo(f);
                 return (
@@ -252,16 +247,15 @@ export default function FlowPage() {
         </section>
       ))}
 
-      <div className="mx-auto max-w-6xl px-4 py-10 text-center sm:px-8">
+      <div className="mx-auto max-w-[1400px] px-4 py-10 text-center">
         <p className="text-sm text-white/45">
-          Pattern parity with suite Flow hubs — all footage and copy are{" "}
-          {site.name}-owned Lab samples.
+          Media matrix · every card is a real {site.name} path · Lab footage only
         </p>
         <Link
           href="/create"
-          className="mt-4 inline-flex rounded-full bg-[#c8ff3d] px-6 py-3 text-sm font-black text-black"
+          className="mt-4 inline-flex rounded-full bg-[#c8ff3d] px-8 py-3.5 text-sm font-black text-black shadow-[0_0_32px_rgba(200,255,61,0.25)]"
         >
-          Start in Generate
+          Start Generate video
         </Link>
       </div>
     </div>

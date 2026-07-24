@@ -15,6 +15,7 @@ import { SuiteEntryStrip } from "@/components/SuiteEntryStrip";
 import { HomeViralPresetRail } from "@/components/HomeViralPresetRail";
 import { HomeViralWall } from "@/components/HomeViralWall";
 import { HfProductRail } from "@/components/HfProductRail";
+import { SeedanceCampaign } from "@/components/SeedanceCampaign";
 import { useI18n } from "@/components/LanguageProvider";
 
 /** Soft concurrent autoplay budget — pause extras when many tiles enter view. */
@@ -166,8 +167,11 @@ export function HfExploreHome({
       {/* HF Viral Presets — dense grid is the homepage (not a blog) */}
       <HomeViralWall items={wallItems} />
 
+      {/* HF Seedance battle banner — full-bleed video CTA */}
+      <SeedanceCampaign />
+
       {/* Compact premiere strip (secondary to the wall) */}
-      <section className="relative min-h-[min(520px,70svh)] overflow-hidden border-b border-white/10">
+      <section className="relative min-h-[min(420px,55svh)] overflow-hidden border-b border-white/10">
         <div className="absolute inset-0">
           <Clip
             key={item.id}
