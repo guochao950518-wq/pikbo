@@ -74,6 +74,9 @@ export default function CommunityPage() {
             <Link href="/create" className="btn btn-ghost !px-3 !py-2 text-xs">
               Generate
             </Link>
+            <Link href="/flow" className="btn btn-ghost !px-3 !py-2 text-xs">
+              Flow
+            </Link>
             <Link
               href="/modules"
               className="btn btn-ghost !px-3 !py-2 text-xs"
@@ -85,6 +88,9 @@ export default function CommunityPage() {
               className="btn btn-ghost !px-3 !py-2 text-xs"
             >
               Seller Pack
+            </Link>
+            <Link href="/image" className="btn btn-ghost !px-3 !py-2 text-xs">
+              Stills
             </Link>
             <Link
               href="/effects"

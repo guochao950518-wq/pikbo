@@ -47,7 +47,7 @@
 | # | Yiha 能力 | 研究结论 | Pikbo 动作 | 优先级 | 状态 |
 |---|-----------|----------|------------|--------|------|
 | Y1 | Create = 模型+提示+参考 | 标准工作台 | Create i2v + extra | P0 | live |
-| Y2 | 顶栏 Video/Image/Edit | 模态分轨 | Generate / Image / Modules | P0 | partial |
+| Y2 | 顶栏 Video/Image/Edit | 模态分轨 | Generate / Stills / Modules / Pack / Flow | P0 | live |
 | Y3 | **/lego 垂直 mini-app** | 固定工作流壳 | `/modules` | P0 | live |
 | Y4 | Explore → remix | 灵感回 Create | Explore/project remix | P0 | live |
 | Y5 | Membership 积分透明 | 生成前成本 | pricing + banner credits | P1 | partial |
@@ -90,5 +90,6 @@ Round C              真 UGC / 云 Library / 真多模型（要账号+key）
 - [ ] 独立真片审计（人工 QA / Lab proof scores）  
 - [x] 错误态 micro-copy 全站统一（`GenerateFailPanel` · Create/Landing/Batch/Image + generateClient action copy）  
 - [x] Suite strip 加 **Flow** 门 + tag 密度（H1 partial → denser）  
+- [x] **Y2** suite chrome 加 **Stills** 轨 + `/image` 套 chrome · handoff 安全 URL  
 
 *Grok · HF_YIHA_ITEM_BACKLOG · 2026-07-24*

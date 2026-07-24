@@ -1011,6 +1011,11 @@ assert.match(gen, /signal\?: AbortSignal|sleep\([^)]*signal/);
 const imagePage = fs.readFileSync(join(root, "app/image/page.tsx"), "utf8");
 assert.match(imagePage, /AbortController|Cancel request/);
 assert.match(imagePage, /refund unconfirmed|Request canceled/);
+assert.match(imagePage, /GenerateSuiteChrome|canHandOffStill|stashPendingStill/);
+assert.match(
+  fs.readFileSync(join(root, "components/GenerateSuiteChrome.tsx"), "utf8"),
+  /id:\s*["']image["']|href:\s*["']\/image["']/
+);
 assert.match(
   fs.readFileSync(join(root, "app/tools/page.tsx"), "utf8"),
   /ItemList|itemListElement/

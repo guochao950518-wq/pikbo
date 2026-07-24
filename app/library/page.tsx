@@ -32,10 +32,10 @@ export default function LibraryPage() {
             <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-[var(--fg-muted)]">
               Suite Library pattern, soft-launch:{" "}
               <span className="font-semibold text-[var(--mint)]">
-                this browser only
-              </span>
-              . Group by project or Toy Identity SKU · remake into Generate · not
-              cloud-synced until durable sign-in.
+                Saved on this device
+              </span>{" "}
+              only (this browser). Group by project or Toy Identity SKU · remake
+              into Generate · not cloud-synced until durable sign-in.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">

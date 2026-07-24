@@ -11,6 +11,21 @@ import {
   type ImageHistoryItem,
 } from "@/lib/imageHistory";
 import { GenerateFailPanel } from "@/components/GenerateFailPanel";
+import { GenerateSuiteChrome } from "@/components/GenerateSuiteChrome";
+
+/** Handoff stills into Create — http(s) or same-origin path only. */
+function canHandOffStill(url: string | null | undefined): url is string {
+  if (!url) return false;
+  return /^https?:\/\//i.test(url) || url.startsWith("/");
+}
+
+function stashPendingStill(url: string) {
+  try {
+    sessionStorage.setItem("pikbo_pending_still", url);
+  } catch {
+    /* private mode */
+  }
+}
 
 export default function ImageStudioPage() {
   const [prompt, setPrompt] = useState(
@@ -147,51 +162,72 @@ export default function ImageStudioPage() {
   }
 
   return (
-    <div className="px-4 py-10 sm:px-8">
-      <div className="mx-auto max-w-4xl">
-        <span className="chip">🖼️ Stills · suite Preview</span>
-        <h1 className="mt-3 text-3xl font-bold">Still studio</h1>
-        <p className="mt-2 text-sm text-[var(--fg-muted)]">
-          Mock packaging & colorways before motion. Flux via fal (
-          {CREDITS_PER_VIDEO} credits). Then animate in Generate — or jump to a
-          Module job.
-        </p>
-        <div className="mt-3 flex flex-wrap gap-2">
-          <Link href="/create" className="btn btn-ghost !px-3 !py-1.5 text-xs">
-            Generate
-          </Link>
-          <Link href="/modules" className="btn btn-ghost !px-3 !py-1.5 text-xs">
-            Modules
-          </Link>
-          <Link
-            href="/create?mode=seller-pack"
-            className="btn btn-ghost !px-3 !py-1.5 text-xs"
-          >
-            Seller Pack
-          </Link>
+    <div>
+      <GenerateSuiteChrome />
+      <div className="px-4 py-8 sm:px-8">
+      <div className="mx-auto max-w-5xl">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <span className="chip">🖼️ Stills · suite Preview</span>
+            <h1 className="mt-3 text-2xl font-bold tracking-tight sm:text-3xl">
+              Still studio
+            </h1>
+            <p className="mt-2 max-w-2xl text-sm text-[var(--fg-muted)]">
+              Mock packaging & colorways before motion. Flux via fal (
+              {CREDITS_PER_VIDEO} credits live · demos labeled 0). Hand off a
+              safe URL into Generate, Modules, or Seller Pack — not a free
+              image farm.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href="/create"
+              className="btn btn-primary !px-3 !py-1.5 text-xs"
+            >
+              Generate
+            </Link>
+            <Link
+              href="/modules"
+              className="btn btn-ghost !px-3 !py-1.5 text-xs"
+            >
+              Modules
+            </Link>
+            <Link
+              href="/create?mode=seller-pack"
+              className="btn btn-ghost !px-3 !py-1.5 text-xs"
+            >
+              Seller Pack
+            </Link>
+            <Link href="/flow" className="btn btn-ghost !px-3 !py-1.5 text-xs">
+              Flow
+            </Link>
+          </div>
         </div>
 
-        <div className="card mt-8 grid gap-6 p-6 lg:grid-cols-2">
+        <div className="card mt-6 grid gap-5 p-5 sm:p-6 lg:grid-cols-2">
           <div>
-            <label className="text-xs font-semibold text-[var(--fg-dim)]">
+            <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--mint)]/80">
               Prompt
             </label>
             <textarea
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               rows={6}
-              className="mt-2 w-full rounded-xl border border-[var(--border)] bg-[var(--bg-soft)] px-3 py-2 text-sm outline-none focus:border-[var(--brand)]"
+              className="mt-2 w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2.5 text-sm outline-none focus:border-[var(--mint)]/50 focus:shadow-[0_0_0_3px_rgba(200,255,61,0.1)]"
             />
-            <div className="mt-3 flex flex-wrap gap-2 text-xs">
+            <p className="mt-2 text-[10px] font-bold uppercase tracking-wider text-white/35">
+              Aspect
+            </p>
+            <div className="mt-1.5 flex flex-wrap gap-1.5 text-xs">
               {["1:1", "3:4", "16:9", "9:16"].map((r) => (
                 <button
                   key={r}
                   type="button"
                   onClick={() => setAspect(r)}
-                  className={`rounded-lg border px-2 py-1 ${
+                  className={`rounded-lg border px-2.5 py-1 font-semibold transition ${
                     aspect === r
-                      ? "border-[var(--brand)] text-[var(--fg)]"
-                      : "border-[var(--border)] text-[var(--fg-muted)]"
+                      ? "border-[var(--mint)]/50 bg-[var(--mint)]/12 text-[var(--mint)]"
+                      : "border-white/10 text-[var(--fg-muted)] hover:border-white/25"
                   }`}
                 >
                   {r}
@@ -239,7 +275,7 @@ export default function ImageStudioPage() {
                 Demo placeholder — add FAL_KEY for Flux stills.
               </p>
             )}
-            {imageUrl && imageUrl.startsWith("http") && (
+            {canHandOffStill(imageUrl) && (
               <div className="mt-3 flex flex-col gap-2">
                 {(demo || lastSettlement) && (
                   <p className="text-center text-[11px] text-[var(--fg-dim)]">
@@ -249,62 +285,41 @@ export default function ImageStudioPage() {
                       : null}
                   </p>
                 )}
+                <p className="text-center text-[10px] font-bold uppercase tracking-wider text-[var(--mint)]/70">
+                  Delivery · next job
+                </p>
                 <Link
                   href="/create"
                   className="btn btn-primary w-full text-sm"
-                  onClick={() => {
-                    try {
-                      sessionStorage.setItem("pikbo_pending_still", imageUrl);
-                    } catch {
-                      // ignore
-                    }
-                  }}
+                  onClick={() => stashPendingStill(imageUrl)}
                 >
                   Animate in Generate →
                 </Link>
                 <Link
                   href="/create?mode=seller-pack"
                   className="btn btn-ghost w-full text-sm"
-                  onClick={() => {
-                    try {
-                      sessionStorage.setItem("pikbo_pending_still", imageUrl);
-                    } catch {
-                      // ignore
-                    }
-                  }}
+                  onClick={() => stashPendingStill(imageUrl)}
                 >
                   Seller Pack · 3 clips →
                 </Link>
                 <Link
                   href="/modules"
                   className="btn btn-ghost w-full text-sm"
-                  onClick={() => {
-                    try {
-                      sessionStorage.setItem("pikbo_pending_still", imageUrl);
-                    } catch {
-                      // ignore
-                    }
-                  }}
+                  onClick={() => stashPendingStill(imageUrl)}
                 >
                   Pick a Module job →
                 </Link>
                 <Link
                   href="/effects/360-spin-showcase"
                   className="btn btn-ghost w-full text-sm"
-                  onClick={() => {
-                    try {
-                      sessionStorage.setItem("pikbo_pending_still", imageUrl);
-                    } catch {
-                      // ignore
-                    }
-                  }}
+                  onClick={() => stashPendingStill(imageUrl)}
                 >
                   Or spin on effect page →
                 </Link>
               </div>
             )}
           </div>
-          <div className="grid place-items-center overflow-hidden rounded-xl border border-dashed border-[var(--border)] bg-black/30">
+          <div className="media-stage relative grid min-h-[16rem] place-items-center overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-black/50 to-black/80 sm:min-h-[20rem]">
             {imageUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -314,10 +329,27 @@ export default function ImageStudioPage() {
               />
             ) : (
               <div className="p-8 text-center text-sm text-[var(--fg-dim)]">
-                <p className="text-3xl">🧸</p>
-                <p className="mt-2">Preview</p>
+                <p className="text-3xl" aria-hidden>
+                  🧸
+                </p>
+                <p className="mt-2 font-semibold text-white/70">Still preview</p>
+                <p className="mt-1 max-w-[14rem] text-[11px] leading-relaxed text-white/40">
+                  Write a prompt · pick aspect · Generate still. Live uses Flux
+                  when FAL_KEY is set; demos stay labeled.
+                </p>
               </div>
             )}
+            {imageUrl ? (
+              <span
+                className={`absolute left-2 top-2 rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wider ${
+                  demo
+                    ? "border border-white/15 bg-black/60 text-white/70"
+                    : "bg-[var(--mint)] text-black"
+                }`}
+              >
+                {demo ? "Demo" : "Live still"}
+              </span>
+            ) : null}
           </div>
         </div>
 
@@ -371,11 +403,20 @@ export default function ImageStudioPage() {
           Have a real figure photo?{" "}
           <Link
             href="/create"
-            className="font-semibold text-[var(--brand)] hover:underline"
+            className="font-semibold text-[var(--mint)] hover:underline"
           >
             Animate it with Seedance
           </Link>
+          {" · "}
+          <Link href="/library" className="text-[var(--fg-dim)] hover:underline">
+            Library
+          </Link>
+          {" · "}
+          <Link href="/models" className="text-[var(--fg-dim)] hover:underline">
+            Models honesty
+          </Link>
         </p>
+      </div>
       </div>
     </div>
   );

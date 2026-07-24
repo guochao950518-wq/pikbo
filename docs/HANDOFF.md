@@ -4,6 +4,12 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Y2 Stills suite rail + Image studio craft
+- `GenerateSuiteChrome`: Stills mode → `/image` (Preview badge · Flux honesty).
+- Image studio: suite chrome · media-stage · safe handoff (`http(s)` + `/path`).
+- Community header: Flow + Stills doors.
+- Verified: typecheck · lint · engine-smoke.
+
 ### 2026-07-24 — [grok] Delivery progress + Create controls density
 - DeliveryChecklist: progress bar · complete state · denser ticks.
 - ModulesMobileCta: Flow + Pack · sticky glass craft.

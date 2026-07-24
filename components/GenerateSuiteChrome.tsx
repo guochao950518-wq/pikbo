@@ -17,6 +17,12 @@ const MODES = [
     blurb: "Workbench",
   },
   {
+    id: "image",
+    label: "Stills",
+    href: "/image",
+    blurb: "Preview · Flux",
+  },
+  {
     id: "modules",
     label: "Modules",
     href: "/modules",
@@ -56,6 +62,9 @@ export function GenerateSuiteChrome({
     if (id === "generate") {
       return (path === "/create" || path === "/generate") && !sellerMode;
     }
+    if (id === "image") {
+      return path === "/image" || path.startsWith("/image/");
+    }
     if (id === "seller") {
       return path === "/create" && sellerMode;
     }
@@ -82,18 +91,28 @@ export function GenerateSuiteChrome({
                 compact ? "text-base" : "text-lg sm:text-xl"
               )}
             >
-              Generate
+              {path === "/image" || path.startsWith("/image/")
+                ? "Stills"
+                : "Generate"}
             </h1>
             <span className="rounded-full border border-[var(--mint)]/40 bg-[var(--mint)]/12 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-[var(--mint)] shadow-[0_0_20px_rgba(200,255,61,0.12)]">
               Toy studio
             </span>
-            <span className="hidden rounded-full border border-white/10 px-2 py-0.5 text-[9px] font-semibold text-white/40 sm:inline">
-              Seedance live
-            </span>
+            {path === "/image" || path.startsWith("/image/") ? (
+              <span className="rounded-full border border-amber-300/30 bg-amber-300/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-100/90">
+                Preview
+              </span>
+            ) : (
+              <span className="hidden rounded-full border border-white/10 px-2 py-0.5 text-[9px] font-semibold text-white/40 sm:inline">
+                Seedance live
+              </span>
+            )}
           </div>
           {!compact && (
             <p className="mt-0.5 text-[11px] text-white/45 sm:text-xs">
-              {site.suiteLine} — craft-grade toy clips, not a model zoo
+              {path === "/image" || path.startsWith("/image/")
+                ? "Flux stills · mock packaging, then animate in Generate — not a free image farm"
+                : `${site.suiteLine} — craft-grade toy clips, not a model zoo`}
             </p>
           )}
         </div>
