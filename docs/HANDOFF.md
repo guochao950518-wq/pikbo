@@ -4,6 +4,11 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] VideoTile AutoPlay budget + Effects proof ItemList
+- VideoTile uses shared AutoPlayVideo (mobile ≤1 concurrent · preload none · focusable=false).
+- Effects hub: ItemList JSON-LD for proof-backed recipes only; hub copy notes Lab-proof count.
+- Verified: engine-smoke · typecheck · lint.
+
 ### 2026-07-24 — [grok] Auth rate limits + safe download redirects
 - Magic-link: per-email 3/min + per-IP 8/min with Retry-After; generic success (no email echo).
 - Claim POST: 12/min per user+IP. Downloads: `isSafeDeliverableUrl` (http(s) or /path only).

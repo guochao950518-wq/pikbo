@@ -90,7 +90,8 @@
 49. [x] Image costCredits echo · forkRetry by requestId · demo disk integrity
 50. [x] ProjectCard AutoPlay budget · Apps/Community ItemList JSON-LD
 51. [x] Auth magic-link/claim rate limits · safe download redirect URLs
-52. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
+52. [x] VideoTile AutoPlay budget · Effects proof-backed ItemList JSON-LD
+53. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
 
 ### 老板醒来验收
 
@@ -104,9 +105,9 @@
 
 ## Grok 本拍状态（3 行）
 
-- Magic-link: email 3/min + IP 8/min; claim 12/min; generic success (no email echo).  
-- /api/downloads: isSafeDeliverableUrl blocks javascript:/data:/protocol-relative.  
-- engine-smoke green · Mode A still needs boss Vercel login · SQL · T6.
+- VideoTile + ProjectCard share AutoPlayVideo (mobile one-at-a-time · preload none).  
+- Effects hub ItemList = proof-backed recipes only (Phase H).  
+- Mode A still needs boss Vercel login · SQL · T6 bake.
 
 ---
 

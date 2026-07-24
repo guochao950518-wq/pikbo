@@ -6,12 +6,20 @@ import { allCategoryFeeds } from "@/lib/videoFeed";
 import { VideoTile } from "@/components/VideoTile";
 import { GenerateSuiteChrome } from "@/components/GenerateSuiteChrome";
 import { listCreateShelfWorkflows } from "@/lib/workflows";
+import { proofBackedRecipeSlugs } from "@/lib/seoIndex";
+import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Toy video presets · Recipes",
   description:
     "Every Pikbo effect as a playable video — spin, unbox, dance, cinematic scenes for designer toys. Remake in Generate.",
   alternates: { canonical: "/effects" },
+  openGraph: {
+    title: `Toy video presets · Recipes | ${site.name}`,
+    description:
+      "Playable Lab recipes for designer toys — spin, unbox, dance, shelf. Remix in Generate.",
+    url: `${site.url}/effects`,
+  },
 };
 
 /** HF viral-presets wall + suite chrome (toy vertical) */
@@ -20,9 +28,31 @@ export default function EffectsHub() {
   const jobBlocks = listCreateShelfWorkflows().filter(
     (w) => w.id !== "photo-to-clip"
   );
+  // Phase H: ItemList only proof-backed recipes (concept walls stay reachable/noindex).
+  const proofSlugs = new Set(proofBackedRecipeSlugs());
+  const proofPresets = PRESETS.filter((p) => proofSlugs.has(p.slug));
+  const itemListLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Pikbo Lab toy video recipes with proof",
+    description:
+      "Effect landings that have a unique Lab cached demo. Concept recipes without proof are omitted.",
+    numberOfItems: proofPresets.length,
+    itemListElement: proofPresets.map((p, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: p.name,
+      url: `${site.url}/effects/${p.slug}`,
+      description: p.seoDescription,
+    })),
+  };
 
   return (
     <div className="pb-24">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListLd) }}
+      />
       <Suspense
         fallback={
           <div className="border-b border-white/10 px-4 py-3 text-sm text-white/40">
@@ -41,7 +71,7 @@ export default function EffectsHub() {
               Viral presets · remake in Generate
             </h1>
             <p className="mt-0.5 text-[11px] text-[var(--fg-dim)]">
-              Full recipe wall · or start from a{" "}
+              Full recipe wall · {proofPresets.length} Lab-proof · or start from a{" "}
               <Link href="/modules" className="text-[var(--mint)] hover:underline">
                 Module job
               </Link>

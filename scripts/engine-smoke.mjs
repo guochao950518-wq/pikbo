@@ -1002,6 +1002,16 @@ const projectCard = fs.readFileSync(
 );
 assert.match(projectCard, /AutoPlayVideo/);
 assert.match(projectCard, /focusable=\{false\}/);
+const videoTile = fs.readFileSync(
+  join(root, "components/VideoTile.tsx"),
+  "utf8"
+);
+assert.match(videoTile, /AutoPlayVideo/);
+assert.match(videoTile, /focusable=\{false\}/);
+assert.match(
+  fs.readFileSync(join(root, "app/effects/page.tsx"), "utf8"),
+  /proofBackedRecipeSlugs|ItemList/
+);
 assert.match(genJobsStore, /export function generationJobsProbe/);
 assert.match(genJobsStore, /forkRetryJob[\s\S]*findJobByRequestOrId/);
 // Demo + sample stills must exist on disk (preflight parity)
