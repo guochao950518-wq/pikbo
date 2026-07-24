@@ -135,9 +135,17 @@ export function resolveSpecImage(
 export function requestCreditStateFromFailure(result: {
   creditsRefunded?: boolean;
   status: number;
+  /** Client/server error codes (NETWORK_ERROR · REQUEST_CANCELED · …) */
+  code?: string;
 }): Exclude<RequestCreditState, "0 cached" | "10 used"> {
   if (result.creditsRefunded === true) return "10 restored";
-  if (result.status === 0) return "refund unconfirmed";
+  if (
+    result.status === 0 ||
+    result.code === "NETWORK_ERROR" ||
+    result.code === "REQUEST_CANCELED"
+  ) {
+    return "refund unconfirmed";
+  }
   return null;
 }
 

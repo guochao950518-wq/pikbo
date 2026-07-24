@@ -40,8 +40,13 @@ export type GenerateSuccess = {
   /** Server-enforced resolution (480p free / 720p paid default) */
   resolution: string;
   session: PublicSession;
-  /** present on live fal jobs */
+  /** present on live fal jobs (provider id); may equal jobId on demo */
   requestId?: string;
+  /**
+   * Process-memory ledger id (Phase D). Prefer for cancel/poll/download when
+   * distinct from provider requestId.
+   */
+  jobId?: string;
   provider?: string;
   /** why demo was returned — only when demo:true */
   demoReason?: "no_provider_key";

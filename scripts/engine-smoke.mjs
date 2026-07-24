@@ -1078,7 +1078,47 @@ assert.doesNotMatch(
   /autoPlay/
 );
 assert.match(genJobsStore, /export function generationJobsProbe/);
+assert.match(genJobsStore, /byStatus|timedOutThisProbe/);
 assert.match(genJobsStore, /forkRetryJob[\s\S]*findJobByRequestOrId/);
+// Success payload must echo process ledger jobId (cancel/poll)
+assert.match(
+  fs.readFileSync(join(root, "lib/contracts.ts"), "utf8"),
+  /jobId\?:/
+);
+assert.match(genRoute, /jobId/);
+// Network/cancel codes → refund unconfirmed settlement
+assert.match(
+  fs.readFileSync(join(root, "lib/createTrust.ts"), "utf8"),
+  /NETWORK_ERROR|REQUEST_CANCELED/
+);
+assert.equal(
+  (function requestCreditStateFromFailurePure(result) {
+    if (result.creditsRefunded === true) return "10 restored";
+    if (
+      result.status === 0 ||
+      result.code === "NETWORK_ERROR" ||
+      result.code === "REQUEST_CANCELED"
+    ) {
+      return "refund unconfirmed";
+    }
+    return null;
+  })({ status: 0, code: "NETWORK_ERROR" }),
+  "refund unconfirmed"
+);
+assert.equal(
+  (function requestCreditStateFromFailurePure(result) {
+    if (result.creditsRefunded === true) return "10 restored";
+    if (
+      result.status === 0 ||
+      result.code === "NETWORK_ERROR" ||
+      result.code === "REQUEST_CANCELED"
+    ) {
+      return "refund unconfirmed";
+    }
+    return null;
+  })({ status: 500, code: "REQUEST_CANCELED" }),
+  "refund unconfirmed"
+);
 // Demo + sample stills must exist on disk (preflight parity)
 {
   const demoClipsSrc = fs.readFileSync(join(root, "lib/demoClips.ts"), "utf8");

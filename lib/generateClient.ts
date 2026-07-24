@@ -234,8 +234,13 @@ export function historyFieldsFromSuccess(
       typeof data.resolution === "string"
         ? data.resolution
         : meta.fallbackResolution,
+    // Prefer process ledger jobId for cancel/download; provider requestId fallback.
     requestId:
-      typeof data.requestId === "string" ? data.requestId : undefined,
+      typeof data.jobId === "string"
+        ? data.jobId
+        : typeof data.requestId === "string"
+          ? data.requestId
+          : undefined,
     sourceProject: meta.sourceProject,
     channel: meta.channel,
     status: "succeeded",

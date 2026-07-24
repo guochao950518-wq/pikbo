@@ -229,6 +229,7 @@ export async function POST(req: Request) {
           provider: "demo-cached",
         });
         payload.requestId = job.id;
+        payload.jobId = job.id;
       } catch {
         /* best-effort job ledger */
       }
@@ -396,25 +397,9 @@ export async function POST(req: Request) {
       }
 
       await shadowSettle(shadow, result.requestId);
-      const payload: GenerateSuccess = {
-        videoUrl,
-        demo: false,
-        watermark: plan.watermark,
-        model,
-        duration: secs,
-        aspectRatio: aspect,
-        resolution,
-        session: publicSession(session),
-        // Prefer provider requestId; fall back to local ledger id for poll/cancel.
-        requestId: result.requestId || liveJobId,
-        provider: "bytedance-seedance",
-        // Wave B — echo server-validated recipe + live settlement
-        effect: preset.slug,
-        costCredits: check.cost,
-        creditsOutcome: "10 used",
-      };
+      let ledgerJobId = liveJobId;
       try {
-        completeSyncGenerateJob({
+        const job = completeSyncGenerateJob({
           jobId: liveJobId,
           sessionId: session.id,
           effect: preset.slug,
@@ -430,9 +415,28 @@ export async function POST(req: Request) {
           requestId: result.requestId || liveJobId,
           provider: "bytedance-seedance",
         });
+        ledgerJobId = job.id;
       } catch {
         /* best-effort */
       }
+      const payload: GenerateSuccess = {
+        videoUrl,
+        demo: false,
+        watermark: plan.watermark,
+        model,
+        duration: secs,
+        aspectRatio: aspect,
+        resolution,
+        session: publicSession(session),
+        // Prefer provider requestId; fall back to local ledger id for poll/cancel.
+        requestId: result.requestId || ledgerJobId,
+        jobId: ledgerJobId,
+        provider: "bytedance-seedance",
+        // Wave B — echo server-validated recipe + live settlement
+        effect: preset.slug,
+        costCredits: check.cost,
+        creditsOutcome: "10 used",
+      };
       return NextResponse.json(payload);
     } catch (e) {
       console.error("generate error:", model, e);

@@ -97,7 +97,8 @@
 56. [x] Flow + home viral: AutoPlay budget (kill multi-autoPlay) · flow PREVIEW_ROBOTS
 57. [x] Round B Y5 sellerPackQuote · Pack balance strip · Library By SKU · NETWORK/CANCEL codes · CP /flow /apps
 58. [x] Live generate beginSyncGenerateJob (running ledger) · complete/fail · Library cancel/timeout mid-flight
-59. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
+59. [x] jobId echo on success · jobs probe byStatus/open · NETWORK/CANCEL → refund unconfirmed
+60. 下一拍：Mode A Vercel deploy (boss login) · SQL migration apply · T6 bake when worker
 
 ### 老板醒来验收
 
@@ -111,8 +112,8 @@
 
 ## Grok 本拍状态（3 行）
 
-- Live generate opens `running` job before fal (`beginSyncGenerateJob`).  
-- complete/fail finalize same row — Library cancel + timeout sweep work mid-flight.  
+- Success payload echoes `jobId` (ledger) + `requestId` (provider).  
+- health jobs probe: byStatus/open/timedOutThisProbe; cancel/network → refund unconfirmed.  
 - Mode A still needs boss Vercel login · SQL · T6 bake.
 
 ---

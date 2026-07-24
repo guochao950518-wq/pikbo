@@ -737,21 +737,42 @@ export function generationJobsProbe(): {
   mode: "local-memory";
   durable: false;
   count: number;
+  /** Status histogram for Mode A ops (running > 0 means mid-flight live job). */
+  byStatus: Record<GenerationJobStatus, number>;
+  /** queued + running — cancel/timeout targets */
+  open: number;
   webhookEvents: number;
   jobTimeoutMs: number;
+  timedOutThisProbe: number;
   note: string;
 } {
   const timedOut = sweepTimedOutJobs();
+  const byStatus: Record<GenerationJobStatus, number> = {
+    queued: 0,
+    running: 0,
+    succeeded: 0,
+    failed: 0,
+    canceled: 0,
+  };
+  for (const j of jobs.values()) {
+    byStatus[j.status] = (byStatus[j.status] ?? 0) + 1;
+  }
+  const open = byStatus.queued + byStatus.running;
   return {
     mode: "local-memory",
     durable: false,
     count: jobs.size,
+    byStatus,
+    open,
     webhookEvents: webhookEvents.size,
     jobTimeoutMs: jobTimeoutMs(),
+    timedOutThisProbe: timedOut.length,
     note:
       timedOut.length > 0
         ? `Process-memory ledger; swept ${timedOut.length} timed-out job(s) this probe`
-        : "Process-memory ledger; not multi-node durable",
+        : open > 0
+          ? `Process-memory ledger; ${open} open (queued/running) job(s)`
+          : "Process-memory ledger; not multi-node durable",
   };
 }
 
