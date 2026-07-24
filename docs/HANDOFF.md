@@ -4,6 +4,13 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] Delivery progress + Create controls density
+- DeliveryChecklist: progress bar · complete state · denser ticks.
+- ModulesMobileCta: Flow + Pack · sticky glass craft.
+- Create: recipe cards active glow · selected recipe + aspect channel hints.
+- WorkflowShelf Flow link · Footer suite CTAs · SellerPackSteps Now chip.
+- Verified: typecheck · lint · engine-smoke.
+
 ### 2026-07-24 — [grok] Create next-job grid + Pricing/Project craft
 - Create success: same-photo next jobs as blurb cards + SKU chip.
 - Pricing hero suite doors · soft-launch billing badge · free CTA → Lab sample.

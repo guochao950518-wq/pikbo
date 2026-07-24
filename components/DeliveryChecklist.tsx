@@ -63,19 +63,23 @@ export function DeliveryChecklist({
   if (items.length === 0) return null;
 
   const done = items.filter((it) => checked[it.id]).length;
+  const pct = Math.round((done / items.length) * 100);
+  const allDone = done === items.length;
 
   return (
     <div
-      className={`rounded-xl border border-white/10 bg-black/50 px-3.5 py-3 text-left backdrop-blur-sm ${className}`}
+      className={`rounded-2xl border px-3.5 py-3 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-sm ${
+        allDone
+          ? "border-[var(--mint)]/35 bg-[var(--mint)]/[0.08]"
+          : "border-white/10 bg-black/55"
+      } ${className}`}
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--mint)]/80">
+        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--mint)]/90">
           {title}
-          {done > 0 ? (
-            <span className="ml-1.5 font-semibold normal-case tracking-normal text-white/40">
-              · {done}/{items.length}
-            </span>
-          ) : null}
+          <span className="ml-1.5 font-semibold normal-case tracking-normal text-white/45">
+            · {done}/{items.length}
+          </span>
         </p>
         {done > 0 ? (
           <button
@@ -94,17 +98,30 @@ export function DeliveryChecklist({
           </button>
         ) : null}
       </div>
-      <ul className="mt-2 space-y-1.5 text-[11px] text-white/65">
+
+      <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/10">
+        <div
+          className="h-full rounded-full bg-[var(--mint)] transition-all duration-300"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+
+      <ul className="mt-2.5 space-y-1.5 text-[11px] text-white/65">
         {items.map((item) => {
           const ok = Boolean(checked[item.id]);
           return (
-            <li key={item.id} className="flex gap-2">
+            <li
+              key={item.id}
+              className={`flex gap-2 rounded-lg px-1.5 py-1 transition ${
+                ok ? "bg-white/[0.02]" : "hover:bg-white/[0.03]"
+              }`}
+            >
               <button
                 type="button"
                 onClick={() => toggle(item.id)}
                 className={`mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded border text-[9px] font-black transition ${
                   ok
-                    ? "border-[var(--mint)]/60 bg-[var(--mint)] text-black"
+                    ? "border-[var(--mint)]/60 bg-[var(--mint)] text-black shadow-[0_0_10px_rgba(200,255,61,0.35)]"
                     : "border-white/25 bg-black/40 text-transparent hover:border-[var(--mint)]/40"
                 }`}
                 aria-pressed={ok}
@@ -126,7 +143,7 @@ export function DeliveryChecklist({
                   type="button"
                   onClick={() => toggle(item.id)}
                   className={`text-left ${
-                    ok ? "text-white/40 line-through" : "text-white/70"
+                    ok ? "text-white/40 line-through" : "text-white/75"
                   }`}
                 >
                   {item.label}
@@ -136,9 +153,16 @@ export function DeliveryChecklist({
           );
         })}
       </ul>
-      <p className="mt-2 text-[10px] leading-snug text-white/35">
-        Ticks stay on this device only · not cloud-synced · failed jobs refund
-      </p>
+
+      {allDone ? (
+        <p className="mt-2 text-[10px] font-semibold leading-snug text-[var(--mint)]/90">
+          Pack checklist complete · ready to ship this SKU
+        </p>
+      ) : (
+        <p className="mt-2 text-[10px] leading-snug text-white/35">
+          Ticks stay on this device only · not cloud-synced · failed jobs refund
+        </p>
+      )}
     </div>
   );
 }

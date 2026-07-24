@@ -1584,18 +1584,19 @@ export function CreateStudio({
                   key={p.slug}
                   type="button"
                   onClick={() => selectEffect(p.slug)}
-                  className={`min-w-[118px] shrink-0 rounded-xl border px-2.5 py-2.5 text-left transition ${
+                  className={`min-w-[122px] shrink-0 rounded-xl border px-2.5 py-2.5 text-left transition duration-200 ${
                     effect === p.slug
-                      ? "border-[var(--mint)] bg-[var(--mint)]/10 ring-1 ring-[var(--mint)]/40"
-                      : "border-[var(--border)] bg-[var(--bg-soft)]"
+                      ? "border-[var(--mint)] bg-[var(--mint)]/12 ring-1 ring-[var(--mint)]/45 shadow-[0_0_24px_rgba(200,255,61,0.12)]"
+                      : "border-white/10 bg-black/35 hover:border-white/25 hover:bg-black/50"
                   }`}
                 >
                   <span className="text-base">{p.emoji}</span>
-                  <span className="mt-1 block text-[11px] font-bold leading-tight">
+                  <span className="mt-1 block text-[11px] font-bold leading-tight text-white/95">
                     {viralName(p.slug, p.name)}
                   </span>
                   <span className="mt-0.5 block text-[9px] text-[var(--fg-dim)]">
                     {p.aspectRatio}
+                    {effect === p.slug ? " · active" : ""}
                   </span>
                 </button>
               ))}
@@ -1620,46 +1621,49 @@ export function CreateStudio({
           </div>
 
           {/* Active recipe summary + aspect (essential only) */}
-          <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-soft)] p-3">
+          <div className="rounded-xl border border-[var(--mint)]/20 bg-gradient-to-br from-[var(--mint)]/[0.07] to-black/40 p-3 shadow-[inset_0_1px_0_rgba(200,255,61,0.08)]">
             <div className="flex items-start justify-between gap-2">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--fg-dim)]">
+                <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--mint)]/80">
                   Selected recipe
                 </p>
-                <p className="mt-0.5 text-sm font-bold">
+                <p className="mt-0.5 text-sm font-bold text-white">
                   {preset.emoji} {viralName(preset.slug, preset.name)}
                 </p>
-                <p className="mt-0.5 text-[11px] text-[var(--fg-dim)]">
+                <p className="mt-0.5 text-[11px] leading-snug text-white/45">
                   {preset.tagline}
                 </p>
               </div>
-              <span className="shrink-0 rounded-full border border-white/10 px-2 py-0.5 text-[10px] text-[var(--fg-dim)]">
+              <span className="shrink-0 rounded-full border border-[var(--mint)]/25 bg-black/40 px-2 py-0.5 text-[10px] font-semibold text-[var(--mint)]">
                 {effectiveDuration}s · {isFree ? "480p" : resolution}
               </span>
             </div>
             <div className="mt-3">
-              <p className="mb-1.5 text-[10px] font-semibold text-[var(--fg-dim)]">
-                Aspect
+              <p className="mb-1.5 text-[10px] font-semibold text-white/40">
+                Aspect · channel crop
               </p>
               <div className="flex gap-2">
                 {(
                   [
-                    { id: "9:16" as const, label: "9:16" },
-                    { id: "1:1" as const, label: "1:1" },
-                    { id: "16:9" as const, label: "16:9" },
+                    { id: "9:16" as const, label: "9:16", hint: "TikTok" },
+                    { id: "1:1" as const, label: "1:1", hint: "Etsy" },
+                    { id: "16:9" as const, label: "16:9", hint: "Wide" },
                   ] as const
                 ).map((a) => (
                   <button
                     key={a.id}
                     type="button"
                     onClick={() => setAspectRatio(a.id)}
-                    className={`flex-1 rounded-lg border py-2 text-[11px] font-semibold ${
+                    className={`flex-1 rounded-lg border py-2 text-[11px] font-semibold transition ${
                       aspectRatio === a.id
-                        ? "border-[var(--mint)] bg-[var(--mint)]/10 text-[var(--mint)]"
-                        : "border-[var(--border)] text-[var(--fg-muted)]"
+                        ? "border-[var(--mint)] bg-[var(--mint)]/15 text-[var(--mint)] shadow-[0_0_16px_rgba(200,255,61,0.12)]"
+                        : "border-white/10 text-white/55 hover:border-white/25"
                     }`}
                   >
-                    {a.label}
+                    <span className="block">{a.label}</span>
+                    <span className="mt-0.5 block text-[9px] font-medium opacity-70">
+                      {a.hint}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -1667,14 +1671,14 @@ export function CreateStudio({
           </div>
 
           {/* Advanced — models, duration, seed, prompt (collapsed) */}
-          <div className="rounded-xl border border-[var(--border)]">
+          <div className="rounded-xl border border-white/10 bg-black/25">
             <button
               type="button"
               onClick={() => setShowAdvanced((v) => !v)}
-              className="flex w-full items-center justify-between px-3 py-2.5 text-left text-xs font-semibold text-[var(--fg-muted)]"
+              className="flex w-full items-center justify-between px-3 py-2.5 text-left text-xs font-semibold text-white/65 transition hover:text-white"
             >
               Advanced
-              <span className="text-[10px] text-[var(--fg-dim)]">
+              <span className="text-[10px] text-white/40">
                 {showAdvanced ? "Hide" : "Duration · model · prompt"}
               </span>
             </button>

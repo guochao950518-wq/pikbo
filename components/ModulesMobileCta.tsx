@@ -6,7 +6,10 @@ import { track } from "@/lib/analytics";
 /** Sticky mobile CTA on Modules wall — above AppShell tab nav */
 export function ModulesMobileCta() {
   return (
-    <div className="fixed inset-x-0 bottom-[4.75rem] z-40 border-t border-white/10 bg-black/90 px-4 py-2.5 pb-[max(0.6rem,env(safe-area-inset-bottom))] backdrop-blur-md lg:hidden">
+    <div className="fixed inset-x-0 bottom-[4.75rem] z-40 border-t border-white/10 bg-black/92 px-3 py-2.5 pb-[max(0.6rem,env(safe-area-inset-bottom))] shadow-[0_-12px_40px_rgba(0,0,0,0.55)] backdrop-blur-xl lg:hidden">
+      <p className="mb-1.5 text-center text-[10px] font-medium text-white/45">
+        One photo · job block ready · Seedance live
+      </p>
       <div className="flex gap-2">
         <Link
           href="/create?try=1&sample=scout"
@@ -17,7 +20,7 @@ export function ModulesMobileCta() {
               meta: { cta: "try_free" },
             })
           }
-          className="btn btn-primary min-w-0 flex-1 py-3 text-sm"
+          className="btn btn-primary min-w-0 flex-[1.4] py-3 text-sm font-black"
         >
           Try free · 10s
         </Link>
@@ -30,9 +33,22 @@ export function ModulesMobileCta() {
               meta: { cta: "seller_pack" },
             })
           }
-          className="btn btn-ghost shrink-0 px-3 py-3 text-xs"
+          className="btn btn-ghost shrink-0 border border-white/15 px-3 py-3 text-xs font-bold"
         >
-          Seller Pack
+          Pack · 3
+        </Link>
+        <Link
+          href="/flow"
+          onClick={() =>
+            track({
+              event: "landing_view",
+              path: "/modules",
+              meta: { cta: "flow" },
+            })
+          }
+          className="btn btn-ghost shrink-0 border border-white/15 px-3 py-3 text-xs font-bold"
+        >
+          Flow
         </Link>
       </div>
     </div>

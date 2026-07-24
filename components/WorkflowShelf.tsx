@@ -43,12 +43,20 @@ export function WorkflowShelf({
               </p>
             )}
           </div>
-          <Link
-            href="/modules"
-            className="text-[10px] font-semibold text-[var(--mint)] hover:underline"
-          >
-            All modules →
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/flow"
+              className="text-[10px] font-semibold text-white/45 hover:text-white hover:underline"
+            >
+              Flow
+            </Link>
+            <Link
+              href="/modules"
+              className="text-[10px] font-semibold text-[var(--mint)] hover:underline"
+            >
+              All modules →
+            </Link>
+          </div>
         </div>
         <div className="mt-2 flex gap-2 overflow-x-auto pb-0.5 [scrollbar-width:none]">
           {items.map((w) => {
