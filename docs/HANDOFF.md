@@ -4,13 +4,19 @@ Newest first. One block per meaningful landing.
 
 ---
 
+### 2026-07-24 — [grok] generate UNSAFE_URL + providerFailHttp
+- Live unsafe videoUrl returns **`UNSAFE_URL`** (was mislabeled MODEL_EMPTY).
+- Shared `providerFailHttp`: PROVIDER_TIMEOUT 504 + Retry-After · CONTENT_POLICY 422 · balance/rate/other.
+- Webhook unsafe success → **422**. Client + contracts cover all codes.
+- Verified: engine-smoke · typecheck · lint · main `7c12948`.
+
 ### 2026-07-24 — [grok] Image UNSAFE_URL gate + Create adoptImage useCallback
 - `/api/image` live stills: `isSafeDeliverableUrl` or refund + `UNSAFE_URL` (generate parity).
 - Image studio surfaces refunded copy; Create adoptImage useCallback + safe pending-still schemes.
 - Verified: engine-smoke · typecheck · lint.
 
 ### 2026-07-24 — [grok] Safe provider videoUrl + timeout/content classify
-- Generate validates `isSafeDeliverableUrl` before settle (unsafe → refund + MODEL_EMPTY).
+- Generate validates `isSafeDeliverableUrl` before settle.
 - Webhook job store rejects unsafe success URLs (`UNSAFE_URL`). Provider rate → Retry-After.
 - classifyProviderError: timeout + content policy kinds; next.config X-Frame-Options DENY.
 - Verified: engine-smoke · typecheck · lint.
