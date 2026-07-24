@@ -160,38 +160,47 @@ export default function FlowPage() {
         <GenerateSuiteChrome />
       </Suspense>
 
-      <div className="border-b border-white/10 px-4 py-8 sm:px-8">
-        <div className="mx-auto max-w-6xl">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-[#c8ff3d]">
+      <div className="relative border-b border-white/10 px-4 py-8 sm:px-8">
+        <div
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(80%_60%_at_10%_0%,rgba(200,255,61,0.08),transparent_55%)]"
+          aria-hidden
+        />
+        <div className="relative mx-auto max-w-6xl">
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#c8ff3d]">
             Flow · creation matrix
           </p>
           <h1 className="mt-2 font-display text-3xl font-black uppercase tracking-tight sm:text-5xl">
             How do you want to create?
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-white/55">
-            Same idea as{" "}
-            <span className="text-white/70">Higgsfield Flow</span>: a media-first
-            matrix of workspaces — rebuilt for designer toys. Each card opens a
-            real {site.name} path. No fake multi-model zoo.
+            Media-first workspace matrix for designer toys — same structure as
+            suite Flow hubs, rebuilt vertical. Every card opens a real{" "}
+            {site.name} path. No fake multi-model zoo.
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
             <Link
               href="/create?try=1&sample=scout"
-              className="inline-flex rounded-full bg-[#c8ff3d] px-6 py-3 text-sm font-black text-black"
+              className="btn btn-primary inline-flex rounded-full px-6 py-3 text-sm font-black"
             >
               Try free · 10s
             </Link>
             <Link
               href="/modules"
-              className="inline-flex rounded-full border border-white/20 px-5 py-3 text-sm font-bold text-white/80 hover:border-[#c8ff3d]/40"
+              className="inline-flex rounded-full border border-white/20 bg-white/[0.03] px-5 py-3 text-sm font-bold text-white/80 transition hover:border-[#c8ff3d]/40 hover:text-white"
             >
               All modules
             </Link>
             <Link
               href="/create"
-              className="inline-flex rounded-full border border-white/20 px-5 py-3 text-sm font-bold text-white/80 hover:border-[#c8ff3d]/40"
+              className="inline-flex rounded-full border border-white/20 bg-white/[0.03] px-5 py-3 text-sm font-bold text-white/80 transition hover:border-[#c8ff3d]/40 hover:text-white"
             >
               Open Generate
+            </Link>
+            <Link
+              href="/effects"
+              className="inline-flex rounded-full border border-white/15 px-5 py-3 text-sm font-bold text-white/55 transition hover:border-white/30 hover:text-white/80"
+            >
+              Recipe wall
             </Link>
           </div>
           <nav

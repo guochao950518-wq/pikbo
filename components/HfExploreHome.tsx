@@ -199,6 +199,19 @@ export function HfExploreHome({
               Use this recipe
             </Link>
             <Link
+              href="/flow"
+              onClick={() =>
+                track({
+                  event: "landing_view",
+                  path: "/",
+                  meta: { cta: "flow" },
+                })
+              }
+              className="inline-flex items-center justify-center rounded-full border border-[#c8ff3d]/40 bg-[#c8ff3d]/10 px-5 py-3 text-sm font-bold text-[#c8ff3d] backdrop-blur transition hover:bg-[#c8ff3d]/15"
+            >
+              Browse Flow
+            </Link>
+            <Link
               href="/modules"
               onClick={() =>
                 track({
@@ -207,9 +220,9 @@ export function HfExploreHome({
                   meta: { cta: "modules" },
                 })
               }
-              className="inline-flex items-center justify-center rounded-full border border-[#c8ff3d]/40 bg-[#c8ff3d]/10 px-5 py-3 text-sm font-bold text-[#c8ff3d] backdrop-blur transition hover:bg-[#c8ff3d]/15"
+              className="inline-flex items-center justify-center rounded-full border border-white/20 bg-black/50 px-5 py-3.5 text-sm font-bold text-white backdrop-blur-md transition hover:border-[#c8ff3d]/50"
             >
-              Toy Modules
+              Modules
             </Link>
             <Link
               href={item.projectHref || item.detailHref || "/effects"}

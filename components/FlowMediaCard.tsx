@@ -30,36 +30,43 @@ export function FlowMediaCard({
   return (
     <Link
       href={href}
-      className="group relative overflow-hidden rounded-2xl bg-neutral-900 ring-1 ring-white/10 transition hover:-translate-y-1 hover:ring-[#c8ff3d]/45"
+      className="group relative overflow-hidden rounded-2xl bg-neutral-900 ring-1 ring-white/10 transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_-28px_rgba(200,255,61,0.2)] hover:ring-[#c8ff3d]/50"
       aria-label={`Open ${title}`}
     >
-      <div className="relative aspect-video">
+      <div className="relative aspect-video overflow-hidden">
         <AutoPlayVideo
           poster={poster}
           webm={webm}
           mp4={mp4}
           focusable={false}
-          className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+          desktopPlayMode="interaction"
+          className="absolute inset-0 h-full w-full object-cover transition duration-700 ease-out will-change-transform group-hover:scale-[1.05]"
         />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/35 to-transparent" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/10" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#c8ff3d]/40 to-transparent opacity-0 transition group-hover:opacity-100" />
         <span
-          className={`absolute left-2.5 top-2.5 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide ${
+          className={`absolute left-2.5 top-2.5 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide shadow-sm ${
             isPreview
               ? "bg-amber-400/90 text-black"
-              : "bg-black/60 text-[#c8ff3d]"
+              : "bg-black/65 text-[#c8ff3d] backdrop-blur-sm"
           }`}
         >
           {badge}
         </span>
-        <span className="absolute bottom-2 right-2 rounded bg-black/55 px-1.5 py-0.5 text-[9px] text-white/50">
+        <span className="absolute bottom-2 right-2 rounded-full bg-black/55 px-1.5 py-0.5 text-[9px] font-medium text-white/50 backdrop-blur-sm">
           Lab media
+        </span>
+        <span className="absolute bottom-2 left-2 translate-y-1 rounded-full bg-[#c8ff3d] px-2.5 py-1 text-[10px] font-black text-black opacity-0 shadow-[0_0_20px_rgba(200,255,61,0.35)] transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+          Open →
         </span>
       </div>
       <div className="p-4">
-        <h3 className="text-lg font-bold group-hover:text-[#c8ff3d]">{title}</h3>
+        <h3 className="text-lg font-bold tracking-tight text-white transition group-hover:text-[#c8ff3d]">
+          {title}
+        </h3>
         <p className="mt-1 text-sm leading-snug text-white/50">{blurb}</p>
-        <p className="mt-3 text-[11px] font-bold uppercase tracking-wide text-[#c8ff3d]">
-          Open →
+        <p className="mt-3 text-[11px] font-bold uppercase tracking-wide text-[#c8ff3d]/90">
+          {isPreview ? "Preview path" : "Open workspace"} →
         </p>
       </div>
     </Link>

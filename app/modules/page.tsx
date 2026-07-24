@@ -164,17 +164,20 @@ export default function ModulesPage() {
       >
         <GenerateSuiteChrome />
       </Suspense>
-      <div className="px-4 py-10 sm:px-8">
-        <div className="mx-auto max-w-6xl">
+      <div className="relative px-4 py-10 sm:px-8">
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 h-56 bg-[radial-gradient(60%_80%_at_0%_0%,rgba(200,255,61,0.08),transparent_70%)]"
+          aria-hidden
+        />
+        <div className="relative mx-auto max-w-6xl">
           <span className="chip">Modular · toy jobs</span>
-          <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
+          <h1 className="mt-3 font-display text-3xl font-black uppercase tracking-tight sm:text-4xl">
             Toy Modules
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[var(--fg-muted)]">
-            The modular side of {site.name}: each block is a fixed seller or
-            collector job that opens Generate with recipe and aspect ready —
-            same Seedance engine. Structure of suite mini-apps; all media is
-            Pikbo Lab.
+            Fixed seller & collector jobs — pick a block, one photo in, recipe
+            and aspect pre-set. Same Seedance engine as Generate. Structure of
+            suite mini-apps; all media is Pikbo Lab.
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
             <Link
@@ -182,6 +185,9 @@ export default function ModulesPage() {
               className="btn btn-primary text-sm"
             >
               Try free · Lab sample
+            </Link>
+            <Link href="/flow" className="btn btn-ghost text-sm">
+              Browse Flow
             </Link>
             <Link href="/create" className="btn btn-ghost text-sm">
               Open Generate
