@@ -2,21 +2,23 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useI18n } from "@/components/LanguageProvider";
 
 const KEY = "pikbo_onboard_v3";
 
 export function OnboardingBanner() {
+  const { t } = useI18n();
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    const t = window.setTimeout(() => {
+    const tmr = window.setTimeout(() => {
       try {
         if (!localStorage.getItem(KEY)) setShow(true);
       } catch {
         setShow(true);
       }
     }, 0);
-    return () => window.clearTimeout(t);
+    return () => window.clearTimeout(tmr);
   }, []);
 
   if (!show) return null;
@@ -35,12 +37,9 @@ export function OnboardingBanner() {
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3">
         <div className="min-w-0 text-sm">
           <span className="font-bold text-[var(--mint)]">
-            One photo · listing or social clip
+            {t("onboard.title")}
           </span>
-          <span className="text-white/55">
-            {" "}
-            — free Mini trial 5s · 480p when live is on · Modules for job packs
-          </span>
+          <span className="text-white/55"> {t("onboard.sub")}</span>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Link
@@ -48,28 +47,28 @@ export function OnboardingBanner() {
             onClick={dismiss}
             className="btn btn-primary px-3.5 py-1.5 text-xs font-black"
           >
-            Try free · 10s
+            {t("cta.tryFree")} · 10s
           </Link>
           <Link
             href="/flow"
             onClick={dismiss}
             className="btn btn-ghost px-3 py-1.5 text-xs"
           >
-            Flow
+            {t("nav.flow")}
           </Link>
           <Link
             href="/modules"
             onClick={dismiss}
             className="btn btn-ghost px-3 py-1.5 text-xs"
           >
-            Modules
+            {t("nav.modules")}
           </Link>
           <button
             type="button"
             onClick={dismiss}
             className="text-xs text-white/40 hover:text-white/70"
           >
-            Dismiss
+            {t("onboard.dismiss")}
           </button>
         </div>
       </div>

@@ -6,7 +6,7 @@ import { useI18n } from "@/components/LanguageProvider";
 
 /** Globe dropdown to switch UI language. Compact variant for the mobile header. */
 export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
-  const { locale, setLocale } = useI18n();
+  const { locale, setLocale, t } = useI18n();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -31,7 +31,8 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        aria-label="Change language"
+        aria-label={t("lang.change")}
+        title={t("lang.change")}
         className={`flex items-center gap-1.5 rounded-full border border-white/10 text-white/70 transition-colors hover:border-white/25 hover:text-white ${
           compact ? "h-8 px-2 text-[11px]" : "px-3 py-1.5 text-[13px]"
         }`}

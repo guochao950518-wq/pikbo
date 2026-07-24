@@ -5,12 +5,14 @@ import { DEMO_VIDEOS } from "@/lib/demoVideos";
 import { track } from "@/lib/analytics";
 import { createRemixHref } from "@/lib/remixIntent";
 import { AutoPlayVideo } from "@/components/AutoPlayVideo";
+import { useI18n } from "@/components/LanguageProvider";
 
 /**
  * HF Viral Presets pattern — dense horizontal rail of unique Lab clips.
  * One card = one recipe deep link. No shared-loop masquerade.
  */
 export function HomeViralPresetRail() {
+  const { t } = useI18n();
   // Prefer unique presets; keep order of DEMO_VIDEOS as Lab batch order
   const seen = new Set<string>();
   const clips = DEMO_VIDEOS.filter((d) => {
@@ -25,21 +27,20 @@ export function HomeViralPresetRail() {
         <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-wider text-[#c8ff3d]/90">
-              Toy viral presets
+              {t("home.viral.eyebrow")}
             </p>
             <h2 className="mt-1 font-display text-xl font-bold uppercase tracking-tight sm:text-2xl">
-              One tap · recipe ready
+              {t("home.viral.h2")}
             </h2>
             <p className="mt-1 max-w-xl text-sm text-white/45">
-              Higgsfield-style preset wall, toy-native: each clip is an official
-              Lab sample for one registered recipe — remake with your photo.
+              {t("home.viral.sub")}
             </p>
           </div>
           <Link
             href="/effects"
             className="text-[12px] font-semibold text-[#c8ff3d] hover:underline"
           >
-            View all recipes →
+            {t("home.viral.allRecipes")}
           </Link>
         </div>
         <div className="flex gap-2.5 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -71,7 +72,7 @@ export function HomeViralPresetRail() {
                   {d.eyebrow}
                 </span>
                 <span className="absolute right-2 top-2 rounded-full bg-[#c8ff3d] px-1.5 py-0.5 text-[8px] font-black text-black opacity-0 shadow transition group-hover:opacity-100">
-                  Remake
+                  {t("home.remake")}
                 </span>
                 <div className="absolute inset-x-0 bottom-0 p-2.5">
                   <p className="text-[12px] font-bold leading-tight text-white">
@@ -79,7 +80,7 @@ export function HomeViralPresetRail() {
                   </p>
                   <p className="mt-0.5 text-[10px] text-white/50">{d.character}</p>
                   <p className="mt-1.5 text-[9px] font-bold uppercase tracking-wide text-[#c8ff3d] opacity-0 transition group-hover:opacity-100">
-                    Your photo →
+                    {t("home.yourPhoto")}
                   </p>
                 </div>
               </div>

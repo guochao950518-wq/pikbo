@@ -7,6 +7,7 @@ import {
   saveActivation,
   type ActivationState,
 } from "@/lib/activation";
+import { useI18n } from "@/components/LanguageProvider";
 
 /**
  * Lightweight activation checklist — not a multi-step tour.
@@ -31,6 +32,7 @@ export function ActivationChecklist({
     return () => window.clearTimeout(t);
   }, [hasImage, hasGenerated]);
 
+  const { t } = useI18n();
   if (!state || state.dismissed) return null;
   const { done, total, complete } = activationProgress(state);
   if (complete) return null;
@@ -38,12 +40,12 @@ export function ActivationChecklist({
 
   const items: Array<{ key: keyof ActivationState; label: string; ok: boolean }> =
     [
-      { key: "choseJob", label: "Pick a job", ok: state.choseJob },
-      { key: "addedPhoto", label: "Add photo", ok: state.addedPhoto },
-      { key: "generated", label: "Generate", ok: state.generated },
+      { key: "choseJob", label: t("activation.pickJob"), ok: state.choseJob },
+      { key: "addedPhoto", label: t("activation.addPhoto"), ok: state.addedPhoto },
+      { key: "generated", label: t("activation.generate"), ok: state.generated },
       {
         key: "savedOrShared",
-        label: "Save / share",
+        label: t("activation.share"),
         ok: state.savedOrShared,
       },
     ];
@@ -53,14 +55,14 @@ export function ActivationChecklist({
       <div className="mx-auto max-w-6xl">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--mint)]">
-            First clip · {done}/{total}
+            {t("activation.title")} · {done}/{total}
           </p>
           <button
             type="button"
             className="text-[10px] text-white/40 hover:text-white/70"
             onClick={() => setState(saveActivation({ dismissed: true }))}
           >
-            Hide
+            {t("activation.hide")}
           </button>
         </div>
         <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-white/10">

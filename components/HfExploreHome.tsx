@@ -13,6 +13,7 @@ import {
 import { track } from "@/lib/analytics";
 import { SuiteEntryStrip } from "@/components/SuiteEntryStrip";
 import { HomeViralPresetRail } from "@/components/HomeViralPresetRail";
+import { useI18n } from "@/components/LanguageProvider";
 
 /** Soft concurrent autoplay budget — pause extras when many tiles enter view. */
 const playingVideos = new Set<HTMLVideoElement>();
@@ -116,6 +117,7 @@ export function HfExploreHome({
   projects: ShowcaseProject[];
   feed: FeedItem[];
 }) {
+  const { t } = useI18n();
   const showcase: FeedItem[] = feed.length
     ? feed
     : demos.slice(0, 8).map((d) => ({
@@ -163,7 +165,7 @@ export function HfExploreHome({
 
         <div className="relative mx-auto flex min-h-[min(860px,calc(100svh-3.5rem))] max-w-6xl flex-col justify-end px-4 pb-8 pt-16 sm:px-6 sm:pb-12">
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/45">
-            Feel it first — then make yours
+            {t("home.feelFirst")}
           </p>
           <span className="mt-3 inline-flex w-fit items-center rounded-full border border-[#c8ff3d]/30 bg-black/60 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#c8ff3d] shadow-[0_0_24px_rgba(200,255,61,0.15)] backdrop-blur">
             {item.badge ?? "Official example"}
@@ -183,7 +185,7 @@ export function HfExploreHome({
               }
               className="inline-flex items-center justify-center rounded-full bg-[#c8ff3d] px-7 py-3.5 text-sm font-black text-black shadow-[0_0_48px_-6px_rgba(200,255,61,0.55)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_56px_-4px_rgba(200,255,61,0.65)]"
             >
-              Try free in 10 seconds
+              {t("home.tryFree10s")}
             </Link>
             <Link
               href={item.href}
@@ -196,7 +198,7 @@ export function HfExploreHome({
               }
               className="inline-flex items-center justify-center rounded-full border border-white/20 bg-black/50 px-5 py-3.5 text-sm font-bold text-white backdrop-blur-md transition hover:border-[#c8ff3d]/50 hover:bg-black/60"
             >
-              Use this recipe
+              {t("home.useRecipe")}
             </Link>
             <Link
               href="/flow"
@@ -209,7 +211,7 @@ export function HfExploreHome({
               }
               className="inline-flex items-center justify-center rounded-full border border-[#c8ff3d]/40 bg-[#c8ff3d]/10 px-5 py-3 text-sm font-bold text-[#c8ff3d] backdrop-blur transition hover:bg-[#c8ff3d]/15"
             >
-              Browse Flow
+              {t("home.browseFlow")}
             </Link>
             <Link
               href="/modules"
@@ -222,7 +224,7 @@ export function HfExploreHome({
               }
               className="inline-flex items-center justify-center rounded-full border border-white/20 bg-black/50 px-5 py-3.5 text-sm font-bold text-white backdrop-blur-md transition hover:border-[#c8ff3d]/50"
             >
-              Modules
+              {t("home.modules")}
             </Link>
             <Link
               href={item.projectHref || item.detailHref || "/effects"}
@@ -235,7 +237,7 @@ export function HfExploreHome({
               }
               className="inline-flex items-center justify-center rounded-full border border-white/15 px-4 py-3 text-sm font-semibold text-white/70 hover:text-white"
             >
-              What&apos;s inside?
+              {t("home.whatsInside")}
             </Link>
           </div>
           <p className="mt-3 text-[11px] text-white/45">
@@ -282,10 +284,10 @@ export function HfExploreHome({
       <section className="border-b border-white/10 bg-gradient-to-b from-black via-[#08080c] to-black px-3 py-12 sm:px-5">
         <div className="mx-auto max-w-5xl">
           <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#c8ff3d]/90">
-            Proof
+            {t("home.proof")}
           </p>
           <h2 className="font-display mt-1 text-xl font-bold uppercase tracking-tight sm:text-3xl">
-            Before → after
+            {t("home.beforeAfter")}
           </h2>
           <p className="mt-2 max-w-lg text-sm leading-relaxed text-white/50">
             Same official Lab example: one still in, one cached clip out — not a
@@ -352,19 +354,19 @@ export function HfExploreHome({
               href={item.href}
               className="inline-flex rounded-full bg-[#c8ff3d] px-7 py-3.5 text-sm font-black text-black shadow-[0_0_40px_-8px_rgba(200,255,61,0.5)] transition hover:-translate-y-0.5"
             >
-              Replace this toy with mine
+              {t("home.replaceMine")}
             </Link>
             <Link
               href={item.projectHref || item.detailHref || "/explore"}
               className="inline-flex rounded-full border border-white/20 bg-black/40 px-5 py-3.5 text-sm font-bold text-white/85 backdrop-blur transition hover:border-[#c8ff3d]/45"
             >
-              Inside project
+              {t("home.insideProject")}
             </Link>
             <Link
               href="/create?mode=seller-pack"
               className="inline-flex rounded-full border border-white/15 px-5 py-3.5 text-sm font-bold text-white/70 transition hover:border-white/30 hover:text-white"
             >
-              Seller Pack
+              {t("cta.sellerPack")}
             </Link>
           </div>
         </div>
@@ -437,13 +439,13 @@ export function HfExploreHome({
                     href={showcaseRecipeHref(project)}
                     className="flex-1 rounded-full bg-[#c8ff3d] py-1.5 text-center text-[10px] font-black text-black shadow-[0_0_16px_rgba(200,255,61,0.25)] transition hover:brightness-110"
                   >
-                    Remake
+                    {t("home.remake")}
                   </Link>
                   <Link
                     href={showcaseProjectHref(project)}
                     className="rounded-full border border-white/20 bg-black/55 px-2.5 py-1.5 text-[10px] font-bold text-white backdrop-blur-sm transition hover:border-[#c8ff3d]/40"
                   >
-                    Inside
+                    {t("home.insideProject")}
                   </Link>
                 </div>
               </div>

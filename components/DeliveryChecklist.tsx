@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { DeliveryItem } from "@/lib/deliveryPack";
 import { deliveryChecklistStorageKey } from "@/lib/deliveryPack";
 import { markActivationShared } from "@/components/ActivationChecklist";
+import { useI18n } from "@/components/LanguageProvider";
 
 /**
  * Interactive post-success checklist — ticks stay on this device (sessionStorage).
@@ -22,6 +23,7 @@ export function DeliveryChecklist({
   items: DeliveryItem[];
   className?: string;
 }) {
+  const { t } = useI18n();
   const storageKey = useMemo(
     () => deliveryChecklistStorageKey(surface),
     [surface]
@@ -94,7 +96,7 @@ export function DeliveryChecklist({
               }
             }}
           >
-            Reset ticks
+            {t("delivery.reset")}
           </button>
         ) : null}
       </div>
@@ -156,11 +158,11 @@ export function DeliveryChecklist({
 
       {allDone ? (
         <p className="mt-2 text-[10px] font-semibold leading-snug text-[var(--mint)]/90">
-          Pack checklist complete · ready to ship this SKU
+          {t("delivery.complete")}
         </p>
       ) : (
         <p className="mt-2 text-[10px] leading-snug text-white/35">
-          Ticks stay on this device only · not cloud-synced · failed jobs refund
+          {t("delivery.footer")}
         </p>
       )}
     </div>

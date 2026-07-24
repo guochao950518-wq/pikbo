@@ -2,68 +2,70 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/components/LanguageProvider";
 
 /**
  * HF Generate–style suite chrome for the toy vertical.
  * Modes map to real Pikbo surfaces only (no fake Cinema tabs).
  */
-const MODES = [
+const MODE_DEFS = [
   {
-    id: "generate",
-    label: "Photo → Clip",
+    id: "generate" as const,
     href: "/create",
-    blurb: "Workbench",
+    labelKey: "suite.mode.generate",
+    blurbKey: "suite.mode.generate.blurb",
   },
   {
-    id: "image",
-    label: "Stills",
+    id: "image" as const,
     href: "/image",
-    blurb: "Preview · Flux",
+    labelKey: "suite.mode.stills",
+    blurbKey: "suite.mode.stills.blurb",
   },
   {
-    id: "modules",
-    label: "Modules",
+    id: "modules" as const,
     href: "/modules",
-    blurb: "Job blocks",
+    labelKey: "suite.mode.modules",
+    blurbKey: "suite.mode.modules.blurb",
   },
   {
-    id: "seller",
-    label: "Seller Pack",
+    id: "seller" as const,
     href: "/create?mode=seller-pack",
-    blurb: "3 clips",
+    labelKey: "suite.mode.seller",
+    blurbKey: "suite.mode.seller.blurb",
   },
   {
-    id: "recipes",
-    label: "Recipes",
+    id: "recipes" as const,
     href: "/effects",
-    blurb: "Preset wall",
+    labelKey: "suite.mode.recipes",
+    blurbKey: "suite.mode.recipes.blurb",
   },
   {
-    id: "flow",
-    label: "Flow",
+    id: "flow" as const,
     href: "/flow",
-    blurb: "Matrix",
+    labelKey: "suite.mode.flow",
+    blurbKey: "suite.mode.flow.blurb",
   },
-] as const;
+];
 
 export function GenerateSuiteChrome({
   compact,
 }: {
   compact?: boolean;
 }) {
+  const { t } = useI18n();
   const path = usePathname() || "";
   const sp = useSearchParams();
   const sellerMode =
     sp?.get("mode") === "seller-pack" || sp?.get("mode") === "seller";
+  const isImage = path === "/image" || path.startsWith("/image/");
 
-  function isActive(id: (typeof MODES)[number]["id"]) {
+  function isActive(id: (typeof MODE_DEFS)[number]["id"]) {
     if (id === "generate") {
       return (path === "/create" || path === "/generate") && !sellerMode;
     }
     if (id === "image") {
-      return path === "/image" || path.startsWith("/image/");
+      return isImage;
     }
     if (id === "seller") {
       return path === "/create" && sellerMode;
@@ -91,28 +93,24 @@ export function GenerateSuiteChrome({
                 compact ? "text-base" : "text-lg sm:text-xl"
               )}
             >
-              {path === "/image" || path.startsWith("/image/")
-                ? "Stills"
-                : "Generate"}
+              {isImage ? t("suite.stills") : t("cta.generate")}
             </h1>
             <span className="rounded-full border border-[var(--mint)]/40 bg-[var(--mint)]/12 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-[var(--mint)] shadow-[0_0_20px_rgba(200,255,61,0.12)]">
-              Toy studio
+              {t("suite.toyStudio")}
             </span>
-            {path === "/image" || path.startsWith("/image/") ? (
+            {isImage ? (
               <span className="rounded-full border border-amber-300/30 bg-amber-300/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-100/90">
-                Preview
+                {t("suite.preview")}
               </span>
             ) : (
               <span className="hidden rounded-full border border-white/10 px-2 py-0.5 text-[9px] font-semibold text-white/40 sm:inline">
-                Seedance live
+                {t("suite.seedanceLive")}
               </span>
             )}
           </div>
           {!compact && (
             <p className="mt-0.5 text-[11px] text-white/45 sm:text-xs">
-              {path === "/image" || path.startsWith("/image/")
-                ? "Flux stills · mock packaging, then animate in Generate — not a free image farm"
-                : `${site.suiteLine} — craft-grade toy clips, not a model zoo`}
+              {isImage ? t("suite.line.stills") : t("suite.line.video")}
             </p>
           )}
         </div>
@@ -120,7 +118,7 @@ export function GenerateSuiteChrome({
           aria-label="Suite modes"
           className="flex gap-1.5 overflow-x-auto pb-0.5 [scrollbar-width:none]"
         >
-          {MODES.map((m) => {
+          {MODE_DEFS.map((m) => {
             const active = isActive(m.id);
             return (
               <Link
@@ -134,10 +132,10 @@ export function GenerateSuiteChrome({
                 )}
               >
                 <span className="block text-[11px] font-bold leading-none">
-                  {m.label}
+                  {t(m.labelKey)}
                 </span>
                 <span className="mt-0.5 block text-[9px] opacity-60">
-                  {m.blurb}
+                  {t(m.blurbKey)}
                 </span>
               </Link>
             );

@@ -1617,8 +1617,13 @@ const failPanel = fs.readFileSync(
   join(root, "components/GenerateFailPanel.tsx"),
   "utf8"
 );
-assert.match(failPanel, /Try another recipe|Free Lab sample/);
-assert.match(failPanel, /10 credits restored|Refund unconfirmed/);
+// Fail CTAs are i18n keys (en/zh via t); restored/unconfirmed copy lives in lib/i18n
+assert.match(failPanel, /fail\.anotherRecipe|fail\.labSample/);
+assert.match(failPanel, /fail\.restored|fail\.unconfirmed/);
+const i18nSrc = fs.readFileSync(join(root, "lib/i18n.ts"), "utf8");
+assert.match(i18nSrc, /fail\.labSample/);
+assert.match(i18nSrc, /Free Lab sample|免费实验室样片/);
+assert.match(i18nSrc, /10 credits restored|已退还 10 积分/);
 assert.match(createStudio, /GenerateFailPanel/);
 assert.match(batchStudio, /GenerateFailPanel/);
 assert.match(batchStudio, /registerLocalAsset|sharedAssetId/);

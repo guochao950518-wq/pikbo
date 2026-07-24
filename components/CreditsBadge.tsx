@@ -10,8 +10,10 @@ import {
 } from "@/lib/meClient";
 import { CREDITS_PER_VIDEO } from "@/lib/pricing";
 import { SESSION_EVENT } from "@/lib/sessionEvents";
+import { useI18n } from "@/components/LanguageProvider";
 
 export function CreditsBadge({ compact }: { compact?: boolean }) {
+  const { t } = useI18n();
   const [session, setSession] = useState<MeResponse | null>(null);
 
   const load = useCallback(() => {
@@ -96,18 +98,18 @@ export function CreditsBadge({ compact }: { compact?: boolean }) {
       >
         {credits}
       </span>
-      <span>credits</span>
+      <span>{t("credits.credits")}</span>
       {demo ? (
         <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-[var(--fg-dim)]">
-          demo
+          {t("credits.demo")}
         </span>
       ) : signed ? (
         <span className="rounded-full bg-[var(--mint)]/15 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-[var(--mint)]">
-          account
+          {t("credits.account")}
         </span>
       ) : low ? (
         <span className="rounded-full bg-[var(--brand)]/20 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-[var(--brand)]">
-          upgrade
+          {t("credits.upgrade")}
         </span>
       ) : session.plan !== "free" ? (
         <span className="rounded-full bg-[var(--grad-soft)] px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-[var(--fg)]">

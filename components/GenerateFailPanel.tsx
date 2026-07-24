@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useI18n } from "@/components/LanguageProvider";
 
 export type FailCreditHint =
   | null
@@ -19,7 +20,7 @@ export function GenerateFailPanel({
   creditState = null,
   creditsRestored = false,
   onRetry,
-  retryLabel = "Retry",
+  retryLabel,
   showLabSample = true,
   showRecipes = true,
   showModules = true,
@@ -28,7 +29,6 @@ export function GenerateFailPanel({
 }: {
   message?: string | null;
   creditState?: FailCreditHint;
-  /** Explicit restored flag when creditState is not set */
   creditsRestored?: boolean;
   onRetry?: () => void;
   retryLabel?: string;
@@ -38,6 +38,7 @@ export function GenerateFailPanel({
   compact?: boolean;
   className?: string;
 }) {
+  const { t } = useI18n();
   const restored =
     creditsRestored ||
     creditState === "10 restored" ||
@@ -47,6 +48,7 @@ export function GenerateFailPanel({
   if (!message && !restored && !unconfirmed) return null;
 
   const tone = restored || unconfirmed ? "amber" : "brand";
+  const retryText = retryLabel || t("fail.retry");
 
   return (
     <div
@@ -69,12 +71,12 @@ export function GenerateFailPanel({
 
       {restored ? (
         <p className="mt-1 text-[11px] font-bold uppercase tracking-wide text-amber-200/90">
-          10 credits restored · not charged for this failed job
+          {t("fail.restored")}
         </p>
       ) : null}
       {unconfirmed ? (
         <p className="mt-1 text-[11px] font-bold uppercase tracking-wide text-amber-200/90">
-          Refund unconfirmed · check balance before retrying
+          {t("fail.unconfirmed")}
         </p>
       ) : null}
 
@@ -83,8 +85,7 @@ export function GenerateFailPanel({
           compact ? "mt-1 text-[10px]" : "mt-1.5 text-[11px]"
         }`}
       >
-        Keep the still · switch recipe if motion looked off · Lab sample is free
-        when you just want to feel the flow.
+        {t("fail.next")}
       </p>
 
       <div
@@ -98,7 +99,7 @@ export function GenerateFailPanel({
             onClick={onRetry}
             className="rounded-full border border-[var(--mint)]/45 bg-[var(--mint)]/15 px-3 py-1 text-[11px] font-bold text-[var(--mint)] transition hover:bg-[var(--mint)]/25"
           >
-            {retryLabel}
+            {retryText}
           </button>
         ) : null}
         {showLabSample ? (
@@ -106,7 +107,7 @@ export function GenerateFailPanel({
             href="/create?try=1&sample=scout"
             className="rounded-full border border-white/15 bg-white/[0.04] px-3 py-1 text-[11px] font-semibold text-white/75 transition hover:border-white/30 hover:text-white"
           >
-            Free Lab sample
+            {t("fail.labSample")}
           </Link>
         ) : null}
         {showRecipes ? (
@@ -114,7 +115,7 @@ export function GenerateFailPanel({
             href="/effects"
             className="rounded-full border border-white/15 bg-white/[0.04] px-3 py-1 text-[11px] font-semibold text-white/75 transition hover:border-white/30 hover:text-white"
           >
-            Try another recipe
+            {t("fail.anotherRecipe")}
           </Link>
         ) : null}
         {showModules ? (
@@ -122,7 +123,7 @@ export function GenerateFailPanel({
             href="/modules"
             className="rounded-full border border-white/15 bg-white/[0.04] px-3 py-1 text-[11px] font-semibold text-white/75 transition hover:border-white/30 hover:text-white"
           >
-            Modules
+            {t("fail.modules")}
           </Link>
         ) : null}
       </div>

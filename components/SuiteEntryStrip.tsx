@@ -2,100 +2,103 @@
 
 import Link from "next/link";
 import { track } from "@/lib/analytics";
+import { useI18n } from "@/components/LanguageProvider";
 
 /**
  * Toy suite entry rail — HF Generate + Yiha modules pattern, verticalized.
  * Used on Home after premiere so users hit real product doors, not model zoo.
  */
-const ENTRIES = [
+const ENTRY_DEFS = [
   {
     href: "/create",
-    label: "Generate",
-    blurb: "Photo → clip workbench",
+    labelKey: "suite.generate",
+    blurbKey: "suite.generate.blurb",
     emoji: "✦",
     hot: true,
-    tag: "Flagship",
+    tagKey: "suite.tag.flagship" as const,
   },
   {
     href: "/flow",
-    label: "Flow",
-    blurb: "Media matrix · one tap",
+    labelKey: "suite.flow",
+    blurbKey: "suite.flow.blurb",
     emoji: "◎",
     hot: true,
-    tag: "Explore",
+    tagKey: "suite.tag.explore" as const,
   },
   {
     href: "/modules",
-    label: "Modules",
-    blurb: "Listing · hook · unbox",
+    labelKey: "suite.modules",
+    blurbKey: "suite.modules.blurb",
     emoji: "▦",
     hot: true,
-    tag: "Jobs",
+    tagKey: "suite.tag.jobs" as const,
   },
   {
     href: "/create?mode=seller-pack",
-    label: "Seller Pack",
-    blurb: "3 clips · one photo",
+    labelKey: "suite.seller",
+    blurbKey: "suite.seller.blurb",
     emoji: "🛍️",
     hot: true,
-    tag: "Sell",
+    tagKey: "suite.tag.sell" as const,
   },
   {
     href: "/effects",
-    label: "Recipes",
-    blurb: "Full preset wall",
+    labelKey: "suite.recipes",
+    blurbKey: "suite.recipes.blurb",
     emoji: "🧸",
   },
   {
     href: "/create?try=1&sample=scout",
-    label: "Try free",
-    blurb: "Lab still · 10s",
+    labelKey: "suite.tryFree",
+    blurbKey: "suite.tryFree.blurb",
     emoji: "▶",
   },
 ] as const;
 
 export function SuiteEntryStrip({
-  title = "Toy creative suite",
-  subtitle = "Generate workbench + modular jobs — not a multi-model zoo",
+  titleKey = "suite.title",
+  subtitleKey = "suite.sub",
 }: {
-  title?: string;
-  subtitle?: string;
+  titleKey?: string;
+  subtitleKey?: string;
 }) {
+  const { t } = useI18n();
+
   return (
     <section className="border-b border-white/10 bg-gradient-to-b from-[#0c0c14] via-[#08080c] to-black px-3 py-8 sm:px-5">
       <div className="mx-auto max-w-6xl">
         <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#c8ff3d]">
-              {title}
+              {t(titleKey)}
             </p>
-            <p className="mt-1 text-[12px] text-white/50">{subtitle}</p>
+            <p className="mt-1 text-[12px] text-white/50">{t(subtitleKey)}</p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <Link
               href="/flow"
               className="text-[11px] font-semibold text-white/55 hover:text-white hover:underline"
             >
-              Browse Flow
+              {t("suite.browseFlow")}
             </Link>
             <Link
               href="/create"
               className="text-[11px] font-semibold text-[#c8ff3d] hover:underline"
             >
-              Open Generate →
+              {t("suite.openGenerate")}
             </Link>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6">
-          {ENTRIES.map((e) => (
+          {ENTRY_DEFS.map((e) => (
             <Link
-              key={e.href + e.label}
+              key={e.href + e.labelKey}
               href={e.href}
               onClick={() =>
                 track({
                   event: "landing_view",
                   path: "/",
-                  meta: { cta: "suite_entry", label: e.label },
+                  meta: { cta: "suite_entry", label: e.labelKey },
                 })
               }
               className={`group relative overflow-hidden rounded-2xl border px-3 py-3.5 transition duration-200 hover:-translate-y-0.5 ${
@@ -112,17 +115,17 @@ export function SuiteEntryStrip({
                 <span className="text-lg" aria-hidden>
                   {e.emoji}
                 </span>
-                {"tag" in e && e.tag ? (
+                {"tagKey" in e && e.tagKey ? (
                   <span className="rounded-full border border-white/12 bg-black/35 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white/45">
-                    {e.tag}
+                    {t(e.tagKey)}
                   </span>
                 ) : null}
               </div>
               <span className="mt-1.5 block text-[13px] font-bold text-white">
-                {e.label}
+                {t(e.labelKey)}
               </span>
               <span className="mt-0.5 block text-[10px] leading-snug text-white/45">
-                {e.blurb}
+                {t(e.blurbKey)}
               </span>
             </Link>
           ))}

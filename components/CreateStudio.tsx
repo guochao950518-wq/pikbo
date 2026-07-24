@@ -48,6 +48,7 @@ import {
   markActivationShared,
 } from "@/components/ActivationChecklist";
 import { GenerateFailPanel } from "@/components/GenerateFailPanel";
+import { useI18n } from "@/components/LanguageProvider";
 import { getJobIntent, JOB_INTENTS, type JobIntentId } from "@/lib/jobIntents";
 import type { Workflow } from "@/lib/workflows";
 import {
@@ -150,6 +151,7 @@ export function CreateStudio({
   /** Job-to-be-done: etsy-listing | tiktok-hook | blind-box-drop | shelf-display */
   initialJob?: string;
 }) {
+  const { t } = useI18n();
   const remix = useMemo(
     () =>
       parseRemixSearchParams({
@@ -925,18 +927,18 @@ export function CreateStudio({
   const canGenerate =
     !busy && mode === "i2v" && Boolean(image) && ownsRights;
   const primaryLabel = busy
-    ? "Generating…"
+    ? t("create.generating")
     : !image
-      ? "Add a toy photo first"
+      ? t("create.addPhotoFirst")
       : !ownsRights
-        ? "Confirm ownership to continue"
+        ? t("create.confirmOwnership")
         : demoMode
-          ? "Generate · free cached demo"
+          ? t("create.genCached")
           : !canAfford
-            ? `Needs ${CREDITS_PER_VIDEO} credits`
+            ? t("create.needsCredits", { n: CREDITS_PER_VIDEO })
             : isFree
-              ? `Generate Mini trial · ${CREDITS_PER_VIDEO} credits`
-              : `Generate · ${CREDITS_PER_VIDEO} credits`;
+              ? t("create.genMini", { n: CREDITS_PER_VIDEO })
+              : t("create.genPaid", { n: CREDITS_PER_VIDEO });
 
   // Path clarity for mobile: 1 photo → 2 recipe → 3 run → 4 result
   const pathStep: 1 | 2 | 3 | 4 =
@@ -1356,8 +1358,8 @@ export function CreateStudio({
                 className="mt-1 w-full rounded-lg border border-[var(--border)] px-2 py-1.5 text-[11px] font-semibold text-[var(--fg-muted)] hover:border-[var(--mint)]/40 hover:text-[var(--mint)]"
               >
                 {showAllRecipes
-                  ? "Show launch recipes only"
-                  : "More recipes · full catalog"}
+                  ? t("create.launchOnly")
+                  : t("create.moreRecipes")}
               </button>
             )}
           </div>
@@ -1404,7 +1406,7 @@ export function CreateStudio({
                 <span className="mr-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--mint)] text-[9px] text-black lg:hidden">
                   1
                 </span>
-                Your toy photo
+                {t("create.yourPhoto")}
               </label>
               {image && (
                 <button
@@ -1415,7 +1417,7 @@ export function CreateStudio({
                     setAssetId(null);
                   }}
                 >
-                  Replace
+                  {t("create.replace")}
                 </button>
               )}
             </div>
@@ -1437,7 +1439,7 @@ export function CreateStudio({
                     className="h-full w-full object-contain"
                   />
                   <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-3 py-2.5 text-center text-[10px] font-semibold text-white/70 opacity-0 transition group-hover/drop:opacity-100">
-                    Drop or click to replace still
+                    {t("create.replaceStill")}
                   </span>
                 </>
               ) : (
@@ -1446,10 +1448,10 @@ export function CreateStudio({
                     🧸
                   </span>
                   <span className="block font-semibold text-white/80">
-                    Drop a photo of a figure you own
+                    {t("create.dropPhoto")}
                   </span>
                   <span className="mt-1 block text-xs text-white/45">
-                    or tap · JPEG / PNG / WebP / GIF · under ~8 MB
+                    {t("create.dropHint")}
                   </span>
                 </span>
               )}
@@ -1466,23 +1468,22 @@ export function CreateStudio({
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--mint)]/90">
-                    Toy identity · optional
+                    {t("create.toyIdentity")}
                   </p>
                   <p className="mt-0.5 text-[10px] leading-snug text-white/40">
-                    Lock SKU + paint details so remakes stay on-figure. Not a
-                    cloud character train.
+                    {t("create.toyIdentity.hint")}
                   </p>
                 </div>
                 {(toyIdentity.sku || toyIdentity.preserve) && (
                   <span className="shrink-0 rounded-full border border-[var(--mint)]/30 bg-[var(--mint)]/10 px-1.5 py-0.5 text-[9px] font-bold text-[var(--mint)]">
-                    Active
+                    {t("create.active")}
                   </span>
                 )}
               </div>
               <div className="mt-2 grid gap-2 sm:grid-cols-2">
                 <label className="block">
                   <span className="text-[10px] font-semibold text-[var(--fg-dim)]">
-                    Name / SKU
+                    {t("create.sku")}
                   </span>
                   <input
                     value={toyIdentity.sku}
@@ -1494,7 +1495,7 @@ export function CreateStudio({
                 </label>
                 <label className="block">
                   <span className="text-[10px] font-semibold text-[var(--fg-dim)]">
-                    Preserve
+                    {t("create.preserve")}
                   </span>
                   <input
                     value={toyIdentity.preserve}
@@ -1512,7 +1513,7 @@ export function CreateStudio({
             {!image && (
               <div className="mt-3 rounded-2xl border border-[var(--mint)]/25 bg-[var(--mint)]/[0.06] p-3">
                 <p className="text-sm font-bold text-[var(--fg)]">
-                  No photo? Try an official Lab sample
+                  {t("create.noPhotoSample")}
                 </p>
                 <p className="mt-0.5 text-[11px] text-[var(--fg-muted)]">
                   Official Pikbo stills (not a customer upload). Cached demos
@@ -1526,10 +1527,10 @@ export function CreateStudio({
                   className="btn btn-primary mt-3 w-full py-3 text-sm disabled:opacity-50"
                 >
                   {sampleLoading || busy
-                    ? "Working…"
+                    ? t("create.generating")
                     : demoMode
-                      ? "▶  One tap · free cached sample"
-                      : "▶  One tap · Mini sample (10 credits)"}
+                      ? t("create.oneTapCached")
+                      : t("create.oneTapMini")}
                 </button>
                 <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
                   {SAMPLE_TOYS.map((s) => (
@@ -1608,15 +1609,15 @@ export function CreateStudio({
                 className="mt-2 w-full rounded-lg border border-[var(--border)] px-2 py-1.5 text-[11px] font-semibold text-[var(--fg-muted)] hover:border-[var(--mint)]/40 hover:text-[var(--mint)]"
               >
                 {showAllRecipes
-                  ? "Show launch recipes only"
-                  : "More recipes · full catalog"}
+                  ? t("create.launchOnly")
+                  : t("create.moreRecipes")}
               </button>
             )}
             <Link
               href="/create?mode=seller-pack"
               className="mt-2 inline-flex text-[11px] font-semibold text-[var(--mint)] hover:underline"
             >
-              Need 3 seller formats? Seller Pack →
+              {t("create.sellerPackLink")}
             </Link>
           </div>
 
@@ -1625,7 +1626,7 @@ export function CreateStudio({
             <div className="flex items-start justify-between gap-2">
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--mint)]/80">
-                  Selected recipe
+                  {t("create.selectedRecipe")}
                 </p>
                 <p className="mt-0.5 text-sm font-bold text-white">
                   {preset.emoji} {viralName(preset.slug, preset.name)}
@@ -1640,7 +1641,7 @@ export function CreateStudio({
             </div>
             <div className="mt-3">
               <p className="mb-1.5 text-[10px] font-semibold text-white/40">
-                Aspect · channel crop
+                {t("create.aspectChannel")}
               </p>
               <div className="flex gap-2">
                 {(
@@ -1677,9 +1678,11 @@ export function CreateStudio({
               onClick={() => setShowAdvanced((v) => !v)}
               className="flex w-full items-center justify-between px-3 py-2.5 text-left text-xs font-semibold text-white/65 transition hover:text-white"
             >
-              Advanced
+              {t("create.advanced")}
               <span className="text-[10px] text-white/40">
-                {showAdvanced ? "Hide" : "Duration · model · prompt"}
+                {showAdvanced
+                  ? t("create.advancedHide")
+                  : t("create.advancedHint")}
               </span>
             </button>
             {showAdvanced && (
@@ -1950,7 +1953,11 @@ export function CreateStudio({
                     }
                   : undefined
               }
-              retryLabel={activeVersion ? "Retry this version" : "Retry generate"}
+              retryLabel={
+                activeVersion
+                  ? t("fail.retryVersion")
+                  : t("fail.retryGenerate")
+              }
               showLabSample={!image}
             />
           )}
@@ -1972,7 +1979,7 @@ export function CreateStudio({
               <span className="mr-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--mint)] text-[9px] text-black lg:hidden">
                 4
               </span>
-              Result
+              {t("create.result")}
             </h2>
             <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-[10px] font-semibold text-white/50">
               {usedModel || MODELS.find((m) => m.id === modelId)?.label}
@@ -2013,7 +2020,7 @@ export function CreateStudio({
                   className="mt-4 rounded-full border border-white/20 px-4 py-1.5 text-[11px] font-bold text-white/80 hover:border-white/40 hover:text-white"
                   title="Aborts this browser request. Soft-launch may still finish server-side; refund unconfirmed until balance confirms."
                 >
-                  Cancel request
+                  {t("create.cancelRequest")}
                 </button>
                 <p className="mt-1.5 max-w-xs text-[10px] leading-relaxed text-[var(--fg-dim)]">
                   Stops waiting in this tab. Live debit/refund may still settle
@@ -2154,12 +2161,10 @@ export function CreateStudio({
                 )}
                 <div className="mx-auto mt-4 max-w-md rounded-2xl border border-[var(--mint)]/35 bg-gradient-to-b from-[var(--mint)]/[0.12] to-black/40 px-4 py-3.5 text-center shadow-[0_0_40px_rgba(200,255,61,0.1)]">
                   <p className="text-[15px] font-black tracking-tight text-white">
-                    {demo ? "Lab preview ready" : "Your clip is ready"}
+                    {demo ? t("create.labReady") : t("create.ready")}
                   </p>
                   <p className="mt-1 text-[12px] leading-relaxed text-white/55">
-                    {demo
-                      ? "Labeled Lab demo — style only. Live mode uses your photo."
-                      : "Download, post, or spin another version. Prior clips stay on the version chips."}
+                    {demo ? t("create.labReady.sub") : t("create.ready.sub")}
                   </p>
                 </div>
 
@@ -2184,11 +2189,10 @@ export function CreateStudio({
                     <div className="mb-2.5 flex flex-wrap items-end justify-between gap-2">
                       <div>
                         <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--mint)]">
-                          Same photo · next job
+                          {t("create.nextJob")}
                         </p>
                         <p className="mt-0.5 text-[11px] leading-snug text-white/45">
-                          Keep this still — spin listing, hook, or full Seller
-                          Pack without re-uploading.
+                          {t("create.nextJob.hint")}
                         </p>
                       </div>
                       {toyIdentity.sku ? (
@@ -2269,7 +2273,7 @@ export function CreateStudio({
                         });
                       }}
                     >
-                      Download · keep it
+                      {t("create.download")}
                     </a>
                   ) : (
                     <button
@@ -2287,14 +2291,14 @@ export function CreateStudio({
                     onClick={copyLink}
                     className="btn btn-ghost px-3.5 py-2 text-xs"
                   >
-                    {copied ? "Copied!" : "Copy link"}
+                    {copied ? t("create.copied") : t("create.copyLink")}
                   </button>
                   <button
                     type="button"
                     onClick={shareX}
                     className="btn btn-ghost px-3.5 py-2 text-xs"
                   >
-                    Share on X
+                    {t("create.shareX")}
                   </button>
                   <button
                     type="button"
@@ -2302,7 +2306,7 @@ export function CreateStudio({
                     title="Reuse this version's exact recipe, still, duration, aspect, model, and seed. Appends a new version."
                     className="btn btn-ghost px-3.5 py-2 text-xs"
                   >
-                    Retry · same settings
+                    {t("create.retrySame")}
                   </button>
                   <button
                     type="button"
@@ -2310,7 +2314,7 @@ export function CreateStudio({
                     title="Uses your current Composer settings (recipe, duration, aspect, model) — not the frozen version."
                     className="btn btn-ghost px-3.5 py-2 text-xs"
                   >
-                    Make variant
+                    {t("create.makeVariant")}
                   </button>
                 {!downloadAllowed ? (
                   <p className="basis-full text-center text-[10px] leading-relaxed text-amber-100/80">
@@ -2321,7 +2325,7 @@ export function CreateStudio({
                     href="/effects"
                     className="btn btn-ghost px-4 py-2 text-xs"
                   >
-                    Another recipe
+                    {t("create.anotherRecipe")}
                   </Link>
                   {remix.intent?.sourceProjectSlug ? (
                     <Link
@@ -2335,13 +2339,13 @@ export function CreateStudio({
                     href="/library"
                     className="btn btn-ghost px-4 py-2 text-xs"
                   >
-                    Saved to Library
+                    {t("create.savedLibrary")}
                   </Link>
                   <Link
                     href="/create?mode=seller-pack"
                     className="btn btn-ghost px-3.5 py-2 text-xs"
                   >
-                    Seller Pack
+                    {t("cta.sellerPack")}
                   </Link>
                   </div>
                 </div>
@@ -2489,7 +2493,7 @@ export function CreateStudio({
                   </svg>
                 </span>
                 <p className="mt-4 font-display text-base font-bold uppercase tracking-tight text-white sm:text-lg">
-                  Clip didn&apos;t land
+                  {t("create.clipDidntLand")}
                 </p>
                 <p className="mt-1.5 max-w-sm text-xs leading-relaxed text-[var(--fg-muted)]">
                   {error ||
@@ -2503,14 +2507,14 @@ export function CreateStudio({
                       onClick={() => void generate()}
                       className="btn btn-primary px-6 py-2.5 text-sm disabled:opacity-50"
                     >
-                      Retry generate
+                      {t("create.retryGenerate")}
                     </button>
                   ) : null}
                   <Link
                     href="/effects"
                     className="rounded-full border border-white/20 bg-white/[0.05] px-4 py-2.5 text-sm font-semibold text-white/85 hover:border-white/35"
                   >
-                    Pick another recipe
+                    {t("create.pickRecipe")}
                   </Link>
                   <button
                     type="button"
@@ -2518,7 +2522,7 @@ export function CreateStudio({
                     onClick={() => void loadSampleToy("scout", true)}
                     className="rounded-full border border-[var(--mint)]/35 bg-[var(--mint)]/10 px-4 py-2.5 text-sm font-semibold text-[var(--mint)] hover:bg-[var(--mint)]/18 disabled:opacity-50"
                   >
-                    Free Lab sample
+                    {t("create.freeLabSample")}
                   </button>
                 </div>
               </div>
@@ -2540,14 +2544,14 @@ export function CreateStudio({
                   </svg>
                 </span>
                 <p className="mt-4 font-display text-base font-bold uppercase tracking-tight text-white sm:text-lg">
-                  Your clip lands here
+                  {t("create.clipLands")}
                 </p>
                 <p className="mt-1.5 max-w-xs text-xs text-[var(--fg-muted)]">
                   {image
-                    ? "Hit the green Generate button — one primary action."
+                    ? t("create.hitGenerate")
                     : demoMode
-                      ? "No photo? One-tap official Lab sample (cached · free)."
-                      : "No photo? One-tap official Lab sample (live Mini · 10 credits)."}
+                      ? t("create.noPhotoCached")
+                      : t("create.noPhotoLive")}
                 </p>
                 {!image && (
                   <button
@@ -2557,8 +2561,8 @@ export function CreateStudio({
                     className="btn btn-primary mt-5 px-6 py-2.5 text-sm disabled:opacity-50"
                   >
                     {demoMode
-                      ? "▶ Lab sample · free"
-                      : "▶ Lab sample · Mini trial"}
+                      ? t("create.labSampleFree")
+                      : t("create.labSampleMini")}
                   </button>
                 )}
                 <span className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-[var(--mint)]/25 bg-black/40 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--mint)]">
