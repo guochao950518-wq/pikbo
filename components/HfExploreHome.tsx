@@ -347,12 +347,26 @@ export function HfExploreHome({
               <dd className="inline">Cached Lab · not live</dd>
             </div>
           </dl>
-          <Link
-            href={item.href}
-            className="mt-7 inline-flex rounded-full bg-[#c8ff3d] px-7 py-3.5 text-sm font-black text-black shadow-[0_0_40px_-8px_rgba(200,255,61,0.5)] transition hover:-translate-y-0.5"
-          >
-            Replace this toy with mine
-          </Link>
+          <div className="mt-7 flex flex-wrap gap-2">
+            <Link
+              href={item.href}
+              className="inline-flex rounded-full bg-[#c8ff3d] px-7 py-3.5 text-sm font-black text-black shadow-[0_0_40px_-8px_rgba(200,255,61,0.5)] transition hover:-translate-y-0.5"
+            >
+              Replace this toy with mine
+            </Link>
+            <Link
+              href={item.projectHref || item.detailHref || "/explore"}
+              className="inline-flex rounded-full border border-white/20 bg-black/40 px-5 py-3.5 text-sm font-bold text-white/85 backdrop-blur transition hover:border-[#c8ff3d]/45"
+            >
+              Inside project
+            </Link>
+            <Link
+              href="/create?mode=seller-pack"
+              className="inline-flex rounded-full border border-white/15 px-5 py-3.5 text-sm font-bold text-white/70 transition hover:border-white/30 hover:text-white"
+            >
+              Seller Pack
+            </Link>
+          </div>
         </div>
       </section>
 

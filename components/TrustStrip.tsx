@@ -2,29 +2,29 @@ import Link from "next/link";
 
 export function TrustStrip() {
   return (
-    <section className="border-y border-[var(--border)] bg-white px-4 py-5 sm:px-8">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-10 gap-y-3 text-center text-xs tracking-wide text-[var(--fg-muted)]">
+    <section className="border-y border-white/10 bg-gradient-to-r from-black via-[#0a0a0c] to-black px-4 py-5 sm:px-8">
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-8 gap-y-3 text-center text-xs tracking-wide text-white/50">
         <span>
-          <strong className="font-semibold text-[var(--fg)]">Seedance</strong>{" "}
+          <strong className="font-semibold text-[var(--mint)]">Seedance</strong>{" "}
           live path when configured
         </span>
-        <span className="hidden h-3 w-px bg-[var(--border)] sm:block" />
+        <span className="hidden h-3 w-px bg-white/15 sm:block" />
         <span>Cached demos clearly labeled</span>
-        <span className="hidden h-3 w-px bg-[var(--border)] sm:block" />
+        <span className="hidden h-3 w-px bg-white/15 sm:block" />
         <span>Free: one Mini 5s 480p trial · on-player mark</span>
-        <span className="hidden h-3 w-px bg-[var(--border)] sm:block" />
+        <span className="hidden h-3 w-px bg-white/15 sm:block" />
         <span>
           Made for{" "}
           <Link
             href="/for/etsy-listing-videos"
-            className="font-medium text-[var(--fg)] underline-offset-2 hover:underline"
+            className="font-medium text-white/80 underline-offset-2 hover:text-[var(--mint)] hover:underline"
           >
             Etsy
           </Link>
           {" · "}
           <Link
             href="/for/tiktok-shop-product-videos"
-            className="font-medium text-[var(--fg)] underline-offset-2 hover:underline"
+            className="font-medium text-white/80 underline-offset-2 hover:text-[var(--mint)] hover:underline"
           >
             TikTok Shop
           </Link>

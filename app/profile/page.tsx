@@ -13,11 +13,17 @@ export default function ProfilePage() {
   const auth = publicAuthStatus();
 
   return (
-    <div className="px-4 py-10 sm:px-8">
-      <div className="mx-auto max-w-lg">
+    <div className="relative px-4 py-10 sm:px-8">
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(40%_70%_at_50%_0%,rgba(200,255,61,0.07),transparent_70%)]"
+        aria-hidden
+      />
+      <div className="relative mx-auto max-w-lg">
         <span className="chip">Account</span>
-        <h1 className="mt-3 text-2xl font-bold">Profile</h1>
-        <p className="mt-1 text-sm text-[var(--fg-muted)]">
+        <h1 className="mt-3 font-display text-2xl font-black uppercase tracking-tight">
+          Profile
+        </h1>
+        <p className="mt-1.5 text-sm leading-relaxed text-[var(--fg-muted)]">
           Plan, credits, and session — guest cookie on this device, or
           signed-in durable wallet when Supabase is configured.
         </p>
@@ -27,6 +33,20 @@ export default function ProfilePage() {
             Sign-in status →
           </Link>
         </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Link href="/create" className="btn btn-primary !px-3 !py-1.5 text-xs">
+            Generate
+          </Link>
+          <Link href="/library" className="btn btn-ghost !px-3 !py-1.5 text-xs">
+            Library
+          </Link>
+          <Link href="/pricing" className="btn btn-ghost !px-3 !py-1.5 text-xs">
+            Plans
+          </Link>
+          <Link href="/flow" className="btn btn-ghost !px-3 !py-1.5 text-xs">
+            Flow
+          </Link>
+        </div>
         <ProfilePanel />
       </div>
     </div>
